@@ -35,7 +35,8 @@ void BuildSaveGameBuffer(unsigned char *buf) {
   buf[SAVE_OFFSET(escapeRunCount)] = g_anLevelEscapeRunCount;
   buf[SAVE_OFFSET(escapeRunCountLane1)] = g_nLevelEscapeRunCountLane1;
   buf[SAVE_OFFSET(extraLives)] = g_nExtraLives;
-  CopyWords(buf + SAVE_OFFSET(flight), g_anFlightClearTimes, 0x14);
+  CopyWords(buf + SAVE_OFFSET(flight), g_anFlightClearTimes,
+            FLIGHT_LEVEL_COUNT * 4);
   w = 0;
   tbl = g_abFlightBonusPaid;
   row = buf;
@@ -46,12 +47,13 @@ void BuildSaveGameBuffer(unsigned char *buf) {
     do {
       *dst++ = *src++;
     } while ((int)dst < (int)end);
-    tbl += 5;
+    tbl += FLIGHT_BONUS_SLOTS;
     w += 1;
-    row += 5;
-  } while (w < 5);
-  CopyWords(buf + SAVE_OFFSET(levelVisited), g_abLevelVisitedFlag, 0x24);
-  CopyWords(buf + SAVE_OFFSET(levelExited), g_abLevelExited, 0x24);
+    row += FLIGHT_BONUS_SLOTS;
+  } while (w < FLIGHT_LEVEL_COUNT);
+  CopyWords(buf + SAVE_OFFSET(levelVisited), g_abLevelVisitedFlag,
+            TOTAL_LEVEL_COUNT);
+  CopyWords(buf + SAVE_OFFSET(levelExited), g_abLevelExited, TOTAL_LEVEL_COUNT);
   i = 0;
   eggs = g_anLevelEggsRecovered;
   gems = g_anLevelGemsCollected;
@@ -65,12 +67,13 @@ void BuildSaveGameBuffer(unsigned char *buf) {
     SAVE_RAW(half, short, levelGems) = *gems++;
     row2[SAVE_OFFSET(levelEggs)] = *eggs++;
     half += 2;
-  } while (i < 0x24);
+  } while (i < TOTAL_LEVEL_COUNT);
   i = 0;
   do {
     *(i + buf + SAVE_OFFSET(balloonistState)) = g_abWorldBalloonistState[i];
     i += 1;
-  } while (i < 6);
-  CopyWords(buf + SAVE_OFFSET(killBitmaps), g_anLevelKillBitmapTable, 0x480);
+  } while (i < WORLD_COUNT);
+  CopyWords(buf + SAVE_OFFSET(killBitmaps), g_anLevelKillBitmapTable,
+            TOTAL_LEVEL_COUNT * 32);
   ((SaveGameBuffer *)buf)->checksum = ComputeSaveGameChecksum(start);
 }

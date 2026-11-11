@@ -98,7 +98,7 @@ void DispatchSpyroPhysicsByState(void) {
       if (ang > 0x800) {
         ang -= 0x1000;
       }
-      t = (SPY[SPY_GROUND_SLOPE] << 12) / 22;
+      t = (SPY[SPY_GROUND_SLOPE] << 12) / (SLOPE_STEEP - 1);
       ang = abs(ang);
       if (ang > 0x400) {
         a = g_anSpyroSlopeSpeedTargets[2] +
@@ -146,16 +146,16 @@ void DispatchSpyroPhysicsByState(void) {
     ProbeSpyroGroundContact();
     ApplyGravityAlongSpyroSlopeNormal();
     frame = g_bSpyroAnimFrame;
-    if (frame < 10) {
+    if (frame < HURT_FLASH_FRAMES) {
       g_abSpyroTintRgba[3] = 0xFF;
       if (frame & 1) {
-        g_abSpyroTintRgba[2] = 0xFF;
-        g_abSpyroTintRgba[1] = 0xFF;
-        g_abSpyroTintRgba[0] = 0xFF;
+        g_abSpyroTintRgba[2] = HURT_FLASH_LIGHT;
+        g_abSpyroTintRgba[1] = HURT_FLASH_LIGHT;
+        g_abSpyroTintRgba[0] = HURT_FLASH_LIGHT;
       } else {
-        g_abSpyroTintRgba[2] = 0x40;
-        g_abSpyroTintRgba[1] = 0x40;
-        g_abSpyroTintRgba[0] = 0x40;
+        g_abSpyroTintRgba[2] = HURT_FLASH_DARK;
+        g_abSpyroTintRgba[1] = HURT_FLASH_DARK;
+        g_abSpyroTintRgba[0] = HURT_FLASH_DARK;
       }
     } else {
       g_abSpyroTintRgba[3] = 0;
@@ -300,20 +300,20 @@ void DispatchSpyroPhysicsByState(void) {
     ApplyGravityAlongSpyroSlopeNormal();
     break;
   case SPYRO_ST_HAZARD: {
-    int *timer;
+    int *sink;
     int n;
 
-    timer = &SPY[SPY_HAZARD_SINK];
-    if (*timer != 0) {
-      n = *timer + 8;
-      *timer = n;
+    sink = &SPY[SPY_HAZARD_SINK];
+    if (*sink != 0) {
+      n = *sink + SPYRO_HAZARD_SINK_STEP;
+      *sink = n;
       g_nSpyroWorldPosZ = g_nSpyroTriggerEntryZ + SPYRO_RADIUS;
       if (g_nSparxHealth >= SPARX_GONE) {
-        if (n > 0x96) {
-          *timer = 0x96;
+        if (n > SPYRO_HAZARD_SINK_SURVIVE) {
+          *sink = SPYRO_HAZARD_SINK_SURVIVE;
         }
-      } else if (n > 0x240) {
-        *timer = 0x240;
+      } else if (n > SPYRO_HAZARD_SINK_FATAL) {
+        *sink = SPYRO_HAZARD_SINK_FATAL;
       }
     }
     AdvanceSpyroPhysics();

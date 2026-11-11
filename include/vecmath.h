@@ -28,6 +28,9 @@ int LookupCosine(int angle);
 #define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
 #endif
 int ArcTan2(int x, int y, int scale);
+/* A wrapped 12-bit angle (0..0xFFF) more than a quarter turn either way of 0
+ * (0x401..0xBFF): the direction points behind. */
+#define ANGLE12_BEHIND(a) ((unsigned)((a) - 0x401) < 0x7FF)
 int ArcTan2_8bit(int x, int y);
 
 /* libc abs (gcc expands it inline). */

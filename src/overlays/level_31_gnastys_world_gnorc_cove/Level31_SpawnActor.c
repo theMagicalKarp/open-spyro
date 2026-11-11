@@ -37,7 +37,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
     InitActorRenderDefaults(rec);
     st->vel[2] = PICKUP_DROP_POP_VZ;
     st->bounces = PICKUP_DROP_BOUNCES;
-    st->sparkle = BILLBOARD_NONE;
+    st->sparkle = ROT_BILLBOARD_NONE;
     st->vel[0] = 0;
     st->vel[1] = 0;
     st->restMode = COLLREST_STILL;
@@ -110,7 +110,7 @@ Actor *Level31_SpawnActor(int type, Actor *parent) {
       st->bounces = PICKUP_DROP_BOUNCES;
     }
     pos = &rec->posX;
-    st->sparkle = BILLBOARD_NONE;
+    st->sparkle = ROT_BILLBOARD_NONE;
     rec->subMode = COLLECT_BOUNCE;
     rec->cullRadius = CULL_RADIUS(0x1800);
     rec->updateDist = UPDATE_DIST(0x10000);

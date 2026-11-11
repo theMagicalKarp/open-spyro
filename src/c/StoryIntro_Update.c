@@ -3,6 +3,7 @@
 #include "funcs.h"
 #include "gamestate.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 #include "spyro_state.h"
 #include "title_state.h"
@@ -134,8 +135,8 @@ void StoryIntro_Update(void) {
               g_nCdStreamState == CSTREAM_EXT_SECOND_HALF) {
             clear.x = 0;
             clear.y = 0;
-            clear.w = 0x200;
-            clear.h = 0x1e0;
+            clear.w = SCREEN_W;
+            clear.h = SCREEN_H * 2;
             ClearImage(&clear, 0, 0, 0);
             DrawSync(0);
             g_pWorkAreaTop = (void *)(RAM_END - g_nCrt0StackSize);

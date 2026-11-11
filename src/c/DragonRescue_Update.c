@@ -26,8 +26,8 @@
      StopSoundVoiceByIndex `li a1,4` keeps the call's delay slot);
    - the case-0 timer base is the function-scope `i` (it lives in s1, as the
      original's base does), read into a block-local before the rumble store;
-   - both voice-marker arguments are `&GB[11]`, which gives the case-6 timer
-     base its a3 preference and lets the case-0 and case-6 PlaySoundEffect
+   - both voice-marker arguments are `&GB[GB_VOICE]`, which gives the case-6
+   timer base its a3 preference and lets the case-0 and case-6 PlaySoundEffect
      tails cross-jump;
    - the case-2 5-holder is asm-opaque so it lands in the AllocActorRecordSlot
      delay slot, and case 4's `done` doubles as the case-5 table pointer (two
@@ -37,6 +37,16 @@
    [5] timer, [6] sweep length, ... [24] statue, [25] mirror, [26] source. */
 
 #define GB g_anDragonRescueBlock
+/* Its words as the held-base accesses below read them (the array form keeps
+ * the original's single base register). */
+#define GB_TIMER 5     /* g_nDragonRescueTimer */
+#define GB_VOICE 11    /* g_bSceneSfxVoiceMarker (the voice line's row) */
+#define GB_PAD_HOLD 13 /* g_nDragonRescuePadHoldTimer */
+#define GB_CAM_START_YAW                                                       \
+  18 /* g_nDragonRescueCameraStartYaw (radius, z follow) */
+#define GB_CAM_TARGET_YAW                                                      \
+  21                 /* g_nDragonRescueCameraTargetYaw (radius, z follow) */
+#define GB_STATUE 24 /* g_pDragonRescueStatueActor */
 #define EUL2 (((unsigned char *)g_anSpyroWorldPosBlock)[0xE])
 #define SRC (*(Actor *volatile *)&g_pDragonRescueSourceActor)
 #define STATUE (*(Actor *volatile *)&g_pDragonRescueStatueActor)
@@ -97,7 +107,7 @@ void DragonRescue_Update(void) {
   int i;
   int done;
 
-  GB[5] += g_nFrameStep;
+  GB[GB_TIMER] += g_nFrameStep;
   g_nDragonRescueSecondaryTimer += g_nFrameStep;
   switch (g_nDragonRescueSubstate) {
   case DRAGON_RESCUE_AURA: {
@@ -124,7 +134,7 @@ void DragonRescue_Update(void) {
     if (g_nPulseRumbleTimer < RESCUE_RUMBLE_FRAMES) {
       g_nPulseRumbleTimer = RESCUE_RUMBLE_FRAMES;
     }
-    i = (int)&GB[5];
+    i = (int)&GB[GB_TIMER];
     now = *(int *)i;
     g_nPulseRumbleAmount = RESCUE_RUMBLE_AMOUNT;
     if (now >= RESCUE_AURA_FRAMES) {
@@ -184,10 +194,10 @@ void DragonRescue_Update(void) {
       g_bSpyroFramePrev = 0;
       g_bSpyroSubFrameTimer = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
-      ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
+      ((unsigned char *)g_pEmitListBase)[1] = EMIT_CLASS_END;
       StopAllSoundExceptMask(1 << SRC->voiceRow);
       PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_SWEEP), 0, SFX_MODE_PANNED,
-                      (unsigned char *)&GB[11]);
+                      (unsigned char *)&GB[GB_VOICE]);
     }
   } break;
   case DRAGON_RESCUE_SWEEP:
@@ -273,10 +283,16 @@ void DragonRescue_Update(void) {
       if (g_nSpyroAnimPlayRate_blk[0] > 0x10) {
         g_nSpyroAnimPlayRate_blk[0] = 0x10;
       }
-      if (((GB[21] - GB[18]) & 0xFFF) < 0x801) {
-        a = GB[18] + ((AbsAngleDelta12(GB[21], GB[18]) * t) >> 13);
+      if (((GB[GB_CAM_TARGET_YAW] - GB[GB_CAM_START_YAW]) & 0xFFF) < 0x801) {
+        a = GB[GB_CAM_START_YAW] +
+            ((AbsAngleDelta12(GB[GB_CAM_TARGET_YAW], GB[GB_CAM_START_YAW]) *
+              t) >>
+             13);
       } else {
-        a = GB[18] - ((AbsAngleDelta12(GB[21], GB[18]) * t) >> 13);
+        a = GB[GB_CAM_START_YAW] -
+            ((AbsAngleDelta12(GB[GB_CAM_TARGET_YAW], GB[GB_CAM_START_YAW]) *
+              t) >>
+             13);
       }
       d = g_nDragonRescueCameraStartRadius +
           (((g_nDragonRescueCameraTargetRadius -
@@ -463,10 +479,10 @@ void DragonRescue_Update(void) {
                                g_pDragonRescueSourceActor);
         }
         OPAQUE_COPY(five, 5);
-        GB[24] = (int)AllocActorRecordSlot();
-        InitActorRenderDefaults((void *)GB[24]);
+        GB[GB_STATUE] = (int)AllocActorRecordSlot();
+        InitActorRenderDefaults((void *)GB[GB_STATUE]);
         ACTOR_RAW(STATUE, short, type) = ACTOR_TYPE_RESCUED_DRAGON;
-        CopyVector(&((Actor *)GB[24])->posX, &SRC->posX);
+        CopyVector(&((Actor *)GB[GB_STATUE])->posX, &SRC->posX);
         {
           Actor *s = SRC;
           Actor *t = STATUE;
@@ -477,34 +493,34 @@ void DragonRescue_Update(void) {
         STATUE->otBias = five;
         ACTOR_RAW(STATUE, int, groundCode) = -1;
         STATUE->posZ += RESCUE_FLOOR_PROBE_RAISE;
-        FindWorldFloorBelowPoint(&((Actor *)GB[24])->posX);
+        FindWorldFloorBelowPoint(&((Actor *)GB[GB_STATUE])->posX);
         STATUE->posZ -= RESCUE_FLOOR_PROBE_RAISE;
-        EncodeHitNormalToActorGroundCode((void *)GB[24]);
-        InsertActorIntoSpatialGrid((void *)GB[24]);
+        EncodeHitNormalToActorGroundCode((void *)GB[GB_STATUE]);
+        InsertActorIntoSpatialGrid((void *)GB[GB_STATUE]);
         g_pDragonRescueSpyroMirrorActor = AllocActorRecordSlot();
         InitActorRenderDefaults(g_pDragonRescueSpyroMirrorActor);
         ACTOR_RAW(MIRROR, short, type) = ACTOR_TYPE_RESCUE_SPYRO;
         CopyVector(&MIRROR->posX, g_anSpyroWorldPos);
         MIRROR->otBias = five;
         InsertActorIntoSpatialGrid(MIRROR);
-        StopSoundVoiceByIndex(GB[11], VOICE_RELEASE);
+        StopSoundVoiceByIndex(GB[GB_VOICE], VOICE_RELEASE);
         PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_STATUE), 0, SFX_MODE_PANNED,
-                        (unsigned char *)&GB[11]);
+                        (unsigned char *)&GB[GB_VOICE]);
         ACTOR_RAW(SRC, int, posZ) += RESCUE_SOURCE_SINK;
         DespawnActorRecord(SRC);
       }
     }
     break;
   case DRAGON_RESCUE_TURN:
-    if (GB[5] < RESCUE_TURN_FRAMES) {
+    if (GB[GB_TIMER] < RESCUE_TURN_FRAMES) {
       STATUE->scale =
-          RESCUE_DRAGON_START_SCALE - GB[5] * RESCUE_DRAGON_GROW_STEP;
+          RESCUE_DRAGON_START_SCALE - GB[GB_TIMER] * RESCUE_DRAGON_GROW_STEP;
       {
         Actor *s = SRC;
         int turn;
 
         turn = SignedAngleDelta8(STATUE_ST(s)->dragonYaw >> 4, s->rotZ) *
-               GB[5] / RESCUE_TURN_FRAMES;
+               GB[GB_TIMER] / RESCUE_TURN_FRAMES;
         {
           Actor *s2 = SRC;
           Actor *t = STATUE;
@@ -517,7 +533,7 @@ void DragonRescue_Update(void) {
       Actor *t;
 
       g_nDragonRescueSubstate = DRAGON_RESCUE_CAMERA_PATH;
-      GB[5] = 0;
+      GB[GB_TIMER] = 0;
       t = STATUE;
       t->rotZ = STATUE_ST(s)->dragonYaw >> 4;
       STATUE->scale = 0;
@@ -531,9 +547,9 @@ void DragonRescue_Update(void) {
     int step;
 
     done = 0;
-    if (GB[5] < g_nDragonRescueCameraPathCount * 2) {
+    if (GB[GB_TIMER] < g_nDragonRescueCameraPathCount * 2) {
       if (g_nDragonRescueAudioFiredFlag == 0 &&
-          GB[5] >= STATUE_ST(SRC)->speechFrame) {
+          GB[GB_TIMER] >= STATUE_ST(SRC)->speechFrame) {
         CopyWords(save, *(void *volatile *)g_apSampleBankEntriesBlock, 0x14);
         SBE->nSampleAddr = SPU_RAM_SIZE - g_nDragonRescueAudioSampleSize;
         SBE->nLoopAddr = -1;
@@ -546,12 +562,12 @@ void DragonRescue_Update(void) {
         }
         SBE->nPitchSpread = 0;
         SBE->nPitchStep = 0;
-        SBE->nPitchMode = 0;
+        SBE->nPitchMode = SAMPLE_PITCH_AROUND;
         ((struct { int v; } *)&g_nSfxOverrideFlags)->v = SFX_OVERRIDE_VOLUME;
         ((struct { short v; } *)&g_nSfxOverrideVolL)->v = SPU_VOLUME_MAX;
         ((struct { short v; } *)&g_nSfxOverrideVolR)->v = SPU_VOLUME_MAX;
-        StopSoundVoiceByIndex(GB[11], VOICE_RELEASE);
-        PlaySoundEffect(0, 0, SFX_MODE_PANNED, (unsigned char *)&GB[11]);
+        StopSoundVoiceByIndex(GB[GB_VOICE], VOICE_RELEASE);
+        PlaySoundEffect(0, 0, SFX_MODE_PANNED, (unsigned char *)&GB[GB_VOICE]);
         CopyWords(*(void *volatile *)g_apSampleBankEntriesBlock, save, 0x14);
         g_nDragonRescueAudioFiredFlag = 1;
       }
@@ -567,13 +583,13 @@ void DragonRescue_Update(void) {
         g_nCameraEulerYaw = CAM_KEY_RAW(p, yaw);
       }
       FRAME_STEP(g_pDragonRescueStatueModelData, step);
-      STATUE->frame = GB[5] / step;
+      STATUE->frame = GB[GB_TIMER] / step;
       {
         Actor *p = STATUE;
 
         p->nextFrame = p->frame + 1;
       }
-      STATUE->frameProgress = (GB[5] % step << 6) / step;
+      STATUE->frameProgress = (GB[GB_TIMER] % step << 6) / step;
       {
         short n =
             ((AnimationHeader *)(FIRST_ANIM(g_pDragonRescueStatueModelData)))
@@ -586,13 +602,13 @@ void DragonRescue_Update(void) {
         }
       }
       FRAME_STEP(g_pDragonRescueMirrorModelData, step);
-      MIRROR->frame = GB[5] / step;
+      MIRROR->frame = GB[GB_TIMER] / step;
       {
         Actor *p = MIRROR;
 
         p->nextFrame = p->frame + 1;
       }
-      MIRROR->frameProgress = (GB[5] % step << 6) / step;
+      MIRROR->frameProgress = (GB[GB_TIMER] % step << 6) / step;
       {
         short n =
             ((AnimationHeader *)(FIRST_ANIM(g_pDragonRescueMirrorModelData)))
@@ -656,10 +672,10 @@ void DragonRescue_Update(void) {
         }
       }
     }
-    if (GB[13] != 0) {
-      GB[13] += g_nFrameStep;
-      if (GB[13] >= RESCUE_PAD_HOLD_FRAMES) {
-        GB[13] = 0;
+    if (GB[GB_PAD_HOLD] != 0) {
+      GB[GB_PAD_HOLD] += g_nFrameStep;
+      if (GB[GB_PAD_HOLD] >= RESCUE_PAD_HOLD_FRAMES) {
+        GB[GB_PAD_HOLD] = 0;
       }
     }
   } break;
@@ -691,23 +707,23 @@ void DragonRescue_Update(void) {
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
   roll_in:
-    CopyVector(&HUD_ICON(5 * ACTOR_SIZE + k)->posX,
+    CopyVector(&HUD_ICON(HUD_SLOT_DRAGON_DIGITS * ACTOR_SIZE + k)->posX,
                (int *)((char *)g_anDragonRescueIconRestPos + off));
     if (g_nDragonRescueTimer < RESCUE_LIGHT_UP_FRAMES) {
       *icon += (((short *)done)[g_nDragonRescueTimer >> 1] * 3) >> 1;
     } else {
       *icon += (g_anHudRollInStepTable[0xC] * 3) >> 1;
     }
-    icon += 0x16;
+    icon += ACTOR_SIZE / 4; /* the next slot's posY */
     k += ACTOR_SIZE;
     i++;
-    off += 0xC;
-    if (i < 3) {
+    off += 3 * 4; /* one rest position */
+    if (i < HUD_DRAGON_SLOTS) {
       goto roll_in;
     }
-    if (GB[5] >= RESCUE_LIGHT_UP_FRAMES) {
+    if (GB[GB_TIMER] >= RESCUE_LIGHT_UP_FRAMES) {
       g_nDragonRescueSubstate = DRAGON_RESCUE_COUNT;
-      GB[5] = 0;
+      GB[GB_TIMER] = 0;
       g_bHudDragonRollPhase = 0;
       CopyVector((int *)ang, &g_pDragonRescueStatueActor->posX);
       ((int *)ang)[2] += RESCUE_SWIRL_RAISE;
@@ -716,7 +732,7 @@ void DragonRescue_Update(void) {
       DespawnActorRecord(STATUE);
       DespawnActorRecord(MIRROR);
       PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_DEPART), 0, SFX_MODE_PANNED,
-                      (unsigned char *)&GB[11]);
+                      (unsigned char *)&GB[GB_VOICE]);
     }
   } break;
   case DRAGON_RESCUE_COUNT:
@@ -738,14 +754,14 @@ void DragonRescue_Update(void) {
                         &g_bSceneSfxVoiceMarker);
       }
     }
-    if (GB[5] >= RESCUE_COUNT_FRAMES &&
+    if (GB[GB_TIMER] >= RESCUE_COUNT_FRAMES &&
         g_nDragonRescueStreamState == RESCUE_STREAM_DONE) {
       g_nDragonRescueSubstate = DRAGON_RESCUE_FADE_OUT;
-      GB[5] = 0;
+      GB[GB_TIMER] = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
-      ((unsigned char *)g_pEmitListBase)[1] = 0xFF;
+      ((unsigned char *)g_pEmitListBase)[1] = EMIT_CLASS_END;
       PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_FADE), 0, SFX_MODE_PANNED,
-                      (unsigned char *)&GB[11]);
+                      (unsigned char *)&GB[GB_VOICE]);
     }
     break;
   case DRAGON_RESCUE_FADE_OUT: {
@@ -754,7 +770,7 @@ void DragonRescue_Update(void) {
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
-    if (g_nDragonRescueTimer < 0x10) {
+    if (g_nDragonRescueTimer < RESCUE_FADE_FRAMES / 2) {
       int n;
       int *icon;
       int j;
@@ -765,18 +781,18 @@ void DragonRescue_Update(void) {
       j = 0;
       off = 0;
     roll_out:
-      CopyVector(&HUD_ICON(5 * ACTOR_SIZE + j)->posX,
+      CopyVector(&HUD_ICON(HUD_SLOT_DRAGON_DIGITS * ACTOR_SIZE + j)->posX,
                  (int *)((char *)g_anDragonRescueIconRestPos + off));
       j += ACTOR_SIZE;
-      off += 0xC;
+      off += 3 * 4; /* one rest position */
       n++;
       *icon += (0x11 - g_nDragonRescueTimer) * 3;
-      icon += 0x16;
-      if (n < 3) {
+      icon += ACTOR_SIZE / 4; /* the next slot's posY */
+      if (n < HUD_DRAGON_SLOTS) {
         goto roll_out;
       }
     }
-    if (g_nDragonRescueTimer < 0x10) {
+    if (g_nDragonRescueTimer < RESCUE_FADE_FRAMES / 2) {
       k = g_nDragonRescueTimer;
     } else {
       k = RESCUE_FADE_FRAMES - g_nDragonRescueTimer;

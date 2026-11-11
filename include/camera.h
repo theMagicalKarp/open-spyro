@@ -122,5 +122,36 @@ enum CameraMode {
 #define CAM_LOOK_PITCH_SPLIT 0x140
 #define CAM_LOOK_HEAD_YAW 0x300
 #define CAM_LOOK_HEAD_PITCH 0x200
+/* UpdateGameplayCamera: the eye marches in CAM_STEP_LEN substeps as a
+ * CAM_COLLIDE_RADIUS sphere, sliding off at most CAM_COLLIDE_TRIES times a
+ * step; leftover moves under CAM_SLIDE_SLOP per axis are dropped. Line of
+ * sight is tested to CAM_LOS_DROP below Spyro's position. Occluded for
+ * CAM_RESEAT_FRAMES it tries the CAM_RESEAT_COUNT reseat blocks, then the
+ * CAM_ESCAPE_COUNT escape offsets. The stuck count only resets while Spyro
+ * projects inside the screen less CAM_ONSCREEN_MARGIN_X/_Y and is within
+ * CAM_FAR_RANGE. */
+#define CAM_STEP_LEN 0x100
+#define CAM_COLLIDE_RADIUS 0x100
+#define CAM_COLLIDE_TRIES 6
+#define CAM_SLIDE_SLOP 0x20
+#define CAM_LOS_DROP 0x134
+#define CAM_RESEAT_FRAMES 0x1F
+#define CAM_RESEAT_COUNT 5
+#define CAM_ESCAPE_COUNT 5
+#define CAM_ONSCREEN_MARGIN_X 0x20
+#define CAM_ONSCREEN_MARGIN_Y 0x18
+#define CAM_FAR_RANGE 0x2000
+/* AdvanceCameraSpringStep: the gain / threshold tables hold one row of
+ * CAM_SPRING_COLUMNS tuning sets per axis (yaw, pitch, distance, roll, pitch
+ * bias, yaw bias). Charging, the yaw drive is at least CAM_CHARGE_MIN_DRIVE.
+ * The passive follow holds the yaw below CAM_PASSIVE_MAX_SPEED (Spyro's
+ * speed). Spring states clamp to CAM_SPRING_CLAMP (glide entry, the passive
+ * re-engage) or CAM_SPRING_CLAMP_SWING (CAM_OPT_SMOOTH_SWING). */
+#define CAM_SPRING_COLUMNS 6
+#define CAM_SPRING_ROW(axis) ((axis) * CAM_SPRING_COLUMNS)
+#define CAM_CHARGE_MIN_DRIVE 0x400
+#define CAM_PASSIVE_MAX_SPEED 0x400
+#define CAM_SPRING_CLAMP 0x800
+#define CAM_SPRING_CLAMP_SWING 0x2000
 
 #endif /* OPEN_SPYRO_CAMERA_H */

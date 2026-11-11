@@ -92,5 +92,9 @@ enum DragonRescueStreamState {
 #define RESCUE_FADE_FRAMES 0x20
 #define RESCUE_FADE_RADIUS_STEP 0x50
 #define RESCUE_FADE_COLOR_STEP 8
+/* DragonRescue_Draw: the rescued-dragon banner shows for the camera path's
+ * first RESCUE_BANNER_FRAMES; the counter stays up for the fade-out's first
+ * half (RESCUE_FADE_FRAMES / 2), while the tint ramps up. */
+#define RESCUE_BANNER_FRAMES 0x3C
 
 #endif /* OPEN_SPYRO_DRAGON_RESCUE_H */

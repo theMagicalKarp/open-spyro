@@ -18,7 +18,7 @@ void InitActorRenderDefaults(Actor *actor) {
   actor->nextAnim = ACTOR_SPAWN_ANIM;
   actor->frame = 0;
   actor->frameProgress = 0;
-  actor->frameRate = 0x20;
+  actor->frameRate = ANIM_RATE_TICKS(2);
   actor->group = 0xff;
   actor->gateChunk = GATE_CHUNK_ALWAYS;
   actor->dropKind = DROP_GEM_ROLL;

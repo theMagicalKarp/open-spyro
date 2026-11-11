@@ -370,11 +370,7 @@ void Level32_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = actor->posZ + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -426,11 +422,7 @@ void Level32_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = (actor->posZ) + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -701,7 +693,7 @@ void Level32_UpdateActors(void) {
 
       toSpyro = ApproxDist2D(&actor->posX, &SPY.posX);
 
-      if (st->timer < 0xFA) {
+      if (st->timer < ROT_BILLBOARD_GLINT_TIMER_CAP) {
         st->timer += g_nFrameStep;
       }
 
@@ -718,7 +710,7 @@ void Level32_UpdateActors(void) {
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                         &actor->posX);
 
-          if (g_aRotBillboards[st->attach].life < 5) {
+          if (g_aRotBillboards[st->attach].life < ROT_BILLBOARD_FADING_LIFE) {
             st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
@@ -806,7 +798,7 @@ void Level32_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == VOICE_OWNER_NONE) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = SPARX_BUZZ_VOLUME;
                     g_nSfxOverrideVolL = SPARX_BUZZ_VOLUME;
@@ -929,7 +921,7 @@ void Level32_UpdateActors(void) {
                 if (sparx->target == 0) {
                   if (GetSoundVoiceStatusByOwner(
                           g_pSparxActor,
-                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == 0) {
+                          g_apActorMeshTable[g_pSparxActor->type]->m_Sounds[SPARX_VOICE_BUZZ]) == VOICE_OWNER_NONE) {
                     g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                     g_nSfxOverrideVolR = SPARX_BUZZ_VOLUME;
                     g_nSfxOverrideVolL = SPARX_BUZZ_VOLUME;
@@ -1413,7 +1405,7 @@ void Level32_UpdateActors(void) {
               st->target = 0;
               EBB_BREAK();
 
-              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
+              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == VOICE_OWNER_NONE) {
                 g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                 g_nSfxOverrideVolR = SPARX_HANDOVER_VOLUME;
                 g_nSfxOverrideVolL = SPARX_HANDOVER_VOLUME;
@@ -1626,7 +1618,7 @@ void Level32_UpdateActors(void) {
 
       case BURSTGUN_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, BURSTGUN_KNOCK_DRAG, sixteen);
-        if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
+        if ((unsigned)((g_nGroundSurfaceType & TRIGGER_REGION_MASK) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
@@ -1793,7 +1785,7 @@ void Level32_UpdateActors(void) {
 
       case SWEEPGUN_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, SWEEPGUN_KNOCK_DRAG, SWEEPGUN_KNOCK_GRAVITY);
-        if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
+        if ((unsigned)((g_nGroundSurfaceType & TRIGGER_REGION_MASK) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
@@ -1921,7 +1913,7 @@ void Level32_UpdateActors(void) {
 
       case LOBGUN_KNOCKED:
         DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LOBGUN_KNOCK_DRAG, 0x16);
-        if ((unsigned)((g_nGroundSurfaceType & 0x3F) - 1) < 2) {
+        if ((unsigned)((g_nGroundSurfaceType & TRIGGER_REGION_MASK) - 1) < 2) {
           int h = ProbeActorGroundHeight(actor);
           int z = actor->posZ - actor->floorOffset;
 
@@ -2133,7 +2125,7 @@ void Level32_UpdateActors(void) {
                         g_aRotBillboards[st->attach].pos);
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                         &actor->posX);
-          if (g_aRotBillboards[st->attach].life < 5) {
+          if (g_aRotBillboards[st->attach].life < ROT_BILLBOARD_FADING_LIFE) {
             st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
@@ -2432,7 +2424,7 @@ void Level32_UpdateActors(void) {
           int dx;
           int dy;
 
-          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE]) == 0) {
+          if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[STATUE_VOICE_RATTLE]) == VOICE_OWNER_NONE) {
             PlayActorMeshVoice(actor, STATUE_VOICE_RATTLE, 0);
           }
 
@@ -3086,15 +3078,15 @@ void Level32_UpdateActors(void) {
           actor->rotY = st->savedRotY;
           actor->posZ = st->savedPosZ;
           actor->mode = LIFECHEST_OPEN;
-          actor->frameProgress = 8;
-          actor->frameRate = 8;
+          actor->frameProgress = ANIM_RATE_TICKS(8);
+          actor->frameRate = ANIM_RATE_TICKS(8);
           actor->nextAnim = LIFECHEST_OPEN;
 
           st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
-          st->passenger->frameRate = 0x10;
+          st->passenger->frameRate = ANIM_RATE_TICKS(4);
           st->passenger->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           st->passenger->cullRadius = ACTOR_CULL_HIDDEN;
           st->passenger->drawn = 0;
@@ -3136,8 +3128,8 @@ void Level32_UpdateActors(void) {
         if (st->phase >= LIFECHEST_OPEN_FRAMES) {
           DespawnActorRecord(st->passenger);
           st->phase = GetRandomU32() & 0xFF;
-          actor->frameProgress = 8;
-          actor->frameRate = 8;
+          actor->frameProgress = ANIM_RATE_TICKS(8);
+          actor->frameRate = ANIM_RATE_TICKS(8);
           actor->mode = LIFECHEST_CLOSED;
           actor->nextAnim = LIFECHEST_CLOSED;
           if (actor->voiceRow == VOICE_ROW_NONE) {

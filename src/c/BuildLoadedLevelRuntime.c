@@ -12,6 +12,8 @@
 
 #include "camera.h"
 #include "cd_music.h"
+#include "emit_record.h"
+#include "frame_db.h"
 #include "funcs.h"
 #include "gamestate.h"
 #include "globals.h"
@@ -113,7 +115,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     ResetSpyroEntity(RESET_SPYRO_SOFT);
     g_nSpyroInputBlankCountdown = 0xC;
   }
-  if ((g_nActiveLevelId % 10) == 5) {
+  if (LEVEL_IN_WORLD(g_nActiveLevelId) == LEVEL_FLIGHT_SLOT) {
     g_nFlightLevelActive = 1;
     g_nSpyroFlightMode = 1;
     g_nSpyroFallReferenceZ = g_nLevelSpawnPosZ;
@@ -395,8 +397,8 @@ sprites:
     if (g_nDemoMode == DEMO_PLAYBACK) {
       g_pDemoPadCursor = p;
     } else {
-      g_pDemoPadCursor = (void *)0x80600000;
-      FillWord((void *)0x80600000, 0, 0x4000);
+      g_pDemoPadCursor = DEMO_RECORD_BUFFER;
+      FillWord(DEMO_RECORD_BUFFER, 0, DEMO_RECORD_BYTES);
     }
   }
   mask = 0;
@@ -500,8 +502,8 @@ sprites:
   } while (i >= 0);
   g_pEmitListBase = g_pEmitListBuffer;
   g_pEmitListWriteCursor = g_pEmitListBuffer;
-  ((unsigned char *)g_pEmitListBuffer)[1] = 0xFF;
-  ((int *)g_pEmitListBase)[0x800] = -1;
+  ((unsigned char *)g_pEmitListBuffer)[1] = EMIT_CLASS_END;
+  ((int *)g_pEmitListBase)[EMIT_LIST_BYTES / 4] = -1;
   ResetWorldParticleTables();
   if ((fullSetup != 0) && (g_nFlightLevelActive == 0)) {
     g_pSparxActor = g_pfnLevelSpawnActor(ACTOR_TYPE_SPARX, 0);

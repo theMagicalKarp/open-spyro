@@ -374,11 +374,7 @@ void Level0_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = actor->posZ + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -430,11 +426,7 @@ void Level0_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = (actor->posZ) + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -795,13 +787,13 @@ void Level0_UpdateActors(void) {
 
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
-      if (st->timer < 0xFA) {
+      if (st->timer < ROT_BILLBOARD_GLINT_TIMER_CAP) {
         st->timer += g_nFrameStep;
       }
 
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
-        if (st->sparkle != BILLBOARD_NONE) {
+        if (st->sparkle != ROT_BILLBOARD_NONE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
@@ -813,17 +805,17 @@ void Level0_UpdateActors(void) {
           AddVector(g_aRotBillboards[st->sparkle].pos, g_aRotBillboards[st->sparkle].pos,
                         &actor->posX);
 
-          if (g_aRotBillboards[st->sparkle].life < 5) {
-            st->sparkle = BILLBOARD_NONE;
+          if (g_aRotBillboards[st->sparkle].life < ROT_BILLBOARD_FADING_LIFE) {
+            st->sparkle = ROT_BILLBOARD_NONE;
           }
         } else {
-          if (st->timer > 0xf7) {
+          if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
             int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
             if (handle >= 0 && dist < ROT_BILLBOARD_ATTACH_RANGE) {
               st->sparkle = handle;
             }
 
-            st->timer = (GetRandomU32() & 0x1F) + 33;
+            st->timer = (GetRandomU32() & 0x1F) + 0x21;
           }
         }
       }
@@ -1958,7 +1950,7 @@ void Level0_UpdateActors(void) {
         RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->attach].pos);
         AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                       &actor->posX);
-        if (g_aRotBillboards[st->attach].life < 5) {
+        if (g_aRotBillboards[st->attach].life < ROT_BILLBOARD_FADING_LIFE) {
           st->attach = ROT_BILLBOARD_NONE;
         }
       } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
@@ -2855,7 +2847,7 @@ void Level0_UpdateActors(void) {
         }
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
-            (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
+            (g_nGroundSurfaceType & TRIGGER_REGION_MASK) < TRIGGER_REGION_NONE && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
           actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           SPY.requestState = SPYRO_ST_GLIDE;
@@ -2895,7 +2887,7 @@ void Level0_UpdateActors(void) {
         SPY.otBinBias = SPYRO_OT_BIAS_PINNED;
 
         if (CollideSphereWithWorldAndActors(&CAM.posX, PORTALGUIDE_CAM_PROBE_RADIUS, PORTALGUIDE_CAM_PROBE_RADIUS) != 0 &&
-            (g_nGroundSurfaceType & 0x3F) < 0x3F && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
+            (g_nGroundSurfaceType & TRIGGER_REGION_MASK) < TRIGGER_REGION_NONE && g_pTriggerRegionTable[g_nGroundSurfaceType][0] == TRIGGER_PORTAL) {
           actor->mode = PORTALGUIDE_IDLE;
           CAM.nextMode = (CAM_HELD | CAM_MODE_LEVEL_TRANSITION);
           g_nCdStreamState = LSTREAM_PRESERVE;
@@ -2967,15 +2959,15 @@ void Level0_UpdateActors(void) {
           actor->rotY = st->savedRotY;
           actor->posZ = st->savedPosZ;
           actor->mode = LIFECHEST_OPEN;
-          actor->frameProgress = 8;
-          actor->frameRate = 8;
+          actor->frameProgress = ANIM_RATE_TICKS(8);
+          actor->frameRate = ANIM_RATE_TICKS(8);
           actor->nextAnim = LIFECHEST_OPEN;
 
           st->passenger = g_pfnLevelSpawnActor(ACTOR_TYPE_LIFE_CHEST_RIDER, actor);
           st->passenger->rotX = actor->rotX;
           st->passenger->rotY = actor->rotY;
           st->passenger->rotZ = actor->rotZ;
-          st->passenger->frameRate = 0x10;
+          st->passenger->frameRate = ANIM_RATE_TICKS(4);
           st->passenger->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           st->passenger->cullRadius = ACTOR_CULL_HIDDEN;
           st->passenger->drawn = 0;
@@ -3017,8 +3009,8 @@ void Level0_UpdateActors(void) {
         if (st->phase >= LIFECHEST_OPEN_FRAMES) {
           DespawnActorRecord(st->passenger);
           st->phase = GetRandomU32() & 0xFF;
-          actor->frameProgress = 8;
-          actor->frameRate = 8;
+          actor->frameProgress = ANIM_RATE_TICKS(8);
+          actor->frameRate = ANIM_RATE_TICKS(8);
           actor->mode = LIFECHEST_CLOSED;
           actor->nextAnim = LIFECHEST_CLOSED;
           if (actor->voiceRow == VOICE_ROW_NONE) {

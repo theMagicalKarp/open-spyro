@@ -1,6 +1,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spu.h"
 
 /* Per-frame SPU maintenance: every 64 frames resync the software voice pool
    with the hardware, then flush any pending key-on / key-off requests (masked
@@ -15,12 +16,12 @@ void TickSpuPerFrame(void) {
   pon = g_anSpuPendingKeyOnBlock;
   on = pon[0];
   if (on != 0) {
-    SetSpuKeyMask(1, on & 0xFFFFFF);
+    SetSpuKeyMask(1, on & SPU_VOICE_ALL);
     pon[0] = 0;
   }
   off = g_dwSpuPendingKeyOff;
   if (off != 0) {
-    SetSpuKeyMask(0, off & 0xFFFFFF);
+    SetSpuKeyMask(0, off & SPU_VOICE_ALL);
     g_dwSpuPendingKeyOff = 0;
   }
 }

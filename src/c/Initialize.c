@@ -2,6 +2,7 @@
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 
 /* Boot-time bring-up + title sequence (0x800127C0, 0x530). Brings up the GPU,
@@ -84,7 +85,7 @@ void Initialize(void) {
     rect.w = 0x300;
     rect.x = 0;
     rect.y = 0;
-    rect.h = 0xF0;
+    rect.h = SCREEN_H;
     LoadImage(&rect, g_apLoadStagingBufferBlock[0]);
     DrawSync(0);
     VSync(0);
@@ -105,12 +106,14 @@ void Initialize(void) {
       register int lba1 asm("$4") = lba[0];
       register int off1 asm("$7") = *(volatile int *)archOff;
       void *buf1 = g_pSharedLoadBuffer;
-      CdReadSyncSectors(lba1, buf1, 0x800, off1, stallTicks);
+      CdReadSyncSectors(lba1, buf1, CD_SECTOR_BYTES, off1, stallTicks);
     }
     timOff = g_anWorldTimAudioChunkOffsetBlock;
-    CopyWords(timOff, *(void *volatile *)&g_pSharedLoadBuffer, 0x1D0);
+    CopyWords(timOff, *(void *volatile *)&g_pSharedLoadBuffer,
+              ARCHIVE_DESC_BYTES);
     top = (char *)0x801C0000 - g_nCrt0StackSize;
-    CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], stallTicks);
+    CdReadSyncSectors(lba[0], top, TIM_PAGE_BYTES, timOff[0] + archOff[0],
+                      stallTicks);
     {
       int cnt3 = *(volatile int *)&g_nLevelLoadChunkSize;
       int off3 = *(volatile int *)&g_nLevelLoadByteOffset;
@@ -137,7 +140,7 @@ fade_out_title:
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
-  rect.h = 0xF0;
+  rect.h = SCREEN_H;
   LoadImage(&rect, buf2[0]);
   DrawSync(0);
   VSync(0);
@@ -157,7 +160,7 @@ fade_in_splash:
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
-  rect.h = 0xF0;
+  rect.h = SCREEN_H;
   LoadImage(&rect, splashFrame);
   DrawSync(0);
   VSync(0);
@@ -187,7 +190,7 @@ fade_out_splash:
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
-  rect.h = 0xF0;
+  rect.h = SCREEN_H;
   LoadImage(&rect, splashFrame2);
   DrawSync(0);
   VSync(0);
@@ -205,8 +208,8 @@ fade_out_splash:
       (DISPENV *)(isrgb24 + 0x73)); /* g_FrameDispEnv1, off the held base */
   clear.x = 0;
   clear.y = 0;
-  clear.w = 0x200;
-  clear.h = 0x1E0;
+  clear.w = SCREEN_W;
+  clear.h = SCREEN_H * 2;
   ClearImage(&clear, 0, 0, 0);
   DrawSync(0);
   SetDispMask(1);

@@ -570,11 +570,7 @@ void Level14_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = actor->posZ + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -626,11 +622,7 @@ void Level14_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = (actor->posZ) + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -696,11 +688,11 @@ void Level14_UpdateActors(void) {
 
       if (actor->nextAnim == THIEF_ANIM_TAUNT) {
         if (actor->nextFrame == THIEF_TAUNT_EARLY_FRAME && (GetRandomU32() & 3) == 0 &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[THIEF_VOICE_TAUNT_EARLY]) == 0) {
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[THIEF_VOICE_TAUNT_EARLY]) == VOICE_OWNER_NONE) {
           PlayActorMeshVoice(actor, THIEF_VOICE_TAUNT_EARLY, 0);
         }
         if (actor->nextFrame == THIEF_TAUNT_LATE_FRAME && (GetRandomU32() & 3) == 0 &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[THIEF_VOICE_TAUNT_LATE]) == 0) {
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[THIEF_VOICE_TAUNT_LATE]) == VOICE_OWNER_NONE) {
           PlayActorMeshVoice(actor, THIEF_VOICE_TAUNT_LATE, 0);
         }
       }
@@ -1635,13 +1627,13 @@ void Level14_UpdateActors(void) {
 
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
-      if (st->timer < 0xFA) {
+      if (st->timer < ROT_BILLBOARD_GLINT_TIMER_CAP) {
         st->timer += g_nFrameStep;
       }
 
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
-        if (st->sparkle != BILLBOARD_NONE) {
+        if (st->sparkle != ROT_BILLBOARD_NONE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
@@ -1653,17 +1645,17 @@ void Level14_UpdateActors(void) {
           AddVector(g_aRotBillboards[st->sparkle].pos, g_aRotBillboards[st->sparkle].pos,
                         &actor->posX);
 
-          if (g_aRotBillboards[st->sparkle].life < 5) {
-            st->sparkle = BILLBOARD_NONE;
+          if (g_aRotBillboards[st->sparkle].life < ROT_BILLBOARD_FADING_LIFE) {
+            st->sparkle = ROT_BILLBOARD_NONE;
           }
         } else {
-          if (st->timer > 0xf7) {
+          if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
             int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
             if (handle >= 0 && dist < ROT_BILLBOARD_ATTACH_RANGE) {
               st->sparkle = handle;
             }
 
-            st->timer = (GetRandomU32() & 0x1F) + 33;
+            st->timer = (GetRandomU32() & 0x1F) + 0x21;
           }
         }
       }
@@ -3218,7 +3210,7 @@ void Level14_UpdateActors(void) {
         RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->attach].pos);
         AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                       &actor->posX);
-        if (g_aRotBillboards[st->attach].life < 5) {
+        if (g_aRotBillboards[st->attach].life < ROT_BILLBOARD_FADING_LIFE) {
           st->attach = ROT_BILLBOARD_NONE;
         }
       } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
@@ -4214,7 +4206,7 @@ void Level14_UpdateActors(void) {
           ENTER_POSE(actor, FLEEWALK_FLEE);
           continue;
         }
-        actor->frameRate = 0x10;
+        actor->frameRate = ANIM_RATE_TICKS(4);
         if (TICK_DOWN(st->timer) != 0) {
           if (TrackEntityYawTowardSpyro(actor, 8, 0x30, YAW_STEP_IN_BAND) != 0 &&
               MoveActorAlongHeading(actor, st->speed, 0, FWALK_MOVE_RADIUS, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT) == MOVED_BLOCKED) {
@@ -4241,7 +4233,7 @@ void Level14_UpdateActors(void) {
               ENTER_POSE(actor, FLEEWALK_WALK);
               continue;
             }
-            actor->frameRate = 8;
+            actor->frameRate = ANIM_RATE_TICKS(8);
             if (TurnActorYawTowardAngle(actor,
                               ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
                                             NODE_PT(st->cur)[1] - actor->posY,
@@ -4262,7 +4254,7 @@ void Level14_UpdateActors(void) {
               ENTER_POSE(actor, FLEEWALK_STAND);
               continue;
             }
-            actor->frameRate = 0x10;
+            actor->frameRate = ANIM_RATE_TICKS(4);
           }
         } else {
           TurnActorYawTowardAngle(actor, st->heading, 8, 0x30, YAW_STEP_IN_BAND);
@@ -4282,7 +4274,7 @@ void Level14_UpdateActors(void) {
             ENTER_POSE(actor, FLEEWALK_WALK);
             continue;
           }
-          actor->frameRate = 8;
+          actor->frameRate = ANIM_RATE_TICKS(8);
           if (TICK_DOWN(st->timer) != 0) {
             if (ApproxDist2D(&actor->posX, PATH_CUR(st->cur)) < FWALK_NODE_RANGE) {
               if (st->mode & FWALK_F_REVERSE) {
@@ -4326,7 +4318,7 @@ void Level14_UpdateActors(void) {
             ENTER_POSE(actor, FLEEWALK_WALK);
             continue;
           }
-          actor->frameRate = 8;
+          actor->frameRate = ANIM_RATE_TICKS(8);
           if (TICK_DOWN(st->timer) != 0) {
             if (TurnActorYawTowardAngle(actor,
                               ArcTan2(NODE_PT(st->cur)[0] - actor->posX,
@@ -4352,7 +4344,7 @@ void Level14_UpdateActors(void) {
             ENTER_POSE(actor, FLEEWALK_STAND);
             continue;
           }
-          actor->frameRate = 0x10;
+          actor->frameRate = ANIM_RATE_TICKS(4);
         }
       }
       RefreshActorDerivedState(actor, ACTOR_REFRESH_COLLISION);

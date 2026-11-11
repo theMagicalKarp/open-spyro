@@ -3,6 +3,8 @@
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
+#include "level_id.h"
 #include "level_sfx.h"
 #include "pad_buttons.h"
 #include "pause_menu.h"
@@ -67,8 +69,8 @@ void PauseMenu_Update(void) {
     TickSpuPerFrame();
     r.x = 0;
     r.y = 0;
-    r.w = 0x200;
-    r.h = 0x1E0;
+    r.w = SCREEN_W;
+    r.h = SCREEN_H * 2;
     ClearImage(&r, 0, 0, 0);
     DrawSync(0);
     g_pLoadStagingBuffer = g_abTitlescreenOverlayEnd;
@@ -123,18 +125,19 @@ void PauseMenu_Update(void) {
       if ((g_dwPadPressed & PAD_LEFT) && g_nSfxVolume > 0) {
         SFX(SFX_MENU_SELECT);
         g_nSfxVolume--;
-      } else if ((g_dwPadPressed & PAD_RIGHT) && g_nSfxVolume < 10) {
+      } else if ((g_dwPadPressed & PAD_RIGHT) && g_nSfxVolume < VOLUME_STEPS) {
         SFX(SFX_MENU_SELECT);
         g_nSfxVolume++;
       }
-      g_nSfxMixVolume_blk[0] = g_nSfxVolume * SPU_VOLUME_MAX / 10;
+      g_nSfxMixVolume_blk[0] = g_nSfxVolume * SPU_VOLUME_MAX / VOLUME_STEPS;
       g_nSoundMasterVolume = (g_nSfxMixVolume_blk[0] << 12) / SPU_VOLUME_MAX;
       return;
     case OPTIONS_ROW_MUSIC_VOLUME:
       if ((g_dwPadPressed & PAD_LEFT) && g_nMusicVolume > 0) {
         SFX(SFX_MENU_SELECT);
         g_nMusicVolume--;
-      } else if ((g_dwPadPressed & PAD_RIGHT) && g_nMusicVolume < 10) {
+      } else if ((g_dwPadPressed & PAD_RIGHT) &&
+                 g_nMusicVolume < VOLUME_STEPS) {
         SFX(SFX_MENU_SELECT);
         g_nMusicVolume++;
       }
@@ -143,8 +146,8 @@ void PauseMenu_Update(void) {
         int *common = (int *)((char *)p - 0x31C);
         int vol;
 
-        *common = 0xC0;
-        vol = g_nMusicVolume << 11;
+        *common = SPU_COMMON_CDVOL;
+        vol = g_nMusicVolume << MUSIC_VOLUME_SHIFT;
         *p = vol;
         g_nCdDaVolumeCurrent = vol;
         g_nSpuCommonCdVolumeR = vol;
@@ -156,13 +159,13 @@ void PauseMenu_Update(void) {
         SFX(SFX_MENU_SELECT);
         if ((*g_anSoundMonoMixFlagBlock = 1 - *g_anSoundMonoMixFlagBlock) !=
             0) {
-          g_bCdMixRightToLeft = 0x3F;
-          g_bCdMixRightToRight = 0x3F;
-          g_bCdMixLeftToRight = 0x3F;
-          g_bCdMixLeftToLeft = 0x3F;
+          g_bCdMixRightToLeft = CD_MIX_HALF;
+          g_bCdMixRightToRight = CD_MIX_HALF;
+          g_bCdMixLeftToRight = CD_MIX_HALF;
+          g_bCdMixLeftToLeft = CD_MIX_HALF;
         } else {
-          g_bCdMixRightToRight = 0x7F;
-          g_bCdMixLeftToLeft = 0x7F;
+          g_bCdMixRightToRight = CD_MIX_FULL;
+          g_bCdMixLeftToLeft = CD_MIX_FULL;
           g_bCdMixRightToLeft = 0;
           g_bCdMixLeftToRight = 0;
         }
@@ -237,7 +240,7 @@ void PauseMenu_Update(void) {
     return;
   case PAUSE_ROW_EXIT:
     SFX(SFX_MENU_SELECT);
-    if (g_nActiveLevelId % 10 == 0) {
+    if (LEVEL_IN_WORLD(g_nActiveLevelId) == LEVEL_HOME_SLOT) {
       g_nPauseMenuCursor = PAUSE_QUIT_NO;
       g_nPauseMenuSubstate = PAUSE_PAGE_QUIT_CONFIRM;
       return;

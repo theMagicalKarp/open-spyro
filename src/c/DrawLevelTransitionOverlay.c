@@ -60,11 +60,11 @@ void DrawLevelTransitionOverlay(void) {
   int y;
   int gx;
 
-  idx = (g_nNextLevelId / 10 - 1) * 6 + g_nNextLevelId % 10;
-  sub = g_nNextLevelId % 10;
-  if (sub == 0) {
+  idx = LEVEL_SLOT(g_nNextLevelId);
+  sub = LEVEL_IN_WORLD(g_nNextLevelId);
+  if (sub == LEVEL_HOME_SLOT) {
     sprintf(buf, g_szReturningHome);
-  } else if ((g_nNextLevelId < LEVEL_GNORC_GNEXUS && sub == 4) ||
+  } else if ((g_nNextLevelId < LEVEL_GNORC_GNEXUS && sub == LEVEL_BOSS_SLOT) ||
              g_nNextLevelId == LEVEL_GNASTY_GNORC) {
     sprintf(buf, g_szConfrontingFmt, g_apLevelNameStrings[idx]);
   } else {
@@ -72,10 +72,10 @@ void DrawLevelTransitionOverlay(void) {
   }
 
   pos[0] = 0x100 - (strlen(buf) - 1) * 8;
-  if (g_nLevelTransitionPhase < 0x20) {
+  if (g_nLevelTransitionPhase < TALLY_SLIDE) {
     pos[1] = g_anSineLut[g_nLevelTransitionPhase * 2] >> 7;
-  } else if (g_nLevelTransitionPhase >= 0x181) {
-    pos[1] = g_anSineLut[(0x1a0 - g_nLevelTransitionPhase) * 2] >> 7;
+  } else if (g_nLevelTransitionPhase > TALLY_OUT) {
+    pos[1] = g_anSineLut[(TALLY_END - g_nLevelTransitionPhase) * 2] >> 7;
   } else {
     pos[1] = 0x20;
   }
@@ -99,7 +99,7 @@ void DrawLevelTransitionOverlay(void) {
     }
   }
 
-  if (g_nLevelTransitionPhase >= 0x40) {
+  if (g_nLevelTransitionPhase >= TALLY_PANEL_IN) {
     i = g_nTotalTreasureCollected;
     x0 = 0x28;
     while (i >= 10) {
@@ -109,30 +109,31 @@ void DrawLevelTransitionOverlay(void) {
 
     pos[0] = x0 + 0x28;
     pos[2] = TEXT_DEPTH;
-    if (g_nLevelTransitionPhase < 0x60) {
-      slide = g_nLevelTransitionPhase - 0x40;
-      pos[1] = 0x110 - (g_anSineLut[slide * 2] >> 6);
+    if (g_nLevelTransitionPhase < TALLY_PANEL_IN + TALLY_SLIDE) {
+      slide = g_nLevelTransitionPhase - TALLY_PANEL_IN;
+      pos[1] = TALLY_PANEL_Y_DOWN - (g_anSineLut[slide * 2] >> 6);
     } else if (g_nLevelTransitionPhase < g_nGemTallyHoldEndPhase) {
-      pos[1] = 0xd0;
-    } else if (g_nLevelTransitionPhase < g_nGemTallyHoldEndPhase + 0x20) {
-      slide = g_nLevelTransitionPhase - 0x20;
-      pos[1] =
-          0x110 - (g_anSineLut[(g_nGemTallyHoldEndPhase - slide) * 2] >> 6);
-    } else if (g_nLevelTransitionPhase < 0xe0) {
-      pos[1] = 0x110;
-    } else if (g_nLevelTransitionPhase < 0x100) {
-      slide = g_nLevelTransitionPhase - 0xe0;
-      pos[1] = 0x110 - (g_anSineLut[slide * 2] >> 6);
-    } else if (g_nLevelTransitionPhase < 0x180) {
-      pos[1] = 0xd0;
-    } else if (g_nLevelTransitionPhase < 0x1a0) {
-      pos[1] =
-          0x110 - (g_anSineLut[(0x1a0 - g_nLevelTransitionPhase) * 2] >> 6);
+      pos[1] = TALLY_PANEL_Y_UP;
+    } else if (g_nLevelTransitionPhase <
+               g_nGemTallyHoldEndPhase + TALLY_SLIDE) {
+      slide = g_nLevelTransitionPhase - TALLY_SLIDE;
+      pos[1] = TALLY_PANEL_Y_DOWN -
+               (g_anSineLut[(g_nGemTallyHoldEndPhase - slide) * 2] >> 6);
+    } else if (g_nLevelTransitionPhase < TALLY_TOTAL_IN) {
+      pos[1] = TALLY_PANEL_Y_DOWN;
+    } else if (g_nLevelTransitionPhase < TALLY_TOTAL_IN + TALLY_SLIDE) {
+      slide = g_nLevelTransitionPhase - TALLY_TOTAL_IN;
+      pos[1] = TALLY_PANEL_Y_DOWN - (g_anSineLut[slide * 2] >> 6);
+    } else if (g_nLevelTransitionPhase < TALLY_OUT) {
+      pos[1] = TALLY_PANEL_Y_UP;
+    } else if (g_nLevelTransitionPhase < TALLY_END) {
+      pos[1] = TALLY_PANEL_Y_DOWN -
+               (g_anSineLut[(TALLY_END - g_nLevelTransitionPhase) * 2] >> 6);
     } else {
-      pos[1] = 0x110;
+      pos[1] = TALLY_PANEL_Y_DOWN;
     }
 
-    if (g_nLevelTransitionPhase < 0xe0) {
+    if (g_nLevelTransitionPhase < TALLY_TOTAL_IN) {
       sprintf(buf, g_szTreasureFound);
     } else {
       sprintf(buf, g_szTotalTreasure);
@@ -157,14 +158,14 @@ void DrawLevelTransitionOverlay(void) {
       }
     }
 
-    if (g_nLevelTransitionPhase < 0x80) {
+    if (g_nLevelTransitionPhase < TALLY_GEMS_IN) {
       value = g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry;
-    } else if (g_nLevelTransitionPhase < 0xe0) {
-      span = (g_nGemTallyIconCount + 1) * 2;
-      if (span >= 0x41) {
-        span = 0x40;
+    } else if (g_nLevelTransitionPhase < TALLY_TOTAL_IN) {
+      span = (g_nGemTallyIconCount + 1) * TALLY_ICON_FRAMES;
+      if (span > TALLY_COUNT_MAX) {
+        span = TALLY_COUNT_MAX;
       }
-      slide = g_nLevelTransitionPhase - 0x80;
+      slide = g_nLevelTransitionPhase - TALLY_GEMS_IN;
       shown = span - slide;
       if (shown < 0) {
         shown = 0;
@@ -175,15 +176,15 @@ void DrawLevelTransitionOverlay(void) {
       value =
           (g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry) *
           shown / span;
-    } else if (g_nLevelTransitionPhase < 0x110) {
+    } else if (g_nLevelTransitionPhase < TALLY_TOTAL_COUNT) {
       value = g_nTotalTreasureCollected -
               (g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry);
     } else {
-      span = (g_nGemTallyIconCount + 1) * 2;
-      if (span >= 0x41) {
-        span = 0x40;
+      span = (g_nGemTallyIconCount + 1) * TALLY_ICON_FRAMES;
+      if (span > TALLY_COUNT_MAX) {
+        span = TALLY_COUNT_MAX;
       }
-      slide = g_nLevelTransitionPhase - 0x110;
+      slide = g_nLevelTransitionPhase - TALLY_TOTAL_COUNT;
       shown = span - slide;
       if (shown < 0) {
         shown = 0;
@@ -236,14 +237,14 @@ void DrawLevelTransitionOverlay(void) {
         g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
       }
       i++;
-    } while (i < 0x20);
+    } while (i < GEM_TALLY_ICONS_MAX);
 
     g_pSpriteRecordWriteCursor--;
     FillWord(g_pSpriteRecordWriteCursor, 0, ACTOR_SIZE);
     spr = (TallySprite *)g_pSpriteRecordWriteCursor;
     spr->uv = 0x1d9;
     spr->x = x0 + 0x140;
-    if (g_nLevelTransitionPhase < 0xe0) {
+    if (g_nLevelTransitionPhase < TALLY_TOTAL_IN) {
       y = pos[1];
       spr->scale = 0x800;
       spr->r = 6;

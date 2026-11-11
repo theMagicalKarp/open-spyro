@@ -150,6 +150,18 @@ typedef enum SpyroState
                                         * levelling back out to FLY */
 #define SPYRO_STUCK_RESPAWN_TICKS 0x12C /* FALL / SLIDE held this long: respawn,
                                          * refunding the life (or end a flight run) */
+/* TickSpyroFlameAttack's breath, by g_nSpyroFlameTimer: the flame anchor
+ * drops at FLAME_ANCHOR_DROP_FRAME; every FLAME_EMIT_PERIOD frames from
+ * FLAME_EMIT_FIRST to FLAME_EMIT_LAST two flame particles spawn; a fresh
+ * Circle from FLAME_REARM_FRAME starts a second breath, and at
+ * FLAME_END_FRAME the breath ends. */
+#define FLAME_ANCHOR_DROP_FRAME 0x10
+#define FLAME_EMIT_FIRST 0xC
+#define FLAME_EMIT_LAST 0x1C
+#define FLAME_EMIT_PERIOD 4
+#define FLAME_REARM_FRAME 0x2C
+#define FLAME_END_FRAME 0x30
+
 /* TickSpyroAttackEffects. A superflame tints Spyro SUPERFLAME_TINT_R/G/B
  * with a sine alpha (minus TINT_ALPHA_BIAS); under WARN_FRAMES left the tint
  * blinks off from BLINK_OFF of every BLINK_PERIOD frames. Each flame-breath
@@ -160,6 +172,12 @@ typedef enum SpyroState
 #define SUPERFLAME_TINT_G 0x20
 #define SUPERFLAME_TINT_B 0x10
 #define SUPERFLAME_TINT_ALPHA_BIAS 0x28
+/* SPYRO_ST_HURT_TINT (DispatchSpyroPhysicsByState): for its first
+ * HURT_FLASH_FRAMES animation frames Spyro's tint alternates white and dark
+ * grey (odd / even frames). */
+#define HURT_FLASH_FRAMES 10
+#define HURT_FLASH_LIGHT 0xFF
+#define HURT_FLASH_DARK 0x40
 #define SUPERFLAME_WARN_FRAMES 0x78
 #define SUPERFLAME_BLINK_PERIOD 24
 #define SUPERFLAME_BLINK_OFF 0xE
@@ -195,6 +213,17 @@ typedef enum SpyroState
                                           * falls on (keeping the fall's timer) */
 #define SPYRO_HAZARD_TICKS 0x3C        /* HAZARD: longer and the hazard claims him */
 #define SPYRO_HAZARD_JUMP_TICKS 0x10   /* HAZARD: Cross jumps out after this */
+#define SPYRO_DEATH_TICKS 0x65         /* DEATH: respawn after this */
+#define SPYRO_DEATH_PINNED_TICKS 0x7D  /* DEATH_PINNED: respawn after this */
+/* HAZARD: once sinking starts, the depth grows SPYRO_HAZARD_SINK_STEP a
+ * substep, up to SPYRO_HAZARD_SINK_SURVIVE while Sparx still has health, or
+ * to SPYRO_HAZARD_SINK_FATAL on the fatal hit, where Spyro respawns (or a
+ * flight level ends the run). */
+#define SPYRO_HAZARD_SINK_STEP 8
+#define SPYRO_HAZARD_SINK_SURVIVE 0x96
+#define SPYRO_HAZARD_SINK_FATAL 0x240
+/* The level box's X / Y edge: Spyro closer than this to 0 falls out. */
+#define SPYRO_WORLD_EDGE_XY 0x800
 #define SPYRO_SUPERCHARGE_MIN_TICKS 0xF /* SUPERCHARGE: letting go of Square
                                          * this early stays supercharged */
 #define SPYRO_SUPERCHARGE_JUMP_HOLD 10 /* SUPERCHARGE: frames Cross is held before
@@ -317,6 +346,22 @@ typedef enum SpyroState
  * the portal guides set while Spyro jumps and glides into a portal. */
 #define SPYRO_OT_BIAS_DEFAULT 5
 #define SPYRO_OT_BIAS_PINNED 0x7F
+/* UpdateGameplayCamera, line of sight to Spyro blocked: a smaller pull (and
+ * no shadow bias) for the frame. */
+#define SPYRO_OT_BIAS_OCCLUDED 2
+/* SampleSpyroShadowRingHeights: the drop shadow's OT bias (one bin pair
+ * deeper once Spyro is SHADOW_HIGH_ABOVE above the ground), and its 8-vertex
+ * ring probed one vertex a tick from SHADOW_PROBE_LIFT above, keeping ground
+ * within SHADOW_PROBE_WINDOW of the vertex; the stored height is scaled by
+ * SHADOW_HEIGHT_SCALE / 0x200. */
+#define SHADOW_OT_BIAS 3
+#define SHADOW_OT_BIAS_HIGH 5
+#define SHADOW_HIGH_ABOVE 0x365
+#define SHADOW_RING_VERTS 8
+#define SHADOW_PROBE_LIFT 0x200
+#define SHADOW_PROBE_DEPTH 0x400
+#define SHADOW_PROBE_WINDOW 0x80
+#define SHADOW_HEIGHT_SCALE 0xC2
 
 /* g_dwSpyroRequestMask bits (SpyroObj.requestMask): a scripted override of
  * Spyro posted by actors and cutscenes, applied by AdvanceSpyroPhysics while
@@ -334,6 +379,23 @@ typedef enum SpyroState
 #define SPYRO_RQ_CAMERA 0x00200        /* CAM_MODE_REQUEST on the request anchor */
 #define SPYRO_RQ_PORTAL_PATH_CAMERA 0x00400 /* CAM_MODE_PORTAL_PATH */
 #define SPYRO_RQ_LOCK_ON 0x01000       /* face g_pScriptedCameraActor (EnemyLock params) */
+/* SPYRO_RQ_LOCK_ON, manning a fireball cannon (levels 6 / 24;
+ * AdvanceSpyroPhysics): once the camera has been within LOCK_ON_ALIGN_ANGLE
+ * (8-bit) of the cannon's facing for LOCK_ON_SETTLE_FRAMES, a pad move with
+ * Spyro inside the cone behind the cannon (LOCK_ON_CONE, or _WALK while
+ * already circling; narrower in Peace Keepers) and heading within
+ * LOCK_ON_ORBIT_MATCH of a quarter turn off its facing starts
+ * SPYRO_ST_SCRIPTED_WALK round it. The camera anchors LOCK_ON_ANCHOR_LIFT
+ * above the cannon. */
+#define LOCK_ON_ALIGN_ANGLE 0x10
+#define LOCK_ON_SETTLE_FRAMES 0x1E
+#define LOCK_ON_CONE 0x30
+#define LOCK_ON_CONE_WALK 0x38
+#define LOCK_ON_CONE_PEACE_KEEPERS 0x28
+#define LOCK_ON_CONE_WALK_PEACE_KEEPERS 0x32
+#define LOCK_ON_ORBIT_TURN 0x40
+#define LOCK_ON_ORBIT_MATCH 0x200
+#define LOCK_ON_ANCHOR_LIFT 0x200
 #define SPYRO_RQ_FREEZE_INPUT 0x02000  /* replay the pad snapshot */
 #define SPYRO_RQ_NO_CLIP 0x04000       /* no ground probes, raw velocity */
 #define SPYRO_RQ_TARGET_CAMERA 0x08000 /* CAM_MODE_SCRIPTED_TARGET */
@@ -365,6 +427,26 @@ typedef enum SpyroState
  * actor's facing Spyro is in). */
 #define SPYRO_SUB_ORBIT_NEG 1
 #define SPYRO_SUB_ORBIT_POS 2
+/* SPYRO_ST_IDLE under a scripted move: the scripted flame breath was pressed;
+ * the next tick hands control back. */
+#define SPYRO_SUB_IDLE_FLAMED 1
+/* SPYRO_ST_WALK / RUN / JOG: cleared every substep; ApplyPadInputToSpyroBodyYaw
+ * sets it when a light push asks for a turn sharper than SPYRO_PIVOT_TURN, and
+ * Spyro brakes (SPYRO_GROUND_DECEL) instead of accelerating while he pivots. */
+#define SPYRO_SUB_WALK_PIVOT 1
+#define SPYRO_PIVOT_TURN 0x100
+/* ...and only while the stick is pushed less than SPYRO_PIVOT_STICK (of
+ * PAD_STICK_MAX): a light push turns Spyro toward it at a rate scaled by the
+ * push. */
+#define SPYRO_PIVOT_STICK 0x60
+/* SPYRO_ST_CHARGE: ChangeSpyroState sets bit 0 on every ground-charge entry
+ * and nothing clears it while charging, so the stick-steer / homing branch it
+ * gates always runs (SUPERCHARGE, which shares the latch bits, never sets it). */
+#define SPYRO_SUB_CHARGE_STEER 1
+/* SPYRO_ST_FALL out of the level (below its death plane or off the box's
+ * edge): the substate counts frames, and at SPYRO_DEATH_FALL_FRAMES Spyro
+ * respawns (TickSpyroGameplayFrame). */
+#define SPYRO_DEATH_FALL_FRAMES 0x79
 #define SPYRO_SUB_SUPERCHARGE 0x40    /* charge/charge-air entered from a supercharge */
 #define SPYRO_SUB_CHARGE_LATCHED 0x80 /* charge target speed latched (LATCH_CHARGE_SPEED) */
 /* Glide/fly substates >= 8 are scripted: flight levels stop the clock and the
@@ -379,6 +461,21 @@ typedef enum SpyroState
  * dispatched by DispatchSpyroTriggerEvent. The type-specific data words
  * follow the 4-byte header. */
 #define TRIGGER_REGION_DATA(rec) ((int *)((rec) + 4))
+/* g_nGroundSurfaceType / g_nSpyroFirstContactSurfaceType: the low bits index
+ * g_pTriggerRegionTable, TRIGGER_REGION_NONE meaning no region; the first
+ * contact is SURFACE_NO_CONTACT until something is hit this frame. */
+#define TRIGGER_REGION_MASK 0x3F
+#define TRIGGER_REGION_NONE 0x3F
+#define SURFACE_NO_CONTACT 0xFF
+/* DispatchSpyroTriggerEvent's event (AdvanceSpyroFrameMotion): the region
+ * Spyro first touched this frame, the one on the ground below him, or the
+ * one he stands on (grounded, within TRIGGER_ON_HEIGHT). A ground latch arms
+ * for touch / over within GROUND_LATCH_HEIGHT. */
+#define TRIGGER_EV_TOUCH 0
+#define TRIGGER_EV_OVER 1
+#define TRIGGER_EV_ON 2
+#define TRIGGER_ON_HEIGHT 0x200
+#define GROUND_LATCH_HEIGHT 0x190
 enum TriggerRegionType {
   TRIGGER_HAZARD = 0,       /* raises SPYRO_EV_HAZARD; data: [0] instant death, [1] g_nSpyroHazardKind */
   TRIGGER_LIFT = 1,         /* raises SPYRO_EV_LIFT (g_pSpyroLiftRegionData) */

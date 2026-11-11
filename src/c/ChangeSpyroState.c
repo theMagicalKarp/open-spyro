@@ -95,7 +95,7 @@ void ChangeSpyroState(int state) {
     a = (ArcTan2(SPY[SPY_MOTION], g_anSpyroMotionVec[1], ATAN_ANGLE12) -
          g_nSpyroBodyYaw) &
         0xFFF;
-    if ((unsigned)(a - 0x401) < 0x7FF) {
+    if (ANGLE12_BEHIND(a)) {
       g_nSpyroMotionSpeed = 0;
     } else {
       g_nSpyroMotionSpeed = VectorLength(&SPY[SPY_MOTION], VEC_LEN_XY);
@@ -208,9 +208,9 @@ void ChangeSpyroState(int state) {
       if (!(g_nSpyroSubstate & SPYRO_SUB_CHARGE_LATCHED)) {
         LATCH_CHARGE_SPEED(g_anSpyroCarryMotionVec);
       }
-      g_nSpyroSubstate = SPYRO_SUB_CHARGE_LATCHED | 1;
+      g_nSpyroSubstate = SPYRO_SUB_CHARGE_LATCHED | SPYRO_SUB_CHARGE_STEER;
     } else {
-      g_nSpyroSubstate = 1;
+      g_nSpyroSubstate = SPYRO_SUB_CHARGE_STEER;
     }
     SPY[SPY_BODY_YAW_STEP] = 0;
     g_nSpyroGravityStep = -SPYRO_CHARGE_FALL_ACCEL;
@@ -494,11 +494,10 @@ void ChangeSpyroState(int state) {
     break;
   case SPYRO_ST_SCRIPTED_WALK:
     SPY[SPY_SUBSTATE] = 0;
-    if ((unsigned)(((ArcTan2(SPY[SPY_MOTION], g_anSpyroMotionVec[1],
-                             ATAN_ANGLE12) -
-                     g_nSpyroBodyYaw) &
-                    0xFFF) -
-                   0x401) < 0x7FF) {
+    if (ANGLE12_BEHIND(
+            (ArcTan2(SPY[SPY_MOTION], g_anSpyroMotionVec[1], ATAN_ANGLE12) -
+             g_nSpyroBodyYaw) &
+            0xFFF)) {
       g_nSpyroMotionSpeed = 0;
     } else {
       g_nSpyroMotionSpeed = VectorLength(&SPY[SPY_MOTION], VEC_LEN_XY);

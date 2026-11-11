@@ -3,6 +3,7 @@
 #include "cutscene_path.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 #include "pad_buttons.h"
 #include "types.h"
@@ -23,10 +24,10 @@ void Cutscene_Update(void) {
   if (g_nCutsceneId >= 2 && g_pPathTableHead->frame == 0) {
     StopAllSoundExceptMask(0);
     TickSpuPerFrame();
-    rect.w = 0x200;
+    rect.w = SCREEN_W;
     rect.x = 0;
     rect.y = 0;
-    rect.h = 0x1E0;
+    rect.h = SCREEN_H * 2;
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     g_nCdStreamState = CSTREAM_READ_HEADER;

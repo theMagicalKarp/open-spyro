@@ -38,7 +38,7 @@ void LoadActorMeshTables(void) {
   nbytes = *(volatile int *)dir;
   CopyWords(g_pWorkAreaTop, dir + 0x200, nbytes);
 
-  for (; i < 0x40; i++) {
+  for (; i < MESH_STREAM_MAX; i++) {
     if (dir[i * 2 + 1] == 0) {
       break;
     }

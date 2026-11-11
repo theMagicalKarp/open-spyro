@@ -45,6 +45,9 @@ enum PadAxis {
 #define PAD_ANALOG_CENTERED 0x7F7F7F7F
 /* One axis byte at rest. */
 #define PAD_STICK_CENTER 0x7F
+/* A stick axis read as a signed deflection runs -PAD_STICK_MAX..PAD_STICK_MAX
+ * (the d-pad stands in at full deflection). */
+#define PAD_STICK_MAX 0x7F
 
 /* The left stick is centred when the upper half of the word is 0x7F7F. */
 #define PAD_LEFT_STICK_MASK 0xFFFF0000

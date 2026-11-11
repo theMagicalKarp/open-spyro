@@ -30,8 +30,8 @@ void SyncSoundVoicesWithHardware(void) {
         *pending |= mask;
       }
     }
-    off += 0x1C;
+    off += VOICE_ROW_STRIDE;
     i += 1;
     p += 1;
-  } while (i < 24);
+  } while (i < SPU_VOICE_COUNT);
 }

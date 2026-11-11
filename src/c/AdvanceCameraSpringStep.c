@@ -28,11 +28,12 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
     int *p = &g_anCameraSpringDeltaStateBlock[k];                              \
     int v;                                                                     \
                                                                                \
-    v = *p + ((drive * delta -                                                 \
-               g_anCameraSpringDampingGains[(k) * 6 + column] * *p) >>         \
-              8);                                                              \
+    v = *p +                                                                   \
+        ((drive * delta -                                                      \
+          g_anCameraSpringDampingGains[CAM_SPRING_ROW(k) + column] * *p) >>    \
+         8);                                                                   \
     *p = v;                                                                    \
-    if (abs(v) < g_anCameraSpringSnapThresholds[(k) * 6 + column]) {           \
+    if (abs(v) < g_anCameraSpringSnapThresholds[CAM_SPRING_ROW(k) + column]) { \
       *p = 0;                                                                  \
       if (g_nCameraSnapped != 0) {                                             \
         if (delta > 0) {                                                       \
@@ -78,8 +79,8 @@ void AdvanceCameraSpringStep(int column) {
   int delta;
 
   drive = g_anCameraSpringDriveGains[column];
-  if (g_nCameraCurrentMode == CAM_MODE_CHARGE && drive < 0x400) {
-    drive = 0x400;
+  if (g_nCameraCurrentMode == CAM_MODE_CHARGE && drive < CAM_CHARGE_MIN_DRIVE) {
+    drive = CAM_CHARGE_MIN_DRIVE;
   }
   if (g_nCameraManualYawInput != 0) {
     delta = g_nCameraManualYawInput;
@@ -90,7 +91,8 @@ void AdvanceCameraSpringStep(int column) {
                  (unsigned)(g_nSpyroState - SPYRO_ST_JUMP) <
                      2) || /* JUMP or FALL */
                 g_nCameraForcePassiveFollow) &&
-               g_nSpyroMotionSpeed < 0x400 && g_nCameraCollisionRetries == 0 &&
+               g_nSpyroMotionSpeed < CAM_PASSIVE_MAX_SPEED &&
+               g_nCameraCollisionRetries == 0 &&
                g_nCameraSpringSuppressFlag == 0) {
       delta = 0;
       g_anCameraSpringDeltaState[0] = 0;
@@ -105,18 +107,18 @@ void AdvanceCameraSpringStep(int column) {
       g_nSpyroSubstate == SPYRO_SUB_GLIDE_ENTER) {
     int *p = g_anCameraSpringDeltaStateBlock;
 
-    if (*p < -0x800) {
-      *p = -0x800;
+    if (*p < -CAM_SPRING_CLAMP) {
+      *p = -CAM_SPRING_CLAMP;
     }
-    if (*p > 0x800) {
-      *p = 0x800;
+    if (*p > CAM_SPRING_CLAMP) {
+      *p = CAM_SPRING_CLAMP;
     }
   }
   if ((g_dwActiveCameraOptions & CAM_OPT_SMOOTH_SWING) &&
       g_nCameraCollisionRetries == 0 &&
       (g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK) ||
        g_nCameraCurrentMode == CAM_MODE_CHARGE)) {
-    CLAMP_STATE(g_nCameraSpringYawDelta, 0x2000);
+    CLAMP_STATE(g_nCameraSpringYawDelta, CAM_SPRING_CLAMP_SWING);
   }
   if (((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) ||
        g_nCameraForcePassiveFollow) &&
@@ -124,7 +126,7 @@ void AdvanceCameraSpringStep(int column) {
       g_nCameraSpringSuppressFlag == 0 &&
       (g_nCameraCurrentMode == CAM_MODE_STAND ||
        g_nCameraCurrentMode == CAM_HELD)) {
-    CLAMP_STATE(g_nCameraSpringYawDelta, 0x800);
+    CLAMP_STATE(g_nCameraSpringYawDelta, CAM_SPRING_CLAMP);
   }
   APPLY(0);
 
@@ -141,12 +143,12 @@ void AdvanceCameraSpringStep(int column) {
   } else {
     ANGLE_DELTA(g_nCameraTargetPitch, g_nCameraSpringPitch);
   }
-  drive = g_anCameraSpringDriveGains[6 + column];
+  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(1) + column];
   SPRING(1);
   if ((g_dwActiveCameraOptions & CAM_OPT_SMOOTH_SWING) &&
       g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK) &&
       g_nCameraCollisionRetries == 0) {
-    CLAMP_STATE(g_nCameraSpringPitchDelta, 0x2000);
+    CLAMP_STATE(g_nCameraSpringPitchDelta, CAM_SPRING_CLAMP_SWING);
   }
   APPLY(1);
 
@@ -155,7 +157,7 @@ void AdvanceCameraSpringStep(int column) {
   } else {
     delta = g_nCameraTargetDistance - g_nCameraSpringDistance;
   }
-  drive = g_anCameraSpringDriveGains[12 + column];
+  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(2) + column];
   SPRING(2);
   APPLY(2);
 
@@ -164,7 +166,7 @@ void AdvanceCameraSpringStep(int column) {
   } else {
     ANGLE_DELTA(g_nCameraTargetRoll, g_nCameraSpringRoll);
   }
-  drive = g_anCameraSpringDriveGains[18 + column];
+  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(3) + column];
   SPRING(3);
   APPLY(3);
 
@@ -173,7 +175,7 @@ void AdvanceCameraSpringStep(int column) {
   } else {
     ANGLE_DELTA(g_nCameraTargetPitchBias, g_nCameraSpringPitchBias);
   }
-  drive = g_anCameraSpringDriveGains[24 + column];
+  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(4) + column];
   SPRING(4);
   APPLY(4);
 
@@ -182,7 +184,7 @@ void AdvanceCameraSpringStep(int column) {
   } else {
     ANGLE_DELTA(g_nCameraTargetYawBias, g_nCameraSpringYawBias);
   }
-  drive = g_anCameraSpringDriveGains[30 + column];
+  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(5) + column];
   SPRING(5);
   APPLY(5);
 }

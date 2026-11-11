@@ -68,12 +68,12 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
   voice = -1;
   switch (mode) {
   case SFX_MODE_FLAT:
-    if (GetSoundVoiceStatusByOwner(owner, sampleId) == 2) {
+    if (GetSoundVoiceStatusByOwner(owner, sampleId) == VOICE_OWNER_LOOPING) {
       return 0;
     }
     break;
   case SFX_MODE_3D:
-    if (GetSoundVoiceStatusByOwner(owner, sampleId) == 2) {
+    if (GetSoundVoiceStatusByOwner(owner, sampleId) == VOICE_OWNER_LOOPING) {
       return 0;
     }
     SubtractVector(delta, &owner->posX, (int *)(cam - 0x14));
@@ -87,7 +87,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
       if (pPlaying != 0) {
         *pPlaying = VOICE_ROW_NONE;
       }
-      return 0x7F;
+      return VOICE_ROW_NONE;
     }
     break;
   case SFX_MODE_PANNED:
@@ -95,7 +95,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
   }
 
   quietest = 0x100;
-  for (i = 0; i < 0x18; i++) {
+  for (i = 0; i < SPU_VOICE_COUNT; i++) {
     if ((g_aSpuVoiceRows[i].nFlags & VOICE_ROW_BUSY) == 0) {
       voice = i;
       break;
@@ -106,7 +106,7 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
   }
 
   if (voice >= 0) {
-    if (voice != 0x18) {
+    if (voice != SPU_VOICE_COUNT) {
       g_aSpuVoiceRows[voice].nFlags = mode | VOICE_ROW_ACTIVE;
       g_aSpuVoiceRows[voice].pOwner = (unsigned char *)owner;
       g_aSpuVoiceRows[voice].nSampleId = sampleId;
@@ -121,7 +121,8 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
           g_aSpuVoiceRows[voice].nPitch = ENT->nPitch;
         }
       }
-      attr.mask = 0x10093;
+      attr.mask = SPU_ATTR_VOLL | SPU_ATTR_VOLR | SPU_ATTR_PITCH |
+                  SPU_ATTR_ADDR | SPU_ATTR_LOOP_ADDR;
       attr.voice = 1 << voice;
       attr.addr = ENT->nSampleAddr;
       attr.pitch = ENT->nPitch;
@@ -158,12 +159,12 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
           g_aSpuVoiceRows[i].nVolR = attr.volR;
           g_aSpuVoiceRows[i].nVolL = g_nSfxOverrideVolL;
         } else {
-          g_aSpuVoiceRows[voice].anPanCache[0] = 0x2000;
-          g_aSpuVoiceRows[voice].anPanCache[1] = 0x2000;
-          attr.volR = 0x2000;
-          attr.volL = 0x2000;
-          g_aSpuVoiceRows[i].nVolR = 0x2000;
-          g_aSpuVoiceRows[i].nVolL = 0x2000;
+          g_aSpuVoiceRows[voice].anPanCache[0] = SFX_FLAT_VOLUME;
+          g_aSpuVoiceRows[voice].anPanCache[1] = SFX_FLAT_VOLUME;
+          attr.volR = SFX_FLAT_VOLUME;
+          attr.volL = SFX_FLAT_VOLUME;
+          g_aSpuVoiceRows[i].nVolR = SFX_FLAT_VOLUME;
+          g_aSpuVoiceRows[i].nVolL = SFX_FLAT_VOLUME;
         }
         break;
       }
@@ -178,10 +179,10 @@ unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
           attr.volR = g_nSfxOverrideVolR;
           attr.volL = g_nSfxOverrideVolL;
         } else {
-          g_aSpuVoiceRows[voice].anPanCache[0] = 0x3CCC;
-          g_aSpuVoiceRows[voice].anPanCache[1] = 0x3CCC;
-          attr.volR = 0x3CCC;
-          attr.volL = 0x3CCC;
+          g_aSpuVoiceRows[voice].anPanCache[0] = SFX_3D_VOLUME;
+          g_aSpuVoiceRows[voice].anPanCache[1] = SFX_3D_VOLUME;
+          attr.volR = SFX_3D_VOLUME;
+          attr.volL = SFX_3D_VOLUME;
         }
         ComputeVoicePanAndFalloff(
             &attr.volL, dist,

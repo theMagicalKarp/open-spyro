@@ -11,6 +11,14 @@
 #define MUSIC_CMD_STOP_4 4 /* same as MUSIC_CMD_STOP (StopAllSoundExceptMask's) */
 #define MUSIC_CMD_RESUME 8 /* restart from g_dwCdMusicReadHead */
 
+/* g_nCdMusicStreamTimeout, a g_nVblankTickCount deadline (the count restarts
+ * at each level load): a track that runs out before it loops; after it, the
+ * stream picks another of the level's three and sets the next deadline
+ * MUSIC_REPICK_TICKS (8 min at 60 Hz) on. A level's first visit starts with
+ * MUSIC_REPICK_FIRST_VISIT_TICKS (12 min). */
+#define MUSIC_REPICK_TICKS 0x7080
+#define MUSIC_REPICK_FIRST_VISIT_TICKS 0xA8C0
+
 /* g_dwMusicStreamStatus: one state at a time. */
 #define MUSIC_ST_PLAYING 0x10 /* CdlReadS issued; the stream tick follows the read head */
 #define MUSIC_ST_IDLE 0x40    /* drive free: data reads may run */

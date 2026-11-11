@@ -69,10 +69,10 @@ SDATA(g_pSpyroContactActor, 4);
                          g_anCollisionHitNormal[2],                            \
                          VectorLength(g_anCollisionHitNormal, VEC_LEN_XY),     \
                          ATAN_ANGLE8) >= SLOPE_STEEP) {                        \
-      int t = g_nGroundSurfaceType & 0x3F;                                     \
+      int t = g_nGroundSurfaceType & TRIGGER_REGION_MASK;                      \
       unsigned char kind;                                                      \
                                                                                \
-      if (t != 0x3F) {                                                         \
+      if (t != TRIGGER_REGION_NONE) {                                          \
         kind = **(unsigned char **)((char *)g_pTriggerRegionTable + t * 4);    \
       } else {                                                                 \
         kind = 0;                                                              \
@@ -82,7 +82,7 @@ SDATA(g_pSpyroContactActor, 4);
       }                                                                        \
     }                                                                          \
     CopyVector(pos, g_anCollisionResolvedPos);                                 \
-    if (g_nSpyroFirstContactSurfaceType == 0xFF) {                             \
+    if (g_nSpyroFirstContactSurfaceType == SURFACE_NO_CONTACT) {               \
       g_nSpyroFirstContactSurfaceType = g_nGroundSurfaceType;                  \
       CopyVector(pos + SPY_FIRST_POINT, g_anCollisionContactPoint);            \
       CopyVector(pos + SPY_FIRST_NORMAL, g_anCollisionHitNormal);              \
@@ -126,7 +126,7 @@ int AdvanceSpyroPhysics(void) {
   int hole;
 
   g_nSpyroContactedActorFlag = 0;
-  g_nSpyroFirstContactSurfaceType = 0xFF;
+  g_nSpyroFirstContactSurfaceType = SURFACE_NO_CONTACT;
   g_nSpyroWallSlideContributedFlag = 0;
   {
     int *q = &SPY[SPY_PROBE_SUSPEND];
@@ -217,8 +217,8 @@ int AdvanceSpyroPhysics(void) {
           a -= 0x100;
         }
         lock = m | SPYRO_RQ_FREEZE_INPUT;
-        if (abs(a) < 0x10) {
-          if (g_nSpyroScriptedAlignFrames >= 0x1E) {
+        if (abs(a) < LOCK_ON_ALIGN_ANGLE) {
+          if (g_nSpyroScriptedAlignFrames >= LOCK_ON_SETTLE_FRAMES) {
             ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
             if (g_nSpyroSpeedTarget != 0) {
               int side;
@@ -233,16 +233,16 @@ int AdvanceSpyroPhysics(void) {
                 a -= 0x100;
               }
               if (g_nActiveLevelId == LEVEL_PEACE_KEEPERS) {
-                side = 0x28;
+                side = LOCK_ON_CONE_PEACE_KEEPERS;
                 if ((int)rq2[SPY_STATE - SPY_REQUEST] ==
                     SPYRO_ST_SCRIPTED_WALK) {
-                  side = 0x32;
+                  side = LOCK_ON_CONE_WALK_PEACE_KEEPERS;
                 }
               } else {
-                side = 0x30;
+                side = LOCK_ON_CONE;
                 if ((int)rq2[SPY_STATE - SPY_REQUEST] ==
                     SPYRO_ST_SCRIPTED_WALK) {
-                  side = 0x38;
+                  side = LOCK_ON_CONE_WALK;
                 }
               }
               if (abs(a) < side) {
@@ -255,10 +255,10 @@ int AdvanceSpyroPhysics(void) {
                 a = (a - (h << 4)) & 0xFFF;
                 if (a < 0x800) {
                   side = 1;
-                  t = h + 0x40;
+                  t = h + LOCK_ON_ORBIT_TURN;
                 } else {
                   side = 0;
-                  t = h - 0x40;
+                  t = h - LOCK_ON_ORBIT_TURN;
                 }
                 a = t << 4;
                 SCHED_FENCE();
@@ -266,7 +266,7 @@ int AdvanceSpyroPhysics(void) {
                 if (a > 0x800) {
                   a -= 0x1000;
                 }
-                if (abs(a) < 0x200) {
+                if (abs(a) < LOCK_ON_ORBIT_MATCH) {
                   if (g_nSpyroState != SPYRO_ST_SCRIPTED_WALK) {
                     ChangeSpyroState(SPYRO_ST_SCRIPTED_WALK);
                   }
@@ -301,7 +301,7 @@ int AdvanceSpyroPhysics(void) {
         g_pCameraAnchorPos = g_anCameraLatchedAnchorPos;
         CopyVector(g_anCameraLatchedAnchorPos,
                    ACTOR_POS(g_pScriptedCameraActor));
-        g_anCameraLatchedAnchorPos[2] += 0x200;
+        g_anCameraLatchedAnchorPos[2] += LOCK_ON_ANCHOR_LIFT;
         g_nCameraParamsReferenceYaw = g_pScriptedCameraActor->rotZ << 4;
         g_pCameraTargetParams = g_anCameraParamEnemyLock;
         g_nCameraNextMode = (CAM_HELD | CAM_MODE_REQUEST);

@@ -64,12 +64,10 @@ void Level14_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step2;
-      rec[0xC] -= step4;
-      rec[0xD] -= step4;
-      rec[0xE] -= step4;
+      SIZE += step2;
+      FADE_COL(step4);
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -77,12 +75,10 @@ void Level14_AdvanceEmitList(int step) {
     case EMIT_SPARK_VEL_DIM:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step4;
-      rec[0xC] -= step4;
-      rec[0xD] -= step4;
-      rec[0xE] -= step4;
+      SIZE += step4;
+      FADE_COL(step4);
       AGE += step;
-      if (AGE >= 0x18 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -90,12 +86,10 @@ void Level14_AdvanceEmitList(int step) {
     case EMIT_SPARK_RISE:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step4;
-      rec[0xC] -= step4;
-      rec[0xD] -= step4;
-      rec[0xE] -= step4;
+      SIZE += step4;
+      FADE_COL(step4);
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -203,23 +197,23 @@ void Level14_AdvanceEmitList(int step) {
       len = near + abs(dv[2]);
       if (CLASS == burst) {
         if (len >= 0x3001) {
-          rec[0xC] = 0xFF;
-          rec[0xD] = 0xFF;
-          rec[0xE] = 0xFF;
-          rec[0xA] = 4;
+          COL_R = 0xFF;
+          COL_G = 0xFF;
+          COL_B = 0xFF;
+          SIZE = 4;
           CLASS = 0;
           rec[0xF] = 0x40;
         }
       } else if (len < 0x2800) {
         CLASS = burst;
-        rec[0xC] = 0x80;
-        rec[0xD] = 0x80;
-        rec[0xE] = 0x80;
-        rec[0x11] = 4;
+        COL_R = 0x80;
+        COL_G = 0x80;
+        COL_B = 0x80;
+        DEPTH_BIAS = 4;
         rec[0xF] = 0x2C;
-        rec[0x10] = 0;
-        rec[0xA] = (GetRandomU32() & 0xF) + 0x18;
-        rec[0xB] = (GetRandomU32() & 0x7) + 0xF;
+        TEX_INDEX = 0;
+        SIZE = (GetRandomU32() & 0xF) + 0x18;
+        SPIN = (GetRandomU32() & 0x7) + 0xF;
       }
       break;
     }
@@ -234,7 +228,7 @@ void Level14_AdvanceEmitList(int step) {
 
       /* The short spawn drift: the record walks along its own jittered
        * velocity, plus a quarter of the record velocity vector. */
-      if (AGE >= 0x30 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x30)) {
         goto expire;
       } else {
         SVectorToVectorShl2(qa, POS);
@@ -269,7 +263,7 @@ void Level14_AdvanceEmitList(int step) {
       KEEP_IN_REG(burst);
       SVectorToVectorShl2(p, POS);
       EBB_BREAK();
-      if (ALIVE == 0) {
+      if (VISIBLE == 0) {
         goto expire;
       } else {
         bolt = v;
@@ -295,25 +289,25 @@ void Level14_AdvanceEmitList(int step) {
           len = c + abs(v[2]);
           if (CLASS == burst) {
             if (len >= 0x3001) {
-              rec[0xA] = 4;
+              SIZE = 4;
               rec[0xF] = 0x40;
               CLASS = 0;
-              c = rec[0xC] * 2;
-              rec[0xC] = c;
-              rec[0xD] *= 2;
-              rec[0xE] *= 2;
+              c = COL_R * 2;
+              COL_R = c;
+              COL_G *= 2;
+              COL_B *= 2;
             }
           } else if (len < 0x2800) {
             CLASS = burst;
-            rec[0x11] = 4;
+            DEPTH_BIAS = 4;
             rec[0xF] = 0x2C;
-            rec[0x10] = 0;
-            c = rec[0xC] >> 1;
-            rec[0xC] = c;
-            rec[0xD] >>= 1;
-            rec[0xE] >>= 1;
-            rec[0xA] = (GetRandomU32() & 0xF) + 0x18;
-            rec[0xB] = (GetRandomU32() & 0x7) + 0xF;
+            TEX_INDEX = 0;
+            c = COL_R >> 1;
+            COL_R = c;
+            COL_G >>= 1;
+            COL_B >>= 1;
+            SIZE = (GetRandomU32() & 0xF) + 0x18;
+            SPIN = (GetRandomU32() & 0x7) + 0xF;
           }
         }
       }
@@ -323,9 +317,9 @@ void Level14_AdvanceEmitList(int step) {
     case EMIT_SUPERCHARGE_TRAIL:
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step2;
+      SIZE += step2;
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -343,33 +337,31 @@ void Level14_AdvanceEmitList(int step) {
         w[2] += 0x100;
         VectorToSVectorShr2(POS, w);
         HS(0x18) = HU(0x18) + 0x40;
-        rec[0xA] = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        SIZE = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
     case EMIT_BURST_SPARK:
       AddSVector(POS, POS, &HS(0x12));
-      rec[0xC] -= 8;
-      rec[0xD] -= 8;
-      rec[0xE] -= 8;
-      if (rec[0xC] == 0 || ALIVE == 0) {
+      FADE_COL(8);
+      if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
 
     case EMIT_ACTOR_SPARK:
-      rec[0xB] += 8;
-      rec[0xA] += 2;
-      if (rec[0xC] != 0) {
-        rec[0xC] -= 8;
+      SPIN += 8;
+      SIZE += 2;
+      if (COL_R != 0) {
+        COL_R -= 8;
       }
-      if (rec[0xD] != 0) {
-        rec[0xD] -= 8;
+      if (COL_G != 0) {
+        COL_G -= 8;
       }
-      if (rec[0xE] != 0) {
-        rec[0xE] -= 8;
+      if (COL_B != 0) {
+        COL_B -= 8;
       }
-      if ((W(0xC) & 0xFFFFFF) == 0 || ALIVE == 0) {
+      if (COL_RGB == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -379,11 +371,9 @@ void Level14_AdvanceEmitList(int step) {
        * channel bottoms out. */
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step2;
-      rec[0xC] -= 4;
-      rec[0xD] -= 4;
-      rec[0xE] -= 4;
-      if (rec[0xC] == 0 || ALIVE == 0) {
+      SIZE += step2;
+      FADE_COL(4);
+      if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -392,14 +382,14 @@ void Level14_AdvanceEmitList(int step) {
       /* The same ember with a late red cut-off at age 9. */
       AddSVector(POS, POS, VEL);
       SPARK_Z_CLIMB();
-      rec[0xA] += step2;
+      SIZE += step2;
       if (AGE >= 9) {
-        rec[0xC] -= 0x20;
+        COL_R -= 0x20;
       }
-      rec[0xD] -= 8;
-      rec[0xE] -= 4;
+      COL_G -= 8;
+      COL_B -= 4;
       AGE++;
-      if (AGE >= 0xC || ALIVE == 0) {
+      if (AGED_OR_CULLED(0xC)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -408,14 +398,14 @@ void Level14_AdvanceEmitList(int step) {
     {
       int s;
 
-      rec[0x18] += g_nFrameStep * 4;
-      rec[0x19] += g_nFrameStep;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x18]] * rec[0x19]) >> 12);
-      s = g_anSineLut[rec[0x18]] * rec[0x19];
+      SWIRL_ANGLE += g_nFrameStep * 4;
+      SWIRL_RADIUS += g_nFrameStep;
+      HU(0x4) = HU(0x12) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       HU(0x8) += *(const int *)&g_nFrameStep * 6;
-      rec[0xB] += 4;
+      SPIN += 4;
       HU(0x6) = HU(0x14) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
+      if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -425,34 +415,32 @@ void Level14_AdvanceEmitList(int step) {
     {
       int heat;
 
-      if (rec[0xC] < 0xF0) {
-        rec[0xC] += 4;
+      if (COL_R < 0xF0) {
+        COL_R += 4;
       }
-      if (rec[0xD] < 0xF0) {
-        rec[0xD] += 4;
+      if (COL_G < 0xF0) {
+        COL_G += 4;
       }
-      if (rec[0xE] < 0xF0) {
-        rec[0xE] += 4;
+      if (COL_B < 0xF0) {
+        COL_B += 4;
       }
-      rec[0x1C] += g_nFrameStep * 8;
+      JET_ANGLE += g_nFrameStep * 8;
       heat = 0x3F;
       if (g_nDragonRescueTimer < 0x40) {
         heat = g_nDragonRescueTimer;
       }
-      HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
-      HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x1C]] * HS(0x1A)) >> 12);
-      HU(0x6) = HU(0x14) + ((g_anSineLut[rec[0x1C]] * HS(0x1A)) >> 12);
+      HS(0x18) = (JET_SEGMENT * (0x48 - heat)) >> 3;
+      HS(0x1A) = (((0x20 - JET_SEGMENT) * heat) >> 4) + 8;
+      HU(0x4) = HU(0x12) + ((g_anCosineLut[JET_ANGLE] * HS(0x1A)) >> 12);
+      HU(0x6) = HU(0x14) + ((g_anSineLut[JET_ANGLE] * HS(0x1A)) >> 12);
       HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
       break;
     }
 
     case EMIT_RISING_PUFF:
       HU(0x8) += HU(0x1E);
-      rec[0xA]++;
-      rec[0xC] -= step2;
-      rec[0xD] -= step2;
-      rec[0xE] -= step2;
+      SIZE++;
+      FADE_COL(step2);
       AGE += step;
       if (AGE >= 0x20) {
         FreeEmitListRecord(rec);
@@ -463,7 +451,7 @@ void Level14_AdvanceEmitList(int step) {
       /* A plain drifter with a long life. */
       AddSVector(POS, POS, VEL);
       AGE += step;
-      if (AGE >= 0x40 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x40)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -476,25 +464,25 @@ void Level14_AdvanceEmitList(int step) {
       if (HS(0x1E) != 0) {
         HU(0x1C)++;
       }
-      c = rec[0xC] - step;
+      c = COL_R - step;
       HS(0x1E) = 1 - HU(0x1E);
-      rec[0xA] += step2;
+      SIZE += step2;
       if (c < 0) {
         c = 0;
       }
-      rec[0xC] = c;
-      c = rec[0xD] - step;
+      COL_R = c;
+      c = COL_G - step;
       if (c < 0) {
         c = 0;
       }
-      rec[0xD] = c;
-      c = rec[0xE] - step;
+      COL_G = c;
+      c = COL_B - step;
       if (c < 0) {
         c = 0;
       }
-      rec[0xE] = c;
+      COL_B = c;
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -531,7 +519,7 @@ void Level14_AdvanceEmitList(int step) {
         }
         AGE++;
       }
-      if (AGE >= 0x18 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -597,29 +585,29 @@ void Level14_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         goto expire;
       } else {
-        rec[0x10] -= 3;
-        if (rec[0x10] < 0x80) {
-          rec[0x10] = 0x80;
+        COL0_R -= 3;
+        if (COL0_R < 0x80) {
+          COL0_R = 0x80;
         }
-        rec[0x11] -= 4;
-        if (rec[0x11] < 0x60) {
-          rec[0x11] = 0x60;
+        COL0_G -= 4;
+        if (COL0_G < 0x60) {
+          COL0_G = 0x60;
         }
-        rec[0x12] = 0;
-        rec[0x14] -= 3;
-        if (rec[0x14] < 0xC0) {
-          rec[0x14] = 0xC0;
+        COL0_B = 0;
+        COL1_R -= 3;
+        if (COL1_R < 0xC0) {
+          COL1_R = 0xC0;
         }
-        rec[0x15] -= 4;
-        if (rec[0x15] < 0x80) {
-          rec[0x15] = 0x80;
+        COL1_G -= 4;
+        if (COL1_G < 0x80) {
+          COL1_G = 0x80;
         }
-        rec[0x16] -= 6;
-        if (rec[0x16] < 0x20) {
-          rec[0x16] = 0x20;
+        COL1_B -= 6;
+        if (COL1_B < 0x20) {
+          COL1_B = 0x20;
         }
       }
       break;
@@ -632,7 +620,7 @@ void Level14_AdvanceEmitList(int step) {
       int r;
 
       AGE++;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         goto expire;
       } else {
         d[0] = HS(0xA) - HS(0x4);
@@ -656,12 +644,12 @@ void Level14_AdvanceEmitList(int step) {
         HU(0x4) = HU(0xA) - d[0];
         HU(0x6) = HU(0xC) - d[1];
         HU(0x8) = HU(0xE) - d[2];
-        rec[0x14] -= 2;
-        rec[0x15] -= 2;
-        rec[0x16] -= 4;
-        rec[0x10] -= 3;
-        rec[0x11] -= 3;
-        rec[0x12] -= 3;
+        COL1_R -= 2;
+        COL1_G -= 2;
+        COL1_B -= 4;
+        COL0_R -= 3;
+        COL0_G -= 3;
+        COL0_B -= 3;
       }
       break;
     }
@@ -673,7 +661,7 @@ void Level14_AdvanceEmitList(int step) {
       int r;
 
       AGE++;
-      if (AGE >= 0x30 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x30)) {
         goto expire;
       } else {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
@@ -702,7 +690,7 @@ void Level14_AdvanceEmitList(int step) {
     }
 
     case EMIT_ORBIT_DOT:
-      if (ALIVE == 0 || AGE >= 0x21) {
+      if (VISIBLE == 0 || AGE >= 0x21) {
         FreeEmitListRecord(rec);
         break;
       }
@@ -719,13 +707,13 @@ void Level14_AdvanceEmitList(int step) {
     {
       int s;
 
-      rec[0x18] += g_nFrameStep * 4;
-      rec[0x19] += g_nFrameStep;
-      HU(0x4) = HU(0x10) + ((g_anCosineLut[rec[0x18]] * rec[0x19]) >> 12);
-      s = g_anSineLut[rec[0x18]] * rec[0x19];
+      SWIRL_ANGLE += g_nFrameStep * 4;
+      SWIRL_RADIUS += g_nFrameStep;
+      HU(0x4) = HU(0x10) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       HU(0x8) += g_nFrameStep * 6;
       HU(0x6) = HU(0x12) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
+      if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -759,7 +747,7 @@ void Level14_AdvanceEmitList(int step) {
       int r;
 
       AGE++;
-      if (AGE >= 0x28 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x28)) {
         goto expire;
       } else {
         HU(0x4) += HU(0x10);
@@ -783,9 +771,9 @@ void Level14_AdvanceEmitList(int step) {
         if (HS(0x14) < -4) {
           HS(0x14) = -4;
         }
-        rec[0xC] -= 2;
-        rec[0xD] -= 2;
-        rec[0xE] -= 1;
+        COL_R -= 2;
+        COL_G -= 2;
+        COL_B -= 1;
       }
       break;
     }
@@ -804,15 +792,15 @@ void Level14_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x18 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x18)) {
         goto expire;
       } else {
-        rec[0x10] -= 3;
-        rec[0x11] -= 4;
-        rec[0x14] -= 3;
-        rec[0x15] -= 4;
-        if (rec[0x16] >= 6) {
-          rec[0x16] -= 6;
+        COL0_R -= 3;
+        COL0_G -= 4;
+        COL1_R -= 3;
+        COL1_G -= 4;
+        if (COL1_B >= 6) {
+          COL1_B -= 6;
         }
       }
       break;
@@ -833,7 +821,7 @@ void Level14_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;

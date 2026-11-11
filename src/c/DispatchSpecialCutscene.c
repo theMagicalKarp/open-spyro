@@ -1,6 +1,7 @@
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "level_id.h"
 #include "main_shared.h"
 #include "title_state.h"
@@ -18,10 +19,10 @@ void DispatchSpecialCutscene(void) {
   int id = g_nCutsceneId;
   if (id == CUTSCENE_OPENING) {
     int *mode = g_anTitleModeBlock;
-    rect.w = 0x200;
+    rect.w = SCREEN_W;
     rect.x = 0;
     rect.y = 0;
-    rect.h = 0x1E0;
+    rect.h = SCREEN_H * 2;
     ClearImage(&rect, 0, 0, 0);
     DrawSync(0);
     StopAllSoundExceptMask(0);

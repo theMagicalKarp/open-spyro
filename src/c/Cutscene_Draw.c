@@ -51,6 +51,6 @@ void Cutscene_Draw(void) {
   g_nVsyncFramePaceAnchor = VSync(-1);
   PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   PutDrawEnv(g_pActiveFrameDrawEnv);
-  ot = (int *)LinkOTPrimitives(0x800);
+  ot = (int *)LinkOTPrimitives(OT_BIN_COUNT);
   DrawOTag(ot);
 }

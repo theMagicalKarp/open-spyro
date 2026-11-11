@@ -96,7 +96,7 @@ void TickDragonRescueAssetStream(void) {
     if (g_nDragonRescueSplitFlag == 0) {
       {
         register int top asm("$2") =
-            0x80000; /* SPU RAM end; v0 as in the original (A374) */
+            SPU_RAM_SIZE; /* v0 as in the original (A374) */
         SetSpuTransferStartAddr(top + (g_nDragonRescueSpuChunkIndex << 15) -
                                 g_nDragonRescueAudioSampleSize);
       }
@@ -116,7 +116,7 @@ void TickDragonRescueAssetStream(void) {
       }
       {
         register int top asm("$2") =
-            0x80000; /* SPU RAM end; v0 as in the original (A374) */
+            SPU_RAM_SIZE; /* v0 as in the original (A374) */
         SetSpuTransferStartAddr(top + (CHUNK << 15) -
                                 g_nDragonRescueAudioSampleSize);
       }
@@ -177,7 +177,8 @@ void TickDragonRescueAssetStream(void) {
     break;
   case RESCUE_STREAM_LEVEL_AUDIO:
     if (g_nDragonRescueSplitFlag == 1) {
-      SetSpuTransferStartAddr(0x81010 - g_nDragonRescueReadByteCount);
+      SetSpuTransferStartAddr(SPU_RAM_SIZE + SPU_SAMPLE_BASE -
+                              g_nDragonRescueReadByteCount);
       {
         int len = g_nDragonRescueReadByteCount - 0x100000;
 
@@ -200,7 +201,7 @@ void TickDragonRescueAssetStream(void) {
   case RESCUE_STREAM_LEVEL_MESHES:
     InstallSpyroAnimStream(
         HEAD + (g_anActorMeshOffsetList - g_nWorldDataExtChunkOffset));
-    for (i = 0; i < 0x200; i++) {
+    for (i = 0; i < ACTOR_MESH_TABLE_SLOTS; i++) {
       if (((int)g_apActorMeshTableBlock[i] & 0xFFFFFF) <
           ((int)g_apWorldUnpackHeadBlock[7] & 0xFFFFFF)) {
         g_apActorMeshTableBlock[i] = 0;
@@ -210,7 +211,7 @@ void TickDragonRescueAssetStream(void) {
     mesh = g_apActorMeshTableBlock;
     list = g_anActorMeshOffsetBlock;
     slot = ACTOR_MESH_INDEX_LIST(list) + 1;
-    for (; i < 0x40; i++) {
+    for (; i < MESH_STREAM_MAX; i++) {
       if (list[i] <= 0) {
         break;
       }

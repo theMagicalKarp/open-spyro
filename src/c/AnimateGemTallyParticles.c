@@ -30,36 +30,37 @@ void AnimateGemTallyParticles(void) {
 
   g_pGemTallyParticleRecords = g_anActorShadowQueue;
   if (g_nLevelTransitionPhase == 0) {
-    g_nGemTallyHoldEndPhase = g_nGemTallyIconCount * 2 + 0x8C;
-    if (g_nGemTallyHoldEndPhase > 0xC0) {
-      g_nGemTallyHoldEndPhase = 0xC0;
+    g_nGemTallyHoldEndPhase =
+        g_nGemTallyIconCount * TALLY_ICON_FRAMES + TALLY_HOLD_BASE;
+    if (g_nGemTallyHoldEndPhase > TALLY_HOLD_CAP) {
+      g_nGemTallyHoldEndPhase = TALLY_HOLD_CAP;
     }
     i = 0;
     do {
       PARTICLES[i].live = 0;
       i++;
-    } while (i < 0x40);
+    } while (i < GEM_TALLY_POOL);
   }
 
   g_nLevelTransitionPhase += g_nFrameStep;
-  if (g_nLevelTransitionPhase >= 0x1A1) {
+  if (g_nLevelTransitionPhase > TALLY_END) {
     g_nLevelTransitionTallyActive = 0;
     return;
   }
-  if (g_nLevelTransitionPhase < 0x80) {
+  if (g_nLevelTransitionPhase < TALLY_GEMS_IN) {
     return;
   }
 
-  for (i = 0; i < 0x20; i++) {
+  for (i = 0; i < GEM_TALLY_ICONS_MAX; i++) {
     if (i >= g_nGemTallyIconCount) {
       continue;
     }
-    if (g_nLevelTransitionPhase < i * 2 + 0x80) {
+    if (g_nLevelTransitionPhase < i * TALLY_ICON_FRAMES + TALLY_GEMS_IN) {
       continue;
     }
-    if (g_nLevelTransitionPhase < 0x100 && PARTICLES[i].live == 0) {
+    if (g_nLevelTransitionPhase < TALLY_SPAWN_END && PARTICLES[i].live == 0) {
       PARTICLES[i].live = 1;
-      spawn = i * 2 - 0x80;
+      spawn = i * TALLY_ICON_FRAMES - TALLY_GEMS_IN;
       PARTICLES[i].phase = g_nLevelTransitionPhase - spawn - g_nFrameStep;
       PARTICLES[i].vx = (GetRandomU32() & 0xFF) - 0x80;
       PARTICLES[i].vy = (GetRandomU32() & 0x3F) + 0x60;
@@ -79,30 +80,34 @@ void AnimateGemTallyParticles(void) {
 
     PARTICLES[i].phase += g_nFrameStep;
     PARTICLES[i].spin += PARTICLES[i].spinv;
-    if (PARTICLES[i].phase < 0x30) {
+    if (PARTICLES[i].phase < GEM_ARC_RISE_END) {
       PARTICLES[i].x = (PARTICLES[i].vx *
                         (0x1000 - g_anCosineLut[PARTICLES[i].phase * 4 / 3])) >>
                        12;
       PARTICLES[i].y =
           (PARTICLES[i].vy * g_anSineLut[PARTICLES[i].phase * 4 / 3]) >> 12;
-    } else if (PARTICLES[i].phase < 0x60) {
-      PARTICLES[i].x = PARTICLES[i].vx +
-                       ((PARTICLES[i].vx *
-                         g_anSineLut[(PARTICLES[i].phase - 0x30) * 8 / 3]) >>
-                        13);
+    } else if (PARTICLES[i].phase < GEM_ARC_HANG_END) {
+      PARTICLES[i].x =
+          PARTICLES[i].vx +
+          ((PARTICLES[i].vx *
+            g_anSineLut[(PARTICLES[i].phase - GEM_ARC_RISE_END) * 8 / 3]) >>
+           13);
       PARTICLES[i].y =
           (PARTICLES[i].vy >> 1) +
           ((PARTICLES[i].vy *
-            (g_anCosineLut[(PARTICLES[i].phase - 0x30) * 8 / 3] + 0x1000)) >>
+            (g_anCosineLut[(PARTICLES[i].phase - GEM_ARC_RISE_END) * 8 / 3] +
+             0x1000)) >>
            14);
-    } else if (PARTICLES[i].phase < 0x93) {
-      PARTICLES[i].x = PARTICLES[i].vx -
-                       ((PARTICLES[i].vx *
-                         g_anSineLut[(PARTICLES[i].phase - 0x60) * 4 / 3]) >>
-                        12);
-      PARTICLES[i].y = (PARTICLES[i].vy *
-                        g_anCosineLut[(PARTICLES[i].phase - 0x60) * 4 / 3]) >>
-                       13;
+    } else if (PARTICLES[i].phase < GEM_ARC_FALL_END) {
+      PARTICLES[i].x =
+          PARTICLES[i].vx -
+          ((PARTICLES[i].vx *
+            g_anSineLut[(PARTICLES[i].phase - GEM_ARC_HANG_END) * 4 / 3]) >>
+           12);
+      PARTICLES[i].y =
+          (PARTICLES[i].vy *
+           g_anCosineLut[(PARTICLES[i].phase - GEM_ARC_HANG_END) * 4 / 3]) >>
+          13;
     } else {
       PARTICLES[i].live = 0;
       if (i % 3 == 0) {

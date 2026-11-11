@@ -33,7 +33,7 @@ void StopAllSoundExceptMask(int mask) {
   int eight;
   int silence;
   volatile unsigned int *keyoff;
-  mask = mask ^ 0xFFFFFF;
+  mask = mask ^ SPU_VOICE_ALL;
   i = 0;
   keyoff = g_adwSpuPendingKeyOffBlock;
   one = 1;
@@ -50,7 +50,7 @@ top:
     unsigned char *owner;
     bit = one << i;
     if (((mask >> i) & 1) != 0) {
-      rowOff = (i & 0x7F) * 0x1C;
+      rowOff = (i & 0x7F) * VOICE_ROW_STRIDE;
       *keyoff |= bit;
       rowAt = rowOff;
       mode = (VOICE_ROW_RAW(rowAt, unsigned short, nFlags)) & SFX_MODE_MASK;
@@ -76,7 +76,7 @@ top:
     park:
       row = i & 0x7F;
 
-      parkOff = row * 0x1C;
+      parkOff = row * VOICE_ROW_STRIDE;
       VOICE_ROW_RAW(parkOff, unsigned short, nFlags) = VOICE_ROW_STOPPED;
       VOICE_ROW_RAW(parkOff, int, pOwner) = 0;
       VOICE_ROW_RAW(parkOff, int, pPlaying) = 0;
@@ -85,8 +85,8 @@ top:
   }
 
   i += 1;
-  off += 0x1C;
-  if (i < 0x18) {
+  off += VOICE_ROW_STRIDE;
+  if (i < SPU_VOICE_COUNT) {
     goto top;
   }
   g_dwSpuPendingKeyOn = 0;

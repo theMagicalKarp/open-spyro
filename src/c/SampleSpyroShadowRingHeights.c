@@ -46,9 +46,9 @@ void SampleSpyroShadowRingHeights(int probe) {
   if (g_bSpyroOtBinBias < SPYRO_OT_BIAS_PINNED) {
     g_bSpyroOtBinBias = SPYRO_OT_BIAS_DEFAULT;
   }
-  g_nSpyroShadowOtBinBias = 3;
-  if ((g_anSpyroWorldPos[2] - gz) >= 0x365) {
-    g_nSpyroShadowOtBinBias = 5;
+  g_nSpyroShadowOtBinBias = SHADOW_OT_BIAS;
+  if ((g_anSpyroWorldPos[2] - gz) >= SHADOW_HIGH_ABOVE) {
+    g_nSpyroShadowOtBinBias = SHADOW_OT_BIAS_HIGH;
   }
   /* The empty loop is load-bearing: its NOTE_INSN_LOOP_BEG ends cse's extended
      basic block, so the held matrix base below has no constant equivalence and
@@ -61,23 +61,24 @@ void SampleSpyroShadowRingHeights(int probe) {
     g_anSpyroShadowHidden[0] = 1;
   }
   ring = g_anSpyroShadowRingIndexBlock;
-  idx = (ring[0] + 1) & 7;
+  idx = (ring[0] + 1) & (SHADOW_RING_VERTS - 1);
   ring[0] = idx;
   if (probe != 0) {
     RotateVectorByMatrix(g_anSpyroBodyMtx,
                          &g_anSpyroShadowProbeOffsetTable[idx * 3], v);
     AddVector(v, v, SPY_VIA(g_anSpyroBodyMtx, SPY_BODY_MTX, SPY_POS));
-    v[2] += 0x200;
-    ground = FindGroundHeightBelow(v, 0x400);
-    v[2] -= 0x200;
-    if (((unsigned int)((v[2] - ground) + 0x80)) >= 0x100) {
+    v[2] += SHADOW_PROBE_LIFT;
+    ground = FindGroundHeightBelow(v, SHADOW_PROBE_DEPTH);
+    v[2] -= SHADOW_PROBE_LIFT;
+    if (((unsigned int)((v[2] - ground) + SHADOW_PROBE_WINDOW)) >=
+        2 * SHADOW_PROBE_WINDOW) {
       char *flags = (char *)ring - 0x18;
       RING_SLOT(flags) = 1;
     } else {
       char *flags = (char *)ring - 0x18;
       char *heights = (char *)ring - 0x20;
       RING_SLOT(flags) = 0;
-      d = (g_anSpyroShadowPos[2] - ground) * 0xC2;
+      d = (g_anSpyroShadowPos[2] - ground) * SHADOW_HEIGHT_SCALE;
       RING_SLOT(heights) = d / 0x200;
       return;
     }

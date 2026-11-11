@@ -68,7 +68,8 @@ void AdvanceSpyroSubstepState(void) {
     break;
   case SPYRO_ST_CHARGE:
     UpdateSpyroFlightAttitudeNearGround();
-    if ((g_nSpyroSubstate & 1) && g_nSpyroContactedActorFlag != 0) {
+    if ((g_nSpyroSubstate & SPYRO_SUB_CHARGE_STEER) &&
+        g_nSpyroContactedActorFlag != 0) {
       g_nSpyroMotionSpeed = 0xA00;
     }
     break;

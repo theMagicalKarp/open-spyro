@@ -111,7 +111,7 @@ void StoryIntro_Draw(void) {
   VSync(0);
   PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
   PutDrawEnv(g_pActiveFrameDrawEnv);
-  DrawOTag(LinkOTPrimitives(0x800));
+  DrawOTag(LinkOTPrimitives(OT_BIN_COUNT));
 }
 
 /* Four levers, in the order they paid (A93 is the whole preheader story):

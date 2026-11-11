@@ -172,7 +172,6 @@ typedef struct NameLetterState {
  * (TickSpyroGameplayFrame), and thrown / lobbed projectiles (levels 25, 26,
  * 28) burst once any coordinate falls below it. */
 #define WORLD_MIN_COORD 0x400
-#define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
 /* Actor.probeDist sentinels (DriveActorTrackedMove; other values are the
  * ground-probe distance / 4, 0 = the default 0x12C). */
 #define ACTOR_PROBE_LIFT_ONLY 0xFE /* probe with MOVE_LIFT alone (no slide, no floor follow) */
@@ -259,6 +258,12 @@ typedef struct NameLetterState {
 #define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
 #define ACTOR_ANIM_DONE 0x02      /* the animation finished (g_nActorAnimDone) */
 #define ACTOR_ANIM_EXTRA_STEP 0x04 /* the long-frame extra pass stepped again */
+/* Actor.frameProgress: TickActorAnims adds frameRate every tick and steps a
+ * frame when the sum reaches ANIM_STEP. ANIM_RATE_TICKS(n) is the rate that
+ * steps every n ticks. A pose change usually seeds frameProgress with the
+ * same value as frameRate, so the blend starts one tick in. */
+#define ANIM_STEP 0x40
+#define ANIM_RATE_TICKS(n) (ANIM_STEP / (n))
 /* TickActorAnims' mode: the low bits shift frameRate down; ANIM_TICK_EXTRA is
  * the extra pass a long frame (g_nFrameStep >= 3) runs after the normal one,
  * at half rate for a 3-tick frame. */
@@ -623,6 +628,10 @@ enum ActorType {
                              * outside its audible range */
 #define SFX_MODE_PANNED 0x10 /* pan supplied by the caller */
 #define SFX_MODE_MASK 0x1C   /* the mode group within a voice row's nFlags */
+/* GetSoundVoiceStatusByOwner's result for (owner, sample). */
+#define VOICE_OWNER_NONE 0
+#define VOICE_OWNER_PLAYING 1
+#define VOICE_OWNER_LOOPING 2
 
 /* g_nSfxOverrideFlags: one-shot overrides the next PlaySoundEffect consumes
  * (and clears). */
@@ -644,6 +653,27 @@ enum DropThrow {
   DROP_IN_PLACE = 5,        /* appears on the source with no velocity */
   DROP_HIGH_HOP = 6,        /* lands within 0x100 of the source with a high hop */
 };
+/* SpawnActorDeathDrop. A rolled drop takes a percentage roll: under
+ * DROP_LIFE_PERCENT an extra life, under DROP_BUTTERFLY_PERCENT a butterfly
+ * (while Sparx is below full health). A thrown drop leaves at HOP_VZ
+ * (HIGH_HOP_VZ) up, within DROP_HIGH_HOP_JITTER / DROP_SCATTER_JITTER of the
+ * source on X and Y, and falls DROP_GRAVITY a frame; it starts DROP_LIFT
+ * above the source. DROP_TUMBLE_IF_NEAR tumbles when charging Spyro is
+ * within DROP_TUMBLE_RANGE and DROP_TUMBLE_DZ. A landing spot steeper than
+ * DROP_MAX_SLOPE (8-bit angle) or inside a solid within DROP_CLEAR_RADIUS
+ * falls back to the source. */
+#define DROP_LIFE_PERCENT 2
+#define DROP_BUTTERFLY_PERCENT 12
+#define DROP_HOP_VZ 0x8C
+#define DROP_HIGH_HOP_VZ 0x12C
+#define DROP_HIGH_HOP_JITTER 0x100
+#define DROP_SCATTER_JITTER 0x200
+#define DROP_GRAVITY 10
+#define DROP_LIFT 0x100
+#define DROP_TUMBLE_RANGE 0x800
+#define DROP_TUMBLE_DZ 0x400
+#define DROP_MAX_SLOPE 0x18
+#define DROP_CLEAR_RADIUS 0xC8
 
 /* Waypoint path used by the path-following classes (10, 114, 339) and
  * FollowActorWaypointPath / PivotActorAlongPath: node count, current node,

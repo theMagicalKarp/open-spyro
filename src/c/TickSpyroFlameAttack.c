@@ -94,12 +94,13 @@ void TickSpyroFlameAttack(void) {
       break;
 
     case SPYRO_FLAME_BREATHING:
-      if (g_nSpyroFlameTimer == 0x10) {
+      if (g_nSpyroFlameTimer == FLAME_ANCHOR_DROP_FRAME) {
         anchor = g_abSpyroFlameAnchorModeBlock;
         anchor[0] = 0;
       }
-      if ((((g_nSpyroFlameTimer & 3) == 0) &&
-           (((unsigned int)(g_nSpyroFlameTimer - 0xC)) < 0x11)) &&
+      if ((((g_nSpyroFlameTimer & (FLAME_EMIT_PERIOD - 1)) == 0) &&
+           (((unsigned int)(g_nSpyroFlameTimer - FLAME_EMIT_FIRST)) <
+            FLAME_EMIT_LAST - FLAME_EMIT_FIRST + 1)) &&
           (g_nCdStreamState < LSTREAM_PRESERVE)) {
         {
           int *tip = g_anSpyroFlameTipOffsets;
@@ -125,7 +126,7 @@ void TickSpyroFlameAttack(void) {
           }
         }
       } else if ((g_dwPadPressed & PAD_CIRCLE) &&
-                 ((timer = g_anSpyroFlameTimerBlock)[0] >= 0x2C)) {
+                 ((timer = g_anSpyroFlameTimerBlock)[0] >= FLAME_REARM_FRAME)) {
         timer[0] = -1;
         g_nSpyroFlamePhase = 2;
         g_abSpyroAnimLayer1SubstepBlock[0] = 4;
@@ -141,7 +142,7 @@ void TickSpyroFlameAttack(void) {
         }
         FillWord(g_abSpyroFlameSlotAge, 0, 8);
       } else {
-        if (g_anSpyroFlameTimerBlock[0] >= 0x30) {
+        if (g_anSpyroFlameTimerBlock[0] >= FLAME_END_FRAME) {
           live = g_abSpyroFlameActiveBlock;
           live[0] = 0;
           FillWord(((char *)live) - 0x78, 0, 8);

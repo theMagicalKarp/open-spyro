@@ -171,11 +171,7 @@ void Level29_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = actor->posZ + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -227,11 +223,7 @@ void Level29_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = (actor->posZ) + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -540,13 +532,13 @@ void Level29_UpdateActors(void) {
 
       int dist = ApproxDist2D(&actor->posX, &SPY.posX);
 
-      if (st->timer < 0xFA) {
+      if (st->timer < ROT_BILLBOARD_GLINT_TIMER_CAP) {
         st->timer += g_nFrameStep;
       }
 
       if (actor->type != ACTOR_TYPE_SPARX_FOOD) {
 
-        if (st->sparkle != BILLBOARD_NONE) {
+        if (st->sparkle != ROT_BILLBOARD_NONE) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
 
           if (actor->type == ACTOR_TYPE_EXTRA_LIFE) {
@@ -558,17 +550,17 @@ void Level29_UpdateActors(void) {
           AddVector(g_aRotBillboards[st->sparkle].pos, g_aRotBillboards[st->sparkle].pos,
                         &actor->posX);
 
-          if (g_aRotBillboards[st->sparkle].life < 5) {
-            st->sparkle = BILLBOARD_NONE;
+          if (g_aRotBillboards[st->sparkle].life < ROT_BILLBOARD_FADING_LIFE) {
+            st->sparkle = ROT_BILLBOARD_NONE;
           }
         } else {
-          if (st->timer > 0xf7) {
+          if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
             int handle = SpawnActorRotBillboard(actor, &g_anRotBillboardOffset3);
             if (handle >= 0 && dist < ROT_BILLBOARD_ATTACH_RANGE) {
               st->sparkle = handle;
             }
 
-            st->timer = (GetRandomU32() & 0x1F) + 33;
+            st->timer = (GetRandomU32() & 0x1F) + 0x21;
           }
         }
       }
@@ -1204,8 +1196,8 @@ void Level29_UpdateActors(void) {
         if (g_nActorAnimDone != 0) {
           actor->mode = FTARGET_SPENT;
           if (actor->nextAnim != FTARGET_SPENT) {
-            actor->frameProgress = 0x10;
-            actor->frameRate = 0x10;
+            actor->frameProgress = ANIM_RATE_TICKS(4);
+            actor->frameRate = ANIM_RATE_TICKS(4);
             actor->nextAnim = FTARGET_SPENT;
             actor->nextFrame = 0;
             OnActorAnimQueued(actor);
@@ -1269,7 +1261,7 @@ void Level29_UpdateActors(void) {
         RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->attach].pos);
         AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                       &actor->posX);
-        if (g_aRotBillboards[st->attach].life < 5) {
+        if (g_aRotBillboards[st->attach].life < ROT_BILLBOARD_FADING_LIFE) {
           st->attach = ROT_BILLBOARD_NONE;
         }
       } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
@@ -1409,7 +1401,7 @@ void Level29_UpdateActors(void) {
       {
         Model **models = g_apActorMeshTable;
 
-        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[FCHEST_VOICE_HUM]) == 0 && g_nGamestate == GS_GAMEPLAY) {
+        if (GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable_12B->m_Sounds[FCHEST_VOICE_HUM]) == VOICE_OWNER_NONE && g_nGamestate == GS_GAMEPLAY) {
           PlaySoundEffect(models[actor->type]->m_Sounds[FCHEST_VOICE_HUM], actor, SFX_MODE_3D,
                         &actor->voiceRow);
         }

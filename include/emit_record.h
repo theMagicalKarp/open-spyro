@@ -15,8 +15,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
   union {
     struct {                     /* classes 2 / 3 / 6 -- spark */
       short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
+      unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -29,8 +29,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     } spark;
     struct {                     /* class 0 -- dust mote */
       unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
+      unsigned char depthBias;   /* 0x0A OT depth-bin bias (a dot's) */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -42,8 +42,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     } dust;
     struct {                     /* class 2 -- ribbon (2nd point at 0x12) */
       short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
+      unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -56,8 +56,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     } ribbon;
     struct {                     /* class 2 -- band (shorts at 0x18 / 0x1A) */
       short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
+      unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -72,8 +72,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     } band;
     struct {                     /* class 0 -- smear (2nd point at 0x10) */
       short pos[3];              /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
+      unsigned char depthBias;   /* 0x0A OT depth-bin bias (a dot's) */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -85,8 +85,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     } smear;
     struct {                     /* class 3 -- actor-tracking plume */
       unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
+      unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -100,8 +100,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     } plume;
     struct {                     /* class 3 -- owner-tracked spark */
       unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
+      unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -116,13 +116,13 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
       unsigned short b[3];       /* 0x0A tail */
-      unsigned char c0[4];       /* 0x10 head colour */
-      unsigned char c1[4];       /* 0x14 tail colour */
+      unsigned char c0[4];       /* 0x10 colour at a; [3] the GPU code (EMIT_FX_LINE_G2) */
+      unsigned char c1[4];       /* 0x14 colour at b; [3] the OT-bin bias */
     } line;
     struct {                     /* class 3 -- owner-tethered spark */
       unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
+      unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -139,8 +139,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     } tether;
     struct {                     /* class 2 -- haze puff (word velocity) */
       unsigned short pos[3];     /* 0x04 */
-      unsigned char life;        /* 0x0A */
-      unsigned char seed;        /* 0x0B */
+      unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
+      unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
       unsigned char r;           /* 0x0C */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
@@ -169,6 +169,7 @@ enum EmitClass {
 /* GPU command codes for the `fx` byte: it is the top byte of the colour
  * word at +0x0C, which RasterizeEmitList copies into the primitive. */
 #define EMIT_FX_LINE 0x40       /* flat line */
+#define EMIT_FX_LINE_G2 0x50    /* Gouraud line: a line record's c0[3] */
 #define EMIT_FX_QUAD 0x2C       /* textured quad */
 #define EMIT_FX_QUAD_BLEND 0x2E /* textured quad, semi-transparent */
 
@@ -211,7 +212,7 @@ enum EmitEffect {
                               * yellow / grey by g_nSpyroMotionSpeed (SUPERCHARGE_TRAIL_*) */
   EMIT_SPYRO_ORBIT_SPARKLE = 0xA, /* sparkle circling Spyro; freed when he is hidden */
   EMIT_FADING_SPARK = 0x10,  /* spark from pos[0..2] at velocity pos[3..5]; effectArg ->
-                              * {life, grey >> 3}; all channels fade by 4 a frame */
+                              * {size, grey >> 3}; all channels fade by 4 a frame */
   EMIT_SPARK_RGB = 0x11,     /* spark from pos[0..2] at velocity pos[3..5]; effectArg ->
                               * {r, g, b}; red cut off after frame 9, dies at 0xC */
   EMIT_RISING_SPIRAL = 0x15, /* point that spirals out and up from pos, effectArg
@@ -243,7 +244,7 @@ enum EmitEffect {
   EMIT_SLOWING_SPARK = 0xE,  /* grey spark at the velocity effectArg points to, slowing in x/y and
                               * fading with camera distance; 0x80 frames */
   EMIT_JITTER_BURST = 0xF,   /* EMIT_JITTER_DRIFT thrown out at a random velocity */
-  EMIT_JITTER_SPARKLE = 0x4B, /* level 9: white dot within 0x1F of pos, no velocity, life 4;
+  EMIT_JITTER_SPARKLE = 0x4B, /* level 9: white dot within 0x1F of pos, no velocity, OT bias 4;
                               * advanced like EMIT_JITTER_BURST (the thrown snowball's trail) */
   EMIT_SMOKE_PUFF = 0x13,    /* grey puff that rises, slows, grows and fades with camera
                               * distance; 0x80 frames */
@@ -257,7 +258,7 @@ enum EmitEffect {
   EMIT_FLIGHT_TRAIL = 0x1A,  /* flight trail spark left at Spyro's two trail points, grey
                               * effectArg * 8, fading 8 a frame */
   EMIT_FLIGHT_GROUND_WAKE = 0x1B, /* flight wake under Spyro when he skims a trigger region
-                                   * within 0xC00 of the ground; effectArg = {life, grey} */
+                                   * within 0xC00 of the ground; effectArg = {size, grey} */
   EMIT_ACTOR_RING_SPARK = 0x1C, /* spark flung out at radius effectArg in the YZ plane of the
                                  * Actor * in pos; 0x20 frames */
   EMIT_PATH_WISP = 0x1D,     /* green wisp that walks the waypoint list of the Actor * effectArg

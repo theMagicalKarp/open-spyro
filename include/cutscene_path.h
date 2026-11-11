@@ -18,4 +18,8 @@ typedef struct CutscenePath {
                    * animation segment */
 } CutscenePath;
 
+/* A cutscene actor's animation segment counts on through its model's
+ * animations CUTSCENE_ANIM_FRAMES at a time: anim = seg / 60, frame = seg % 60. */
+#define CUTSCENE_ANIM_FRAMES 60
+
 #endif /* OPEN_SPYRO_CUTSCENE_PATH_H */

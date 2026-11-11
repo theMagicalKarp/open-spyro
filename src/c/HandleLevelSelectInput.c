@@ -45,7 +45,7 @@ void HandleLevelSelectInput(void) {
       break;
     case PAD_UP:
       g_nNextLevelId = g_nActiveLevelId + 1;
-      if (g_nNextLevelId % 10 >= 6) {
+      if (LEVEL_IN_WORLD(g_nNextLevelId) >= LEVELS_PER_WORLD) {
         g_nNextLevelId = (g_nNextLevelId / 10 + 1) * 10;
       }
       if ((unsigned int)(g_nNextLevelId - LEVEL_ARTISANS) >=

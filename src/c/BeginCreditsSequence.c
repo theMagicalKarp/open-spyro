@@ -2,6 +2,7 @@
 #include "credits_mode.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 
 /* Enter the credits gamestate (0x8002d228, GS_CREDITS): clear the whole
@@ -14,10 +15,10 @@
 void BeginCreditsSequence(int reloadMeshes) {
   int unused[8];
   RECT rect;
-  rect.w = 0x200;
+  rect.w = SCREEN_W;
   rect.x = 0;
   rect.y = 0;
-  rect.h = 0x1E0;
+  rect.h = SCREEN_H * 2;
   ClearImage(&rect, 0, 0, 0);
   DrawSync(0);
   StopAllSoundExceptMask(0);

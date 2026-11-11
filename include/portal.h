@@ -59,6 +59,17 @@ typedef struct Portal {
   int pts[8][3]; /* +0x20 nPoints ring points (UnpackWorldDataChunks skips 8 + nPoints * 3 words) */
 } Portal;
 
+/* DrawPortalsAndSky's camera distance bands. Nearer than PORTAL_NEAR_RANGE a
+ * portal is filled with its sky's flat colour (blended toward the ring's
+ * colour from PORTAL_FADE_START, g_nFadeProgress) and gets the fattened
+ * outline pass; nearer than PORTAL_FACING_RANGE it is also dropped when it is
+ * behind the camera. With g_nPortalDistanceFogEnabled the ring colour fogs
+ * toward g_dwWorldFogColor from PORTAL_NEAR_RANGE out to PORTAL_FOG_FAR. */
+#define PORTAL_FACING_RANGE 0x1000
+#define PORTAL_FADE_START 0x3000
+#define PORTAL_NEAR_RANGE 0x4000
+#define PORTAL_FOG_FAR 0x8000
+
 /* One projected ring point: screen x/y plus the OT depth term. */
 typedef struct ScreenPt {
   int x;

@@ -45,9 +45,9 @@ void MenuTransition_Draw(void) {
     }
     i = 0;
     PutDrawEnv(env);
-    rect.y = 0xE0;
+    rect.y = MENU_BACKDROP_CLUT_Y;
     rect.h = 1;
-    rect.x = g_nMenuTickFrames + 0x200;
+    rect.x = g_nMenuTickFrames + MENU_BACKDROP_X;
     rect.w = 0x20 - g_nMenuTickFrames;
     LoadImage(&rect, g_anMenuBackdropGrayClut);
     DrawSync(0);
@@ -59,7 +59,7 @@ void MenuTransition_Draw(void) {
     q->r0 = 0x4C;
     q->g0 = 0x80;
     q->x0 = i << 7;
-    tag = i + 0x88;
+    tag = i + MENU_BACKDROP_TPAGE;
     q->y0 = 8;
     q->x1 = q->x0 + 0x80;
     q->y1 = q->y0;
@@ -78,7 +78,7 @@ void MenuTransition_Draw(void) {
     q->v2 = q->v0 - 0x21;
     q->u3 = q->u0 + 0x80;
     q->v3 = q->v0 - 0x21;
-    q->clut = 0x3820;
+    q->clut = MENU_BACKDROP_CLUT;
     q->tpage = tag;
     p = (unsigned char *)q;
     AddPrimToOTSlot(p, slot);
@@ -129,7 +129,7 @@ void MenuTransition_Draw(void) {
   }
   FillWord(&g_apMainDrawEntityList, 0, FRAME_ARENA_LIST_WORDS);
   RasterizeSpyroModel();
-  DrawOTag(LinkOTPrimitives(0x800));
+  DrawOTag(LinkOTPrimitives(OT_BIN_COUNT));
   DrawSync(0);
   if (g_nDemoActive != 0) {
     VSync(0);

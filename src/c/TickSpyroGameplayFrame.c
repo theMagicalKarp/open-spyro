@@ -99,7 +99,7 @@ void TickSpyroGameplayFrame(void) {
   if (g_nSparxHealth < SPARX_GONE) {
     switch (g_nSpyroState) {
     case SPYRO_ST_HAZARD:
-      if (g_nSpyroHazardSinkDepth == 0x240) {
+      if (g_nSpyroHazardSinkDepth == SPYRO_HAZARD_SINK_FATAL) {
         if (g_nFlightLevelActive != 0) {
           g_pfnLevelEndFlightRun();
           g_pfnLevelUpdateActors();
@@ -109,18 +109,19 @@ void TickSpyroGameplayFrame(void) {
       }
       break;
     case SPYRO_ST_DEATH:
-      if (g_nSpyroStateTimer >= 0x65) {
+      if (g_nSpyroStateTimer >= SPYRO_DEATH_TICKS) {
         TriggerRespawnOrGameOver();
       }
       break;
     case SPYRO_ST_DEATH_PINNED:
-      if (g_nSpyroStateTimer >= 0x7D) {
+      if (g_nSpyroStateTimer >= SPYRO_DEATH_PINNED_TICKS) {
         TriggerRespawnOrGameOver();
       }
       break;
     }
   } else if ((g_nSpyroWorldPosZ < WORLD_MIN_COORD) ||
-             ((g_nSpyroState == SPYRO_ST_FALL) && (g_nSpyroSubstate >= 0x79))) {
+             ((g_nSpyroState == SPYRO_ST_FALL) &&
+              (g_nSpyroSubstate >= SPYRO_DEATH_FALL_FRAMES))) {
     TriggerRespawnOrGameOver();
   } else {
     pos = g_anSpyroWorldPosZBlock;
@@ -129,7 +130,8 @@ void TickSpyroGameplayFrame(void) {
           (g_nSpyroState != SPYRO_ST_GLIDE_DROP)) {
         ChangeSpyroState(SPYRO_ST_FALL);
       }
-    } else if ((g_anSpyroWorldPos[0] < 0x800) || (g_nSpyroWorldPosY < 0x800)) {
+    } else if ((g_anSpyroWorldPos[0] < SPYRO_WORLD_EDGE_XY) ||
+               (g_nSpyroWorldPosY < SPYRO_WORLD_EDGE_XY)) {
       if ((g_nSpyroState != SPYRO_ST_FALL) &&
           (g_nSpyroState != SPYRO_ST_GLIDE_DROP)) {
         ZeroVector(pos + (SPY_MOTION - SPY_POS_Z));

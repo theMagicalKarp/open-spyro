@@ -396,11 +396,7 @@ void Level33_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = actor->posZ + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -452,11 +448,7 @@ void Level33_UpdateActors(void) {
             st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
           }
 
-          if (st->vz >= 128) {
-            actor->posZ = (actor->posZ) + (st->vz - 256);
-          } else {
-            actor->posZ = actor->posZ + st->vz;
-          }
+          ADD_SIGNED_BYTE(actor->posZ, st->vz);
 
           refHeight = actor->posZ - ProbeActorGroundHeight(actor);
 
@@ -742,7 +734,7 @@ void Level33_UpdateActors(void) {
 
       toSpyro = ApproxDist2D(&actor->posX, &SPY.posX);
 
-      if (st->timer < 0xFA) {
+      if (st->timer < ROT_BILLBOARD_GLINT_TIMER_CAP) {
         st->timer += g_nFrameStep;
       }
 
@@ -759,7 +751,7 @@ void Level33_UpdateActors(void) {
           AddVector(g_aRotBillboards[st->attach].pos,
                         g_aRotBillboards[st->attach].pos, &actor->posX);
 
-          if (g_aRotBillboards[st->attach].life < 5) {
+          if (g_aRotBillboards[st->attach].life < ROT_BILLBOARD_FADING_LIFE) {
             st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
@@ -1268,7 +1260,7 @@ void Level33_UpdateActors(void) {
               st->target = 0;
               EBB_BREAK();
 
-              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == 0) {
+              if (GetSoundVoiceStatusByOwner(actor, g_pLevelSampleBankHeader[SFX_GEM_BOUNCE]) == VOICE_OWNER_NONE) {
                 g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
                 g_nSfxOverrideVolR = SPARX_HANDOVER_VOLUME;
                 g_nSfxOverrideVolL = SPARX_HANDOVER_VOLUME;
@@ -1469,11 +1461,11 @@ void Level33_UpdateActors(void) {
 
       if (actor->nextAnim == LANEPAT_WATCH && actor->cullRadius != ACTOR_CULL_HIDDEN) {
         if (actor->nextFrame == 1 && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LANEPAT_VOICE_STAND_EARLY]) == 0) {
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LANEPAT_VOICE_STAND_EARLY]) == VOICE_OWNER_NONE) {
           PlayActorMeshVoice(actor, LANEPAT_VOICE_STAND_EARLY, 0);
         }
         if (actor->nextFrame == 0xA && !(GetRandomU32() & 3) &&
-            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LANEPAT_VOICE_STAND_LATE]) == 0) {
+            GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LANEPAT_VOICE_STAND_LATE]) == VOICE_OWNER_NONE) {
           PlayActorMeshVoice(actor, LANEPAT_VOICE_STAND_LATE, 0);
         }
       }
@@ -2273,7 +2265,7 @@ void Level33_UpdateActors(void) {
                         g_aRotBillboards[st->attach].pos);
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                         &actor->posX);
-          if (g_aRotBillboards[st->attach].life < 5) {
+          if (g_aRotBillboards[st->attach].life < ROT_BILLBOARD_FADING_LIFE) {
             st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
@@ -2340,7 +2332,7 @@ void Level33_UpdateActors(void) {
           RotateVectorByMatrix(actor->mtx, &g_anRotBillboardOffset4, g_aRotBillboards[st->spark].pos);
           AddVector(g_aRotBillboards[st->spark].pos, g_aRotBillboards[st->spark].pos,
                         &actor->posX);
-          if (g_aRotBillboards[st->spark].life < 5) {
+          if (g_aRotBillboards[st->spark].life < ROT_BILLBOARD_FADING_LIFE) {
             st->spark = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK && actor->cullRadius != ACTOR_CULL_HIDDEN) {

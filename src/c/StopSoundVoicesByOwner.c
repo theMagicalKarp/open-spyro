@@ -43,8 +43,8 @@ top:
   flagsp = (unsigned short *)((SPUVOICEROW *)flagsp + 1);
   playingp = (unsigned char **)((SPUVOICEROW *)playingp + 1);
   i += 1;
-  off += 0x1C;
-  if (i < 24) {
+  off += VOICE_ROW_STRIDE;
+  if (i < SPU_VOICE_COUNT) {
     goto top;
   }
   {
