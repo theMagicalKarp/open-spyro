@@ -27,6 +27,10 @@
 
 /* point k through a held byte offset (the original keeps k*12 live) */
 #define KPT (*(ScreenPt *)((char *)g_aPortalRingScreenPts + ko))
+/* SkyHeader.color read through a raw byte offset: the member access
+   changes the schedule (the build grows by 8 bytes). */
+#define SKY_COLOR_RAW(sky) (*(unsigned int *)((char *)(sky) + 0x10))
+
 extern int g_nCameraVisZone[]; /* [-0x10] view mtx, [-0x15] world mtx */
 
 /* Render stage 4: draw the portals, each filled with its destination's sky
@@ -38,10 +42,11 @@ extern int g_nCameraVisZone[]; /* [-0x10] view mtx, [-0x15] world mtx */
    row. Each live portal ring is projected point-by-point into
    g_aPortalRingScreenPts, depth-cued (and fog-blended during storms), then
    walked twice: once to accumulate the centroid, screen extents and silhouette
-   edges of the ring as-is, and — when the portal is nearer than 0x4000 — once
-   more with every point pushed 2 px away from the centroid, giving the fattened
-   outline pass. A pass is emitted only when its extents fall inside the 512x240
-   frame and the ring faces the camera. (0x80050bd0, 5148 bytes.) */
+   edges of the ring as-is, and — when the portal is nearer than
+   PORTAL_NEAR_RANGE — once more with every point pushed 2 px away from the
+   centroid, giving the fattened outline pass. A pass is emitted only when its
+   extents fall inside the 512x240 frame and the ring faces the camera.
+   (0x80050bd0, 5148 bytes.) */
 void DrawPortalsAndSky(void) {
   MATRIX viewMtx;         /* sp+0x10 */
   MATRIX outMtx;          /* sp+0x30 */
@@ -145,9 +150,8 @@ void DrawPortalsAndSky(void) {
       flagX = 1;
       n = LookupCosine(g_nVblankTickCount * 16 + (i << 9));
       color = abs(n) >> 1;
-      color = ComputeDepthCuedColor(
-          *(unsigned int *)((char *)g_apPortals[i]->pSky + 0x10), 0xffffff,
-          color);
+      color = ComputeDepthCuedColor(SKY_COLOR_RAW(g_apPortals[i]->pSky),
+                                    0xffffff, color);
       SubtractVector(vDelta, g_apPortals[i]->pts[0], g_anCameraPos);
       maxX =
           CountLeadingZeros(abs(vDelta[0]) + abs(vDelta[1]) + abs(vDelta[2]));
@@ -162,8 +166,8 @@ void DrawPortalsAndSky(void) {
       if (maxX < 0) {
         maxX = 0;
       }
-      if (g_nPortalDistanceFogEnabled != 0 && dist >= 0x4001) {
-        j = (0x8000 - dist) >> 2;
+      if (g_nPortalDistanceFogEnabled != 0 && dist > PORTAL_NEAR_RANGE) {
+        j = (PORTAL_FOG_FAR - dist) >> 2;
         if (j < 0) {
           j = 0;
         }
@@ -303,7 +307,7 @@ void DrawPortalsAndSky(void) {
         }
         do {
           do {
-            if (flags == 2 && dist < 0x1000) {
+            if (flags == 2 && dist < PORTAL_FACING_RANGE) {
               SubtractVector(vRel, vCenter, g_anCameraPos);
               vAxis[0] = 0x1000;
               vAxis[1] = 0;
@@ -338,12 +342,12 @@ void DrawPortalsAndSky(void) {
           g_anPortalScissorRect[2] = maxX << 16;
           g_anPortalScissorRect[3] = minX << 16;
           g_aPortalSilhouetteEdges[nEdges].live = 0;
-          if (dist < 0x4000) {
-            if (dist >= 0x3001) {
-              g_nFadeProgress = dist - 0x3000;
-              g_dwSkyFadeColor = ComputeDepthCuedColor(
-                  *(unsigned int *)((char *)g_apPortals[i]->pSky + 0x10), color,
-                  dist - 0x3000);
+          if (dist < PORTAL_NEAR_RANGE) {
+            if (dist > PORTAL_FADE_START) {
+              g_nFadeProgress = dist - PORTAL_FADE_START;
+              g_dwSkyFadeColor =
+                  ComputeDepthCuedColor(SKY_COLOR_RAW(g_apPortals[i]->pSky),
+                                        color, dist - PORTAL_FADE_START);
               EmitPortalColorFill(&g_dwSkyFadeColor);
             } else {
               EmitPortalColorFill(&g_apPortals[i]->pSky->color);
@@ -353,7 +357,7 @@ void DrawPortalsAndSky(void) {
           }
         }
 
-        if (dist < 0x4000) {
+        if (dist < PORTAL_NEAR_RANGE) {
           minX = SCREEN_W;
           maxX = 0;
           minY = SCREEN_H;
@@ -453,7 +457,7 @@ void DrawPortalsAndSky(void) {
           } else {
             flags = 0;
           }
-          if (flags == 2 && dist < 0x1000) {
+          if (flags == 2 && dist < PORTAL_FACING_RANGE) {
             int vAxis2[3];           /* sp+0xc0 */
             int vRel2[3];            /* sp+0xd0 */
             unsigned char euler2[3]; /* sp+0xe0 */
@@ -492,11 +496,11 @@ void DrawPortalsAndSky(void) {
             g_anPortalScissorRect[2] = maxX << 16;
             g_anPortalScissorRect[3] = minX << 16;
             g_aPortalSilhouetteEdges[nEdges].live = 0;
-            if (dist >= 0x3001) {
-              g_nFadeProgress = dist - 0x3000;
-              g_dwSkyFadeColor = ComputeDepthCuedColor(
-                  *(unsigned int *)((char *)g_apPortals[i]->pSky + 0x10), color,
-                  dist - 0x3000);
+            if (dist > PORTAL_FADE_START) {
+              g_nFadeProgress = dist - PORTAL_FADE_START;
+              g_dwSkyFadeColor =
+                  ComputeDepthCuedColor(SKY_COLOR_RAW(g_apPortals[i]->pSky),
+                                        color, dist - PORTAL_FADE_START);
               EmitPortalSkyFogShaded((int *)g_apPortals[i]->pSky, &viewMtx,
                                      &outMtx);
             } else {
