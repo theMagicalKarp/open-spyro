@@ -62,7 +62,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
-      rec->u.spark.life = 0x18;
+      rec->u.spark.size = 0x18;
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x80;
       rec->u.spark.g = 0x80;
@@ -81,9 +81,9 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
       if (g_nGamestate == GS_DRAGON_RESCUE) {
-        rec->u.spark.life = 8;
+        rec->u.spark.size = 8;
       } else {
-        rec->u.spark.life = 0x10;
+        rec->u.spark.size = 0x10;
       }
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x60;
@@ -104,7 +104,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       v0[2] = 0x1E;
       VectorToSVectorShr2(rec->u.spark.vel, v0);
       rec->u.spark.toggle = 0;
-      rec->u.spark.life = 0x20;
+      rec->u.spark.size = 0x20;
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x80;
       rec->u.spark.g = 0x80;
@@ -138,7 +138,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.plume.pos[2] = bz + jz;
       rec->u.plume.maxRadius = owner[1];
       rec->u.plume.rise = owner[0] >> 6;
-      rec->u.plume.life = 0x20;
+      rec->u.plume.size = 0x20;
       rec->u.plume.seed = 0x14;
       if (src->subMode != 0) {
         switch (GetRandomU32() & 7) {
@@ -208,7 +208,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
         rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
         rec->u.spark.pos[2] = rec->u.spark.pos[2] + ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x30)) >> 8);
       }
-      rec->u.spark.life = rec->phase * 4;
+      rec->u.spark.size = rec->phase * 4;
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.vel[0] = (GetRandomU32() & 0xE) - 7;
       rec->u.spark.vel[1] = (GetRandomU32() & 0xE) - 7;
@@ -230,7 +230,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       VectorToSVectorShr2(rec->u.spark.vel, (int *)effectArg);
       rec->u.spark.toggle = 0;
-      rec->u.spark.life = 0x18;
+      rec->u.spark.size = 0x18;
       rec->u.spark.seed = GetRandomU32();
       if (g_nSpyroMotionSpeed > SUPERCHARGE_TRAIL_RED_SPEED) {
         rec->u.spark.r = 0xFF;
@@ -260,7 +260,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->phase = GetRandomU32() & 0x1F;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, g_anSpyroWorldPos);
-      rec->u.spark.life = 0x18;
+      rec->u.spark.size = 0x18;
       rec->u.spark.seed = 0xF;
       rec->u.spark.r = g_abEmitTrailColors[k];
       rec->u.spark.g = g_abEmitTrailColorsG[k];
@@ -301,7 +301,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.r = effectArg;
       rec->u.spark.b = effectArg >> 16;
       rec->u.spark.fx = EMIT_FX_QUAD_BLEND;
-      rec->u.spark.life = (GetRandomU32() & 7) + 0x10;
+      rec->u.spark.size = (GetRandomU32() & 7) + 0x10;
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.texIndex = 0;
       break;
@@ -322,7 +322,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.ribbon.r = ~((effectArg & 0xF) << 4);
       rec->u.ribbon.g = 0xFF;
       rec->u.ribbon.b = -0x80 - ((effectArg & 0xF) << 3);
-      rec->u.ribbon.life = 0x30 - ((effectArg & 0xF) * 2);
+      rec->u.ribbon.size = 0x30 - ((effectArg & 0xF) * 2);
       rec->u.ribbon.texIndex = 0;
       rec->u.ribbon.seed = effectArg * 2;
       rec->u.ribbon.fx = EMIT_FX_QUAD_BLEND;
@@ -337,7 +337,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.band.pos2, pos);
       v = 0x30;
       z = i * 16;
-      rec->u.band.life = v;
+      rec->u.band.size = v;
       rec->u.band.r = 0x80;
       rec->u.band.g = 0x80;
       rec->u.band.b = 0x80;
@@ -377,7 +377,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.spark.pos, v2);
       VectorToSVectorShr2(rec->u.spark.vel, pos);
       rec->u.spark.toggle = 0;
-      rec->u.spark.life = 0x10;
+      rec->u.spark.size = 0x10;
       rec->u.spark.seed = GetRandomU32();
       rec->u.spark.r = 0x20;
       rec->u.spark.g = 0x20;
@@ -398,7 +398,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.dust.vel[0] = 0;
       rec->u.dust.vel[1] = 0;
       rec->u.dust.vel[2] = 0;
-      rec->u.dust.life = 2;
+      rec->u.dust.depthBias = 2;
       if (effectArg == 1 || (effectArg == 0 && g_nSparxHealth >= SPARX_GOLD)) {
         rec->u.dust.r = 0xFF;
         rec->u.dust.g = 0xFF;
@@ -510,7 +510,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.dust.g = 0xFF;
       rec->u.dust.b = 0;
       rec->u.dust.fx = EMIT_FX_LINE;
-      rec->u.dust.life = 4;
+      rec->u.dust.depthBias = 4;
       break;
     }
     case EMIT_RISING_SPIRAL_SMEAR: {
@@ -531,7 +531,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.smear.g = 0xFF;
       rec->u.smear.b = -0x80 - ((effectArg & 0xF) << 3);
       rec->u.smear.fx = EMIT_FX_LINE;
-      rec->u.smear.life = 2;
+      rec->u.smear.depthBias = 2;
       break;
     }
     case EMIT_DRIFT_STREAK: {
@@ -584,7 +584,7 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       }
       rec->u.dust.b = (GetRandomU32() & 0x3F) + 0x40;
       rec->u.dust.fx = EMIT_FX_LINE;
-      rec->u.dust.life = 2;
+      rec->u.dust.depthBias = 2;
       break;
     }
     case EMIT_FLAME_STREAK: {
