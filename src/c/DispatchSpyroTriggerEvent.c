@@ -18,8 +18,8 @@ typedef struct {
 #define ENT (g_apPortals[portal])
 #define FLAGS (((TriggerFlags *)g_adwSpyroTriggerEventBlock)->v)
 
-/* 0x80056f64 (0x41c): fires trigger region `idx` for `event` (1 = enter,
-   2 = inside). The region record's type byte (TriggerRegionType) picks the
+/* 0x80056f64 (0x41c): fires trigger region `idx` for `event` (TRIGGER_EV_TOUCH
+   / _OVER / _ON). The region record's type byte (TriggerRegionType) picks the
    action: hazard and lift regions hand their data to Spyro and raise their
    event bit, the ground latch arms a proximity flag, charge-hold / rebound /
    damage raise their trigger-event bits (rebound also spawns
@@ -42,9 +42,10 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
   data = TRIGGER_REGION_DATA(rec);
   switch (rec[0]) {
   case TRIGGER_HAZARD:
-    if (event == 1 && g_nSpyroWorldPosZ - g_nSpyroGroundHeightZ > 0x200) {
+    if (event == TRIGGER_EV_OVER &&
+        g_nSpyroWorldPosZ - g_nSpyroGroundHeightZ > TRIGGER_ON_HEIGHT) {
       g_nSpyroTriggerCurrentEventId = event;
-    } else if (event == 2) {
+    } else if (event == TRIGGER_EV_ON) {
       g_pSpyroHazardRegionData = data;
       FLAGS = (FLAGS & 0x3FF) | SPYRO_EV_HAZARD;
       SCHED_FENCE();
@@ -57,8 +58,8 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     FLAGS = (FLAGS & 0x3FF) | SPYRO_EV_LIFT;
     break;
   case TRIGGER_GROUND_LATCH:
-    if ((unsigned int)event < 2 &&
-        g_nSpyroWorldPosZ - g_nSpyroGroundHeightZ <= 0x190) {
+    if ((unsigned int)event < TRIGGER_EV_ON &&
+        g_nSpyroWorldPosZ - g_nSpyroGroundHeightZ <= GROUND_LATCH_HEIGHT) {
       data[0] = 1;
     }
     break;
@@ -112,7 +113,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     }
     break;
   case TRIGGER_DAMAGE:
-    if (event == 2 && g_anLevelTriggerStateSlots[data[0]] != 0) {
+    if (event == TRIGGER_EV_ON && g_anLevelTriggerStateSlots[data[0]] != 0) {
       FLAGS = (FLAGS & 0x3FF) | (SPYRO_EV_CHARGE_HIT | SPYRO_EV_HIT_TINT);
     }
     break;

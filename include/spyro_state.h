@@ -351,6 +351,23 @@ typedef enum SpyroState
 #define SPYRO_RQ_CAMERA 0x00200        /* CAM_MODE_REQUEST on the request anchor */
 #define SPYRO_RQ_PORTAL_PATH_CAMERA 0x00400 /* CAM_MODE_PORTAL_PATH */
 #define SPYRO_RQ_LOCK_ON 0x01000       /* face g_pScriptedCameraActor (EnemyLock params) */
+/* SPYRO_RQ_LOCK_ON, manning a fireball cannon (levels 6 / 24;
+ * AdvanceSpyroPhysics): once the camera has been within LOCK_ON_ALIGN_ANGLE
+ * (8-bit) of the cannon's facing for LOCK_ON_SETTLE_FRAMES, a pad move with
+ * Spyro inside the cone behind the cannon (LOCK_ON_CONE, or _WALK while
+ * already circling; narrower in Peace Keepers) and heading within
+ * LOCK_ON_ORBIT_MATCH of a quarter turn off its facing starts
+ * SPYRO_ST_SCRIPTED_WALK round it. The camera anchors LOCK_ON_ANCHOR_LIFT
+ * above the cannon. */
+#define LOCK_ON_ALIGN_ANGLE 0x10
+#define LOCK_ON_SETTLE_FRAMES 0x1E
+#define LOCK_ON_CONE 0x30
+#define LOCK_ON_CONE_WALK 0x38
+#define LOCK_ON_CONE_PEACE_KEEPERS 0x28
+#define LOCK_ON_CONE_WALK_PEACE_KEEPERS 0x32
+#define LOCK_ON_ORBIT_TURN 0x40
+#define LOCK_ON_ORBIT_MATCH 0x200
+#define LOCK_ON_ANCHOR_LIFT 0x200
 #define SPYRO_RQ_FREEZE_INPUT 0x02000  /* replay the pad snapshot */
 #define SPYRO_RQ_NO_CLIP 0x04000       /* no ground probes, raw velocity */
 #define SPYRO_RQ_TARGET_CAMERA 0x08000 /* CAM_MODE_SCRIPTED_TARGET */
@@ -412,6 +429,21 @@ typedef enum SpyroState
  * dispatched by DispatchSpyroTriggerEvent. The type-specific data words
  * follow the 4-byte header. */
 #define TRIGGER_REGION_DATA(rec) ((int *)((rec) + 4))
+/* g_nGroundSurfaceType / g_nSpyroFirstContactSurfaceType: the low bits index
+ * g_pTriggerRegionTable, TRIGGER_REGION_NONE meaning no region; the first
+ * contact is SURFACE_NO_CONTACT until something is hit this frame. */
+#define TRIGGER_REGION_MASK 0x3F
+#define TRIGGER_REGION_NONE 0x3F
+#define SURFACE_NO_CONTACT 0xFF
+/* DispatchSpyroTriggerEvent's event (AdvanceSpyroFrameMotion): the region
+ * Spyro first touched this frame, the one on the ground below him, or the
+ * one he stands on (grounded, within TRIGGER_ON_HEIGHT). A ground latch arms
+ * for touch / over within GROUND_LATCH_HEIGHT. */
+#define TRIGGER_EV_TOUCH 0
+#define TRIGGER_EV_OVER 1
+#define TRIGGER_EV_ON 2
+#define TRIGGER_ON_HEIGHT 0x200
+#define GROUND_LATCH_HEIGHT 0x190
 enum TriggerRegionType {
   TRIGGER_HAZARD = 0,       /* raises SPYRO_EV_HAZARD; data: [0] instant death, [1] g_nSpyroHazardKind */
   TRIGGER_LIFT = 1,         /* raises SPYRO_EV_LIFT (g_pSpyroLiftRegionData) */

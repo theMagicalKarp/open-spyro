@@ -36,14 +36,17 @@ void AdvanceSpyroFrameMotion(void) {
     g_nSpyroGroundHeightZ = ground;
     g_nSpyroTriggerCurrentEventId = 0;
     if (g_nSpyroAirborneFrames == 0 &&
-        (surface = g_nGroundSurfaceType & 0x3F) != 0x3F &&
-        g_anSpyroWorldPos[2] - ground < 0x201) {
-      DispatchSpyroTriggerEvent(surface, 2);
-    } else if ((contact = g_nSpyroFirstContactSurfaceType & 0x3F) != 0x3F) {
-      DispatchSpyroTriggerEvent(contact, 0);
+        (surface = g_nGroundSurfaceType & TRIGGER_REGION_MASK) !=
+            TRIGGER_REGION_NONE &&
+        g_anSpyroWorldPos[2] - ground <= TRIGGER_ON_HEIGHT) {
+      DispatchSpyroTriggerEvent(surface, TRIGGER_EV_ON);
+    } else if ((contact = g_nSpyroFirstContactSurfaceType &
+                          TRIGGER_REGION_MASK) != TRIGGER_REGION_NONE) {
+      DispatchSpyroTriggerEvent(contact, TRIGGER_EV_TOUCH);
     } else if (g_nSpyroGroundHeightZ > 0 &&
-               (surface = g_nGroundSurfaceType & 0x3F) != contact) {
-      DispatchSpyroTriggerEvent(surface, 1);
+               (surface = g_nGroundSurfaceType & TRIGGER_REGION_MASK) !=
+                   contact) {
+      DispatchSpyroTriggerEvent(surface, TRIGGER_EV_OVER);
     }
   }
 }
