@@ -27,6 +27,8 @@
 #define HUD_SLOT_GEMS 4          /* gem icon (ACTOR_TYPE_HUD_GEM_ICON), spun and tilted */
 #define HUD_SLOT_DRAGON_DIGITS 5 /* 2 dragons-rescued digits */
 #define HUD_SLOT_DRAGONS 7       /* dragon icon (ACTOR_TYPE_HUD_DRAGON_ICON) */
+/* The dragon counter's slots: its two digits and the icon. */
+#define HUD_DRAGON_SLOTS (HUD_SLOT_DRAGONS - HUD_SLOT_DRAGON_DIGITS + 1)
 #define HUD_SLOT_LIVES_DIGITS 8  /* 2 extra-life digits */
 #define HUD_SLOT_LIVES 10        /* lives icon (ACTOR_TYPE_HUD_LIVES_ICON); the
                                   * sparx-food butterflies ring it */

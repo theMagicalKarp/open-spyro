@@ -113,7 +113,7 @@ void DragonRescue_Draw(void) {
       id = act->mode;
     }
     *q = 0;
-    if (g_nDragonRescueTimer < 0x3C) {
+    if (g_nDragonRescueTimer < RESCUE_BANNER_FRAMES) {
       DrawDragonRescuedBanner();
       EnqueuePendingSpritePrims();
     }
@@ -143,7 +143,7 @@ void DragonRescue_Draw(void) {
     *q++ = icon;
     icon += ACTOR_SIZE;
     i += 1;
-    if (i < 3) {
+    if (i < HUD_DRAGON_SLOTS) {
       goto icon5;
     }
     *q = 0;
@@ -185,7 +185,7 @@ void DragonRescue_Draw(void) {
     *q++ = icon;
     icon += ACTOR_SIZE;
     i += 1;
-    if (i < 3) {
+    if (i < HUD_DRAGON_SLOTS) {
       goto icon6;
     }
     *q = 0;
@@ -200,7 +200,7 @@ void DragonRescue_Draw(void) {
       DrawCinematicLetterbox();
     }
   } else if (g_nDragonRescueSubstate == DRAGON_RESCUE_FADE_OUT) {
-    if (g_nDragonRescueTimer < 0x10) {
+    if (g_nDragonRescueTimer < RESCUE_FADE_FRAMES / 2) {
       int i;
       void **q;
       i = 0;
@@ -210,7 +210,7 @@ void DragonRescue_Draw(void) {
       *q++ = icon;
       icon += ACTOR_SIZE;
       i += 1;
-      if (i < 3) {
+      if (i < HUD_DRAGON_SLOTS) {
         goto icon7;
       }
       *q = 0;

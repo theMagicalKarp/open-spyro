@@ -707,18 +707,18 @@ void DragonRescue_Update(void) {
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
   roll_in:
-    CopyVector(&HUD_ICON(5 * ACTOR_SIZE + k)->posX,
+    CopyVector(&HUD_ICON(HUD_SLOT_DRAGON_DIGITS * ACTOR_SIZE + k)->posX,
                (int *)((char *)g_anDragonRescueIconRestPos + off));
     if (g_nDragonRescueTimer < RESCUE_LIGHT_UP_FRAMES) {
       *icon += (((short *)done)[g_nDragonRescueTimer >> 1] * 3) >> 1;
     } else {
       *icon += (g_anHudRollInStepTable[0xC] * 3) >> 1;
     }
-    icon += 0x16;
+    icon += ACTOR_SIZE / 4; /* the next slot's posY */
     k += ACTOR_SIZE;
     i++;
-    off += 0xC;
-    if (i < 3) {
+    off += 3 * 4; /* one rest position */
+    if (i < HUD_DRAGON_SLOTS) {
       goto roll_in;
     }
     if (GB[GB_TIMER] >= RESCUE_LIGHT_UP_FRAMES) {
@@ -770,7 +770,7 @@ void DragonRescue_Update(void) {
     AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
     TickSpyroAnimLayer1();
     TickSpyroAnimLayer2();
-    if (g_nDragonRescueTimer < 0x10) {
+    if (g_nDragonRescueTimer < RESCUE_FADE_FRAMES / 2) {
       int n;
       int *icon;
       int j;
@@ -781,18 +781,18 @@ void DragonRescue_Update(void) {
       j = 0;
       off = 0;
     roll_out:
-      CopyVector(&HUD_ICON(5 * ACTOR_SIZE + j)->posX,
+      CopyVector(&HUD_ICON(HUD_SLOT_DRAGON_DIGITS * ACTOR_SIZE + j)->posX,
                  (int *)((char *)g_anDragonRescueIconRestPos + off));
       j += ACTOR_SIZE;
-      off += 0xC;
+      off += 3 * 4; /* one rest position */
       n++;
       *icon += (0x11 - g_nDragonRescueTimer) * 3;
-      icon += 0x16;
-      if (n < 3) {
+      icon += ACTOR_SIZE / 4; /* the next slot's posY */
+      if (n < HUD_DRAGON_SLOTS) {
         goto roll_out;
       }
     }
-    if (g_nDragonRescueTimer < 0x10) {
+    if (g_nDragonRescueTimer < RESCUE_FADE_FRAMES / 2) {
       k = g_nDragonRescueTimer;
     } else {
       k = RESCUE_FADE_FRAMES - g_nDragonRescueTimer;
