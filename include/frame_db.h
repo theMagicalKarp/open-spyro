@@ -38,6 +38,21 @@ typedef struct FrameDB {
 /* The pause / inventory / flight-results menus freeze the gameplay frame
  * (StoreImage) into the bytes just below g_pRenderScratchPrimTop: one
  * 0x100 x 0xE1 16-bit frame. */
-#define MENU_SNAPSHOT_BYTES (0x100 * 0xE1 * 2) /* 0x1C200 */
+#define MENU_SNAPSHOT_W 0x100
+#define MENU_SNAPSHOT_H 0xE1
+#define MENU_SNAPSHOT_BYTES (MENU_SNAPSHOT_W * MENU_SNAPSHOT_H * 2) /* 0x1C200 */
+/* ...because the frozen frame overwrites that VRAM: MENU_BACKDROP_STRIPS
+ * strips of the drawing area, MENU_BACKDROP_STRIP_W wide, are read back,
+ * packed to 8-bit luma (MENU_BACKDROP_LUMA_PIXELS each, half as many VRAM
+ * columns) and reloaded from MENU_BACKDROP_X; the grey CLUT row goes to
+ * (MENU_BACKDROP_X, MENU_BACKDROP_CLUT_Y). The backdrop quads draw them as
+ * 8-bit pages MENU_BACKDROP_TPAGE + i through MENU_BACKDROP_CLUT. */
+#define MENU_BACKDROP_STRIPS 4
+#define MENU_BACKDROP_STRIP_W 0x80
+#define MENU_BACKDROP_LUMA_PIXELS 0x7000 /* MENU_BACKDROP_STRIP_W x 0xE0 */
+#define MENU_BACKDROP_X 0x200
+#define MENU_BACKDROP_CLUT_Y 0xE0
+#define MENU_BACKDROP_CLUT 0x3820  /* the CLUT id of (MENU_BACKDROP_X, MENU_BACKDROP_CLUT_Y) */
+#define MENU_BACKDROP_TPAGE 0x88   /* 8-bit texture page at x = MENU_BACKDROP_X */
 
 #endif /* OPEN_SPYRO_FRAME_DB_H */

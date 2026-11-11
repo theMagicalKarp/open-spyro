@@ -62,10 +62,10 @@ void Level23_FlightResults_Draw(void)
     char *envBase;
     i = 0;
     BuildRenderEntityLists();
-    h = 0xE0;
+    h = DRAW_H;
     ComposeFrameScene();
     do {
-    strip = 0x200;
+    strip = MENU_BACKDROP_X;
     RasterizeEmitList();
     DrawPortalsAndSky();
     SetupFrameOT();
@@ -79,41 +79,41 @@ void Level23_FlightResults_Draw(void)
     } while (0);
     img2 = img - 2;
     PutDrawEnv(g_pActiveFrameDrawEnv);
-    DrawOTag(LinkOTPrimitives(0x800));
+    DrawOTag(LinkOTPrimitives(OT_BIN_COUNT));
     DrawSync(0);
     VSync(0);
     PutDispEnv(&FRAME_DB(g_pActiveFrameDrawEnv)->disp);
-    rect.x = 0x200;
+    rect.x = MENU_BACKDROP_X;
     rect.y = 0;
-    rect.w = 0x100;
-    rect.h = 0xE1;
+    rect.w = MENU_SNAPSHOT_W;
+    rect.h = MENU_SNAPSHOT_H;
     StoreImage(&rect, img[0] - MENU_SNAPSHOT_BYTES);
-    y = 8;
+    y = DRAW_Y;
     do
     {
       rect.x = i << 7;
       if (g_pActiveFrameDrawEnv != envBase)
       {
-        y = 0xF8;
+        y = SCREEN_H + DRAW_Y;
       }
       rect.y = y;
-      rect.w = 0x80;
+      rect.w = MENU_BACKDROP_STRIP_W;
       rect.h = h;
       StoreImage(&rect, img2[0], y);
       i += 1;
       DrawSync(0);
-      ConvertRGB15ToLuma8(img2[0], 0x7000);
+      ConvertRGB15ToLuma8(img2[0], MENU_BACKDROP_LUMA_PIXELS);
       rect.x = strip;
       rect.y = 0;
-      rect.w = 0x40;
+      rect.w = MENU_BACKDROP_STRIP_W / 2;
       rect.h = h;
       LoadImage(&rect, img2[0]);
-      strip += 0x40;
-      y = 8;
+      strip += MENU_BACKDROP_STRIP_W / 2;
+      y = DRAW_Y;
     }
-    while (i < 4);
-    rect.x = 0x200;
-    rect.y = 0xE0;
+    while (i < MENU_BACKDROP_STRIPS);
+    rect.x = MENU_BACKDROP_X;
+    rect.y = MENU_BACKDROP_CLUT_Y;
     rect.w = 0x20;
     rect.h = 1;
     LoadImage(&rect, g_anMenuBackdropGrayClut);
@@ -172,7 +172,7 @@ void Level23_FlightResults_Draw(void)
     register int tp asm("$7");
     xx = i << 7;
 
-    tp = i + 0x88;
+    tp = i + MENU_BACKDROP_TPAGE;
     p = g_pPrimBufferWriteCursor;
     {
     register int a asm("$2");
@@ -217,7 +217,7 @@ void Level23_FlightResults_Draw(void)
     QUAD->u3 = a + 0x80U;
     QUAD->v3 = d - 0x21;
     /* Plain stores, so the tpage store fills the jal delay slot. */
-    ((PolyFT4 *) p)->clut = 0x3820;
+    ((PolyFT4 *) p)->clut = MENU_BACKDROP_CLUT;
     ((PolyFT4 *) p)->tpage = tp;
     AddPrimToOT(p);
     }
