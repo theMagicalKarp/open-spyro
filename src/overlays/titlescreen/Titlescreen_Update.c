@@ -89,7 +89,7 @@ void Titlescreen_Update(void) {
         register int t asm("$7");
         cd = *((volatile int *) &g_nCdBaseLba.baseLba);
         t = g_nTitleSceneSectorOffset;
-        StartCdReadAsync(cd, g_pRenderScratchRegionBase - 0x40000, 0x40000,
+        StartCdReadAsync(cd, g_pRenderScratchRegionBase - TIM_PAGE_BYTES, TIM_PAGE_BYTES,
                       t, CD_STALL_TIMEOUT_TICKS);
         g_nTitleMode.subState = TITLE_ATTRACT_LOAD_WAIT;
       } else if (g_nTitleMode.subState == TITLE_ATTRACT_LOAD_WAIT) {
@@ -99,7 +99,7 @@ void Titlescreen_Update(void) {
         g_nCurrentMusicTrack.streamTimeout = 155520000;
         HandleMusicCommand(20, MUSIC_CMD_PLAY);
         setRECT(&rc, 512, 256, 512, 256);
-        LoadImage(&rc, g_pRenderScratchRegionBase - 0x40000);
+        LoadImage(&rc, g_pRenderScratchRegionBase - TIM_PAGE_BYTES);
         g_nTitleMode.subState = TITLE_ATTRACT_FLY_IN;
       }
     } else if (g_nTitleMode.subState == TITLE_ATTRACT_FLY_IN) {

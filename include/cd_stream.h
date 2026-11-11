@@ -12,6 +12,23 @@
 /* A CD-ROM data sector (mode 2 form 1 payload). */
 #define CD_SECTOR_BYTES 0x800
 
+/* An archive's (level / cutscene / credits page) header sector opens with
+ * its chunk descriptors, copied into g_nWorldTimAudioChunkOffset and on. */
+#define ARCHIVE_DESC_BYTES 0x1D0
+/* One 512 x 256 16-bit texture page as LoadImage takes it (VRAM x = 512).
+ * A level or cutscene TIM/audio chunk opens with two of them; the bytes
+ * above the split are the sample bank. */
+#define TIM_PAGE_BYTES 0x40000
+#define TIM_PAGE_X 0x200
+#define TIM_PAGE_W 0x200
+#define TIM_PAGE_H 0x100
+#define TIM_PAIR_BYTES (2 * TIM_PAGE_BYTES)
+
+/* g_apActorMeshTable's slot count, and the most models one stream installs
+ * (g_anActorMeshOffsetList's 64 words). */
+#define ACTOR_MESH_TABLE_SLOTS 0x200
+#define MESH_STREAM_MAX 0x40
+
 /* TickCutsceneBundleLoadStream: the bundle g_nCutsceneId selects. */
 enum CutsceneStreamState {
   CSTREAM_READ_HEADER = 0,     /* kick the 0x800-byte header read */

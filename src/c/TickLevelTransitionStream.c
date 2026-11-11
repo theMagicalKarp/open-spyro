@@ -137,30 +137,33 @@ void TickLevelTransitionStream(int full) {
     void *dst = *(void *volatile *)&g_pLevelDataBuffer;
     int off = LEVEL_ARCHIVE_OFFSET(intro);
 
-    StartCdReadAsync(lba, dst, 0x800, off, CD_STALL_TIMEOUT_TICKS);
+    StartCdReadAsync(lba, dst, CD_SECTOR_BYTES, off, CD_STALL_TIMEOUT_TICKS);
   }
     g_nCdStreamState++;
     break;
   case LSTREAM_READ_TIM:
-    CopyWords(g_anWorldTimAudioChunkOffsetBlock, LEVEL_DATA_BUF, 0x1D0);
+    CopyWords(g_anWorldTimAudioChunkOffsetBlock, LEVEL_DATA_BUF,
+              ARCHIVE_DESC_BYTES);
     {
       int lba = *(volatile int *)&g_nCdBaseLba;
       int intro = *(volatile int *)&g_nLevelIndex;
       void *dst = *(void *volatile *)g_apLevelDataBufferBlock;
       int off = *(volatile int *)g_anWorldTimAudioChunkOffsetBlock;
 
-      StartCdReadAsync(lba, dst, 0x80000, off + LEVEL_ARCHIVE_OFFSET(intro),
+      StartCdReadAsync(lba, dst, TIM_PAIR_BYTES,
+                       off + LEVEL_ARCHIVE_OFFSET(intro),
                        CD_STALL_TIMEOUT_TICKS);
     }
     g_nEnteredPortalIdx = 0;
     g_nCdStreamState++;
     break;
   case LSTREAM_UPLOAD_TIM:
-    rect.x = 0x200;
-    rect.w = 0x200;
-    rect.h = 0x100;
-    rect.y = g_nEnteredPortalIdx << 8;
-    LoadImage(&rect, (char *)LEVEL_DATA_BUF + (g_nEnteredPortalIdx << 18));
+    rect.x = TIM_PAGE_X;
+    rect.w = TIM_PAGE_W;
+    rect.h = TIM_PAGE_H;
+    rect.y = g_nEnteredPortalIdx * TIM_PAGE_H;
+    LoadImage(&rect,
+              (char *)LEVEL_DATA_BUF + g_nEnteredPortalIdx * TIM_PAGE_BYTES);
     if (++g_nEnteredPortalIdx == 2) {
       int lba = *(volatile int *)&g_nCdBaseLba;
       void *dst = LEVEL_DATA_BUF;
@@ -170,8 +173,8 @@ void TickLevelTransitionStream(int full) {
 
       g_nCdStreamState++;
 
-      StartCdReadAsync(lba, dst, size - 0x80000,
-                       off + LEVEL_ARCHIVE_OFFSET(intro) + 0x80000,
+      StartCdReadAsync(lba, dst, size - TIM_PAIR_BYTES,
+                       off + LEVEL_ARCHIVE_OFFSET(intro) + TIM_PAIR_BYTES,
                        CD_STALL_TIMEOUT_TICKS);
     }
     break;
@@ -235,7 +238,7 @@ void TickLevelTransitionStream(int full) {
       InstallSpyroAnimStream(g_pWorldUnpackHead + (g_anActorMeshOffsetList -
                                                    g_nWorldDataExtChunkOffset));
     }
-    for (i = 0; i < 0x200; i++) {
+    for (i = 0; i < ACTOR_MESH_TABLE_SLOTS; i++) {
       if (((int)g_apActorMeshTableBlock[i] & 0xFFFFFF) <
           ((int)g_apWorldUnpackHeadBlock[7] & 0xFFFFFF)) {
         g_apActorMeshTableBlock[i] = 0;
@@ -245,7 +248,7 @@ void TickLevelTransitionStream(int full) {
     mesh = g_apActorMeshTableBlock;
     list = g_anActorMeshOffsetBlock;
     slot = ACTOR_MESH_INDEX_LIST(list) + 1;
-    for (; i < 0x40; i++) {
+    for (; i < MESH_STREAM_MAX; i++) {
       if (list[i] <= 0) {
         break;
       }
@@ -299,9 +302,9 @@ void TickLevelTransitionStream(int full) {
   } break;
   case LSTREAM_FINALIZE: {
     if (g_abLevelVisitedFlag[g_nLevelIndex] == 0) {
-      g_nCdMusicStreamTimeout = 0xA8C0;
+      g_nCdMusicStreamTimeout = MUSIC_REPICK_FIRST_VISIT_TICKS;
     } else {
-      g_nCdMusicStreamTimeout = 0x7080;
+      g_nCdMusicStreamTimeout = MUSIC_REPICK_TICKS;
     }
     g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[g_nLevelIndex];
     g_abLevelVisitedFlag[g_nLevelIndex] = 1;

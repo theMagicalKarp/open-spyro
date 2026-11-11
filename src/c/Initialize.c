@@ -105,12 +105,14 @@ void Initialize(void) {
       register int lba1 asm("$4") = lba[0];
       register int off1 asm("$7") = *(volatile int *)archOff;
       void *buf1 = g_pSharedLoadBuffer;
-      CdReadSyncSectors(lba1, buf1, 0x800, off1, stallTicks);
+      CdReadSyncSectors(lba1, buf1, CD_SECTOR_BYTES, off1, stallTicks);
     }
     timOff = g_anWorldTimAudioChunkOffsetBlock;
-    CopyWords(timOff, *(void *volatile *)&g_pSharedLoadBuffer, 0x1D0);
+    CopyWords(timOff, *(void *volatile *)&g_pSharedLoadBuffer,
+              ARCHIVE_DESC_BYTES);
     top = (char *)0x801C0000 - g_nCrt0StackSize;
-    CdReadSyncSectors(lba[0], top, 0x40000, timOff[0] + archOff[0], stallTicks);
+    CdReadSyncSectors(lba[0], top, TIM_PAGE_BYTES, timOff[0] + archOff[0],
+                      stallTicks);
     {
       int cnt3 = *(volatile int *)&g_nLevelLoadChunkSize;
       int off3 = *(volatile int *)&g_nLevelLoadByteOffset;

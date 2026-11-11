@@ -90,9 +90,9 @@ int TickDemoPlayback(void) {
       {
         int lba = *(volatile int *)&g_nCdBaseLba;
         int offset = *(volatile int *)&g_nTitleSceneSectorOffset;
-        int dst =
-            -0x40000 + (int)*(void *volatile *)&g_pRenderScratchRegionBase;
-        StartCdReadAsync(lba, (void *)dst, 0x40000, offset,
+        int dst = -TIM_PAGE_BYTES +
+                  (int)*(void *volatile *)&g_pRenderScratchRegionBase;
+        StartCdReadAsync(lba, (void *)dst, TIM_PAGE_BYTES, offset,
                          CD_STALL_TIMEOUT_TICKS);
       }
       g_nSkipGamestateDraw = 1;

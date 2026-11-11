@@ -93,7 +93,7 @@ void TickCdMusicStream(void) {
             int *base = g_anLevelMusicPickTable;
             tbl = &base[g_nLevelIndex * 3];
           }
-          g_nCdMusicStreamTimeout = g_nVblankTickCount + 0x7080;
+          g_nCdMusicStreamTimeout = g_nVblankTickCount + MUSIC_REPICK_TICKS;
           g_nCurrentMusicTrack = (&g_nLevelMusicTrack)[tbl[pick % 3]];
         }
         g_dwCdMusicReadHead = g_anMusicTrackLbaTable[g_nCurrentMusicTrack * 2];

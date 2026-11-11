@@ -188,7 +188,7 @@ void Credits_Update(void) {
     }
     sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
     CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], 0x800, sector, CD_STALL_TIMEOUT_TICKS);
-    CopyWords(g_nWorldTimAudioChunkOffset, g_pLevelDataBuffer_blk[0], 0x1D0);
+    CopyWords(g_nWorldTimAudioChunkOffset, g_pLevelDataBuffer_blk[0], ARCHIVE_DESC_BYTES);
     CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], 0x60000,
                   g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
     rect0[0] = 0x200;
@@ -600,7 +600,7 @@ void Credits_Update(void) {
           break;
         }
         case CREDITS_MODE_FETCH_TEXTURES:
-          CopyWords(g_nWorldTimAudioChunkOffset, g_pCreditsLoadBuf, 0x1D0);
+          CopyWords(g_nWorldTimAudioChunkOffset, g_pCreditsLoadBuf, ARCHIVE_DESC_BYTES);
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x20000,
                         g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
           g_nCreditsMode = g_nCreditsMode + 1;

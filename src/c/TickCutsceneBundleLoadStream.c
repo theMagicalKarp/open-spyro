@@ -63,14 +63,15 @@ void TickCutsceneBundleLoadStream(void) {
     int id = *((volatile int *)(&g_nCutsceneId));
     void *dst = *((void *volatile *)(&g_pLoadStagingBuffer));
     archiveOff = (&g_nCutsceneArchiveOffset)[id * 2];
-    StartCdReadAsync(lba, dst, 0x800, archiveOff, CD_STALL_TIMEOUT_TICKS);
+    StartCdReadAsync(lba, dst, CD_SECTOR_BYTES, archiveOff,
+                     CD_STALL_TIMEOUT_TICKS);
     g_nCdStreamState = CSTREAM_READ_TIM;
   } else if (state == CSTREAM_READ_TIM) {
     int lba;
     int id;
     void *dst;
     CopyWords(g_anWorldTimAudioChunkOffsetBlock, g_apLoadStagingBufferBlock[0],
-              0x1D0);
+              ARCHIVE_DESC_BYTES);
     lba = *((volatile int *)(&g_nCdBaseLba));
     id = *((volatile int *)(&g_nCutsceneId));
     dst = *((void *volatile *)(&g_apLoadStagingBufferBlock[0]));
@@ -81,20 +82,23 @@ void TickCutsceneBundleLoadStream(void) {
     g_nCdStreamState = CSTREAM_UPLOAD_TIM;
     return;
   } else if (state == CSTREAM_UPLOAD_TIM) {
-    tim.x = 0x200;
+    tim.x = TIM_PAGE_X;
     tim.y = 0;
-    tim.w = 0x200;
+    tim.w = TIM_PAGE_W;
+    /* one 512-pixel 16-bit row per 0x400 bytes */
     tim.h = (&g_nCutsceneHeaderChunkSize)[g_nCutsceneId] >> 10;
     LoadImage(&tim, g_pLoadStagingBuffer);
     g_nCdStreamState = CSTREAM_READ_AUDIO;
   } else if (state == CSTREAM_READ_AUDIO) {
     int lba = *((volatile int *)(&g_nCdBaseLba));
     void *dst = *((void *volatile *)(&g_pLoadStagingBuffer));
-    int size = (*((volatile int *)(&g_nWorldTimAudioChunkSize))) - 0x80000;
+    int size =
+        (*((volatile int *)(&g_nWorldTimAudioChunkSize))) - TIM_PAIR_BYTES;
     int id = *((volatile int *)(&g_nCutsceneId));
     int off = *((volatile int *)(&g_nWorldTimAudioChunkOffset));
     StartCdReadAsync(lba, dst, size,
-                     (off + (&g_nCutsceneArchiveOffset)[id * 2]) + 0x80000,
+                     (off + (&g_nCutsceneArchiveOffset)[id * 2]) +
+                         TIM_PAIR_BYTES,
                      CD_STALL_TIMEOUT_TICKS);
     g_nCdStreamState = CSTREAM_UPLOAD_AUDIO;
   } else if (state == CSTREAM_UPLOAD_AUDIO) {
