@@ -2,6 +2,7 @@
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 
 /* Boot-time bring-up + title sequence (0x800127C0, 0x530). Brings up the GPU,
@@ -84,7 +85,7 @@ void Initialize(void) {
     rect.w = 0x300;
     rect.x = 0;
     rect.y = 0;
-    rect.h = 0xF0;
+    rect.h = SCREEN_H;
     LoadImage(&rect, g_apLoadStagingBufferBlock[0]);
     DrawSync(0);
     VSync(0);
@@ -139,7 +140,7 @@ fade_out_title:
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
-  rect.h = 0xF0;
+  rect.h = SCREEN_H;
   LoadImage(&rect, buf2[0]);
   DrawSync(0);
   VSync(0);
@@ -159,7 +160,7 @@ fade_in_splash:
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
-  rect.h = 0xF0;
+  rect.h = SCREEN_H;
   LoadImage(&rect, splashFrame);
   DrawSync(0);
   VSync(0);
@@ -189,7 +190,7 @@ fade_out_splash:
   rect.w = 0x300;
   rect.x = 0;
   rect.y = 0;
-  rect.h = 0xF0;
+  rect.h = SCREEN_H;
   LoadImage(&rect, splashFrame2);
   DrawSync(0);
   VSync(0);

@@ -10,6 +10,14 @@
  * fills in the low 24-bit OT link. */
 #define PRIM_TAG(words) ((words) << 24)
 
+/* The displayed frame: 512 x 240 (each of the two VRAM frame buffers, the
+ * second at y = SCREEN_H). */
+#define SCREEN_W 0x200
+#define SCREEN_H 0xF0
+/* The drawing clip inside it: rows DRAW_Y .. DRAW_Y + DRAW_H. */
+#define DRAW_Y 8
+#define DRAW_H 0xE0
+
 /* GPU command codes (the command word's top byte, the packets' `code`). */
 #define GPU_CODE_POLY_F4 0x28  /* flat quad */
 #define GPU_CODE_POLY_FT4 0x2C /* textured quad */
