@@ -130,6 +130,15 @@
 /* The same point from a byte offset already scaled by 16 (i << 4). */
 #define PATH_PT_AT(p, off) ((int *)((unsigned char *)(p) + (off) + 0x8))
 
+/* Add an unsigned byte that holds a signed step (0x80..0xFF are negative),
+ * as the butterflies' vz is stored. */
+#define ADD_SIGNED_BYTE(dst, b)                                                \
+  if ((b) >= 128) {                                                            \
+    (dst) = (dst) + ((b) - 256);                                               \
+  } else {                                                                     \
+    (dst) = (dst) + (b);                                                       \
+  }
+
 /* The anim bytes 0x3C..0x3F read as one word. */
 #define ANIM_WORD(a) (*(int *)&(a)->anim)
 /* One masked word test of the animation bytes: `anim` is `id` and
