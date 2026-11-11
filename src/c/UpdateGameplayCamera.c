@@ -4,6 +4,7 @@
 #include "gpu_prim.h"
 #include "main_shared.h"
 #include "sdata.h"
+#include "spyro_state.h"
 #include "vecmath.h"
 
 #define CAM g_anCameraPosBlock
@@ -131,8 +132,8 @@ void UpdateGameplayCamera(void) {
   d[2] -= CAM_LOS_DROP;
   if (!CheckLineOfSightSegment(CAM, d) || !CheckLineOfSightSegment(d, CAM)) {
     g_nCameraLosClear = 0;
-    if (g_bSpyroOtBinBias < 0x7F) {
-      g_bSpyroOtBinBias = 2;
+    if (g_bSpyroOtBinBias < SPYRO_OT_BIAS_PINNED) {
+      g_bSpyroOtBinBias = SPYRO_OT_BIAS_OCCLUDED;
     }
     g_nSpyroShadowOtBinBias = 0;
     if (++g_nCameraStuckFrames >= CAM_RESEAT_FRAMES) {

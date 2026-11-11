@@ -141,5 +141,17 @@ enum CameraMode {
 #define CAM_ONSCREEN_MARGIN_X 0x20
 #define CAM_ONSCREEN_MARGIN_Y 0x18
 #define CAM_FAR_RANGE 0x2000
+/* AdvanceCameraSpringStep: the gain / threshold tables hold one row of
+ * CAM_SPRING_COLUMNS tuning sets per axis (yaw, pitch, distance, roll, pitch
+ * bias, yaw bias). Charging, the yaw drive is at least CAM_CHARGE_MIN_DRIVE.
+ * The passive follow holds the yaw below CAM_PASSIVE_MAX_SPEED (Spyro's
+ * speed). Spring states clamp to CAM_SPRING_CLAMP (glide entry, the passive
+ * re-engage) or CAM_SPRING_CLAMP_SWING (CAM_OPT_SMOOTH_SWING). */
+#define CAM_SPRING_COLUMNS 6
+#define CAM_SPRING_ROW(axis) ((axis) * CAM_SPRING_COLUMNS)
+#define CAM_CHARGE_MIN_DRIVE 0x400
+#define CAM_PASSIVE_MAX_SPEED 0x400
+#define CAM_SPRING_CLAMP 0x800
+#define CAM_SPRING_CLAMP_SWING 0x2000
 
 #endif /* OPEN_SPYRO_CAMERA_H */

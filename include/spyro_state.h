@@ -346,6 +346,22 @@ typedef enum SpyroState
  * the portal guides set while Spyro jumps and glides into a portal. */
 #define SPYRO_OT_BIAS_DEFAULT 5
 #define SPYRO_OT_BIAS_PINNED 0x7F
+/* UpdateGameplayCamera, line of sight to Spyro blocked: a smaller pull (and
+ * no shadow bias) for the frame. */
+#define SPYRO_OT_BIAS_OCCLUDED 2
+/* SampleSpyroShadowRingHeights: the drop shadow's OT bias (one bin pair
+ * deeper once Spyro is SHADOW_HIGH_ABOVE above the ground), and its 8-vertex
+ * ring probed one vertex a tick from SHADOW_PROBE_LIFT above, keeping ground
+ * within SHADOW_PROBE_WINDOW of the vertex; the stored height is scaled by
+ * SHADOW_HEIGHT_SCALE / 0x200. */
+#define SHADOW_OT_BIAS 3
+#define SHADOW_OT_BIAS_HIGH 5
+#define SHADOW_HIGH_ABOVE 0x365
+#define SHADOW_RING_VERTS 8
+#define SHADOW_PROBE_LIFT 0x200
+#define SHADOW_PROBE_DEPTH 0x400
+#define SHADOW_PROBE_WINDOW 0x80
+#define SHADOW_HEIGHT_SCALE 0xC2
 
 /* g_dwSpyroRequestMask bits (SpyroObj.requestMask): a scripted override of
  * Spyro posted by actors and cutscenes, applied by AdvanceSpyroPhysics while
