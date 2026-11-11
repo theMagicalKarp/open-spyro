@@ -3,6 +3,7 @@
 #include "funcs.h"
 #include "gamestate.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 #include "sample_bank.h"
 
@@ -36,10 +37,10 @@ int TickDemoPlayback(void) {
     if (g_nDemoExitFadeFrame == 0x10) {
       StopAllSoundExceptMask(0);
       TickSpuPerFrame();
-      rect[0].w = 0x200;
+      rect[0].w = SCREEN_W;
       rect[0].x = 0;
       rect[0].y = 0;
-      rect[0].h = 0x1e0;
+      rect[0].h = SCREEN_H * 2;
       ClearImage(rect, 0, 0, 0);
       DrawSync(0);
       g_pLoadStagingBuffer = &g_abTitlescreenOverlayEnd;

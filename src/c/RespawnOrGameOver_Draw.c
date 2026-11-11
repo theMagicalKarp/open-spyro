@@ -3,6 +3,7 @@
 #include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 #include "match_asm.h"
 
@@ -43,7 +44,7 @@ void RespawnOrGameOver_Draw(void) {
   int d;
   short *ramp;
   char *rec;
-  int bright;
+  int srcY;
   int f;
   void **q;
   int sk;
@@ -65,15 +66,16 @@ void RespawnOrGameOver_Draw(void) {
       DrawOTag(LinkOTPrimitives(0x800));
       DrawSync(0);
       VSync(0);
-      bright = 8;
+      srcY = DRAW_Y;
       rect.x = 0;
       if (g_pActiveFrameDrawEnv != &g_FrameDrawEnv0) {
-        bright = 0xF8;
+        srcY = SCREEN_H + DRAW_Y;
       }
-      rect.w = 0x200;
-      rect.y = bright;
-      rect.h = 0xE0;
-      MoveImage(&rect, 0, 0x100 - bright);
+      rect.w = SCREEN_W;
+      rect.y = srcY;
+      rect.h = DRAW_H;
+      /* copy this frame's drawing area into the other frame buffer */
+      MoveImage(&rect, 0, SCREEN_H + 2 * DRAW_Y - srcY);
       DrawSync(0);
       g_FrameDrawEnv0.isbg = 0;
       g_FrameDrawEnv1.isbg = 0;
@@ -103,10 +105,10 @@ void RespawnOrGameOver_Draw(void) {
         }
         DrawSync(0);
         VSync(0);
-        rect.w = 0x200;
+        rect.w = SCREEN_W;
         rect.x = 0;
         rect.y = 0;
-        rect.h = 0x1E0;
+        rect.h = SCREEN_H * 2;
         ClearImage(&rect, 0, 0, 0);
       }
     }
@@ -187,15 +189,16 @@ void RespawnOrGameOver_Draw(void) {
     DrawOTag(LinkOTPrimitives(0x800));
   } else {
     if (g_nRespawnOrGameOverFrame == 0) {
-      bright = 8;
+      srcY = DRAW_Y;
       rect.x = 0;
       if (g_pActiveFrameDrawEnv != &g_FrameDrawEnv0) {
-        bright = 0xF8;
+        srcY = SCREEN_H + DRAW_Y;
       }
-      rect.w = 0x200;
-      rect.y = bright;
-      rect.h = 0xE0;
-      MoveImage(&rect, 0, 0x100 - bright);
+      rect.w = SCREEN_W;
+      rect.y = srcY;
+      rect.h = DRAW_H;
+      /* copy this frame's drawing area into the other frame buffer */
+      MoveImage(&rect, 0, SCREEN_H + 2 * DRAW_Y - srcY);
       DrawSync(0);
       g_FrameDrawEnv0.isbg = 0;
       g_FrameDrawEnv1.isbg = 0;
@@ -225,10 +228,10 @@ void RespawnOrGameOver_Draw(void) {
         }
         DrawSync(0);
         VSync(0);
-        rect.w = 0x200;
+        rect.w = SCREEN_W;
         rect.x = 0;
         rect.y = 0;
-        rect.h = 0x1E0;
+        rect.h = SCREEN_H * 2;
         ClearImage(&rect, 0, 0, 0);
       }
     }

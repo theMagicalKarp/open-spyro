@@ -208,8 +208,8 @@ fade_out_splash:
       (DISPENV *)(isrgb24 + 0x73)); /* g_FrameDispEnv1, off the held base */
   clear.x = 0;
   clear.y = 0;
-  clear.w = 0x200;
-  clear.h = 0x1E0;
+  clear.w = SCREEN_W;
+  clear.h = SCREEN_H * 2;
   ClearImage(&clear, 0, 0, 0);
   DrawSync(0);
   SetDispMask(1);

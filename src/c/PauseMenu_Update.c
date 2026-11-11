@@ -3,6 +3,7 @@
 #include "cutscene_id.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "level_sfx.h"
 #include "pad_buttons.h"
 #include "pause_menu.h"
@@ -67,8 +68,8 @@ void PauseMenu_Update(void) {
     TickSpuPerFrame();
     r.x = 0;
     r.y = 0;
-    r.w = 0x200;
-    r.h = 0x1E0;
+    r.w = SCREEN_W;
+    r.h = SCREEN_H * 2;
     ClearImage(&r, 0, 0, 0);
     DrawSync(0);
     g_pLoadStagingBuffer = g_abTitlescreenOverlayEnd;
