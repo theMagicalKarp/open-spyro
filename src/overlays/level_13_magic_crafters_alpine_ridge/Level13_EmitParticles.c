@@ -534,7 +534,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c1[3] = 2;
       rec->u.line.c0[0] = 0xE0;
       rec->u.line.c0[1] = 0xC0;
-      rec->u.line.c0[3] = 0x50;
+      rec->u.line.c0[3] = EMIT_FX_LINE_G2;
       rec->u.line.c0[2] = 0;
       rec->u.line.c1[0] = 0xFF;
       rec->u.line.c1[1] = 0xFF;
@@ -563,7 +563,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c1[0] = 0xFF;
       rec->u.line.c1[1] = 0xFF;
       rec->u.line.c1[2] = 0xFF;
-      rec->u.line.c0[3] = 0x50;
+      rec->u.line.c0[3] = EMIT_FX_LINE_G2;
       break;
     }
     case EMIT_RISING_SPIRAL_SMEAR: {
@@ -603,7 +603,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c0[1] = 0x40;
       rec->u.line.c0[2] = 0x60;
       rec->u.line.c1[2] = 0xC0;
-      rec->u.line.c0[3] = 0x50;
+      rec->u.line.c0[3] = EMIT_FX_LINE_G2;
       rec->u.line.c0[0] = 0x80;
       rec->u.line.c1[0] = 0xFF;
       rec->u.line.c1[1] = 0x80;
@@ -675,7 +675,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
         rec->u.line.c1[1] = (GetRandomU32() & 0x1F) - 0x60;
         rec->u.line.c1[2] = (GetRandomU32() & 0x1F) - 0x60;
       }
-      rec->u.line.c0[3] = 0x50;
+      rec->u.line.c0[3] = EMIT_FX_LINE_G2;
       break;
     }
     case EMIT_FALLING_STREAK_BURST: {
@@ -696,7 +696,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.line.c1[3] = 2;
       rec->u.line.c0[0] = 0xE0;
       rec->u.line.c0[1] = 0xC0;
-      rec->u.line.c0[3] = 0x50;
+      rec->u.line.c0[3] = EMIT_FX_LINE_G2;
       rec->u.line.c0[2] = 0;
       rec->u.line.c1[0] = 0xFF;
       rec->u.line.c1[1] = 0xFF;

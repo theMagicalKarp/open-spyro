@@ -116,8 +116,8 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
     struct {                     /* classes 1 / 4 -- streak */
       unsigned short a[3];       /* 0x04 head */
       unsigned short b[3];       /* 0x0A tail */
-      unsigned char c0[4];       /* 0x10 head colour */
-      unsigned char c1[4];       /* 0x14 tail colour */
+      unsigned char c0[4];       /* 0x10 colour at a; [3] the GPU code (EMIT_FX_LINE_G2) */
+      unsigned char c1[4];       /* 0x14 colour at b; [3] the OT-bin bias */
     } line;
     struct {                     /* class 3 -- owner-tethered spark */
       unsigned short pos[3];     /* 0x04 */
@@ -169,6 +169,7 @@ enum EmitClass {
 /* GPU command codes for the `fx` byte: it is the top byte of the colour
  * word at +0x0C, which RasterizeEmitList copies into the primitive. */
 #define EMIT_FX_LINE 0x40       /* flat line */
+#define EMIT_FX_LINE_G2 0x50    /* Gouraud line: a line record's c0[3] */
 #define EMIT_FX_QUAD 0x2C       /* textured quad */
 #define EMIT_FX_QUAD_BLEND 0x2E /* textured quad, semi-transparent */
 
