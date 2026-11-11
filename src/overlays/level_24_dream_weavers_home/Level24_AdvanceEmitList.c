@@ -4,8 +4,8 @@
  * The emit-list ADVANCE pass -- the Dream-Weavers-home 1162-insn variant.
  * Walks the 0x20-byte record stream at g_pEmitListBase and ages one record per
  * iteration: integrates its position, fades its colour, ticks its life
- * counter and, when the record has expired (or its alive byte has been
- * cleared), hands it back with FreeEmitListRecord().  The walk stops at the
+ * counter and, when the record has expired (or its visible byte has been
+ * cleared (culled)), hands it back with FreeEmitListRecord().  The walk stops at the
  * terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Only `rec` is a real induction variable.  `pos` and `vel` are separate
@@ -17,7 +17,7 @@
  *
  * Field map, in record-relative offsets:
  *   0x00  effect id                0x01  class / terminator
- *   0x02  age                      0x03  alive
+ *   0x02  age                      0x03  visible
  *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
  *                                  r/g/b triple for the fading classes)
  *   0x10..0x16  per-record velocity / colour bytes
@@ -25,7 +25,7 @@
  *   0x1C  spark vel z               0x1E  phase toggle
  *
  * Arm-for-arm the level_18 set plus class 0x4A, the drifting mote -- the one
- * arm in the family that tests the alive byte BEFORE the age, which is why
+ * arm in the family that tests the visible byte BEFORE the age, which is why
  * its `rec[0x3] == 0` sits on the left of the `||`.  Same 21-arm register
  * pressure as level_18: `step * 2` spills to the frame and the phase-toggle
  * `1` is not hoisted.
@@ -58,7 +58,7 @@ void Level24_AdvanceEmitList(int step) {
       SIZE += step * 2;
       FADE_COL(step * 4);
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -69,7 +69,7 @@ void Level24_AdvanceEmitList(int step) {
       SIZE += step * 4;
       FADE_COL(step * 4);
       AGE += step;
-      if (AGE >= 0x18 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -80,7 +80,7 @@ void Level24_AdvanceEmitList(int step) {
       SIZE += step * 4;
       FADE_COL(step * 4);
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -114,7 +114,7 @@ void Level24_AdvanceEmitList(int step) {
       SPARK_Z_CLIMB();
       SIZE += step * 2;
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -138,7 +138,7 @@ void Level24_AdvanceEmitList(int step) {
     case EMIT_BURST_SPARK:
       AddSVector(POS, POS, &HS(0x12));
       FADE_COL(8);
-      if (COL_R == 0 || ALIVE == 0) {
+      if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -155,7 +155,7 @@ void Level24_AdvanceEmitList(int step) {
       if (COL_B != 0) {
         COL_B -= 8;
       }
-      if ((W(0xC) & 0xFFFFFF) == 0 || ALIVE == 0) {
+      if ((W(0xC) & 0xFFFFFF) == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -167,7 +167,7 @@ void Level24_AdvanceEmitList(int step) {
       SPARK_Z_CLIMB();
       SIZE += step * 2;
       FADE_COL(4);
-      if (COL_R == 0 || ALIVE == 0) {
+      if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -183,7 +183,7 @@ void Level24_AdvanceEmitList(int step) {
       COL_G -= 8;
       COL_B -= 4;
       AGE++;
-      if (AGE >= 0xC || ALIVE == 0) {
+      if (AGED_OR_CULLED(0xC)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -238,7 +238,7 @@ void Level24_AdvanceEmitList(int step) {
       }
       COL_B = c;
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -274,7 +274,7 @@ void Level24_AdvanceEmitList(int step) {
         }
         AGE++;
       }
-      if (AGE >= 0x18 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -306,7 +306,7 @@ void Level24_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       } else {
         COL0_R -= 3;
@@ -340,7 +340,7 @@ void Level24_AdvanceEmitList(int step) {
       int r;
 
       AGE++;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       } else {
         d[0] = HS(0xA) - HS(0x4);
@@ -380,7 +380,7 @@ void Level24_AdvanceEmitList(int step) {
       int r;
 
       AGE++;
-      if (AGE >= 0x30 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x30)) {
         FreeEmitListRecord(rec);
       } else {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
@@ -409,13 +409,13 @@ void Level24_AdvanceEmitList(int step) {
     }
 
     case EMIT_YELLOW_DUST:
-      /* The drifting mote: no colour ramp, dies on the alive byte first. */
+      /* The drifting mote: no colour ramp, dies on the visible byte first. */
       HU(0x4) += HU(0x10);
       HU(0x6) += HU(0x12);
       HU(0x8) += HU(0x14);
       COL_G -= 0xF;
       AGE++;
-      if (ALIVE == 0 || AGE >= 0x11) {
+      if (VISIBLE == 0 || AGE >= 0x11) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -446,7 +446,7 @@ void Level24_AdvanceEmitList(int step) {
       int r;
 
       AGE++;
-      if (AGE >= 0x28 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x28)) {
         FreeEmitListRecord(rec);
       } else {
         HU(0x4) += HU(0x10);
@@ -490,7 +490,7 @@ void Level24_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x18 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
       } else {
         COL0_R -= 3;
@@ -518,7 +518,7 @@ void Level24_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;

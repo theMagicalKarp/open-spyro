@@ -39,7 +39,7 @@
  *
  * Field map, in record-relative offsets:
  *   0x00  effect id                0x01  class / terminator
- *   0x02  age                      0x03  alive
+ *   0x02  age                      0x03  visible
  *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
  *                                  r/g/b triple for the fading classes)
  *   0x10..0x16  per-record velocity / colour bytes
@@ -87,7 +87,7 @@ void Level27_AdvanceEmitList(int step) {
       SIZE += step2;
       FADE_COL(step4);
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -98,7 +98,7 @@ void Level27_AdvanceEmitList(int step) {
       SIZE += step4;
       FADE_COL(step4);
       AGE += step;
-      if (AGE >= 0x18 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -109,7 +109,7 @@ void Level27_AdvanceEmitList(int step) {
       SIZE += step4;
       FADE_COL(step4);
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -143,7 +143,7 @@ void Level27_AdvanceEmitList(int step) {
     /* <- Level12_AdvanceEmitList */
       /* The rune orbit: it rises and falls on a triangular ramp keyed to the
        * age byte and drifts by its own per-axis velocity words. */
-      if (AGE >= 0x19 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x19)) {
         FreeEmitListRecord(rec);
       } else {
         SPIN += rec[0x1E];
@@ -164,7 +164,7 @@ void Level27_AdvanceEmitList(int step) {
       SPARK_Z_CLIMB();
       SIZE += step2;
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -188,7 +188,7 @@ void Level27_AdvanceEmitList(int step) {
     case EMIT_BURST_SPARK:  /* <- Level10_AdvanceEmitList */
       AddSVector(POS, POS, &HS(0x12));
       FADE_COL(8);
-      if (COL_R == 0 || ALIVE == 0) {
+      if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -205,7 +205,7 @@ void Level27_AdvanceEmitList(int step) {
       if (COL_B != 0) {
         COL_B -= 8;
       }
-      if ((W(0xC) & 0xFFFFFF) == 0 || ALIVE == 0) {
+      if ((W(0xC) & 0xFFFFFF) == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -214,7 +214,7 @@ void Level27_AdvanceEmitList(int step) {
     {
       int c;
 
-      if (AGE >= 0x1C || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x1C)) {
         FreeEmitListRecord(rec);
       } else {
         AddSVector(POS, POS, VEL);
@@ -257,7 +257,7 @@ void Level27_AdvanceEmitList(int step) {
       SPARK_Z_CLIMB();
       SIZE += step2;
       FADE_COL(4);
-      if (COL_R == 0 || ALIVE == 0) {
+      if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -273,7 +273,7 @@ void Level27_AdvanceEmitList(int step) {
       COL_G -= 8;
       COL_B -= 4;
       AGE++;
-      if (AGE >= 0xC || ALIVE == 0) {
+      if (AGED_OR_CULLED(0xC)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -439,7 +439,7 @@ void Level27_AdvanceEmitList(int step) {
       /* A plain drifter with a long life. */
       AddSVector(POS, POS, VEL);
       AGE += step;
-      if (AGE >= 0x40 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x40)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -470,7 +470,7 @@ void Level27_AdvanceEmitList(int step) {
       }
       COL_B = c;
       AGE += step;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -503,7 +503,7 @@ void Level27_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x8 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x8)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -540,7 +540,7 @@ void Level27_AdvanceEmitList(int step) {
         }
         AGE++;
       }
-      if (AGE >= 0x18 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -573,7 +573,7 @@ void Level27_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       } else {
         COL0_R -= 3;
@@ -608,7 +608,7 @@ void Level27_AdvanceEmitList(int step) {
       int r;
 
       AGE++;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       } else {
         d[0] = HS(0xA) - HS(0x4);
@@ -649,7 +649,7 @@ void Level27_AdvanceEmitList(int step) {
       int r;
 
       AGE++;
-      if (AGE >= 0x30 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x30)) {
         FreeEmitListRecord(rec);
       } else {
         d[0] = (HS(0x4) - HS(0xA)) >> 1;
@@ -721,7 +721,7 @@ void Level27_AdvanceEmitList(int step) {
       int r;
 
       AGE++;
-      if (AGE >= 0x28 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x28)) {
         FreeEmitListRecord(rec);
       } else {
         HU(0x4) += HU(0x10);
@@ -766,7 +766,7 @@ void Level27_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x18 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
       } else {
         COL0_R -= 3;
@@ -795,7 +795,7 @@ void Level27_AdvanceEmitList(int step) {
       HU(0xC) += d[1];
       HU(0xE) += d[2];
       AGE++;
-      if (AGE >= 0x20 || ALIVE == 0) {
+      if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       }
       break;

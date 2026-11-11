@@ -43,7 +43,9 @@ extern int g_nSparxHealth;
  * onto one base register, which a struct view does not reproduce. */
 #define CLASS rec[0x1]                         /* class; 0xFF ends the list */
 #define AGE rec[0x2]                           /* frames lived */
-#define ALIVE rec[0x3]                         /* 0 = kill at the next tick */
+#define VISIBLE rec[0x3] /* RasterizeEmitList: 1 drawn, 0 culled last frame */
+/* The usual free test: aged past `n` frames, or culled off screen. */
+#define AGED_OR_CULLED(n) (AGE >= (n) || VISIBLE == 0)
 #define HS(n) (*(short *)(rec + (n)))          /* s16 field at +n */
 #define HU(n) (*(unsigned short *)(rec + (n))) /* u16 field at +n */
 #define W(n) (*(int *)(rec + (n)))             /* s32 field at +n */
