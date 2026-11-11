@@ -48,17 +48,17 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   int hasEggs;
   g_nActiveLevelId = buf[SAVE_OFFSET(levelId)];
   sfx = buf[SAVE_OFFSET(sfxVolume)];
-  sfxMix = (sfx * SPU_VOLUME_MAX) / 10;
+  sfxMix = (sfx * SPU_VOLUME_MAX) / VOLUME_STEPS;
   g_nSfxMixVolume_blk[0] = sfxMix;
   g_nSfxVolume = sfx;
-  g_nSoundMasterVolume = (sfxMix << 0xC) / 16383;
+  g_nSoundMasterVolume = (sfxMix << 0xC) / SPU_VOLUME_MAX;
   music = buf[SAVE_OFFSET(musicVolume)];
   common = ((unsigned char *)g_nSfxMixVolume_blk) - 0x320;
-  *((int *)common) = 0xC0;
+  *((int *)common) = SPU_COMMON_CDVOL;
   g_nMusicVolume = music;
-  g_nCdAudioVolume_blk = music << 0xB;
-  g_nCdDaVolumeCurrent = music << 0xB;
-  g_nSpuCommonCdVolumeR = music << 0xB;
+  g_nCdAudioVolume_blk = music << MUSIC_VOLUME_SHIFT;
+  g_nCdDaVolumeCurrent = music << MUSIC_VOLUME_SHIFT;
+  g_nSpuCommonCdVolumeR = music << MUSIC_VOLUME_SHIFT;
   SetSpuCommonAttr(common);
   cam = ((SaveGameBuffer *)buf)->cameraOptions;
   g_nOptionVibrationEnabled = buf[SAVE_OFFSET(vibration)];
@@ -69,10 +69,11 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   g_nExtraLives = buf[SAVE_OFFSET(extraLives)];
   lives = g_nExtraLives;
   start = buf;
-  if (lives < 4) {
-    g_nExtraLives = 4;
+  if (lives < SAVE_MIN_LIVES) {
+    g_nExtraLives = SAVE_MIN_LIVES;
   }
-  CopyWords(g_anFlightClearTimes, buf + SAVE_OFFSET(flight), 0x14);
+  CopyWords(g_anFlightClearTimes, buf + SAVE_OFFSET(flight),
+            FLIGHT_LEVEL_COUNT * 4);
   off = SAVE_OFFSET(levelExited);
   flightLevel = 0;
   row = buf;
@@ -80,16 +81,17 @@ int ApplySaveGameBuffer(unsigned char *buf) {
   do {
     dst = tbl;
     src = row + SAVE_OFFSET(flight.bonusPaid);
-    end = tbl + 5;
+    end = tbl + FLIGHT_BONUS_SLOTS;
     do {
       *(dst++) = *(src++);
     } while (((int)dst) < ((int)end));
-    row += 5;
+    row += FLIGHT_BONUS_SLOTS;
     flightLevel += 1;
-    tbl += 5;
-  } while (flightLevel < 5);
-  CopyWords(g_abLevelVisitedFlag, buf + SAVE_OFFSET(levelVisited), 0x24);
-  CopyWords(g_abLevelExited, buf + off, 0x24);
+    tbl += FLIGHT_BONUS_SLOTS;
+  } while (flightLevel < FLIGHT_LEVEL_COUNT);
+  CopyWords(g_abLevelVisitedFlag, buf + SAVE_OFFSET(levelVisited),
+            TOTAL_LEVEL_COUNT);
+  CopyWords(g_abLevelExited, buf + off, TOTAL_LEVEL_COUNT);
   i = 0;
   eggs = g_anLevelEggsRecovered;
   gems = g_anLevelGemsCollected;
@@ -106,7 +108,7 @@ int ApplySaveGameBuffer(unsigned char *buf) {
     *dragons = dragonCount;
     gemCount = SAVE_RAW(gemRow, short, levelGems);
     g_nTotalDragonsRescued = totalDragons + dragonCount;
-    hasEggs = i < 0x12;
+    hasEggs = i < EGG_LEVEL_COUNT;
     newTotalGems = totalGems + gemCount;
     EBB_BREAK();
     *gems = gemCount;
@@ -122,12 +124,13 @@ int ApplySaveGameBuffer(unsigned char *buf) {
     gemRow += 2;
     i += 1;
     dragons += 1;
-  } while (i < 0x24);
+  } while (i < TOTAL_LEVEL_COUNT);
   i = 0;
   do {
     g_abWorldBalloonistState[i] = *((buf + i) + SAVE_OFFSET(balloonistState));
     i += 1;
-  } while (i < 6);
-  CopyWords(g_anLevelKillBitmapTable, buf + SAVE_OFFSET(killBitmaps), 0x480);
+  } while (i < WORLD_COUNT);
+  CopyWords(g_anLevelKillBitmapTable, buf + SAVE_OFFSET(killBitmaps),
+            TOTAL_LEVEL_COUNT * 32);
   return ((SaveGameBuffer *)buf)->checksum == ComputeSaveGameChecksum(start);
 }

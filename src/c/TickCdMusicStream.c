@@ -4,6 +4,7 @@
 #include "libcd.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "spu.h"
 #include "vecmath.h"
 
 /* The CdlLOC bytes at 0x800776c1 reached from the music-stream block's
@@ -155,7 +156,7 @@ void TickCdMusicStream(void) {
   store_right:
     g_nSpuCommonCdVolumeR = vol;
   spu:
-    *(unsigned int *)g_abSpuCommonAttr = 0xC0;
+    *(unsigned int *)g_abSpuCommonAttr = SPU_COMMON_CDVOL;
     SetSpuCommonAttr(g_abSpuCommonAttr);
   } else {
     if (g_adwMusicStreamBlock[0] & MUSIC_ST_FADING) {

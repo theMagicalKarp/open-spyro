@@ -57,6 +57,18 @@ typedef struct SpuVoiceRow {
 #define SPU_CD_VOLUME 0x5000
 #define SFX_FLAT_VOLUME 0x2000
 #define SFX_3D_VOLUME 0x3CCC
+/* SpuCommonAttr mask bits: the master and CD volume pairs. */
+#define SPU_COMMON_MVOL 0x03
+#define SPU_COMMON_CDVOL 0xC0
+/* The options screens' volume settings run 0..VOLUME_STEPS; music maps a
+ * step to CD volume << MUSIC_VOLUME_SHIFT (10 steps = SPU_CD_VOLUME). */
+#define VOLUME_STEPS 10
+#define MUSIC_VOLUME_SHIFT 11
+/* CdMix attenuations for the speakers option: stereo passes each side
+ * straight through at CD_MIX_FULL, mono sends both sides to both at
+ * CD_MIX_HALF. */
+#define CD_MIX_FULL 0x7F
+#define CD_MIX_HALF 0x3F
 
 /* The SPU's 24 voices, one mixer row each (g_aSpuVoiceRows). */
 #define SPU_VOICE_COUNT 24
