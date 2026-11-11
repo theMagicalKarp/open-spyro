@@ -431,10 +431,14 @@ typedef enum SpyroState
  * the next tick hands control back. */
 #define SPYRO_SUB_IDLE_FLAMED 1
 /* SPYRO_ST_WALK / RUN / JOG: cleared every substep; ApplyPadInputToSpyroBodyYaw
- * sets it when the stick asks for a turn sharper than SPYRO_PIVOT_TURN, and
+ * sets it when a light push asks for a turn sharper than SPYRO_PIVOT_TURN, and
  * Spyro brakes (SPYRO_GROUND_DECEL) instead of accelerating while he pivots. */
 #define SPYRO_SUB_WALK_PIVOT 1
 #define SPYRO_PIVOT_TURN 0x100
+/* ...and only while the stick is pushed less than SPYRO_PIVOT_STICK (of
+ * PAD_STICK_MAX): a light push turns Spyro toward it at a rate scaled by the
+ * push. */
+#define SPYRO_PIVOT_STICK 0x60
 /* SPYRO_ST_CHARGE: ChangeSpyroState sets bit 0 on every ground-charge entry
  * and nothing clears it while charging, so the stick-steer / homing branch it
  * gates always runs (SUPERCHARGE, which shares the latch bits, never sets it). */

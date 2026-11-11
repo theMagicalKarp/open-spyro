@@ -53,21 +53,21 @@ static inline int *Opaque(int *p) {
     }                                                                          \
   }
 
-/* Analog stick (or d-pad) as signed x/y in -0x7F..0x7F. */
+/* Analog stick (or d-pad) as signed x/y in -PAD_STICK_MAX..PAD_STICK_MAX. */
 #define READ_STICK(x, y)                                                       \
   if (g_pPadSubstepState->stickActive != 0) {                                  \
     x = PADB[PAD_LX_OFFSET] - PAD_STICK_CENTER;                                \
     y = PAD_STICK_CENTER - PADB[PAD_LY_OFFSET];                                \
   } else {                                                                     \
     if (g_pPadSubstepState->held & PAD_UP) {                                   \
-      y = 0x7F;                                                                \
+      y = PAD_STICK_MAX;                                                       \
     } else {                                                                   \
-      y = (g_pPadSubstepState->held & PAD_DOWN) ? -0x7F : 0;                   \
+      y = (g_pPadSubstepState->held & PAD_DOWN) ? -PAD_STICK_MAX : 0;          \
     }                                                                          \
     if (g_pPadSubstepState->held & PAD_RIGHT) {                                \
-      x = 0x7F;                                                                \
+      x = PAD_STICK_MAX;                                                       \
     } else {                                                                   \
-      x = (g_pPadSubstepState->held & PAD_LEFT) ? -0x7F : 0;                   \
+      x = (g_pPadSubstepState->held & PAD_LEFT) ? -PAD_STICK_MAX : 0;          \
     }                                                                          \
   }
 
@@ -728,13 +728,13 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         } else {
           if (g_pPadSubstepState->held & PAD_UP) {
             g_nSpyroMotionAux += SPYRO_FLY_DPAD_STEP;
-            if (g_nSpyroMotionAux >= 0x80) {
-              g_nSpyroMotionAux = 0x7F;
+            if (g_nSpyroMotionAux > PAD_STICK_MAX) {
+              g_nSpyroMotionAux = PAD_STICK_MAX;
             }
           } else if (g_pPadSubstepState->held & PAD_DOWN) {
             g_nSpyroMotionAux -= SPYRO_FLY_DPAD_STEP;
-            if (g_nSpyroMotionAux < -0x7F) {
-              g_nSpyroMotionAux = -0x7F;
+            if (g_nSpyroMotionAux < -PAD_STICK_MAX) {
+              g_nSpyroMotionAux = -PAD_STICK_MAX;
             }
           } else {
             x = -g_nSpyroMotionAux;
@@ -749,13 +749,13 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           y = g_nSpyroMotionAux;
           if (g_pPadSubstepState->held & PAD_RIGHT) {
             g_nSpyroTurnRateAccum += SPYRO_FLY_DPAD_STEP;
-            if (g_nSpyroTurnRateAccum >= 0x80) {
-              g_nSpyroTurnRateAccum = 0x7F;
+            if (g_nSpyroTurnRateAccum > PAD_STICK_MAX) {
+              g_nSpyroTurnRateAccum = PAD_STICK_MAX;
             }
           } else if (g_pPadSubstepState->held & PAD_LEFT) {
             g_nSpyroTurnRateAccum -= SPYRO_FLY_DPAD_STEP;
-            if (g_nSpyroTurnRateAccum < -0x7F) {
-              g_nSpyroTurnRateAccum = -0x7F;
+            if (g_nSpyroTurnRateAccum < -PAD_STICK_MAX) {
+              g_nSpyroTurnRateAccum = -PAD_STICK_MAX;
             }
           } else {
             w = -g_nSpyroTurnRateAccum;
@@ -777,11 +777,11 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           if (g_nSpyroMotionSpeed < SPYRO_FLIGHT_CRUISE_SPEED) {
             z += (SPYRO_FLIGHT_CRUISE_SPEED - g_nSpyroMotionSpeed) >> 6;
           }
-          if (z > 0x7F) {
-            z = 0x7F;
+          if (z > PAD_STICK_MAX) {
+            z = PAD_STICK_MAX;
           }
-          if (z < -0x7F) {
-            z = -0x7F;
+          if (z < -PAD_STICK_MAX) {
+            z = -PAD_STICK_MAX;
           }
         }
         c = LookupCosine(SPY[SPY_ROLL]);
