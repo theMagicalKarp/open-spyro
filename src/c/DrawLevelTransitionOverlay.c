@@ -60,11 +60,11 @@ void DrawLevelTransitionOverlay(void) {
   int y;
   int gx;
 
-  idx = (g_nNextLevelId / 10 - 1) * 6 + g_nNextLevelId % 10;
-  sub = g_nNextLevelId % 10;
-  if (sub == 0) {
+  idx = LEVEL_SLOT(g_nNextLevelId);
+  sub = LEVEL_IN_WORLD(g_nNextLevelId);
+  if (sub == LEVEL_HOME_SLOT) {
     sprintf(buf, g_szReturningHome);
-  } else if ((g_nNextLevelId < LEVEL_GNORC_GNEXUS && sub == 4) ||
+  } else if ((g_nNextLevelId < LEVEL_GNORC_GNEXUS && sub == LEVEL_BOSS_SLOT) ||
              g_nNextLevelId == LEVEL_GNASTY_GNORC) {
     sprintf(buf, g_szConfrontingFmt, g_apLevelNameStrings[idx]);
   } else {

@@ -83,7 +83,7 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     g_nPortalTransitionActive = one;
     portal = data[1];
     g_nEnteredPortalIdx = portal;
-    if (g_nActiveLevelId % 10 != 0) {
+    if (LEVEL_IN_WORLD(g_nActiveLevelId) != LEVEL_HOME_SLOT) {
       g_nReturnPortalLevelId = g_nActiveLevelId;
     }
     SubtractVector(tmp, ready - (SPY_SPARX_HEALTH - SPY_POS), ENT->pts[1]);

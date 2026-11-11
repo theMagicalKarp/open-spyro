@@ -30,7 +30,11 @@ typedef enum Gamestate
 enum DemoMode {
   DEMO_OFF = 0,
   DEMO_PLAYBACK = 1, /* replay the bundle's recorded pad stream (StoryIntro_Update) */
-  DEMO_RECORD = 2,   /* sample the real pad into a buffer at 0x80600000 */
+  DEMO_RECORD = 2,   /* sample the real pad into DEMO_RECORD_BUFFER */
 };
+/* DEMO_RECORD's pad buffer, in the dev kit's RAM above the retail 2 MB
+ * (BuildLoadedLevelRuntime zero-fills it; SampleDemoPadFrame appends). */
+#define DEMO_RECORD_BUFFER ((void *)0x80600000)
+#define DEMO_RECORD_BYTES 0x4000
 
 #endif /* OPEN_SPYRO_GAMESTATE_H */

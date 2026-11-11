@@ -4,6 +4,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "gpu_prim.h"
+#include "level_id.h"
 #include "level_sfx.h"
 #include "pad_buttons.h"
 #include "pause_menu.h"
@@ -238,7 +239,7 @@ void PauseMenu_Update(void) {
     return;
   case PAUSE_ROW_EXIT:
     SFX(SFX_MENU_SELECT);
-    if (g_nActiveLevelId % 10 == 0) {
+    if (LEVEL_IN_WORLD(g_nActiveLevelId) == LEVEL_HOME_SLOT) {
       g_nPauseMenuCursor = PAUSE_QUIT_NO;
       g_nPauseMenuSubstate = PAUSE_PAGE_QUIT_CONFIRM;
       return;

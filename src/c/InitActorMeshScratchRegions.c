@@ -15,10 +15,10 @@ void InitActorMeshScratchRegions(int split) {
   int size;
 
   top = g_pWorkAreaTop;
-  g_pEmitListBuffer = top - 0x2000;
+  g_pEmitListBuffer = top - EMIT_LIST_BYTES;
   EBB_BREAK();
-  g_pRenderScratchOtBase = top - 0x6000;
-  top -= 0x6008;
+  g_pRenderScratchOtBase = top - (EMIT_LIST_BYTES + OT_BIN_BYTES);
+  top -= EMIT_LIST_BYTES + OT_BIN_BYTES + OT_CHAIN_SLOT_BYTES;
   g_pRenderScratchPrimTop = top;
   if (split) {
     size = -PRIM_BUFFER_BYTES_SPLIT;
@@ -37,6 +37,6 @@ void InitActorMeshScratchRegions(int split) {
       VREAD(g_pRenderScratchPrimTop);
   g_pFrameOtDepthBinBase1 = g_pFrameOtDepthBinBase0 =
       VREAD(g_pRenderScratchOtBase);
-  FillWord(g_pFrameOtMergedChainSlot0, 0, 8);
-  FillWord(g_pRenderScratchOtBase, 0, 0x4000);
+  FillWord(g_pFrameOtMergedChainSlot0, 0, OT_CHAIN_SLOT_BYTES);
+  FillWord(g_pRenderScratchOtBase, 0, OT_BIN_BYTES);
 }

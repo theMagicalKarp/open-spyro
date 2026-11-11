@@ -27,6 +27,12 @@ typedef struct FrameDB {
  * (cutscene) layout. */
 #define PRIM_BUFFER_BYTES 0x1C000
 #define PRIM_BUFFER_BYTES_SPLIT 0x13000
+/* The regions above them, from g_pWorkAreaTop down: the emit list (256
+ * 0x20-byte records), the depth-bin OT shared by both frames, and the
+ * 8-byte merged-chain slot. */
+#define EMIT_LIST_BYTES 0x2000
+#define OT_BIN_BYTES 0x4000
+#define OT_CHAIN_SLOT_BYTES 8
 
 /* The pause / inventory / flight-results menus freeze the gameplay frame
  * (StoreImage) into the bytes just below g_pRenderScratchPrimTop: one

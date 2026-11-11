@@ -52,6 +52,13 @@ enum LevelId {
  * g_abLevelVisitedFlag, g_anLevelDragonsRescued, ...): the order of the
  * level overlays, six slots per world. */
 #define LEVEL_SLOT(id) (((id) / 10 - 1) * 6 + (id) % 10)
+/* A level's place in its world (id % 10): the hub, the boss, the flight
+ * level; LEVELS_PER_WORLD slots in all. */
+#define LEVEL_IN_WORLD(id) ((id) % 10)
+#define LEVEL_HOME_SLOT 0
+#define LEVEL_BOSS_SLOT 4
+#define LEVEL_FLIGHT_SLOT 5
+#define LEVELS_PER_WORLD 6
 /* First word of a level's eight-word kill-bitmap row in
  * g_anLevelKillBitmapTable (bit n: actor n's kill is saved, CommitActorKillGems). */
 #define KILL_ROW(id) (LEVEL_SLOT(id) * 8)
