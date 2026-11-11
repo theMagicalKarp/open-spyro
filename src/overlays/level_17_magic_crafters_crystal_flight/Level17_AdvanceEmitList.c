@@ -249,12 +249,12 @@ void Level17_AdvanceEmitList(int step) {
         HU(0x4) = HU(0xA) - d[0];
         HU(0x6) = HU(0xC) - d[1];
         HU(0x8) = HU(0xE) - d[2];
-        rec[0x14] -= 2;
-        rec[0x15] -= 2;
-        rec[0x16] -= 4;
-        rec[0x10] -= 3;
-        rec[0x11] -= 3;
-        rec[0x12] -= 3;
+        COL1_R -= 2;
+        COL1_G -= 2;
+        COL1_B -= 4;
+        COL0_R -= 3;
+        COL0_G -= 3;
+        COL0_B -= 3;
       }
       break;
     }
@@ -366,12 +366,12 @@ void Level17_AdvanceEmitList(int step) {
       if (AGE >= 0x18 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
-        rec[0x10] -= 3;
-        rec[0x11] -= 4;
-        rec[0x14] -= 3;
-        rec[0x15] -= 4;
-        if (rec[0x16] >= 6) {
-          rec[0x16] -= 6;
+        COL0_R -= 3;
+        COL0_G -= 4;
+        COL1_R -= 3;
+        COL1_G -= 4;
+        if (COL1_B >= 6) {
+          COL1_B -= 6;
         }
       }
       break;

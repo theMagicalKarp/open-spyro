@@ -60,6 +60,17 @@ extern int g_nSparxHealth;
 #define COL_R rec[0xC]
 #define COL_G rec[0xD]
 #define COL_B rec[0xE]
+/* The line classes' two colours (LINE_G2): COL0 goes with the point at 0x04,
+ * COL1 with the one at 0x0A; COL1's top byte (0x17) is the OT-bin bias. */
+#define COL0_R rec[0x10]
+#define COL0_G rec[0x11]
+#define COL0_B rec[0x12]
+#define COL1_R rec[0x14]
+#define COL1_G rec[0x15]
+#define COL1_B rec[0x16]
+/* A quad's texture sub-record index and OT depth-bin bias. */
+#define TEX_INDEX rec[0x10]
+#define DEPTH_BIAS rec[0x11]
 /* Fade all three colour bytes by `n`. */
 #define FADE_COL(n)                                                            \
   COL_R -= (n);                                                                \

@@ -353,26 +353,26 @@ void Level7_AdvanceEmitList(int step) {
       if (AGE >= 0x20 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
-        rec[0x10] -= 3;
-        if (rec[0x10] < 0x80) {
-          rec[0x10] = 0x80;
+        COL0_R -= 3;
+        if (COL0_R < 0x80) {
+          COL0_R = 0x80;
         }
-        rec[0x11] -= 4;
-        if (rec[0x11] < 0x60) {
-          rec[0x11] = 0x60;
+        COL0_G -= 4;
+        if (COL0_G < 0x60) {
+          COL0_G = 0x60;
         }
-        rec[0x12] = 0;
-        rec[0x14] -= 3;
-        if (rec[0x14] < 0xC0) {
-          rec[0x14] = 0xC0;
+        COL0_B = 0;
+        COL1_R -= 3;
+        if (COL1_R < 0xC0) {
+          COL1_R = 0xC0;
         }
-        rec[0x15] -= 4;
-        if (rec[0x15] < 0x80) {
-          rec[0x15] = 0x80;
+        COL1_G -= 4;
+        if (COL1_G < 0x80) {
+          COL1_G = 0x80;
         }
-        rec[0x16] -= 6;
-        if (rec[0x16] < 0x20) {
-          rec[0x16] = 0x20;
+        COL1_B -= 6;
+        if (COL1_B < 0x20) {
+          COL1_B = 0x20;
         }
       }
       break;
@@ -408,12 +408,12 @@ void Level7_AdvanceEmitList(int step) {
         HU(0x4) = HU(0xA) - d[0];
         HU(0x6) = HU(0xC) - d[1];
         HU(0x8) = HU(0xE) - d[2];
-        rec[0x14] -= 2;
-        rec[0x15] -= 2;
-        rec[0x16] -= 4;
-        rec[0x10] -= 3;
-        rec[0x11] -= 3;
-        rec[0x12] -= 3;
+        COL1_R -= 2;
+        COL1_G -= 2;
+        COL1_B -= 4;
+        COL0_R -= 3;
+        COL0_G -= 3;
+        COL0_B -= 3;
       }
       break;
     }
@@ -540,12 +540,12 @@ void Level7_AdvanceEmitList(int step) {
       if (AGE >= 0x18 || ALIVE == 0) {
         FreeEmitListRecord(rec);
       } else {
-        rec[0x10] -= 3;
-        rec[0x11] -= 4;
-        rec[0x14] -= 3;
-        rec[0x15] -= 4;
-        if (rec[0x16] >= 6) {
-          rec[0x16] -= 6;
+        COL0_R -= 3;
+        COL0_G -= 4;
+        COL1_R -= 3;
+        COL1_G -= 4;
+        if (COL1_B >= 6) {
+          COL1_B -= 6;
         }
       }
       break;
