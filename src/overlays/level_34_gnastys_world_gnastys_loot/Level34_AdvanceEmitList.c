@@ -181,14 +181,14 @@ void Level34_AdvanceEmitList(int step) {
     case EMIT_RISING_SPIRAL: {
       int s;
 
-      rec[0x18] += g_nFrameStep * 4;
-      rec[0x19] += g_nFrameStep;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x18]] * rec[0x19]) >> 12);
-      s = g_anSineLut[rec[0x18]] * rec[0x19];
+      SWIRL_ANGLE += g_nFrameStep * 4;
+      SWIRL_RADIUS += g_nFrameStep;
+      HU(0x4) = HU(0x12) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       HU(0x8) += *(const int *)&g_nFrameStep * 6;
       SPIN += 4;
       HU(0x6) = HU(0x14) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
+      if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -419,13 +419,13 @@ void Level34_AdvanceEmitList(int step) {
     case EMIT_RISING_SPIRAL_SMEAR: {
       int s;
 
-      rec[0x18] += g_nFrameStep * 4;
-      rec[0x19] += g_nFrameStep;
-      HU(0x4) = HU(0x10) + ((g_anCosineLut[rec[0x18]] * rec[0x19]) >> 12);
-      s = g_anSineLut[rec[0x18]] * rec[0x19];
+      SWIRL_ANGLE += g_nFrameStep * 4;
+      SWIRL_RADIUS += g_nFrameStep;
+      HU(0x4) = HU(0x10) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       HU(0x8) += g_nFrameStep * 6;
       HU(0x6) = HU(0x12) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
+      if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
       break;

@@ -418,14 +418,14 @@ void Level13_AdvanceEmitList(int step) {
     {
       int s;
 
-      rec[0x18] += g_nFrameStep * 4;
-      rec[0x19] += g_nFrameStep;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x18]] * rec[0x19]) >> 12);
-      s = g_anSineLut[rec[0x18]] * rec[0x19];
+      SWIRL_ANGLE += g_nFrameStep * 4;
+      SWIRL_RADIUS += g_nFrameStep;
+      HU(0x4) = HU(0x12) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       HU(0x8) += *(const int *)&g_nFrameStep * 6;
       SPIN += 4;
       HU(0x6) = HU(0x14) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
+      if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
       break;
@@ -482,15 +482,15 @@ void Level13_AdvanceEmitList(int step) {
       if (COL_B < 0xF0) {
         COL_B += 4;
       }
-      rec[0x1C] += g_nFrameStep * 8;
+      JET_ANGLE += g_nFrameStep * 8;
       heat = 0x3F;
       if (g_nDragonRescueTimer < 0x40) {
         heat = g_nDragonRescueTimer;
       }
-      HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
-      HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x1C]] * HS(0x1A)) >> 12);
-      HU(0x6) = HU(0x14) + ((g_anSineLut[rec[0x1C]] * HS(0x1A)) >> 12);
+      HS(0x18) = (JET_SEGMENT * (0x48 - heat)) >> 3;
+      HS(0x1A) = (((0x20 - JET_SEGMENT) * heat) >> 4) + 8;
+      HU(0x4) = HU(0x12) + ((g_anCosineLut[JET_ANGLE] * HS(0x1A)) >> 12);
+      HU(0x6) = HU(0x14) + ((g_anSineLut[JET_ANGLE] * HS(0x1A)) >> 12);
       HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
       break;
     }
@@ -705,13 +705,13 @@ void Level13_AdvanceEmitList(int step) {
     {
       int s;
 
-      rec[0x18] += g_nFrameStep * 4;
-      rec[0x19] += g_nFrameStep;
-      HU(0x4) = HU(0x10) + ((g_anCosineLut[rec[0x18]] * rec[0x19]) >> 12);
-      s = g_anSineLut[rec[0x18]] * rec[0x19];
+      SWIRL_ANGLE += g_nFrameStep * 4;
+      SWIRL_RADIUS += g_nFrameStep;
+      HU(0x4) = HU(0x10) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       HU(0x8) += g_nFrameStep * 6;
       HU(0x6) = HU(0x12) + (s >> 12);
-      if (rec[0x19] >= 0xC1) {
+      if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
       break;

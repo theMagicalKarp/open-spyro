@@ -71,6 +71,13 @@ extern int g_nSparxHealth;
 /* A quad's texture sub-record index and OT depth-bin bias. */
 #define TEX_INDEX rec[0x10]
 #define DEPTH_BIAS rec[0x11]
+/* Swirl records (ribbon / smear): the point circles its centre at
+ * SWIRL_ANGLE (sine-LUT index), SWIRL_RADIUS growing until it is freed. */
+#define SWIRL_ANGLE rec[0x18]
+#define SWIRL_RADIUS rec[0x19]
+/* Fire-jet bands: spin angle and segment index along the jet. */
+#define JET_ANGLE rec[0x1C]
+#define JET_SEGMENT rec[0x1D]
 /* Fade all three colour bytes by `n`. */
 #define FADE_COL(n)                                                            \
   COL_R -= (n);                                                                \

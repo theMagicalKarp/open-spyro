@@ -281,15 +281,15 @@ void Level12_AdvanceEmitList(int step) {
       if (COL_B < 0xF0) {
         COL_B += 4;
       }
-      rec[0x1C] += g_nFrameStep * 8;
+      JET_ANGLE += g_nFrameStep * 8;
       heat = 0x3F;
       if (g_nDragonRescueTimer < 0x40) {
         heat = g_nDragonRescueTimer;
       }
-      HS(0x18) = (rec[0x1D] * (0x48 - heat)) >> 3;
-      HS(0x1A) = (((0x20 - rec[0x1D]) * heat) >> 4) + 8;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[rec[0x1C]] * HS(0x1A)) >> 12);
-      HU(0x6) = HU(0x14) + ((g_anSineLut[rec[0x1C]] * HS(0x1A)) >> 12);
+      HS(0x18) = (JET_SEGMENT * (0x48 - heat)) >> 3;
+      HS(0x1A) = (((0x20 - JET_SEGMENT) * heat) >> 4) + 8;
+      HU(0x4) = HU(0x12) + ((g_anCosineLut[JET_ANGLE] * HS(0x1A)) >> 12);
+      HU(0x6) = HU(0x14) + ((g_anSineLut[JET_ANGLE] * HS(0x1A)) >> 12);
       HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
       break;
     }
