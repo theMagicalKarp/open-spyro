@@ -49,6 +49,17 @@ extern int g_nSparxHealth;
 #define W(n) (*(int *)(rec + (n)))             /* s32 field at +n */
 #define POS ((short *)(rec + 4))               /* tail point, svector */
 #define VEL ((short *)(rec + 0x18))            /* velocity / spin, svector */
+/* The colour bytes of the packed RGB / mode word at 0x0C that
+ * RasterizeEmitList lights the prim with (every class but the streaks, whose
+ * colours sit at 0x10 / 0x14); fading a record is stepping these down. */
+#define COL_R rec[0xC]
+#define COL_G rec[0xD]
+#define COL_B rec[0xE]
+/* Fade all three colour bytes by `n`. */
+#define FADE_COL(n)                                                            \
+  COL_R -= (n);                                                                \
+  COL_G -= (n);                                                                \
+  COL_B -= (n)
 
 /* Spark drift: every other tick the z velocity (VEL[2], updated through its
  * unsigned view) climbs by one; the short at 0x1E is the 0/1 toggle. */
