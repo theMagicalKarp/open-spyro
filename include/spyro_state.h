@@ -160,6 +160,12 @@ typedef enum SpyroState
 #define SUPERFLAME_TINT_G 0x20
 #define SUPERFLAME_TINT_B 0x10
 #define SUPERFLAME_TINT_ALPHA_BIAS 0x28
+/* SPYRO_ST_HURT_TINT (DispatchSpyroPhysicsByState): for its first
+ * HURT_FLASH_FRAMES animation frames Spyro's tint alternates white and dark
+ * grey (odd / even frames). */
+#define HURT_FLASH_FRAMES 10
+#define HURT_FLASH_LIGHT 0xFF
+#define HURT_FLASH_DARK 0x40
 #define SUPERFLAME_WARN_FRAMES 0x78
 #define SUPERFLAME_BLINK_PERIOD 24
 #define SUPERFLAME_BLINK_OFF 0xE

@@ -98,7 +98,7 @@ void DispatchSpyroPhysicsByState(void) {
       if (ang > 0x800) {
         ang -= 0x1000;
       }
-      t = (SPY[SPY_GROUND_SLOPE] << 12) / 22;
+      t = (SPY[SPY_GROUND_SLOPE] << 12) / (SLOPE_STEEP - 1);
       ang = abs(ang);
       if (ang > 0x400) {
         a = g_anSpyroSlopeSpeedTargets[2] +
@@ -146,16 +146,16 @@ void DispatchSpyroPhysicsByState(void) {
     ProbeSpyroGroundContact();
     ApplyGravityAlongSpyroSlopeNormal();
     frame = g_bSpyroAnimFrame;
-    if (frame < 10) {
+    if (frame < HURT_FLASH_FRAMES) {
       g_abSpyroTintRgba[3] = 0xFF;
       if (frame & 1) {
-        g_abSpyroTintRgba[2] = 0xFF;
-        g_abSpyroTintRgba[1] = 0xFF;
-        g_abSpyroTintRgba[0] = 0xFF;
+        g_abSpyroTintRgba[2] = HURT_FLASH_LIGHT;
+        g_abSpyroTintRgba[1] = HURT_FLASH_LIGHT;
+        g_abSpyroTintRgba[0] = HURT_FLASH_LIGHT;
       } else {
-        g_abSpyroTintRgba[2] = 0x40;
-        g_abSpyroTintRgba[1] = 0x40;
-        g_abSpyroTintRgba[0] = 0x40;
+        g_abSpyroTintRgba[2] = HURT_FLASH_DARK;
+        g_abSpyroTintRgba[1] = HURT_FLASH_DARK;
+        g_abSpyroTintRgba[0] = HURT_FLASH_DARK;
       }
     } else {
       g_abSpyroTintRgba[3] = 0;
