@@ -87,7 +87,8 @@ void AdvanceCameraSpringStep(int column) {
     if (PASSIVE_HOLD() && g_nCameraLosClear != 0) {
       delta = 0;
     } else if ((((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) &&
-                 (unsigned)(g_nSpyroState - 5) < 2) ||
+                 (unsigned)(g_nSpyroState - SPYRO_ST_JUMP) <
+                     2) || /* JUMP or FALL */
                 g_nCameraForcePassiveFollow) &&
                g_nSpyroMotionSpeed < 0x400 && g_nCameraCollisionRetries == 0 &&
                g_nCameraSpringSuppressFlag == 0) {

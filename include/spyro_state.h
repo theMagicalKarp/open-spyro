@@ -108,6 +108,12 @@ typedef enum SpyroState
 /* Spyro's collision-sphere radius; standing, his position is this far above
  * the floor (probes, contact spheres, spawn and landing heights). */
 #define SPYRO_RADIUS 0x164
+/* AdvanceSpyroPhysics moves him in substeps of at most COLLIDE_STEP, a
+ * collision try correcting him by at most MAX_CORRECTION; each steep-wall
+ * contact adds its normal at WALL_NUDGE length to the wall-slide nudge. */
+#define SPYRO_COLLIDE_STEP 340
+#define SPYRO_MAX_CORRECTION 0x140
+#define SPYRO_WALL_NUDGE 0x400
 
 /* g_nSpyroAirborneFrames at which a grounded state gives up and falls: a
  * few frames of grace over gaps and bumps. */
@@ -144,6 +150,86 @@ typedef enum SpyroState
                                         * levelling back out to FLY */
 #define SPYRO_STUCK_RESPAWN_TICKS 0x12C /* FALL / SLIDE held this long: respawn,
                                          * refunding the life (or end a flight run) */
+/* TickSpyroAttackEffects. A superflame tints Spyro SUPERFLAME_TINT_R/G/B
+ * with a sine alpha (minus TINT_ALPHA_BIAS); under WARN_FRAMES left the tint
+ * blinks off from BLINK_OFF of every BLINK_PERIOD frames. Each flame-breath
+ * slot (four short arcs, four long) walks its arc path's ARC_POINTS points
+ * and frees itself at ARC_LIFE frames, probing actors at FLAME_HIT_RADIUS;
+ * a slot arms with end age FLAME_SLOT_END_AGE (its burst frame if it hits). */
+#define SUPERFLAME_TINT_R 0x90
+#define SUPERFLAME_TINT_G 0x20
+#define SUPERFLAME_TINT_B 0x10
+#define SUPERFLAME_TINT_ALPHA_BIAS 0x28
+#define SUPERFLAME_WARN_FRAMES 0x78
+#define SUPERFLAME_BLINK_PERIOD 24
+#define SUPERFLAME_BLINK_OFF 0xE
+#define FLAME_SHORT_ARC_POINTS 0x18
+#define FLAME_SHORT_ARC_LIFE 0x20
+#define FLAME_LONG_ARC_POINTS 0x20
+#define FLAME_LONG_ARC_LIFE 0x28
+#define FLAME_HIT_RADIUS 0xA0
+#define FLAME_SLOT_END_AGE 0x20
+
+/* UpdateSpyroStateBehavior's other g_nSpyroStateTimer thresholds: */
+#define SPYRO_WALK_MIN_TICKS 0x10      /* WALK / SCRIPTED_WALK: least time before
+                                        * stopping back to IDLE */
+#define SPYRO_STOP_TURN_TICKS 0x12     /* STOP: reversing this early turns around */
+#define SPYRO_TURN_AROUND_TICKS 0x25   /* TURN_AROUND's length */
+#define SPYRO_JUMP_LAND_TICKS 0x10     /* JUMP: least time before it can land */
+#define SPYRO_JUMP_FALL_TICKS 0x78     /* JUMP: longer than this becomes FALL */
+#define SPYRO_REGLIDE_TICKS 0x10       /* glide already spent: falling this long
+                                        * re-allows FLY (flight) / GLIDE (glide drop) */
+#define SPYRO_REGLIDE_FALL_TICKS 0x1F  /* ...and GLIDE from a plain FALL */
+#define SPYRO_FACE_TARGET_SNAP_TICKS 0xD /* FACE_TARGET: interrupted after this, it
+                                          * still snaps to the target heading */
+#define SPYRO_FACE_TARGET_TICKS 0x14   /* FACE_TARGET's length */
+#define SPYRO_SIDESTEP_MIN_TICKS 0x15  /* SIDESTEP: least length once released */
+#define SPYRO_BONK_FALL_TICKS 0x10     /* CHARGE_BONK: airborne after this: FALL */
+#define SPYRO_BONK_TICKS 0x19          /* CHARGE_BONK's length */
+#define SPYRO_TEETER_MIN_TICKS 0x1F    /* TEETER: least length off the edge hint */
+#define SPYRO_HURT_TICKS 0x18          /* HURT / HURT_TINT / HURT_PINNED / KNOCKBACK */
+#define SPYRO_HURT_LONG_TICKS 0x30     /* HURT_LONG */
+#define SPYRO_GLIDE_SLOW_TICKS 0x10    /* GLIDE: slowing below RUN_DROP_SPEED after
+                                        * this becomes GLIDE_SLOW */
+#define SPYRO_GLIDE_DROP_FALL_TICKS 0x18 /* GLIDE_DROP: landing later than this
+                                          * falls on (keeping the fall's timer) */
+#define SPYRO_HAZARD_TICKS 0x3C        /* HAZARD: longer and the hazard claims him */
+#define SPYRO_HAZARD_JUMP_TICKS 0x10   /* HAZARD: Cross jumps out after this */
+#define SPYRO_SUPERCHARGE_MIN_TICKS 0xF /* SUPERCHARGE: letting go of Square
+                                         * this early stays supercharged */
+#define SPYRO_SUPERCHARGE_JUMP_HOLD 10 /* SUPERCHARGE: frames Cross is held before
+                                        * it jumps on its own */
+/* g_nSpyroInputBlankCountdown floors on landing. */
+#define SPYRO_DROP_LAND_BLANK 8        /* out of a glide drop */
+#define SPYRO_HURT_LAND_BLANK 0xC      /* out of a hurt state */
+
+/* UpdateSpyroStateBehavior speed / motion / angle thresholds. */
+#define SPYRO_WALK_DROP_SPEED 0x640    /* JOG / RUN slower than this: WALK */
+#define SPYRO_REVERSE_ANGLE 0x500      /* RUN / STOP: a move target this far
+                                        * (12-bit) off his heading reverses */
+#define SPYRO_TURN_AROUND_STICK 0x30   /* RUN reversing: stick Y past this turns
+                                        * around, else stops */
+#define SPYRO_TURN_AROUND_EXIT_SPEED 0xA00 /* TURN_AROUND -> WALK speed */
+#define SPYRO_FACE_TARGET_EXIT_SPEED 0x15  /* FACE_TARGET -> WALK speed */
+#define SPYRO_SHOVED_MOTION 0x400      /* IDLE / FIDGET moved this far in a frame
+                                        * (pushed): STOP */
+#define SPYRO_STOP_SETTLE_MOTION 0x100 /* STOP at rest and moving less: IDLE */
+#define SPYRO_GLIDE_STALL_MOTION 0x400 /* glide / fly moving less a frame: FALL */
+#define SPYRO_JUMP_FALL_SPEED 0x1900   /* JUMP falling faster: FALL */
+#define SPYRO_FLY_CEILING 0x200        /* GLIDE / FLY*: this far over the floor
+                                        * reference: FALL */
+#define SPYRO_GLIDE_RISE_MAX 0x18      /* GLIDE / GLIDE_SLOW risen this far over
+                                        * the floor reference: FALL */
+#define SPYRO_SLIDE_CHARGE_SPEED 0x1F00 /* SLIDE: Square faster than this charges */
+#define SPYRO_SLIDE_AIRBORNE_GRACE 8   /* SLIDE: airborne this long: FALL */
+#define SPYRO_SLIDE_LAND_MOTION 0x900  /* SLIDE: on a walkable slope at the anim's
+                                        * end and moving less: lands */
+#define SPYRO_SUPERCHARGE_BONK_RATIO 0x800 /* SUPERCHARGE_AIR: frame motion under
+                                            * this / 4096 of |velocity|: bonk */
+#define SPYRO_FLY_CLIMB_VZ 0x800       /* FLY rising faster: FLY_CLIMB */
+#define SPYRO_FLY_DIVE_VZ 0x1000       /* FLY falling faster: FLY_DIVE */
+#define SPYRO_FLY_CLIMB_LEVEL_VZ 0x600 /* FLY_CLIMB rising slower: back to FLY */
+#define SPYRO_FLY_DIVE_LEVEL_VZ 0xC00  /* FLY_DIVE falling slower: back to FLY */
 
 /* Four separate 0x1E00 limits: */
 #define SPYRO_HURT_KNOCK_MAX_SPEED 0x1E00 /* HURT / HURT_TINT: cap on the knock-back
@@ -156,6 +242,63 @@ typedef enum SpyroState
 #define SPYRO_FLIGHT_CRUISE_SPEED 0x1040 /* level flight: falling below the
                                           * floor reference adds speed, rising
                                           * above it takes it away */
+
+/* Ground and air motion per substep (IntegrateSpyroMotionForSubstep). */
+#define SPYRO_GROUND_ACCEL 0x140     /* AdvanceSpyroSpeedTowardTarget accel: walk /
+                                      * jog / run / stop, jump, sidestep */
+#define SPYRO_GROUND_DECEL 0x0C0     /* its decel (also hurt), and the brake while
+                                      * a gait substate is set */
+#define SPYRO_PAD_TURN_SPEED 0x400   /* slower: the pad turns his body directly
+                                      * (ApplyPadInputToSpyroBodyYaw); faster:
+                                      * TurnSpyroTowardMoveTargetWithLean */
+#define SPYRO_SHARP_TURN 0x200       /* heading error (12-bit) past which a gait
+                                      * stops accelerating */
+#define SPYRO_TURN_AROUND_BRAKE 0x100 /* TURN_AROUND: speed lost per substep */
+#define SPYRO_JUMP_MOVE_SPEED 0xC80  /* JUMP: the stick's full-tilt speed target */
+#define SPYRO_JUMP_STEER_MAX 0x280   /* JUMP: most the stick bends his air velocity */
+#define SPYRO_JUMP_HOLD_TICKS 0xD    /* JUMP: Cross held this early in the rise... */
+#define SPYRO_JUMP_HOLD_LIFT 0xD7    /* ...adds this lift (on top of gravity) */
+#define SPYRO_FALL_STEER_MAX 0x40    /* FALL: most air drag removes per substep */
+#define SPYRO_SIDESTEP_SPEED 0x1000  /* SIDESTEP_L1 / _R1 speed target */
+#define SPYRO_SCRIPTED_FLAME_DELAY 0x2C /* idle under a scripted move: breathe
+                                         * flame after this many substeps */
+/* CHARGE: a homing target (g_pSpyroHomingTargetActor) pulls his heading for
+ * HOMING_TICKS while his heading is at least HOMING_CONE off the camera's and it is
+ * within SPYRO_HOMING_CONE of his heading and HOMING_RANGE of him
+ * (ChangeSpyroState picks it on entering CHARGE: the lowest-scoring live
+ * colliding actor in that cone and range). Off a
+ * charge-hold strip his carried motion loses CHARGE_DRAG / 4096 a substep
+ * and gains CHARGE_THRUST along his heading; letting go of the charge slows
+ * him by CHARGE_STOP_DECEL. */
+#define SPYRO_HOMING_TICKS 0x78
+#define SPYRO_HOMING_CONE 0x200
+#define SPYRO_HOMING_RANGE 0x1800
+#define SPYRO_HOMING_QUICK_RANGE 0x4000 /* ChangeSpyroState: |dx|+|dy|+|dz| cull */
+#define SPYRO_HOMING_ANGLE_WEIGHT 4     /* score = distance + angle off * this */
+#define SPYRO_HOMING_NO_SCORE 0x7530    /* worse than any candidate's score */
+#define SPYRO_CHARGE_DRAG 300
+#define SPYRO_CHARGE_THRUST 0x240
+#define SPYRO_CHARGE_STOP_DECEL 0x180
+#define SPYRO_PINNED_FALL_ACCEL 0x600 /* HURT_PINNED / HURT_LONG airborne */
+#define SPYRO_HURT_LONG_SPIN 0x55     /* HURT_LONG: body yaw added per substep */
+#define SPYRO_PINNED_PRESS 0xC00      /* HURT_PINNED: downward velocity on entry */
+#define SPYRO_STOP_MAX_SPEED 0x1400   /* entering STOP caps the speed here */
+#define SPYRO_SCRIPTED_WALK_SPEED 0x280 /* SCRIPTED_WALK's move-target speed */
+/* Glide / flight attitude (12-bit angles). With the stick idle the d-pad
+ * stands in for it: each held direction moves the virtual stick
+ * FLY_DPAD_STEP a substep (to +-0x7F), released it recentres by up to
+ * FLY_DPAD_RECENTRE. Roll is held within +-FLY_MAX_ROLL and pitch within
+ * +-FLY_MAX_PITCH; the R1 / L1 rolls and the levelling turn the body at most
+ * ROLL_RATE a substep, a roll past ROLL_QUARTER counting as banked. Outside a
+ * flight level (Gnasty's Loot's free flight) the speed gets
+ * FREE_FLIGHT_BOOST on top of the cruise speed. */
+#define SPYRO_FLY_DPAD_STEP 0x10
+#define SPYRO_FLY_DPAD_RECENTRE 0x20
+#define SPYRO_FLY_MAX_ROLL 0x320
+#define SPYRO_FLY_MAX_PITCH 0x300
+#define SPYRO_ROLL_RATE 0x1E
+#define SPYRO_ROLL_QUARTER 0x400
+#define SPYRO_FREE_FLIGHT_BOOST 0x41E
 
 /* Gravity per substep: ChangeSpyroState sets g_nSpyroGravityStep to minus
  * one of these on entering a state (LIFT rises at +0x80 instead). */

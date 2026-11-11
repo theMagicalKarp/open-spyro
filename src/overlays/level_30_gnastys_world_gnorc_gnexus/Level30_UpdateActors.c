@@ -164,7 +164,7 @@ void Level30_UpdateActors(void) {
           SubtractVector(st->pos, st->pos, &parent->posX);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
-          actor->updateDist = 0x20;
+          actor->updateDist = UPDATE_DIST(0x8000);
         }
 
         if (st->active != 0 &&
@@ -320,18 +320,18 @@ void Level30_UpdateActors(void) {
             int *at;
 
             if (TICK_DOWN(st->headingTimer) != 0) {
-              int turn = RandomSignedInRange(0x1E, 0x5A);
+              int turn = RandomSignedInRange(BUTTERFLY_VEER_MIN, BUTTERFLY_VEER_MAX);
 
               if (GetRandomU32() & 1) {
                 turn = -turn;
               }
               st->heading = WrapAddAngle8(st->heading, turn);
-              st->headingTimer = RandomIntInRange(0x3C, 0x8C);
+              st->headingTimer = RandomIntInRange(BUTTERFLY_VEER_MIN_FRAMES, BUTTERFLY_VEER_MAX_FRAMES);
             }
 
             if (TICK_DOWN(st->climbTimer) != 0) {
-              st->vz = RandomSignedInRange(0xA, 0x19);
-              st->climbTimer = RandomIntInRange(0x50, 0x8C);
+              st->vz = RandomSignedInRange(BUTTERFLY_FLUTTER_VZ_MIN, BUTTERFLY_FLUTTER_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
             }
 
             spd = st->vz;
@@ -345,30 +345,30 @@ void Level30_UpdateActors(void) {
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
             if (step < BUTTERFLY_FLUTTER_MIN_HEIGHT) {
-              st->vz = RandomIntInRange(0xA, 0x19);
-              st->climbTimer = RandomIntInRange(0x50, 0x8C);
+              st->vz = RandomIntInRange(BUTTERFLY_FLUTTER_VZ_MIN, BUTTERFLY_FLUTTER_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
             }
 
-            if ((unsigned int)(step - 0x401) < 0x3FF) {
-              st->vz = -RandomIntInRange(0xA, 0x19);
-              st->climbTimer = RandomIntInRange(0x50, 0x8C);
+            if (BUTTERFLY_FLUTTER_MAX_HEIGHT < step && step < BUTTERFLY_DROP_HEIGHT) {
+              st->vz = -RandomIntInRange(BUTTERFLY_FLUTTER_VZ_MIN, BUTTERFLY_FLUTTER_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_FLUTTER_CLIMB_MIN_FRAMES, BUTTERFLY_FLUTTER_CLIMB_MAX_FRAMES);
             }
 
             moved = TurnActorYawTowardAngle(actor, st->heading, 4, 0xA, YAW_STEP_IN_BAND);
-            blocked = MoveActorAlongHeading(actor, 0x1E, 0, 0x32, MOVE_LIFT);
+            blocked = MoveActorAlongHeading(actor, BUTTERFLY_SPEED, 0, BUTTERFLY_RADIUS, MOVE_LIFT);
 
             if (moved != 0) {
               if (blocked != 0) {
                 st->heading =
-                    WrapAddAngle8(st->heading, RandomIntInRange(0x62, 0x9E));
-                st->headingTimer = RandomIntInRange(0x1E, 0x50);
+                    WrapAddAngle8(st->heading, RandomIntInRange(BUTTERFLY_BOUNCE_MIN, BUTTERFLY_BOUNCE_MAX));
+                st->headingTimer = RandomIntInRange(BUTTERFLY_BOUNCE_MIN_FRAMES, BUTTERFLY_BOUNCE_MAX_FRAMES);
               }
             }
 
             if (ApproxDist2D(&actor->posX, st->home) > BUTTERFLY_LEASH) {
               st->heading = ArcTan2(st->home[0] - actor->posX,
                                           st->home[1] - actor->posY, ATAN_ANGLE8);
-              st->headingTimer = 0x28;
+              st->headingTimer = BUTTERFLY_LEASH_TURN_FRAMES;
             }
           } else {
             DespawnActorRecord(actor);
@@ -381,7 +381,7 @@ void Level30_UpdateActors(void) {
                         WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                     actor->posY - spy->posY, ATAN_ANGLE8),
                                       st->circleDir * 8),
-                        8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
+                        8, BUTTERFLY_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
           if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
             actor->mode = BUTTERFLY_FLUTTER;
@@ -389,8 +389,8 @@ void Level30_UpdateActors(void) {
           }
 
           if (TICK_DOWN(st->climbTimer) != 0) {
-            st->vz = RandomSignedInRange(5, 0x14);
-            st->climbTimer = RandomIntInRange(0x28, 0x50);
+            st->vz = RandomSignedInRange(BUTTERFLY_CIRCLE_VZ_MIN, BUTTERFLY_CIRCLE_VZ_MAX);
+            st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
           }
 
           {
@@ -409,13 +409,13 @@ void Level30_UpdateActors(void) {
             step = actor->posZ - ProbeActorGroundHeight(actor);
 
             if (step < BUTTERFLY_CIRCLE_MIN_HEIGHT) {
-              st->vz = RandomIntInRange(5, 0x14);
-              st->climbTimer = RandomIntInRange(0x28, 0x50);
+              st->vz = RandomIntInRange(BUTTERFLY_CIRCLE_VZ_MIN, BUTTERFLY_CIRCLE_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
             }
 
-            if ((unsigned int)(step - 0x3E9) < 0x417) {
-              st->vz = -RandomIntInRange(5, 0x14);
-              st->climbTimer = RandomIntInRange(0x28, 0x50);
+            if (BUTTERFLY_CIRCLE_MAX_HEIGHT < step && step < BUTTERFLY_DROP_HEIGHT) {
+              st->vz = -RandomIntInRange(BUTTERFLY_CIRCLE_VZ_MIN, BUTTERFLY_CIRCLE_VZ_MAX);
+              st->climbTimer = RandomIntInRange(BUTTERFLY_CIRCLE_CLIMB_MIN_FRAMES, BUTTERFLY_CIRCLE_CLIMB_MAX_FRAMES);
             }
           }
           break;
@@ -1216,9 +1216,9 @@ void Level30_UpdateActors(void) {
             st->glow->offX = 0;
             st->glow->offY = 0;
             st->glow->offZ = 0;
-            st->glow->r = 0xC0;
-            st->glow->g = 0xC0;
-            st->glow->b = 0x60;
+            st->glow->r = SPARX_GLOW_R;
+            st->glow->g = SPARX_GLOW_G;
+            st->glow->b = SPARX_GLOW_B;
             st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
@@ -1251,7 +1251,7 @@ void Level30_UpdateActors(void) {
           switch (actor->subMode) {
           case SPARX_SUB_CHASE: {
             /* Closing in on the butterfly. */
-            CollectibleState *pk = st->target->state;
+            ButterflyState *bp = st->target->state;
             int high = actor->nextAnim & 1;
             int dist;
             int reach;
@@ -1294,7 +1294,7 @@ void Level30_UpdateActors(void) {
             if (high == 0 &&
                 (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
-                  AbsAngleDelta8((actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
+                  AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
                                 (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                                     0xFF) < 8))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
@@ -1303,12 +1303,12 @@ void Level30_UpdateActors(void) {
               }
             }
 
-            reach = high != 0 ? 0x96 : 0x82;
-            limit = reach + 5;
+            reach = high != 0 ? SPARX_CHASE_STEP_HIGH : SPARX_CHASE_STEP;
+            limit = reach + SPARX_CHASE_STEP_SLACK;
             if (limit < dist) {
               ScaleVector3ByRatio(svA, dist, limit);
             } else {
-              ScaleVector3ByRatio(svA, dist, reach - 5);
+              ScaleVector3ByRatio(svA, dist, reach - SPARX_CHASE_STEP_SLACK);
             }
             AddVector(&actor->posX, &actor->posX, svA);
             TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
@@ -1385,7 +1385,7 @@ void Level30_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             svF[0] = -SPARX_HOVER_BEHIND;
@@ -1497,7 +1497,7 @@ void Level30_UpdateActors(void) {
             }
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
-            actor->scale = 0x40;
+            actor->scale = ACTOR_SCALE_HALF;
             actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
@@ -1576,7 +1576,7 @@ void Level30_UpdateActors(void) {
       if (actor->flags & ACTOR_HITS_SPYRO) {
         int i;
 
-        actor->soundRange = 0x20;
+        actor->soundRange = SOUND_RANGE(0x8000);
         PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < WOODCHEST_SHARD_PAIRS; i++) {
@@ -1646,7 +1646,7 @@ void Level30_UpdateActors(void) {
       if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
-        actor->soundRange = 0x20;
+        actor->soundRange = SOUND_RANGE(0x8000);
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {

@@ -1,10 +1,11 @@
 #include "globals.h"
+#include "spu.h"
 
 /* Publish the loaded level sample-bank header/entry pointers, and (when
    relocate != 0) patch each entry's leading file-relative sample offset to
-   absolute by adding the 0x1010 SPU RAM base. Entries are 0x14 bytes; the
-   count sits at header+0x100, the entry array at header+0x104. Walks the
-   entries back-to-front. (0x80012cf0, 104 bytes.) */
+   absolute by adding the SPU_SAMPLE_BASE (0x1010) SPU RAM base. Entries are
+   0x14 bytes; the count sits at header+0x100, the entry array at header+0x104.
+   Walks the entries back-to-front. (0x80012cf0, 104 bytes.) */
 void RelocateLevelSampleBank(int *header, int relocate) {
   int i;
   int off;
@@ -21,7 +22,7 @@ void RelocateLevelSampleBank(int *header, int relocate) {
       do {
         entry = (int *)(off + (int)g_pLevelSampleBankEntries);
         i -= 1;
-        *entry = *entry + 0x1010;
+        *entry = *entry + SPU_SAMPLE_BASE;
         off -= 0x14;
       } while (i >= 0);
     }

@@ -418,7 +418,7 @@ void Level0_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, ATAN_ANGLE8),
                                     st->circleDir * 8),
-                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
+                      8, BUTTERFLY_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -458,7 +458,7 @@ void Level0_UpdateActors(void) {
     /* Pressure switch (SwitchState). */
     case ACTOR_TYPE_PRESSURE_SWITCH: {
       SwitchState *st = (SwitchState *)actor->state;
-      int active = g_anLevelKillBitmapTable[0x78] & 1;
+      int active = g_anLevelKillBitmapTable[KILL_ROW(LEVEL_WIZARD_PEAK)] & 1;
 
       switch (actor->subMode) {
       case PSWITCH_CLEAR: {
@@ -681,7 +681,7 @@ void Level0_UpdateActors(void) {
           if (g_pActorListBase[st->idx].mode >= ACTOR_MODE_DORMANT &&
               ApproxDist2D(&actor->posX, &SPY.posX) < 0x4000) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            actor->soundRange = 0x30;
+            actor->soundRange = SOUND_RANGE(0xC000);
             PlaySoundEffect(g_pLevelSampleBankHeader[0x41], actor, SFX_MODE_3D, &actor->voiceRow);
           }
         }
@@ -1667,9 +1667,9 @@ void Level0_UpdateActors(void) {
             st->glow->offX = 0;
             st->glow->offY = 0;
             st->glow->offZ = 0;
-            st->glow->r = 0xC0;
-            st->glow->g = 0xC0;
-            st->glow->b = 0x60;
+            st->glow->r = SPARX_GLOW_R;
+            st->glow->g = SPARX_GLOW_G;
+            st->glow->b = SPARX_GLOW_B;
             st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
@@ -1745,7 +1745,7 @@ void Level0_UpdateActors(void) {
           if (isPickupAnimPhase == 0) {
             if (TICK_DOWN(st->timer) != 0 ||
                 (st->timer < SPARX_CATCH_EARLY_FRAMES &&
-                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * 110)) & 0xFF,
+                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
                                ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
@@ -1753,11 +1753,11 @@ void Level0_UpdateActors(void) {
               }
             }
           }
-          targetSpeed = isPickupAnimPhase ? 150 : 130;
-          if (targetSpeed + 5 < dist) {
-            ScaleVector3ByRatio(svA, dist, targetSpeed + 5);
+          targetSpeed = isPickupAnimPhase ? SPARX_CHASE_STEP_HIGH : SPARX_CHASE_STEP;
+          if (targetSpeed + SPARX_CHASE_STEP_SLACK < dist) {
+            ScaleVector3ByRatio(svA, dist, targetSpeed + SPARX_CHASE_STEP_SLACK);
           } else {
-            ScaleVector3ByRatio(svA, dist, targetSpeed - 5);
+            ScaleVector3ByRatio(svA, dist, targetSpeed - SPARX_CHASE_STEP_SLACK);
           }
           AddVector(&actor->posX, &actor->posX, svA);
           TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
@@ -1833,7 +1833,7 @@ void Level0_UpdateActors(void) {
         }
       } else {
 
-        actor->cullRadius = 0x10;
+        actor->cullRadius = CULL_RADIUS(0x1000);
         if (st->timer <= 0) {
 
           svF[0] = -SPARX_HOVER_BEHIND;
@@ -1943,7 +1943,7 @@ void Level0_UpdateActors(void) {
           }
 
           g_nLevelKeyState = KEYSTATE_CARRIED;
-          actor->scale = 0x40;
+          actor->scale = ACTOR_SCALE_HALF;
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           actor->drawn = 0;
@@ -2031,7 +2031,7 @@ void Level0_UpdateActors(void) {
         continue;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -2403,7 +2403,7 @@ void Level0_UpdateActors(void) {
           SPY.pCamAnchor = &SPY.posX;
           SPY.pCamTarget = &g_anCameraActiveTargetParams;
           spyro->requestMask |= SPYRO_RQ_CAMERA;
-          g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
         st->timer = WHIRL_IDLE_DELAY;
         break;
@@ -2722,7 +2722,7 @@ void Level0_UpdateActors(void) {
         ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
         actor->mode = SEQPROP_RUN;
         st->timer = 0x1E;
-        actor->soundRange = 0x30;
+        actor->soundRange = SOUND_RANGE(0xC000);
         PlaySoundEffect(g_pLevelSampleBankHeader[0x41], actor, SFX_MODE_3D, &actor->voiceRow);
         break;
 
@@ -3010,7 +3010,7 @@ void Level0_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 
@@ -3036,7 +3036,7 @@ void Level0_UpdateActors(void) {
         ((CollectibleState *)prize->state)->mode = COLLREST_SNAP;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */

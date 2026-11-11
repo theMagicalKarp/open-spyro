@@ -101,6 +101,7 @@ extern Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *e
 extern void GetActorAttachPoint(Actor *actor, int slot, int *dst);
 #ifndef STEER_NO_BLOCK
 #define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
+#define STEER_BLOCKED 0x100 /* returned: the heading is within 5 of a blocked one */
 #endif
 extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int contactRadius, int wallRadius, int flags);
 extern int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);

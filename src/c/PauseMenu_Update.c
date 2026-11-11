@@ -174,8 +174,9 @@ void PauseMenu_Update(void) {
         if (g_dwPadPressed & (PAD_CROSS | PAD_RIGHT | PAD_LEFT)) {
           SFX(SFX_MENU_SELECT);
           g_nOptionVibrationEnabled = 1 - g_nOptionVibrationEnabled;
-          if (g_nOptionVibrationEnabled && g_nVibrationLevel < 10) {
-            g_nVibrationLevel = 10;
+          if (g_nOptionVibrationEnabled &&
+              g_nVibrationLevel < VIBRATION_TEST_LEVEL) {
+            g_nVibrationLevel = VIBRATION_TEST_LEVEL;
           }
         }
       } else {

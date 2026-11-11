@@ -108,28 +108,32 @@ void DragonRescue_Update(void) {
     TickSpyroGameplayFrame();
     UpdateCameraFrame();
     g_nDragonRescueAuraStarEnabled = 1;
-    g_bDragonRescueAuraStarColor = g_nDragonRescueTimer * 4 + 0x40;
-    g_nDragonRescueAuraStarRadius = g_nDragonRescueTimer * 0x10;
+    g_bDragonRescueAuraStarColor =
+        g_nDragonRescueTimer * RESCUE_AURA_COLOR_STEP + RESCUE_AURA_COLOR_BASE;
+    g_nDragonRescueAuraStarRadius =
+        g_nDragonRescueTimer * RESCUE_AURA_RADIUS_STEP;
     g_abDragonRescueAuraStarEuler[2] +=
         ((g_nDragonRescueTimer >> 4) + 2) * g_nFrameStep;
-    if (g_nDragonRescueTimer > 0x20) {
-      g_nDragonRescueFullscreenTintLevel = (g_nDragonRescueTimer - 0x20) * 0x10;
+    if (g_nDragonRescueTimer > RESCUE_AURA_TINT_START) {
+      g_nDragonRescueFullscreenTintLevel =
+          (g_nDragonRescueTimer - RESCUE_AURA_TINT_START) *
+          RESCUE_AURA_TINT_STEP;
     } else {
       g_nDragonRescueFullscreenTintLevel = 0;
     }
-    if (g_nPulseRumbleTimer < 8) {
-      g_nPulseRumbleTimer = 8;
+    if (g_nPulseRumbleTimer < RESCUE_RUMBLE_FRAMES) {
+      g_nPulseRumbleTimer = RESCUE_RUMBLE_FRAMES;
     }
     i = (int)&GB[5];
     now = *(int *)i;
-    g_nPulseRumbleAmount = 0x46;
-    if (now >= 0x30) {
+    g_nPulseRumbleAmount = RESCUE_RUMBLE_AMOUNT;
+    if (now >= RESCUE_AURA_FRAMES) {
       int *rec;
 
       g_nDragonRescueSubstate = DRAGON_RESCUE_SWEEP;
       *(int *)i = 0;
       g_nDragonRescueFullscreenTintLevel = 0xFF;
-      ACTOR_RAW(SRC, int, posZ) -= 0x78;
+      ACTOR_RAW(SRC, int, posZ) -= RESCUE_SOURCE_SINK;
       {
         Actor *src = SRC;
 
@@ -165,12 +169,12 @@ void DragonRescue_Update(void) {
           (AbsAngleDelta12(g_nDragonRescueOrbitStartYaw,
                            g_dwDragonRescueOrbitTargetYaw) >>
            4) +
-          0x28;
-      if (g_nDragonRescueSweepDurationFrames < 0x40) {
-        g_nDragonRescueSweepDurationFrames = 0x40;
+          RESCUE_SWEEP_BASE_FRAMES;
+      if (g_nDragonRescueSweepDurationFrames < RESCUE_SWEEP_MIN_FRAMES) {
+        g_nDragonRescueSweepDurationFrames = RESCUE_SWEEP_MIN_FRAMES;
       }
-      if (g_nDragonRescueSweepDurationFrames > 0x80) {
-        g_nDragonRescueSweepDurationFrames = 0x80;
+      if (g_nDragonRescueSweepDurationFrames > RESCUE_SWEEP_MAX_FRAMES) {
+        g_nDragonRescueSweepDurationFrames = RESCUE_SWEEP_MAX_FRAMES;
       }
       g_nSpyroSuperflameTimerSave = g_nSpyroSuperflameTimer;
       ResetSpyroEntity(RESET_SPYRO_FULL);
@@ -187,12 +191,13 @@ void DragonRescue_Update(void) {
     }
   } break;
   case DRAGON_RESCUE_SWEEP:
-    if (g_nDragonRescueTimer < 0x20) {
-      int k = 0x20 - g_nDragonRescueTimer;
+    if (g_nDragonRescueTimer < RESCUE_AURA_FADE_FRAMES) {
+      int k = RESCUE_AURA_FADE_FRAMES - g_nDragonRescueTimer;
 
       g_nDragonRescueAuraStarEnabled = 1;
-      g_bDragonRescueAuraStarColor = k * 4 + 0x40;
-      g_nDragonRescueAuraStarRadius = k * 0x10;
+      g_bDragonRescueAuraStarColor =
+          k * RESCUE_AURA_COLOR_STEP + RESCUE_AURA_COLOR_BASE;
+      g_nDragonRescueAuraStarRadius = k * RESCUE_AURA_RADIUS_STEP;
       g_abDragonRescueAuraStarEuler[2] += ((k >> 4) + 2) * g_nFrameStep;
     } else {
       g_nDragonRescueAuraStarEnabled = 0;
@@ -217,10 +222,10 @@ void DragonRescue_Update(void) {
 
       s->rotY = g_abDragonRescueFlickerPairs1Y[s->subMode * 2];
     }
-    if (g_nPulseRumbleTimer < 8) {
-      g_nPulseRumbleTimer = 8;
+    if (g_nPulseRumbleTimer < RESCUE_RUMBLE_FRAMES) {
+      g_nPulseRumbleTimer = RESCUE_RUMBLE_FRAMES;
     }
-    g_nPulseRumbleAmount = 0x46;
+    g_nPulseRumbleAmount = RESCUE_RUMBLE_AMOUNT;
     g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
     if (g_nDragonRescueTimer < g_nDragonRescueSweepDurationFrames) {
       t = LookupSine((g_nDragonRescueTimer << 11) /
@@ -285,7 +290,7 @@ void DragonRescue_Update(void) {
           (((g_nDragonRescueCameraTargetZ - g_nDragonRescueCameraStartZ) * t) >>
            13);
       {
-        int land = g_nDragonRescueSweepDurationFrames - 0x10;
+        int land = g_nDragonRescueSweepDurationFrames - RESCUE_LAND_LEAD_FRAMES;
 
         if (g_nDragonRescueTimer >= land &&
             g_nDragonRescueTimer - g_nFrameStep < land) {
@@ -293,11 +298,11 @@ void DragonRescue_Update(void) {
           g_bSpyroAnimCurrent = SPYRO_ANIMID_STOP;
           g_bSpyroAnimFrame = 0;
           g_bSpyroSubFrameTimer = 0;
-          g_nSpyroAnimPlayRate = 0xC;
+          g_nSpyroAnimPlayRate = RESCUE_LAND_ANIM_RATE;
         }
       }
     } else if (g_nDragonRescueTimer <
-               g_nDragonRescueSweepDurationFrames + 0x20) {
+               g_nDragonRescueSweepDurationFrames + RESCUE_SETTLE_FRAMES) {
       if (g_nDragonRescueTimer - g_nFrameStep <
           g_nDragonRescueSweepDurationFrames) {
         g_anSpyroWorldPos[0] =
@@ -379,22 +384,25 @@ void DragonRescue_Update(void) {
         ang[1] = ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], ATAN_ANGLE12);
         ang[2] = ArcTan2(vec[0], vec[1], ATAN_ANGLE12);
         g_nCameraEulerRoll =
-            (ang[0] + ((SignedAngleDelta12(W32(rec, 0xc), ang[0]) *
-                        (g_nDragonRescueTimer -
-                         g_nDragonRescueSweepDurationFrames + 0x20)) >>
-                       6)) &
+            (ang[0] +
+             ((SignedAngleDelta12(W32(rec, 0xc), ang[0]) *
+               (g_nDragonRescueTimer - g_nDragonRescueSweepDurationFrames +
+                RESCUE_SETTLE_FRAMES)) >>
+              6)) &
             0xFFF;
         g_nCameraEulerPitch =
-            (ang[1] + ((SignedAngleDelta12(W32(rec, 0x10), ang[1]) *
-                        (g_nDragonRescueTimer -
-                         g_nDragonRescueSweepDurationFrames + 0x20)) >>
-                       6)) &
+            (ang[1] +
+             ((SignedAngleDelta12(W32(rec, 0x10), ang[1]) *
+               (g_nDragonRescueTimer - g_nDragonRescueSweepDurationFrames +
+                RESCUE_SETTLE_FRAMES)) >>
+              6)) &
             0xFFF;
         g_nCameraEulerYaw =
-            (ang[2] + ((SignedAngleDelta12(W32(rec, 0x14), ang[2]) *
-                        (g_nDragonRescueTimer -
-                         g_nDragonRescueSweepDurationFrames + 0x20)) >>
-                       6)) &
+            (ang[2] +
+             ((SignedAngleDelta12(W32(rec, 0x14), ang[2]) *
+               (g_nDragonRescueTimer - g_nDragonRescueSweepDurationFrames +
+                RESCUE_SETTLE_FRAMES)) >>
+              6)) &
             0xFFF;
       }
     }
@@ -412,7 +420,7 @@ void DragonRescue_Update(void) {
       AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
       TickSpyroAnimLayer1();
       TickSpyroAnimLayer2();
-      g_nSpyroWorldPosZ += 0x400;
+      g_nSpyroWorldPosZ += RESCUE_FLOOR_PROBE_RAISE;
       g_nSpyroGroundHeightZ = FindWorldFloorBelowPoint(g_anSpyroWorldPosBlock);
       g_nSpyroWorldPosZ = g_nSpyroGroundHeightZ + SPYRO_RADIUS;
       SampleSpyroShadowRingHeights(0);
@@ -433,12 +441,12 @@ void DragonRescue_Update(void) {
 
       s->rotY = g_abDragonRescueFlickerPairs2Y[s->subMode * 2];
     }
-    if (g_nPulseRumbleTimer < 8) {
-      g_nPulseRumbleTimer = 8;
+    if (g_nPulseRumbleTimer < RESCUE_RUMBLE_FRAMES) {
+      g_nPulseRumbleTimer = RESCUE_RUMBLE_FRAMES;
     }
-    g_nPulseRumbleAmount = 0x46;
+    g_nPulseRumbleAmount = RESCUE_RUMBLE_AMOUNT;
     g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD, g_pDragonRescueSourceActor);
-    if (g_nDragonRescueTimer < 0x10 ||
+    if (g_nDragonRescueTimer < RESCUE_LOAD_MIN_FRAMES ||
         g_nDragonRescueStreamState < RESCUE_STREAM_RELOAD_LEVEL) {
       AdvanceSpyroAnimFrame(g_nSpyroAnimPlayRate);
       TickSpyroAnimLayer1();
@@ -450,7 +458,7 @@ void DragonRescue_Update(void) {
         int n;
         int five;
 
-        for (n = 0; n < 0x20; n++) {
+        for (n = 0; n < RESCUE_SHARD_BURST; n++) {
           g_pfnLevelSpawnActor(ACTOR_TYPE_STATUE_SHARD,
                                g_pDragonRescueSourceActor);
         }
@@ -465,12 +473,12 @@ void DragonRescue_Update(void) {
 
           t->rotZ = s->rotZ;
         }
-        STATUE->scale = 0x60;
+        STATUE->scale = RESCUE_DRAGON_START_SCALE;
         STATUE->otBias = five;
         ACTOR_RAW(STATUE, int, groundCode) = -1;
-        STATUE->posZ += 0x400;
+        STATUE->posZ += RESCUE_FLOOR_PROBE_RAISE;
         FindWorldFloorBelowPoint(&((Actor *)GB[24])->posX);
-        STATUE->posZ -= 0x400;
+        STATUE->posZ -= RESCUE_FLOOR_PROBE_RAISE;
         EncodeHitNormalToActorGroundCode((void *)GB[24]);
         InsertActorIntoSpatialGrid((void *)GB[24]);
         g_pDragonRescueSpyroMirrorActor = AllocActorRecordSlot();
@@ -482,20 +490,21 @@ void DragonRescue_Update(void) {
         StopSoundVoiceByIndex(GB[11], VOICE_RELEASE);
         PlaySoundEffect(LEVEL_SFX(SFX_RESCUE_STATUE), 0, SFX_MODE_PANNED,
                         (unsigned char *)&GB[11]);
-        ACTOR_RAW(SRC, int, posZ) += 0x78;
+        ACTOR_RAW(SRC, int, posZ) += RESCUE_SOURCE_SINK;
         DespawnActorRecord(SRC);
       }
     }
     break;
   case DRAGON_RESCUE_TURN:
-    if (GB[5] < 0x18) {
-      STATUE->scale = 0x60 - GB[5] * 3;
+    if (GB[5] < RESCUE_TURN_FRAMES) {
+      STATUE->scale =
+          RESCUE_DRAGON_START_SCALE - GB[5] * RESCUE_DRAGON_GROW_STEP;
       {
         Actor *s = SRC;
         int turn;
 
         turn = SignedAngleDelta8(STATUE_ST(s)->dragonYaw >> 4, s->rotZ) *
-               GB[5] / 24;
+               GB[5] / RESCUE_TURN_FRAMES;
         {
           Actor *s2 = SRC;
           Actor *t = STATUE;
@@ -526,11 +535,12 @@ void DragonRescue_Update(void) {
       if (g_nDragonRescueAudioFiredFlag == 0 &&
           GB[5] >= STATUE_ST(SRC)->speechFrame) {
         CopyWords(save, *(void *volatile *)g_apSampleBankEntriesBlock, 0x14);
-        SBE->nSampleAddr = 0x80000 - g_nDragonRescueAudioSampleSize;
+        SBE->nSampleAddr = SPU_RAM_SIZE - g_nDragonRescueAudioSampleSize;
         SBE->nLoopAddr = -1;
-        SBE->nVolume = 0x32;
+        SBE->nVolume = RESCUE_VOICE_VOLUME;
         {
-          int rate = (STATUE_ST(SRCS)->speechRate << 10) / 11025;
+          int rate =
+              (STATUE_ST(SRCS)->speechRate << 10) / RESCUE_VOICE_BASE_RATE;
 
           SBE->nPitch = rate;
         }
@@ -546,7 +556,7 @@ void DragonRescue_Update(void) {
         g_nDragonRescueAudioFiredFlag = 1;
       }
       {
-        int *p = (int *)((g_nDragonRescueTimer >> 1) * 0x18 +
+        int *p = (int *)((g_nDragonRescueTimer >> 1) * (int)sizeof(CamPathKey) +
                          (int)g_pDragonRescueCameraPath);
 
         g_anCameraPos[0] = CAM_KEY_RAW(p, x);
@@ -610,7 +620,7 @@ void DragonRescue_Update(void) {
 
       g_nDragonRescueSubstate = DRAGON_RESCUE_LIGHT_UP;
       g_nDragonRescueTimer = 0;
-      p = (int *)(g_nDragonRescueCameraPathCount * 0x18 +
+      p = (int *)(g_nDragonRescueCameraPathCount * (int)sizeof(CamPathKey) +
                   (int)g_pDragonRescueCameraPath);
       g_anCameraPos[0] = CAM_KEY_RAW((CamPathKey *)p - 1, x);
       g_anCameraPos[1] = CAM_KEY_RAW((CamPathKey *)p - 1, y);
@@ -639,7 +649,7 @@ void DragonRescue_Update(void) {
       StopSoundVoiceByIndex(*(int *)&g_bSceneSfxVoiceMarker, 2);
       TickSpuPerFrame();
       if (g_nDragonRescueSplitFlag == 0) {
-        SetSpuTransferStartAddr(0x80000 - g_nDragonRescueAudioSampleSize);
+        SetSpuTransferStartAddr(SPU_RAM_SIZE - g_nDragonRescueAudioSampleSize);
         WriteSpuRam(g_pWorldUnpackHead + g_nDragonRescueAudioSampleOffset,
                     g_nDragonRescueAudioSampleSize);
         while (GetSpuTransferStatus(0) == 0) {
@@ -648,7 +658,7 @@ void DragonRescue_Update(void) {
     }
     if (GB[13] != 0) {
       GB[13] += g_nFrameStep;
-      if (GB[13] >= 0x78) {
+      if (GB[13] >= RESCUE_PAD_HOLD_FRAMES) {
         GB[13] = 0;
       }
     }
@@ -683,7 +693,7 @@ void DragonRescue_Update(void) {
   roll_in:
     CopyVector(&HUD_ICON(5 * ACTOR_SIZE + k)->posX,
                (int *)((char *)g_anDragonRescueIconRestPos + off));
-    if (g_nDragonRescueTimer < 0x19) {
+    if (g_nDragonRescueTimer < RESCUE_LIGHT_UP_FRAMES) {
       *icon += (((short *)done)[g_nDragonRescueTimer >> 1] * 3) >> 1;
     } else {
       *icon += (g_anHudRollInStepTable[0xC] * 3) >> 1;
@@ -695,13 +705,13 @@ void DragonRescue_Update(void) {
     if (i < 3) {
       goto roll_in;
     }
-    if (GB[5] >= 0x19) {
+    if (GB[5] >= RESCUE_LIGHT_UP_FRAMES) {
       g_nDragonRescueSubstate = DRAGON_RESCUE_COUNT;
       GB[5] = 0;
       g_bHudDragonRollPhase = 0;
       CopyVector((int *)ang, &g_pDragonRescueStatueActor->posX);
-      ((int *)ang)[2] += 0x40;
-      g_pfnLevelEmitParticles(0x20, EMIT_RESCUE_SWIRL, ang, 0);
+      ((int *)ang)[2] += RESCUE_SWIRL_RAISE;
+      g_pfnLevelEmitParticles(RESCUE_SWIRL_COUNT, EMIT_RESCUE_SWIRL, ang, 0);
       CopyVector(g_anDragonRescueAuraStarAnchor, (int *)ang);
       DespawnActorRecord(STATUE);
       DespawnActorRecord(MIRROR);
@@ -715,7 +725,7 @@ void DragonRescue_Update(void) {
     TickSpyroAnimLayer2();
     if (g_anHudDragonCachedCountBlock[0] != g_nTotalDragonsRescued ||
         g_bHudDragonRollPhase != 0) {
-      g_bHudDragonRollPhase += 0x10;
+      g_bHudDragonRollPhase += RESCUE_COUNT_ROLL_STEP;
       SetHudCounterDigits(HUD_SLOT_DRAGON_DIGITS, 2,
                           g_anHudDragonCachedCountBlock[0] + 1,
                           HUD_DIGITS_PENDING);
@@ -728,7 +738,8 @@ void DragonRescue_Update(void) {
                         &g_bSceneSfxVoiceMarker);
       }
     }
-    if (GB[5] >= 0x60 && g_nDragonRescueStreamState == RESCUE_STREAM_DONE) {
+    if (GB[5] >= RESCUE_COUNT_FRAMES &&
+        g_nDragonRescueStreamState == RESCUE_STREAM_DONE) {
       g_nDragonRescueSubstate = DRAGON_RESCUE_FADE_OUT;
       GB[5] = 0;
       g_pEmitListWriteCursor = g_pEmitListBase;
@@ -768,14 +779,15 @@ void DragonRescue_Update(void) {
     if (g_nDragonRescueTimer < 0x10) {
       k = g_nDragonRescueTimer;
     } else {
-      k = 0x20 - g_nDragonRescueTimer;
+      k = RESCUE_FADE_FRAMES - g_nDragonRescueTimer;
     }
     g_nDragonRescueFullscreenTintLevel = k * 0x10 - 1;
     g_anDragonRescueAuraStarBlock[0] = 1;
-    g_bDragonRescueAuraStarColor = k * 8 + 0x40;
-    g_nDragonRescueAuraStarRadius = k * 0x50;
+    g_bDragonRescueAuraStarColor =
+        k * RESCUE_FADE_COLOR_STEP + RESCUE_AURA_COLOR_BASE;
+    g_nDragonRescueAuraStarRadius = k * RESCUE_FADE_RADIUS_STEP;
     g_abDragonRescueAuraStarEuler[2] += 8;
-    if (g_nDragonRescueTimer >= 0x20) {
+    if (g_nDragonRescueTimer >= RESCUE_FADE_FRAMES) {
       g_anDragonRescueAuraStarBlock[0] = 0;
       EndDragonRescueToWorld();
     }

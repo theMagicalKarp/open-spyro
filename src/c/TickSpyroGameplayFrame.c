@@ -119,7 +119,7 @@ void TickSpyroGameplayFrame(void) {
       }
       break;
     }
-  } else if ((g_nSpyroWorldPosZ < 0x400) ||
+  } else if ((g_nSpyroWorldPosZ < WORLD_MIN_COORD) ||
              ((g_nSpyroState == SPYRO_ST_FALL) && (g_nSpyroSubstate >= 0x79))) {
     TriggerRespawnOrGameOver();
   } else {

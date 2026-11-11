@@ -52,5 +52,8 @@ enum LevelId {
  * g_abLevelVisitedFlag, g_anLevelDragonsRescued, ...): the order of the
  * level overlays, six slots per world. */
 #define LEVEL_SLOT(id) (((id) / 10 - 1) * 6 + (id) % 10)
+/* First word of a level's eight-word kill-bitmap row in
+ * g_anLevelKillBitmapTable (bit n: actor n's kill is saved, CommitActorKillGems). */
+#define KILL_ROW(id) (LEVEL_SLOT(id) * 8)
 
 #endif /* OPEN_SPYRO_LEVEL_ID_H */

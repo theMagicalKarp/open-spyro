@@ -8,9 +8,9 @@
    updateDist and dropKind 0xFF (gateChunk 0xFF = always drawn, updateDist the
    widest activation radius, dropKind the random gem roll) and voiceRow 0x7F. */
 void InitActorRenderDefaults(Actor *actor) {
-  actor->cullRadius = 0x10;
+  actor->cullRadius = CULL_RADIUS(0x1000);
   actor->updateDist = ACTOR_UPDATE_ALWAYS;
-  actor->otBias = 4;
+  actor->otBias = OT_BIAS_DEFAULT;
   actor->nextFrame = 1;
   actor->mode = ACTOR_SPAWN_MODE;
   actor->subMode = 0;

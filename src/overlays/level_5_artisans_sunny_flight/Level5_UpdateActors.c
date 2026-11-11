@@ -202,7 +202,7 @@ void Level5_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->circleDir * 8),
-                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
+                      8, BUTTERFLY_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -910,9 +910,9 @@ void Level5_UpdateActors(void) {
             st->glow->offX = 0;
             st->glow->offY = 0;
             st->glow->offZ = 0;
-            st->glow->r = 0xC0;
-            st->glow->g = 0xC0;
-            st->glow->b = 0x60;
+            st->glow->r = SPARX_GLOW_R;
+            st->glow->g = SPARX_GLOW_G;
+            st->glow->b = SPARX_GLOW_B;
             st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
@@ -988,7 +988,7 @@ void Level5_UpdateActors(void) {
           if (isPickupAnimPhase == 0) {
             if (TICK_DOWN(st->timer) != 0 ||
                 (st->timer < SPARX_CATCH_EARLY_FRAMES &&
-                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * 110)) & 0xFF,
+                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
                                ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
@@ -996,11 +996,11 @@ void Level5_UpdateActors(void) {
               }
             }
           }
-          targetSpeed = isPickupAnimPhase ? 150 : 130;
-          if (targetSpeed + 5 < dist) {
-            ScaleVector3ByRatio(svA, dist, targetSpeed + 5);
+          targetSpeed = isPickupAnimPhase ? SPARX_CHASE_STEP_HIGH : SPARX_CHASE_STEP;
+          if (targetSpeed + SPARX_CHASE_STEP_SLACK < dist) {
+            ScaleVector3ByRatio(svA, dist, targetSpeed + SPARX_CHASE_STEP_SLACK);
           } else {
-            ScaleVector3ByRatio(svA, dist, targetSpeed - 5);
+            ScaleVector3ByRatio(svA, dist, targetSpeed - SPARX_CHASE_STEP_SLACK);
           }
           AddVector(&actor->posX, &actor->posX, svA);
           TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
@@ -1076,7 +1076,7 @@ void Level5_UpdateActors(void) {
         }
       } else {
 
-        actor->cullRadius = 0x10;
+        actor->cullRadius = CULL_RADIUS(0x1000);
         if (st->timer <= 0) {
 
           svF[0] = -SPARX_HOVER_BEHIND;
@@ -1186,7 +1186,7 @@ void Level5_UpdateActors(void) {
           }
 
           g_nLevelKeyState = KEYSTATE_CARRIED;
-          actor->scale = 0x40;
+          actor->scale = ACTOR_SCALE_HALF;
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           actor->drawn = 0;
@@ -1588,38 +1588,38 @@ void Level5_UpdateActors(void) {
         for (i = 3; i >= 0; i--) {
           st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
           st->digit[i]->cullRadius = ACTOR_CULL_ALWAYS;
-          st->digit[i]->otBias = 0x20;
-          st->digit[i]->posZ = 0x1000;
+          st->digit[i]->otBias = OT_BIAS_SCREEN;
+          st->digit[i]->posZ = FLIGHT_HUD_DEPTH;
           st->digit[i]->rotZ = 0;
         }
-        st->digit[0]->posX = 0x190;
-        st->digit[0]->posY = 0x1E;
-        st->digit[1]->posX = 0x1A4;
-        st->digit[1]->posY = 0x1E;
-        st->digit[2]->posX = 0x1B4;
-        st->digit[2]->posY = 0x1E;
-        st->digit[3]->posX = 0x1C4;
-        st->digit[3]->posY = 0x1E;
+        st->digit[0]->posX = FLIGHT_CLOCK_TENS_X;
+        st->digit[0]->posY = FLIGHT_CLOCK_Y;
+        st->digit[1]->posX = FLIGHT_CLOCK_SECS_X;
+        st->digit[1]->posY = FLIGHT_CLOCK_Y;
+        st->digit[2]->posX = FLIGHT_CLOCK_POINT_X;
+        st->digit[2]->posY = FLIGHT_CLOCK_Y;
+        st->digit[3]->posX = FLIGHT_CLOCK_TENTHS_X;
+        st->digit[3]->posY = FLIGHT_CLOCK_Y;
 
         if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
           for (i = 4; i < 8; i++) {
             st->digit[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_GLYPH_PERIOD, actor);
             st->digit[i]->cullRadius = ACTOR_CULL_ALWAYS;
-            st->digit[i]->otBias = 0x20;
+            st->digit[i]->otBias = OT_BIAS_SCREEN;
             st->digit[i]->rotZ = 0;
           }
-          st->digit[4]->posX = 0x180;
-          st->digit[4]->posY = 0x1F;
-          st->digit[4]->posZ = 0x1800;
-          st->digit[5]->posX = 0x180;
-          st->digit[5]->posY = 0x18;
-          st->digit[5]->posZ = 0x1800;
-          st->digit[6]->posX = 0x170;
-          st->digit[6]->posY = 0x1E;
-          st->digit[6]->posZ = 0x1000;
-          st->digit[7]->posX = 0x1D4;
-          st->digit[7]->posY = 0x1E;
-          st->digit[7]->posZ = 0x1000;
+          st->digit[4]->posX = FLIGHT_CLOCK_COLON_X;
+          st->digit[4]->posY = FLIGHT_CLOCK_COLON_LOW_Y;
+          st->digit[4]->posZ = FLIGHT_CLOCK_COLON_DEPTH;
+          st->digit[5]->posX = FLIGHT_CLOCK_COLON_X;
+          st->digit[5]->posY = FLIGHT_CLOCK_COLON_HIGH_Y;
+          st->digit[5]->posZ = FLIGHT_CLOCK_COLON_DEPTH;
+          st->digit[6]->posX = FLIGHT_CLOCK_MINS_X;
+          st->digit[6]->posY = FLIGHT_CLOCK_Y;
+          st->digit[6]->posZ = FLIGHT_HUD_DEPTH;
+          st->digit[7]->posX = FLIGHT_CLOCK_HUNDREDTHS_X;
+          st->digit[7]->posY = FLIGHT_CLOCK_Y;
+          st->digit[7]->posZ = FLIGHT_HUD_DEPTH;
         }
 
         for (i = 0; i < 8; i++) {
@@ -1637,16 +1637,16 @@ void Level5_UpdateActors(void) {
           }
         }
 
-        for (i = 0, y = 0x3C; i < 4; i++) {
+        for (i = 0, y = FLIGHT_CLASS_ICON_Y; i < 4; i++) {
           g_aHudIconActorRecords[i].type = st->types[i];
           InitActorRenderDefaults(&g_aHudIconActorRecords[i]);
           HideActorRenderRecord(&g_aHudIconActorRecords[i]);
           g_aHudIconActorRecords[i].posY = y;
-          y += 0x14;
-          g_aHudIconActorRecords[i].otBias = 0x20;
+          y += FLIGHT_CLASS_ICON_DY;
+          g_aHudIconActorRecords[i].otBias = OT_BIAS_SCREEN;
           g_aHudIconActorRecords[i].cullRadius = ACTOR_CULL_ALWAYS;
-          g_aHudIconActorRecords[i].posX = 0x3C;
-          g_aHudIconActorRecords[i].posZ = 0x1000;
+          g_aHudIconActorRecords[i].posX = FLIGHT_CLASS_ICON_X;
+          g_aHudIconActorRecords[i].posZ = FLIGHT_HUD_DEPTH;
           g_aHudIconActorRecords[i].tintMode = i + 3;
         }
       }
@@ -1747,7 +1747,7 @@ void Level5_UpdateActors(void) {
         if (st->count != 0 && TICK_DOWN(st->timer) != 0) {
           st->count--;
           st->spent[st->count]->mode = TALLY_ICON_SPEND;
-          st->timer = 0x10;
+          st->timer = FLIGHT_TALLY_SPEND_INTERVAL;
           PlaySoundEffect(AS_PTRU8(g_pLevelSampleBankHeader)[SFX_FLIGHT_TALLY], actor, SFX_MODE_PANNED, 0);
         }
         for (i = 0; i < 8; i++) {
@@ -1756,9 +1756,9 @@ void Level5_UpdateActors(void) {
           if (a != 0 && a->mode == TALLY_ICON_PARKED) {
             if (st->slot[g_nFlightTallySlot] == 0) {
               st->slot[g_nFlightTallySlot] = a;
-              a->posX = g_nFlightTallySlot * 50 + 0x1E;
-              st->slot[g_nFlightTallySlot]->posY = 0xC8;
-              st->slot[g_nFlightTallySlot]->posZ = 0x1000;
+              a->posX = g_nFlightTallySlot * FLIGHT_SLOT_DX + FLIGHT_SLOT_X;
+              st->slot[g_nFlightTallySlot]->posY = FLIGHT_SLOT_Y;
+              st->slot[g_nFlightTallySlot]->posZ = FLIGHT_HUD_DEPTH;
               st->slot[g_nFlightTallySlot]->mode = TALLY_ICON_LIT;
             } else {
               DespawnActorRecord(a);
@@ -1786,7 +1786,7 @@ void Level5_UpdateActors(void) {
             int *cnt = g_anFlightTargetTally;
             int x;
 
-            for (i = 0, x = 0x1E; i < 8; i++) {
+            for (i = 0, x = FLIGHT_TALLY_X; i < 8; i++) {
               st->icon[i]->type = st->types[g_nFlightTallyShownClass];
               if (cnt[g_nFlightTallyShownClass] < i + 1) {
                 st->icon[i]->cullRadius = ACTOR_CULL_ALWAYS;
@@ -1800,7 +1800,7 @@ void Level5_UpdateActors(void) {
                 st->icon[i]->tintMode = g_nFlightTallyShownClass + 3;
                 st->icon[i]->mode = TALLY_ICON_LIT;
               }
-              x += 0x1E;
+              x += FLIGHT_TALLY_DX;
             }
 
             g_anFlightTallyShown[g_nFlightTallyShownClass] = g_anFlightTargetTally[g_nFlightTallyShownClass];
@@ -1957,9 +1957,9 @@ void Level5_UpdateActors(void) {
         actor->rotZ += 8;
         break;
       case TALLY_ICON_SPEND:
-        svW[0] = g_nFlightTallySlot * 50 + 0x1E;
-        svW[1] = 0xC8;
-        svW[2] = 0x1000;
+        svW[0] = g_nFlightTallySlot * FLIGHT_SLOT_DX + FLIGHT_SLOT_X;
+        svW[1] = FLIGHT_SLOT_Y;
+        svW[2] = FLIGHT_HUD_DEPTH;
         AddVector(&st->x, svW, &actor->posX);
         RShiftVector3(&st->x, 1);
         SubtractVector(svW, &st->x, &actor->posX);
@@ -1982,9 +1982,9 @@ void Level5_UpdateActors(void) {
         }
         break;
       case TALLY_ICON_FINALE:
-        svW[0] = (g_anCosineLut[actor->subMode * 64] >> sh6) + 0x100;
-        svW[1] = ((g_anSineLut[actor->subMode * 64] * 5) >> 9) + 0x78;
-        svW[2] = 0x1000;
+        svW[0] = (g_anCosineLut[actor->subMode * 64] >> sh6) + FLIGHT_RING_X;
+        svW[1] = ((g_anSineLut[actor->subMode * 64] * 5) >> 9) + FLIGHT_RING_Y;
+        svW[2] = FLIGHT_HUD_DEPTH;
         AddVector(&st->x, svW, &actor->posX);
         RShiftVector3(&st->x, 1);
         SubtractVector(svW, &st->x, &actor->posX);
@@ -2004,7 +2004,7 @@ void Level5_UpdateActors(void) {
         actor->rotZ += 8;
         if (st->phase <= 0) {
           st->angle =
-              ArcTan2(actor->posX - 0x100, actor->posY - 0x78, ATAN_ANGLE12);
+              ArcTan2(actor->posX - FLIGHT_RING_X, actor->posY - FLIGHT_RING_Y, ATAN_ANGLE12);
           st->phase = -0x3000;
           st->radius = 0x40;
           actor->mode = TALLY_ICON_SPIRAL;
@@ -2015,11 +2015,11 @@ void Level5_UpdateActors(void) {
         st->radius -= 2;
         actor->posX =
             ((st->radius * (LookupCosine(st->angle + st->phase) << 6)) >> 18) +
-            0x100;
+            FLIGHT_RING_X;
         {
           int s = LookupSine(st->angle + st->phase) * 40;
 
-          actor->posY = ((st->radius * s) >> 18) + 0x78;
+          actor->posY = ((st->radius * s) >> 18) + FLIGHT_RING_Y;
         }
         actor->rotZ += 8;
         if (st->phase >= 0) {

@@ -160,7 +160,7 @@ void Level24_UpdateActors(void) {
           SubtractVector(st->pos, st->pos, &parent->posX);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
-          actor->updateDist = 0x20;
+          actor->updateDist = UPDATE_DIST(0x8000);
         }
 
         if (st->active != 0 &&
@@ -370,7 +370,7 @@ void Level24_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->circleDir * 8),
-                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
+                      8, BUTTERFLY_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -857,7 +857,7 @@ void Level24_UpdateActors(void) {
                                                   actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
                                     g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         actor->flags = 0;
-        st->spin = RandomSignedInRange(8, 0xE);
+        st->spin = RandomSignedInRange(LGUARD_SPIN_MIN, LGUARD_SPIN_MAX);
         actor->subMode = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -895,14 +895,14 @@ void Level24_UpdateActors(void) {
           }
           if (st->kind != LGKIND_SMALL) {
             actor->scale = ACTOR_SCALE_UNIT;
-            actor->mode = LGUARD_GROW;
+            actor->mode = LGUARD_TO_SMALL;
             continue;
           }
-          BurstActorWithSound(actor, 0x28);
-          actor->scale = 0x40;
+          BurstActorWithSound(actor, LGUARD_TO_BIG_SPARK_LIFE);
+          actor->scale = LGUARD_TO_BIG_SCALE;
           st->base = 0;
           ANIM_SET(actor, st->base);
-          actor->mode = LGUARD_SHRINK;
+          actor->mode = LGUARD_TO_BIG;
           continue;
         } else if (st->range < 0) {
           TICK_DOWN(st->reloadTimer);
@@ -1006,11 +1006,11 @@ void Level24_UpdateActors(void) {
         }
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
-        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, 0xC, 0x10);
+        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LGUARD_KNOCK_DRAG, LGUARD_KNOCK_GRAVITY);
         if (st->kind == LGKIND_SMALL) {
           if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - 0xB) < 9) {
             g_nActorAnimDone = 0;
@@ -1036,7 +1036,7 @@ void Level24_UpdateActors(void) {
         break;
       }
 
-      case LGUARD_SHRINK:
+      case LGUARD_TO_BIG:
         TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
         if (actor->scale <= ACTOR_SCALE_UNIT) {
@@ -1047,12 +1047,12 @@ void Level24_UpdateActors(void) {
         }
         break;
 
-      case LGUARD_GROW:
+      case LGUARD_TO_SMALL:
         TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
-        if (actor->scale >= LGUARD_GROW_SCALE) {
+        if (actor->scale >= LGUARD_TO_SMALL_SCALE) {
           actor->scale = ACTOR_SCALE_UNIT;
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, LGUARD_TO_SMALL_SPARK_LIFE);
           st->base = 4;
           ANIM_SET(actor, st->base);
           st->kind = !st->kind;
@@ -1076,7 +1076,7 @@ void Level24_UpdateActors(void) {
           }
           break;
         }
-        st->timer = 0x3C;
+        st->timer = LGUARD_ESCORT_TURN_DELAY;
         break;
       }
       }
@@ -1106,7 +1106,7 @@ void Level24_UpdateActors(void) {
             o->subMode = 7;
             o->rotY = ArcTan2(st->speed, st->vz, ATAN_ANGLE8);
             o->rotZ = actor->rotZ;
-            o->cullRadius = 0x50;
+            o->cullRadius = CULL_RADIUS(0x5000);
             st->spark = 0;
           }
           do {
@@ -1844,9 +1844,9 @@ void Level24_UpdateActors(void) {
             st->glow->offX = 0;
             st->glow->offY = 0;
             st->glow->offZ = 0;
-            st->glow->r = 0xC0;
-            st->glow->g = 0xC0;
-            st->glow->b = 0x60;
+            st->glow->r = SPARX_GLOW_R;
+            st->glow->g = SPARX_GLOW_G;
+            st->glow->b = SPARX_GLOW_B;
             st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
@@ -1881,7 +1881,7 @@ void Level24_UpdateActors(void) {
           switch (actor->subMode) {
           case SPARX_SUB_CHASE: {
             /* Closing in on the butterfly. */
-            CollectibleState *pk = st->target->state;
+            ButterflyState *bp = st->target->state;
             int high = actor->nextAnim & 1;
             int dist;
             int reach;
@@ -1929,7 +1929,7 @@ void Level24_UpdateActors(void) {
                 (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
-                      (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
+                      (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
                       (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                           0xFF) < 8))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
@@ -1938,12 +1938,12 @@ void Level24_UpdateActors(void) {
               }
             }
 
-            reach = high != 0 ? 0x96 : 0x82;
-            limit = reach + 5;
+            reach = high != 0 ? SPARX_CHASE_STEP_HIGH : SPARX_CHASE_STEP;
+            limit = reach + SPARX_CHASE_STEP_SLACK;
             if (limit < dist) {
               ScaleVector3ByRatio(g152, dist, limit);
             } else {
-              ScaleVector3ByRatio(g152, dist, reach - 5);
+              ScaleVector3ByRatio(g152, dist, reach - SPARX_CHASE_STEP_SLACK);
             }
             AddVector(&actor->posX, &actor->posX, g152);
             TurnActorYawTowardAngle(actor, ArcTan2(g152[0], g152[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
@@ -2020,7 +2020,7 @@ void Level24_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             g136[0] = -SPARX_HOVER_BEHIND;
@@ -2365,7 +2365,7 @@ void Level24_UpdateActors(void) {
                                     g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         actor->flags = 0;
         actor->probeDist = ACTOR_PROBE_NONE;
-        st->spin = RandomSignedInRange(8, 0xE);
+        st->spin = RandomSignedInRange(LGUARD_SPIN_MIN, LGUARD_SPIN_MAX);
         actor->subMode = 0;
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2412,16 +2412,16 @@ void Level24_UpdateActors(void) {
           }
           if (st->kind == LGKIND_SMALL) {
             st->kind = !st->kind;
-            BurstActorWithSound(actor, 0x28);
-            actor->scale = 0x40;
+            BurstActorWithSound(actor, LGUARD_TO_BIG_SPARK_LIFE);
+            actor->scale = LGUARD_TO_BIG_SCALE;
             st->base = 0;
             ANIM_SET(actor, st->base);
-            actor->mode = LGUARD_SHRINK;
+            actor->mode = LGUARD_TO_BIG;
             continue;
           }
           st->kind = !st->kind;
           actor->scale = ACTOR_SCALE_UNIT;
-          actor->mode = LGUARD_GROW;
+          actor->mode = LGUARD_TO_SMALL;
           continue;
         } else if (st->range < 0) {
           TICK_DOWN(st->reloadTimer);
@@ -2513,7 +2513,7 @@ void Level24_UpdateActors(void) {
 
         if (g_nActorAnimDone != 0) {
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-          BurstActorWithSound(actor, 0x18);
+          BurstActorWithSound(actor, LGUARD_BURST_SPARK_LIFE);
           DespawnActorRecord(actor);
           continue;
         }
@@ -2531,7 +2531,7 @@ void Level24_UpdateActors(void) {
             }
           }
         }
-        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, 0xC, 0x10);
+        r = DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, LGUARD_KNOCK_DRAG, LGUARD_KNOCK_GRAVITY);
         if (r == MOVED_LANDED && actor->nextFrame < 0xA) {
           g_nActorAnimDone = 0;
           actor->frameProgress = sixteen;
@@ -2556,7 +2556,7 @@ void Level24_UpdateActors(void) {
         break;
       }
 
-      case LGUARD_SHRINK:
+      case LGUARD_TO_BIG:
         TICK_DOWN(st->reloadTimer);
         actor->scale -= g_nFrameStep * 2;
         if (actor->scale <= ACTOR_SCALE_UNIT) {
@@ -2566,13 +2566,13 @@ void Level24_UpdateActors(void) {
         }
         break;
 
-      case LGUARD_GROW:
+      case LGUARD_TO_SMALL:
         TICK_DOWN(st->reloadTimer);
         actor->scale += g_nFrameStep * 2;
-        if (actor->scale >= LGUARD_GROW_SCALE) {
+        if (actor->scale >= LGUARD_TO_SMALL_SCALE) {
           StopSoundVoicesByOwner(actor, VOICE_STOP_ALL);
           actor->scale = ACTOR_SCALE_UNIT;
-          BurstActorWithSound(actor, 0x20);
+          BurstActorWithSound(actor, LGUARD_TO_SMALL_SPARK_LIFE);
           st->base = 4;
           ANIM_SET(actor, st->base);
           actor->mode = LGUARD_IDLE;
@@ -2700,7 +2700,7 @@ void Level24_UpdateActors(void) {
             }
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
-            actor->scale = 0x40;
+            actor->scale = ACTOR_SCALE_HALF;
             actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
@@ -2797,7 +2797,7 @@ void Level24_UpdateActors(void) {
         continue;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -2864,7 +2864,7 @@ void Level24_UpdateActors(void) {
       if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
-        actor->soundRange = 0x20;
+        actor->soundRange = SOUND_RANGE(0x8000);
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
@@ -3272,7 +3272,7 @@ void Level24_UpdateActors(void) {
           SPY.pCamAnchor = &SPY.posX;
           SPY.pCamTarget = &g_anCameraActiveTargetParams;
           spyro->requestMask |= SPYRO_RQ_CAMERA;
-          g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
         st->timer = WHIRL_IDLE_DELAY;
         break;
@@ -3393,14 +3393,14 @@ void Level24_UpdateActors(void) {
         if (actor->flags & ACTOR_HIT_BLAST) {
           actor->subMode = BOULDER_CRACKING;
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
-          actor->cullRadius = 0x7F;
+          actor->cullRadius = ACTOR_CULL_MAX;
           if (st->timer < BOULDER_BLAST_TICK) {
             st->timer = BOULDER_BLAST_TICK;
           }
         } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = BOULDER_CRACKING;
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
-          actor->cullRadius = 0x7F;
+          actor->cullRadius = ACTOR_CULL_MAX;
           st->timer = 0;
         } else {
           goto hit;
@@ -3601,7 +3601,7 @@ void Level24_UpdateActors(void) {
     case ACTOR_TYPE_SEED_POD: {
       SeedPodState *st = actor->state;
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       switch (actor->mode) {
       case SEEDPOD_CLOSED:
         if (actor->subMode == SEEDPOD_SUB_UNTINTED) {
@@ -3986,7 +3986,7 @@ void Level24_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 
@@ -4012,7 +4012,7 @@ void Level24_UpdateActors(void) {
         ((CollectibleState *)prize->state)->mode = st->restMode;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */

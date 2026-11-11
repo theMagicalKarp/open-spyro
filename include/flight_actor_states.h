@@ -65,6 +65,39 @@ typedef struct HudState {
 #define FLIGHT_CLOCK_TICK_SECONDS 10
 #define FLIGHT_HURRY_SECONDS 6
 
+/* Flight HUD layout. The HUD actors sit in screen space: posX / posY in
+ * pixels, posZ their depth (FLIGHT_HUD_DEPTH, the colon dots further back),
+ * all with otBias OT_BIAS_SCREEN. The clock runs along FLIGHT_CLOCK_Y
+ * (time attack's colon is two period glyphs stacked at COLON_LOW_Y /
+ * COLON_HIGH_Y); the per-class icons stack down from FLIGHT_CLASS_ICON_Y; the
+ * tally row starts at FLIGHT_TALLY_X; a finished row flies to its finish slot
+ * (slot * FLIGHT_SLOT_DX + FLIGHT_SLOT_X, FLIGHT_SLOT_Y), one icon every
+ * FLIGHT_TALLY_SPEND_INTERVAL frames, and the four filled slots spiral into
+ * the results ring around (FLIGHT_RING_X, FLIGHT_RING_Y). */
+#define FLIGHT_HUD_DEPTH 0x1000
+#define FLIGHT_CLOCK_Y 0x1E
+#define FLIGHT_CLOCK_MINS_X 0x170       /* digit[6], time attack */
+#define FLIGHT_CLOCK_COLON_X 0x180      /* digit[4] / digit[5], time attack */
+#define FLIGHT_CLOCK_COLON_LOW_Y 0x1F
+#define FLIGHT_CLOCK_COLON_HIGH_Y 0x18
+#define FLIGHT_CLOCK_COLON_DEPTH 0x1800
+#define FLIGHT_CLOCK_TENS_X 0x190       /* digit[0] */
+#define FLIGHT_CLOCK_SECS_X 0x1A4       /* digit[1] */
+#define FLIGHT_CLOCK_POINT_X 0x1B4      /* digit[2], the period glyph */
+#define FLIGHT_CLOCK_TENTHS_X 0x1C4     /* digit[3] */
+#define FLIGHT_CLOCK_HUNDREDTHS_X 0x1D4 /* digit[7], time attack */
+#define FLIGHT_CLASS_ICON_X 0x3C
+#define FLIGHT_CLASS_ICON_Y 0x3C
+#define FLIGHT_CLASS_ICON_DY 0x14
+#define FLIGHT_TALLY_X 0x1E
+#define FLIGHT_TALLY_DX 0x1E
+#define FLIGHT_TALLY_SPEND_INTERVAL 0x10
+#define FLIGHT_SLOT_X 0x1E
+#define FLIGHT_SLOT_DX 50
+#define FLIGHT_SLOT_Y 0xC8
+#define FLIGHT_RING_X 0x100
+#define FLIGHT_RING_Y 0x78
+
 /* ACTOR_TYPE_AIMED_SHOT: moves by ->vel until its timer runs out or
  * it hits something. */
 typedef struct DriftState {

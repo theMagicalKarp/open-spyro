@@ -68,7 +68,7 @@ void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
         CURSOR_P->type = ACTOR_TYPE_GLYPH_PERIOD;
       }
 
-      CURSOR->otBias = 0x7F;
+      CURSOR->otBias = OT_BIAS_SPRITE;
       CURSOR->tintMode = nPalette;
       CURSOR->cullRadius = ACTOR_CULL_ALWAYS;
     }

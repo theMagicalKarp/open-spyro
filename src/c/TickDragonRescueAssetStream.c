@@ -4,6 +4,7 @@
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
+#include "spu.h"
 
 #define HEAD (g_apWorldUnpackHeadBlock[0])
 #define HDR (g_anDragonRescueHeaderEndBlock[0])
@@ -73,7 +74,7 @@ void TickDragonRescueAssetStream(void) {
           (int *)(HEAD + g_nDragonRescueMirrorMeshOffset));
       g_nDragonRescueSpuChunkIndex = 0;
     } else {
-      SetSpuTransferStartAddr(0x80000 - g_nDragonRescueAudioSampleSize);
+      SetSpuTransferStartAddr(SPU_RAM_SIZE - g_nDragonRescueAudioSampleSize);
       WriteSpuRam(HEAD + g_nDragonRescueAudioSampleOffset,
                   g_nDragonRescueAudioSampleSize);
       while (GetSpuTransferStatus(0) == 0) {

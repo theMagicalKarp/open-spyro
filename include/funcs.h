@@ -2118,6 +2118,7 @@ int PlaneDistanceAbs(int *pos, int *plane);
  * side it is already turning toward); returns the residual heading error. */
 #ifndef STEER_NO_BLOCK
 #define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
+#define STEER_BLOCKED 0x100 /* returned: the heading is within 5 of a blocked one */
 #endif
 /* 0x80038638: steers `actor` around `tgt` rather than at it: aims at the point `radius` from it on the side the actor is turning toward and walks that heading (`speed`, turn `turnStep` / `turnThreshold`). Returns the residual |angle error| when lined up within `deadzone` or nothing moved, 0x100 when the heading is within 5 of a blocked one (`blockA` / `blockB`, STEER_NO_BLOCK = none) on the turn side, else the negated MoveActorAlongHeading result. */
 int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int contactRadius, int wallRadius, int flags);

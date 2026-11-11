@@ -93,8 +93,9 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     if ((g_nPortalTransitionActive == 0) &&
         (g_nGamestate != GS_ACTOR_CUTSCENE)) {
       if (((g_nGamestate == GS_GAME_OVER) &&
-           (((unsigned int)(g_nActiveLevelId - 0x28)) < 0x14)) &&
-          ((gidx = g_nGameOverLevelIndex - 0x12,
+           (((unsigned int)(g_nActiveLevelId - LEVEL_BEAST_MAKERS)) <
+            LEVEL_GNORC_GNEXUS - LEVEL_BEAST_MAKERS)) &&
+          ((gidx = g_nGameOverLevelIndex - LEVEL_SLOT(LEVEL_BEAST_MAKERS),
             g_anGameOverRespawnPosTable[gidx * 3] != 0))) {
         CopyVector(
             g_anSpyroWorldPos,
@@ -156,7 +157,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
     g_pCameraAnchorPos = g_anSpyroWorldPos;
     g_nCameraCurrentMode = CAM_MODE_STAND;
     g_nCameraNextMode = CAM_MODE_STAND;
-    g_anCameraActiveTargetParams[2] = 0x600;
+    g_anCameraActiveTargetParams[CAMP_DISTANCE] = 0x600;
     g_pCameraTargetParams = g_anCameraActiveTargetParams;
     g_nCameraParamsReferenceYaw = g_nSpyroBodyYaw;
     ResetCameraStateToTarget();

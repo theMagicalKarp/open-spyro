@@ -214,7 +214,7 @@ void Level28_UpdateActors(void) {
           SubtractVector(st->pos, st->pos, &parent->posX);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
-          actor->updateDist = 0x20;
+          actor->updateDist = UPDATE_DIST(0x8000);
         }
 
         if (st->active != 0 &&
@@ -424,7 +424,7 @@ void Level28_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - spy->posX,
                                                   actor->posY - spy->posY, ATAN_ANGLE8),
                                     st->circleDir * 8),
-                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
+                      8, BUTTERFLY_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -836,7 +836,7 @@ void Level28_UpdateActors(void) {
           continue;
         }
         CopyVector(g168, &spy->posX);
-        if (actor->posX < 0x400 || actor->posY < 0x400 || actor->posZ < 0x400) {
+        if (actor->posX < WORLD_MIN_COORD || actor->posY < WORLD_MIN_COORD || actor->posZ < WORLD_MIN_COORD) {
           actor->mode = TROCK_BREAK;
           ANIM_RESET(actor, TROCK_BREAK);
           continue;
@@ -1598,9 +1598,9 @@ void Level28_UpdateActors(void) {
             st->glow->offX = 0;
             st->glow->offY = 0;
             st->glow->offZ = 0;
-            st->glow->r = 0xC0;
-            st->glow->g = 0xC0;
-            st->glow->b = 0x60;
+            st->glow->r = SPARX_GLOW_R;
+            st->glow->g = SPARX_GLOW_G;
+            st->glow->b = SPARX_GLOW_B;
             st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
@@ -1635,7 +1635,7 @@ void Level28_UpdateActors(void) {
           switch (actor->subMode) {
           case SPARX_SUB_CHASE: {
             /* Closing in on the butterfly. */
-            CollectibleState *pk = st->target->state;
+            ButterflyState *bp = st->target->state;
             int high = actor->nextAnim & 1;
             int dist;
             int reach;
@@ -1683,7 +1683,7 @@ void Level28_UpdateActors(void) {
                 (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
-                      (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
+                      (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
                       (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                           0xFF) < 8))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
@@ -1692,12 +1692,12 @@ void Level28_UpdateActors(void) {
               }
             }
 
-            reach = high != 0 ? 0x96 : 0x82;
-            limit = reach + 5;
+            reach = high != 0 ? SPARX_CHASE_STEP_HIGH : SPARX_CHASE_STEP;
+            limit = reach + SPARX_CHASE_STEP_SLACK;
             if (limit < dist) {
               ScaleVector3ByRatio(sparxTargetPos, dist, limit);
             } else {
-              ScaleVector3ByRatio(sparxTargetPos, dist, reach - 5);
+              ScaleVector3ByRatio(sparxTargetPos, dist, reach - SPARX_CHASE_STEP_SLACK);
             }
             AddVector(&actor->posX, &actor->posX, sparxTargetPos);
             TurnActorYawTowardAngle(actor, ArcTan2(sparxTargetPos[0], sparxTargetPos[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
@@ -1774,7 +1774,7 @@ void Level28_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             g184[0] = -SPARX_HOVER_BEHIND;
@@ -2106,7 +2106,7 @@ void Level28_UpdateActors(void) {
       JacquesState *st = actor->state;
 
       if (st->init == 0) {
-        actor->updateDist = 0x20;
+        actor->updateDist = UPDATE_DIST(0x8000);
         st->stops[0] = 3;
         st->stops[1] = 6;
         st->stops[2] = 7;
@@ -2302,7 +2302,7 @@ void Level28_UpdateActors(void) {
             }
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
-            actor->scale = 0x40;
+            actor->scale = ACTOR_SCALE_HALF;
             actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
@@ -2386,12 +2386,12 @@ void Level28_UpdateActors(void) {
         if (g_nLevelKeyState == KEYSTATE_NONE || g_nLevelKeyState == KEYSTATE_REWARD_TAKEN) {
           g_nLevelKeyState = KEYSTATE_NONE;
           actor->updateDist = sixteen;
-          key->updateDist = 0x40;
-          key->cullRadius = 0x18;
+          key->updateDist = UPDATE_DIST(0x10000);
+          key->cullRadius = CULL_RADIUS(0x1800);
         } else {
           g_nLevelKeyState = KEYSTATE_CARRIED;
           actor->subMode = LOCKCHEST_KEY_READY;
-          key->scale = 0x40;
+          key->scale = ACTOR_SCALE_HALF;
           key->groundCode = 0;
           key->gateChunk = GATE_CHUNK_ALWAYS;
           key->subMode = KEY_TAKEN;
@@ -2438,7 +2438,7 @@ void Level28_UpdateActors(void) {
           st->shake = LOCKCHEST_SKIP_TICK;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        key->cullRadius = 0x18;
+        key->cullRadius = CULL_RADIUS(0x1800);
         st->shake += g_nFrameStep;
         g_nCinematicActive = 1;
 
@@ -2498,7 +2498,7 @@ void Level28_UpdateActors(void) {
           key->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
           key->drawn = 0;
           g_nCinematicActive = 0;
-          actor->soundRange = 0x20;
+          actor->soundRange = SOUND_RANGE(0x8000);
           PlayActorMeshVoice(actor, LOCKEDCHEST_VOICE_OPEN, 0);
 
           for (i = 0; i < 4; i++) {
@@ -2553,7 +2553,7 @@ void Level28_UpdateActors(void) {
         continue;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -2620,7 +2620,7 @@ void Level28_UpdateActors(void) {
       if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
-        actor->soundRange = 0x20;
+        actor->soundRange = SOUND_RANGE(0x8000);
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
@@ -2926,7 +2926,7 @@ void Level28_UpdateActors(void) {
           SPY.pCamAnchor = &spy->posX;
           SPY.pCamTarget = &g_anCameraActiveTargetParams;
           spyro->requestMask |= SPYRO_RQ_CAMERA;
-          g_anCameraActiveTargetParams.w[0] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
+          g_anCameraActiveTargetParams.w[CAMP_YAW] = ((0x80 - actor->rotZ) << 4) & 0xFFF;
         }
         st->timer = WHIRL_IDLE_DELAY;
         break;
@@ -3037,7 +3037,7 @@ void Level28_UpdateActors(void) {
     case ACTOR_TYPE_SEED_POD: {
       SeedPodState *st = actor->state;
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       switch (actor->mode) {
       case SEEDPOD_CLOSED:
         if (actor->subMode == SEEDPOD_SUB_UNTINTED) {
@@ -3277,7 +3277,7 @@ void Level28_UpdateActors(void) {
       } else {
         if (actor->anim == LIFECHEST_OPEN) {
           st->phase += g_nFrameStep;
-          st->passenger->cullRadius = 0x10;
+          st->passenger->cullRadius = CULL_RADIUS(0x1000);
           st->passenger->updateDist = ACTOR_UPDATE_ALWAYS;
         }
 
@@ -3303,7 +3303,7 @@ void Level28_UpdateActors(void) {
         ((CollectibleState *)prize->state)->mode = one;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, LIFECHEST_VOICE_BREAK, 0);
 
       /* Fragment bursts; each stops early once the dynamic pool is full. */

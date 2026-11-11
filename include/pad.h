@@ -43,6 +43,8 @@ enum PadAxis {
 
 /* All four axes centred (the neutral analog word). */
 #define PAD_ANALOG_CENTERED 0x7F7F7F7F
+/* One axis byte at rest. */
+#define PAD_STICK_CENTER 0x7F
 
 /* The left stick is centred when the upper half of the word is 0x7F7F. */
 #define PAD_LEFT_STICK_MASK 0xFFFF0000
@@ -70,6 +72,9 @@ typedef struct PadSubstep {
  * in-struct MEM flag (or with a different width/signedness) where the matched
  * code needs that (ComputeSpyroMoveTargetFromPad, PollPadAndDistributeInput). */
 #define PAD_SUBSTEP_OFFSET(field) ((int)&((PadSubstep *)0)->field)
+/* Byte offsets of the left-stick axes in a PadSubstep (0x16 / 0x17). */
+#define PAD_LX_OFFSET (PAD_SUBSTEP_OFFSET(analog) + PAD_AXIS_LX)
+#define PAD_LY_OFFSET (PAD_SUBSTEP_OFFSET(analog) + PAD_AXIS_LY)
 #define PAD_SUBSTEP_RAW(p, type, field) \
   (*(type *)((char *)(p) + PAD_SUBSTEP_OFFSET(field)))
 

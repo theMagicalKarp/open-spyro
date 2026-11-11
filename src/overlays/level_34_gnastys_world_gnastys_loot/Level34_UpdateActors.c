@@ -211,7 +211,7 @@ void Level34_UpdateActors(void) {
           SubtractVector(st->pos, st->pos, &parent->posX);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
         } else {
-          actor->updateDist = 0x20;
+          actor->updateDist = UPDATE_DIST(0x8000);
         }
 
         if (st->active != 0 &&
@@ -419,7 +419,7 @@ void Level34_UpdateActors(void) {
                       WrapAddAngle8(ArcTan2(actor->posX - SPY.posX,
                                                   actor->posY - SPY.posY, ATAN_ANGLE8),
                                     st->circleDir * 8),
-                      8, 0x82, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
+                      8, BUTTERFLY_CIRCLE_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
 
         if (g_pSparxActor == 0 || g_pSparxActor->subMode == SPARX_SUB_PARKED) {
           actor->mode = BUTTERFLY_FLUTTER;
@@ -1104,9 +1104,9 @@ void Level34_UpdateActors(void) {
             st->glow->offX = 0;
             st->glow->offY = 0;
             st->glow->offZ = 0;
-            st->glow->r = 0xC0;
-            st->glow->g = 0xC0;
-            st->glow->b = 0x60;
+            st->glow->r = SPARX_GLOW_R;
+            st->glow->g = SPARX_GLOW_G;
+            st->glow->b = SPARX_GLOW_B;
             st->glow->points = 9;
             st->glow->desc = &g_anSparkleGlowDesc;
           }
@@ -1141,7 +1141,7 @@ void Level34_UpdateActors(void) {
           switch (actor->subMode) {
           case SPARX_SUB_CHASE: {
             /* Closing in on the butterfly. */
-            CollectibleState *pk = st->target->state;
+            ButterflyState *bp = st->target->state;
             int high = actor->nextAnim & 1;
             int dist;
             int reach;
@@ -1189,7 +1189,7 @@ void Level34_UpdateActors(void) {
                 (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
-                      (actor->rotZ + (pk->vel[0] * 0x6E)) & 0xFF,
+                      (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
                       (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                           0xFF) < 8))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
@@ -1198,12 +1198,12 @@ void Level34_UpdateActors(void) {
               }
             }
 
-            reach = high != 0 ? 0x96 : 0x82;
-            limit = reach + 5;
+            reach = high != 0 ? SPARX_CHASE_STEP_HIGH : SPARX_CHASE_STEP;
+            limit = reach + SPARX_CHASE_STEP_SLACK;
             if (limit < dist) {
               ScaleVector3ByRatio(apex, dist, limit);
             } else {
-              ScaleVector3ByRatio(apex, dist, reach - 5);
+              ScaleVector3ByRatio(apex, dist, reach - SPARX_CHASE_STEP_SLACK);
             }
             AddVector(&actor->posX, &actor->posX, apex);
             TurnActorYawTowardAngle(actor, ArcTan2(apex[0], apex[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
@@ -1280,7 +1280,7 @@ void Level34_UpdateActors(void) {
           }
         } else {
           /* No target: hover at a jittered offset beside Spyro. */
-          actor->cullRadius = 0x10;
+          actor->cullRadius = CULL_RADIUS(0x1000);
 
           if (st->timer <= 0) {
             svF[0] = -SPARX_HOVER_BEHIND;
@@ -1425,7 +1425,7 @@ void Level34_UpdateActors(void) {
             }
 
             g_nLevelKeyState = KEYSTATE_CARRIED;
-            actor->scale = 0x40;
+            actor->scale = ACTOR_SCALE_HALF;
             actor->cullRadius = ACTOR_CULL_HIDDEN;
             actor->updateDist = ACTOR_UPDATE_WHEN_DRAWN;
             actor->drawn = 0;
@@ -1475,7 +1475,7 @@ void Level34_UpdateActors(void) {
         if (CHUNK_ANIM_STEP(GetWorldChunkAnimState(st->chunkAnim)) > 0) {
           st->init = one;
           actor->frameRate = 0x10;
-          actor->cullRadius = 0x40;
+          actor->cullRadius = CULL_RADIUS(0x4000);
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
           ZeroVector(st->look);
           actor->subMode = 0;
@@ -1497,7 +1497,7 @@ void Level34_UpdateActors(void) {
         st->speed = LTHIEF_KNOCK_SPEED;
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - SPY.posX, actor->posY - SPY.posY, ATAN_ANGLE8),
-            g_bSpyroPersistentEulerZ, 0x28, 0x40);
+            g_bSpyroPersistentEulerZ, LTHIEF_KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         for (i = 0; i < 3; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
@@ -1550,8 +1550,8 @@ void Level34_UpdateActors(void) {
             break;
 
           case LTHIEF_LEG_SPUR_IN:
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
-                              0) == ((st->curPath->count - 1) | 0x100)) {
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+                              0) == ((st->curPath->count - 1) | PATH_ARRIVED_FLAG)) {
               if (st->curPath == st->pathB) {
                 st->ring->dir = one;
                 st->ring->cur = st->ring->count - 1;
@@ -1574,11 +1574,11 @@ void Level34_UpdateActors(void) {
             break;
 
           case LTHIEF_LEG_RING:
-            n = 0x100;
+            n = PATH_ARRIVED(0);
             if (st->ring->dir > 0) {
-              n = (st->curPath->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | PATH_ARRIVED_FLAG;
             }
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->path->dir = -st->ring->dir;
               if (st->path->dir > 0) {
@@ -1607,11 +1607,11 @@ void Level34_UpdateActors(void) {
             break;
 
           case LTHIEF_LEG_CROSS:
-            n = 0x100;
+            n = PATH_ARRIVED(0);
             if (st->ring->dir > 0) {
-              n = (st->curPath->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | PATH_ARRIVED_FLAG;
             }
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               st->ring->dir = -st->path->dir;
               if (st->ring->dir > 0) {
@@ -1645,11 +1645,11 @@ void Level34_UpdateActors(void) {
               st->ring->dir = -1;
             }
             st->curPath = st->ring;
-            n = 0x100;
+            n = PATH_ARRIVED(0);
             if (st->ring->dir > 0) {
-              n = (st->curPath->count - 1) | 0x100;
+              n = (st->curPath->count - 1) | PATH_ARRIVED_FLAG;
             }
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               0) == n) {
               if (st->ring->dir > 0) {
                 st->curPath = st->pathA;
@@ -1678,7 +1678,7 @@ void Level34_UpdateActors(void) {
             break;
 
           case LTHIEF_LEG_SPUR_OUT:
-            if (PivotActorAlongPath(actor, st->curPath, 0x400, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->curPath, LTHIEF_NODE_RANGE, speed, 0, 6, 0x18, PIVOT_TURN_ANY,
                               MOVE_CHECK_Z) == PATH_ARRIVED(0)) {
               st->leg = LTHIEF_LEG_PARKED;
             }
@@ -1702,16 +1702,16 @@ void Level34_UpdateActors(void) {
             if (AbsAngleDelta8(actor->rotZ,
                               ArcTan2(SPY.posX - actor->posX,
                                             SPY.posY - actor->posY, ATAN_ANGLE8)) <
-                0x40) {
+                LTHIEF_DODGE_FACING) {
               d = (LTHIEF_DODGE_Z - actor->posZ) >> 1;
             } else {
               d = (FLY_Z(st->curPath, st->curPath->cur) - actor->posZ) >> 3;
             }
-            if (d > 0x80) {
-              d = 0x80;
+            if (d > LTHIEF_DODGE_CLIMB_STEP) {
+              d = LTHIEF_DODGE_CLIMB_STEP;
             }
-            if (d < -0x80) {
-              d = -0x80;
+            if (d < -LTHIEF_DODGE_CLIMB_STEP) {
+              d = -LTHIEF_DODGE_CLIMB_STEP;
             }
             actor->posZ += d;
             actor->rotY = -ArcTan2(d, 0x400, ATAN_ANGLE8) + 0x40;
@@ -1725,12 +1725,12 @@ void Level34_UpdateActors(void) {
             g_nSpyroSwingEulerTargetY[30] = (int)&g_anCameraActiveTargetParams;
             g_nSpyroSwingEulerTargetY[19] = /* g_dwSpyroRequestMask */
                 (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT | SPYRO_RQ_CAMERA);
-            g_anCameraActiveTargetParams.w[2] = 0xC00;
-            g_anCameraActiveTargetParams.w[1] = 0x80;
-            g_anCameraActiveTargetParams.w[4] = -0x100;
-            g_anCameraActiveTargetParams.w[3] = 0;
-            g_anCameraActiveTargetParams.w[5] = 0;
-            g_anCameraActiveTargetParams.w[0] = 0x800 - g_bSpyroPersistentEulerZ * 16;
+            g_anCameraActiveTargetParams.w[CAMP_DISTANCE] = LTHIEF_INTRO_CAM_DISTANCE;
+            g_anCameraActiveTargetParams.w[CAMP_PITCH] = LTHIEF_INTRO_CAM_PITCH;
+            g_anCameraActiveTargetParams.w[CAMP_PITCH_BIAS] = LTHIEF_INTRO_CAM_PITCH_BIAS;
+            g_anCameraActiveTargetParams.w[CAMP_ROLL] = 0;
+            g_anCameraActiveTargetParams.w[CAMP_YAW_BIAS] = 0;
+            g_anCameraActiveTargetParams.w[CAMP_YAW] = 0x800 - g_bSpyroPersistentEulerZ * 16;
             r = TweenActorAlongPath(actor, st->path, st->look, &st->laps,
                               st->speed, TWEEN_FLY);
             if (r == TWEEN_WRAPPED) {
@@ -1753,11 +1753,11 @@ void Level34_UpdateActors(void) {
           if (st->roll > 0x800) {
             st->roll -= 0x1000;
           }
-          if (st->roll < -0x200) {
-            st->roll = -0x200;
+          if (st->roll < -LTHIEF_MAX_ROLL) {
+            st->roll = -LTHIEF_MAX_ROLL;
           }
-          if (st->roll > 0x200) {
-            st->roll = 0x200;
+          if (st->roll > LTHIEF_MAX_ROLL) {
+            st->roll = LTHIEF_MAX_ROLL;
           }
           actor->rotX = st->roll >> 4;
         }
@@ -2074,7 +2074,7 @@ void Level34_UpdateActors(void) {
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->drawn = 0;
           actor->groundCode = 0;
-          actor->scale = 0x40;
+          actor->scale = ACTOR_SCALE_HALF;
           actor->gateChunk = GATE_CHUNK_ALWAYS;
           actor->subMode = 1;
           st->mode = one;
@@ -2108,7 +2108,7 @@ void Level34_UpdateActors(void) {
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
           actor->drawn = 0;
           actor->groundCode = 0;
-          actor->scale = 0x40;
+          actor->scale = ACTOR_SCALE_HALF;
           actor->gateChunk = GATE_CHUNK_ALWAYS;
           break;
         }
@@ -2133,7 +2133,7 @@ void Level34_UpdateActors(void) {
           actor->rotY = 0;
           actor->rotZ = g_bSpyroPersistentEulerZ + 0x80;
           actor->drawn = 1;
-          actor->cullRadius = 0x18;
+          actor->cullRadius = CULL_RADIUS(0x1800);
           st->mode = LVORTEX_ACTIVE;
           st->timer = 0;
           if (st->seen != 0) {
@@ -2160,7 +2160,7 @@ void Level34_UpdateActors(void) {
           st->timer = LOCKCHEST_SKIP_TICK;
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        actor->cullRadius = 0x18;
+        actor->cullRadius = CULL_RADIUS(0x1800);
         st->timer += g_nFrameStep;
         g_nCinematicActive = one;
         if (st->timer < LOCKCHEST_INSERT_TICK) {
@@ -2268,7 +2268,7 @@ void Level34_UpdateActors(void) {
         continue;
       }
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       PlayActorMeshVoice(actor, WOODCHEST_VOICE_BREAK, 0);
 
       /* Two of each of the first pair, then six of the third. */
@@ -2335,7 +2335,7 @@ void Level34_UpdateActors(void) {
       if (actor->flags & (ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)) {
         int i;
 
-        actor->soundRange = 0x20;
+        actor->soundRange = SOUND_RANGE(0x8000);
         PlayActorMeshVoice(actor, WOBBLECHEST_VOICE_BREAK, 0);
 
         for (i = 0; i < WOBBLECHEST_SHARD_PAIRS; i++) {
@@ -2676,14 +2676,14 @@ void Level34_UpdateActors(void) {
         if (actor->flags & ACTOR_HIT_BLAST) {
           actor->subMode = BOULDER_CRACKING;
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
-          actor->cullRadius = 0x7F;
+          actor->cullRadius = ACTOR_CULL_MAX;
           if (st->timer < BOULDER_BLAST_TICK) {
             st->timer = BOULDER_BLAST_TICK;
           }
         } else if (actor->flags & ACTOR_HIT_FLAME) {
           actor->subMode = BOULDER_CRACKING;
           actor->updateDist = ACTOR_UPDATE_ALWAYS;
-          actor->cullRadius = 0x7F;
+          actor->cullRadius = ACTOR_CULL_MAX;
           st->timer = 0;
         } else {
           goto hit;
@@ -2857,7 +2857,7 @@ void Level34_UpdateActors(void) {
     case ACTOR_TYPE_SEED_POD: {
       SeedPodState *st = actor->state;
 
-      actor->soundRange = 0x20;
+      actor->soundRange = SOUND_RANGE(0x8000);
       switch (actor->mode) {
       case SEEDPOD_CLOSED:
         if (actor->subMode == SEEDPOD_SUB_UNTINTED) {
@@ -3031,8 +3031,8 @@ void Level34_UpdateActors(void) {
       }
       if (actor->subMode == SPINCHEST_INIT) {
         st->lid = g_pfnLevelSpawnActor(ACTOR_TYPE_SPIN_CHEST_LID, actor);
-        st->lid->cullRadius = 0x1A;
-        actor->updateDist = 0x10;
+        st->lid->cullRadius = CULL_RADIUS(0x1A00);
+        actor->updateDist = UPDATE_DIST(0x4000);
         actor->subMode = SPINCHEST_SPINNING;
         continue;
       }
@@ -3049,9 +3049,9 @@ void Level34_UpdateActors(void) {
       }
       if (st->speed < SPINCHEST_MIN_SPEED) {
         st->speed = SPINCHEST_MIN_SPEED;
-        actor->updateDist = 0x10;
+        actor->updateDist = UPDATE_DIST(0x4000);
       } else {
-        actor->updateDist = 0x40;
+        actor->updateDist = UPDATE_DIST(0x10000);
       }
       st->angle += (st->speed * g_nFrameStep) >> 1;
       st->lid->rotZ = st->angle >> 4;
@@ -3127,7 +3127,7 @@ void Level34_UpdateActors(void) {
         st->vel[2] += LID_LAUNCH_VZ;
         st->timer = 0;
         actor->subMode = LID_FLYING;
-        actor->cullRadius = 0x20;
+        actor->cullRadius = CULL_RADIUS(0x2000);
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
         actor->rotX = 0xA;
         actor->rotY = 0;
@@ -3208,7 +3208,7 @@ void Level34_UpdateActors(void) {
       if (actor->flags & ACTOR_HIT_SUPER) {
         int i;
 
-        actor->soundRange = 0x20;
+        actor->soundRange = SOUND_RANGE(0x8000);
         PlayActorMeshVoice(actor, BROCK_VOICE_BREAK, 0);
         for (i = 0; i < 4;) {
           if (ACTOR_POOL_LOW()) {
@@ -3272,7 +3272,7 @@ void Level34_UpdateActors(void) {
         }
         actor->subMode = CANNON_FUSE;
         actor->updateDist = ACTOR_UPDATE_ALWAYS;
-        actor->cullRadius = 0x7F;
+        actor->cullRadius = ACTOR_CULL_MAX;
         continue;
 
       case CANNON_FUSE:
@@ -3319,8 +3319,8 @@ void Level34_UpdateActors(void) {
           continue;
         }
         actor->subMode = CANNON_FLIGHT;
-        actor->cullRadius = 0x40;
-        actor->updateDist = 0x40;
+        actor->cullRadius = CULL_RADIUS(0x4000);
+        actor->updateDist = UPDATE_DIST(0x10000);
         st->path->cur = 1;
         st->timer = 0;
         ZeroVector(st->vel);

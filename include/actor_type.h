@@ -108,7 +108,15 @@ typedef struct NameLetterState {
 
 /* Actor.voiceRow while no voice row plays the actor's sound. */
 #define VOICE_ROW_NONE 0x7F /* also what a finished or dropped sound stamps into its pPlaying byte */
+/* Actor.otBias values (see the field): */
+#define OT_BIAS_DEFAULT 4    /* InitActorRenderDefaults */
+#define OT_BIAS_SCREEN 0x20  /* HUD and other screen-space actors */
+#define OT_BIAS_SPRITE 0x7F  /* text / sprite records: drawn over everything */
+#define OT_BIAS_DEEPER 0xFE  /* -2: one bin pair behind its depth */
 #define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
+#define ACTOR_SCALE_HALF 0x40 /* ->scale drawing the mesh at half size */
+/* Actor.cullRadius from a view-space bound: stored >> 8. */
+#define CULL_RADIUS(dist) ((dist) >> 8)
 #define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
 /* ->cullRadius 0xFF: a bound every view-space point passes. Only these stamps
  * set bit 7 (level data and spawns stay at or below 0x7F): HUD counter digits
@@ -117,6 +125,7 @@ typedef struct NameLetterState {
  * it is dead (it spawns at 0x10 and nothing restamps it). */
 #define ACTOR_CULL_ALWAYS 0xFF
 #define ACTOR_CULL_ALWAYS_BIT 0x80
+#define ACTOR_CULL_MAX 0x7F /* ->cullRadius: the widest bound below ACTOR_CULL_ALWAYS_BIT */
 #define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
 /* Actor.tintMode presets, used with tint0..2 zeroed.
  * RasterizeSpritePrimQueue reads the preset word at 0x8006E3D8 + (tint word
@@ -153,11 +162,23 @@ typedef struct NameLetterState {
 #define TINT_EXTRA_LIFE 0xC
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
 #define TINT_STATUE_SHARD 0xE
+/* Actor.soundRange stores a positional voice's audible distance >> 10
+ * (PlaySoundEffect drops, TickActiveSoundVoices fades, a voice beyond it);
+ * 0 means SOUND_RANGE_DEFAULT. Most actors that set it use SOUND_RANGE(0x8000). */
+#define SOUND_RANGE_SHIFT 10
+#define SOUND_RANGE_DEFAULT 0x4000
+#define SOUND_RANGE(dist) ((dist) >> SOUND_RANGE_SHIFT)
+/* The level box's floor: Spyro below WORLD_MIN_COORD respawns
+ * (TickSpyroGameplayFrame), and thrown / lobbed projectiles (levels 25, 26,
+ * 28) burst once any coordinate falls below it. */
+#define WORLD_MIN_COORD 0x400
 #define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
 /* Actor.probeDist sentinels (DriveActorTrackedMove; other values are the
  * ground-probe distance / 4, 0 = the default 0x12C). */
 #define ACTOR_PROBE_LIFT_ONLY 0xFE /* probe with MOVE_LIFT alone (no slide, no floor follow) */
 #define ACTOR_PROBE_NONE 0xFF      /* probe distance 0 */
+/* Actor.updateDist from a distance: the activation radius is stored >> 10. */
+#define UPDATE_DIST(dist) ((dist) >> 10)
 #define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
                                   * a negative radius keeps the actor updating anywhere */
 #define ACTOR_UPDATE_WHEN_DRAWN 0 /* ->updateDist: no activation radius, so it only

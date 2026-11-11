@@ -1,5 +1,6 @@
 #include "globals.h"
 #include "main_shared.h"
+#include "pad_buttons.h"
 #include "spyro_state.h"
 
 /* 0x8003cce4 (0x4b0): applies the pending Spyro state change. The restart
@@ -121,9 +122,9 @@ void ApplySpyroStateTransition(void) {
       g_bSpyroAnimFrame = end;
     }
     if (g_nSpyroPrevState == SPYRO_ST_FALL) {
-      g_nPulseRumbleAmount = 0xA0;
-      if (g_nPulseRumbleTimer < 15) {
-        g_nPulseRumbleTimer = 15;
+      g_nPulseRumbleAmount = LAND_RUMBLE_AMOUNT;
+      if (g_nPulseRumbleTimer < LAND_RUMBLE_FRAMES) {
+        g_nPulseRumbleTimer = LAND_RUMBLE_FRAMES;
       }
     }
   } break;

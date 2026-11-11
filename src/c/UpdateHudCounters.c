@@ -94,12 +94,12 @@ void UpdateHudCounters(void) {
     }
   } else if (GEM_STATE == HUD_CTR_ROLL_IN) {
     p = g_bHudLevelGemRollPhase;
-    if (p == 0xD) {
+    if (p == HUD_ROLL_STEPS) {
       GEM_STATE = HUD_CTR_SHOWN;
       FIELD(g_bHudLevelGemRollPhase) = 0;
       GEM_TIMER = 0;
       if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIndex]) {
-        GEM_TIMER = -0x28;
+        GEM_TIMER = -HUD_HOLD_DELAY;
       }
     } else {
       FIELD(g_bHudLevelGemRollPhase) = p + 1;
@@ -108,9 +108,9 @@ void UpdateHudCounters(void) {
   } else if (GEM_STATE == HUD_CTR_SHOWN) {
     if (GEM_CACHED == g_anLevelGemsCollected[g_nLevelIndex] && GEM_PHASE == 0) {
       GEM_TIMER = GEM_TIMER + 1;
-      if (GEM_TIMER == 0x14) {
+      if (GEM_TIMER == HUD_HOLD_FRAMES) {
         GEM_STATE = HUD_CTR_ROLL_OUT;
-        GEM_PHASE = 0xD;
+        GEM_PHASE = HUD_ROLL_STEPS;
       }
     } else {
       FIELDW(g_nHudLevelGemHoldTimer) = 0;
@@ -129,9 +129,9 @@ void UpdateHudCounters(void) {
                             HUD_DIGITS_PENDING);
         CommitHudCounterAnimState(0, 4, ((unsigned char *)gc)[-0x1B]);
         nDelta = g_anLevelGemsCollected[g_nLevelIndex] - gc[0];
-        if (nDelta >= 0xC9) {
-          gc[0] = gc[0] + 8;
-        } else if (nDelta >= 0x15 ||
+        if (nDelta > HUD_GEM_FAST_DELTA) {
+          gc[0] = gc[0] + HUD_GEM_FAST_STEP;
+        } else if (nDelta > HUD_GEM_STEP_DELTA ||
                    ((unsigned char *)gc)[-0x1B] == HUD_DIGIT_SWAP_PHASE) {
           gc[0] = gc[0] + 1;
         }
@@ -156,9 +156,9 @@ void UpdateHudCounters(void) {
     }
   } else if (GEM_STATE == HUD_CTR_ALL_GEMS) {
     GEM_TIMER = GEM_TIMER + g_nFrameStep;
-    if (GEM_TIMER >= 0xF0) {
+    if (GEM_TIMER >= HUD_ALL_GEMS_HOLD) {
       GEM_STATE = HUD_CTR_ROLL_OUT;
-      GEM_PHASE = 0xD;
+      GEM_PHASE = HUD_ROLL_STEPS;
     }
   }
 
@@ -171,10 +171,10 @@ void UpdateHudCounters(void) {
       8;
   if (g_abHudCounterDisplayState[HUD_CTR_DRAGONS] == HUD_CTR_ROLL_IN) {
     p = g_bHudDragonRollPhase;
-    if (p == 0xD) {
+    if (p == HUD_ROLL_STEPS) {
       g_abHudCounterDisplayState[HUD_CTR_DRAGONS] = HUD_CTR_SHOWN;
       g_bHudDragonRollPhase = 0;
-      g_nHudDragonHoldTimer = -0x28;
+      g_nHudDragonHoldTimer = -HUD_HOLD_DELAY;
     } else {
       FIELD(g_bHudDragonRollPhase) = p + 1;
       OffsetHudIconRollAxis(HUD_SLOT_DRAGON_DIGITS, 3,
@@ -182,9 +182,9 @@ void UpdateHudCounters(void) {
     }
   } else if (g_abHudCounterDisplayState[HUD_CTR_DRAGONS] == HUD_CTR_SHOWN) {
     g_nHudDragonHoldTimer = g_nHudDragonHoldTimer + 1;
-    if (g_nHudDragonHoldTimer == 0x14) {
+    if (g_nHudDragonHoldTimer == HUD_HOLD_FRAMES) {
       g_abHudCounterDisplayState[HUD_CTR_DRAGONS] = HUD_CTR_ROLL_OUT;
-      g_bHudDragonRollPhase = 0xD;
+      g_bHudDragonRollPhase = HUD_ROLL_STEPS;
     }
   } else if (g_abHudCounterDisplayState[HUD_CTR_DRAGONS] == HUD_CTR_ROLL_OUT) {
     if (g_bHudDragonRollPhase == 0) {
@@ -209,13 +209,13 @@ void UpdateHudCounters(void) {
     }
   } else if (g_abHudCounterDisplayState[HUD_CTR_LIVES] == HUD_CTR_ROLL_IN) {
     p = g_bHudLivesRollPhase;
-    if (p == 0xD) {
+    if (p == HUD_ROLL_STEPS) {
       g_abHudCounterDisplayState[HUD_CTR_LIVES] = HUD_CTR_SHOWN;
       g_bHudLivesRollPhase = 0;
       g_nHudLivesHoldTimer = 0;
       if (g_nHudLivesCachedCount == g_nExtraLives &&
           g_nHudButterflyCachedCount == g_nSparxFoodCount) {
-        g_nHudLivesHoldTimer = -0x28;
+        g_nHudLivesHoldTimer = -HUD_HOLD_DELAY;
       }
     } else {
       FIELD(g_bHudLivesRollPhase) = p + 1;
@@ -226,9 +226,9 @@ void UpdateHudCounters(void) {
     if (g_nHudLivesCachedCount == g_nExtraLives && g_bHudLivesRollPhase == 0) {
       if (g_nHudButterflyCachedCount == g_nSparxFoodCount) {
         g_nHudLivesHoldTimer = g_nHudLivesHoldTimer + 1;
-        if (g_nHudLivesHoldTimer == 0x14) {
+        if (g_nHudLivesHoldTimer == HUD_HOLD_FRAMES) {
           g_abHudCounterDisplayState[HUD_CTR_LIVES] = HUD_CTR_ROLL_OUT;
-          g_bHudLivesRollPhase = 0xD;
+          g_bHudLivesRollPhase = HUD_ROLL_STEPS;
         }
       } else {
         g_nHudLivesHoldTimer = 0;
@@ -292,12 +292,12 @@ void UpdateHudCounters(void) {
     break;
   case HUD_CTR_ROLL_IN:
     p = g_bHudEggRollPhase;
-    if (p == 0xD) {
+    if (p == HUD_ROLL_STEPS) {
       EGG_STATE = HUD_CTR_SHOWN;
       g_nHudEggHoldTimer = 0;
       if (g_nHudEggCachedCount == g_nTotalEggsRecovered &&
           g_nHudEggRollRequest == 0) {
-        g_nHudEggHoldTimer = -0x28;
+        g_nHudEggHoldTimer = -HUD_HOLD_DELAY;
       }
     } else {
       FIELD(g_bHudEggRollPhase) = p + 1;
@@ -308,9 +308,9 @@ void UpdateHudCounters(void) {
     if (g_nHudEggCachedCount == g_nTotalEggsRecovered) {
       if (g_nHudEggRollRequest != 0) {
         g_nHudEggHoldTimer = 0;
-      } else if (g_nHudEggHoldTimer == 0x14) {
+      } else if (g_nHudEggHoldTimer == HUD_HOLD_FRAMES) {
         EGG_STATE = HUD_CTR_ROLL_OUT;
-        g_bHudEggRollPhase = 0xD;
+        g_bHudEggRollPhase = HUD_ROLL_STEPS;
       }
     } else if (g_nHudEggHoldTimer == 1) {
       av[0] = g_nHudEggCachedCount * 0x144 - 0x9C4;
@@ -352,11 +352,11 @@ void UpdateHudCounters(void) {
     break;
   case HUD_CTR_ROLL_IN:
     p = g_bHudKeyRollPhase;
-    if (p == 0xD) {
+    if (p == HUD_ROLL_STEPS) {
       KEY_STATE = HUD_CTR_SHOWN;
       g_nHudKeyHoldTimer = 0;
       if (g_nHudKeyCachedState == g_nLevelKeyState) {
-        g_nHudKeyHoldTimer = -0x28;
+        g_nHudKeyHoldTimer = -HUD_HOLD_DELAY;
       }
     } else {
       FIELD(g_bHudKeyRollPhase) = p + 1;
@@ -378,9 +378,9 @@ void UpdateHudCounters(void) {
         g_nHudKeyHoldTimer = 0;
         g_nHudKeyCachedState = g_nLevelKeyState;
       }
-    } else if (g_nHudKeyHoldTimer == 0x14) {
+    } else if (g_nHudKeyHoldTimer == HUD_HOLD_FRAMES) {
       KEY_STATE = HUD_CTR_ROLL_OUT;
-      g_bHudKeyRollPhase = 0xD;
+      g_bHudKeyRollPhase = HUD_ROLL_STEPS;
     }
     g_anHudKeyTimerBlock[0] = g_anHudKeyTimerBlock[0] + 1;
     break;

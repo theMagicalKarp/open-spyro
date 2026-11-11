@@ -82,6 +82,14 @@ enum SparxSubMode {
 #define SPARX_CHASE_MIN_FRAMES 150
 #define SPARX_CHASE_MAX_FRAMES 210
 #define SPARX_CATCH_EARLY_FRAMES 80
+/* "Lines up": his heading, led by the butterfly's circleDir * CATCH_LEAD,
+ * within 8 of the camera's reverse yaw. Chasing, he closes CHASE_STEP a
+ * frame (CHASE_STEP_HIGH in the catch animation) on a point just behind the
+ * butterfly, CHASE_STEP_SLACK more while further than that, less once within. */
+#define SPARX_CATCH_LEAD 0x6E
+#define SPARX_CHASE_STEP 0x82
+#define SPARX_CHASE_STEP_HIGH 0x96
+#define SPARX_CHASE_STEP_SLACK 5
 /* With no target Sparx hovers at a random drift HOVER_BEHIND behind Spyro
  * (his body frame), FREE_LOOK_PULLBACK further back under the free-look
  * camera, and at least CHARGE_HOVER_MIN_Z up during a charge; his pitch
@@ -101,6 +109,10 @@ enum SparxSubMode {
 #define SPARX_WING_SPAN 0x64
 #define SPARX_GLOW_START_SIZE 0x40
 #define SPARX_GLOW_GROW 0x20
+/* The gold glow's colour. */
+#define SPARX_GLOW_R 0xC0
+#define SPARX_GLOW_G 0xC0
+#define SPARX_GLOW_B 0x60
 
 /* g_nSfxOverrideVolL/R (of SPU_VOLUME_MAX) for Sparx's buzz when he
  * sets off to fetch, and for the chime when he hands the pickup over. */
@@ -253,6 +265,8 @@ enum ButterflyMode {
 /* Flutter step: MoveActorAlongHeading speed / radius. */
 #define BUTTERFLY_SPEED 30
 #define BUTTERFLY_RADIUS 50
+/* Circling Spyro (BUTTERFLY_CIRCLE): SteerActorAroundPoint speed. */
+#define BUTTERFLY_CIRCLE_SPEED 0x82
 
 /* ->mode of a seed pod (ACTOR_TYPE_SEED_POD, SeedPodState). */
 enum SeedPodMode {
@@ -575,6 +589,35 @@ enum ThiefMode {
 /* A CIRCLE thief starts circling once Spyro, within THIEF_NEAR_RANGE, is more
  * than this (8-bit) off the far side of its node from it. */
 #define THIEF_CIRCLE_ENTER_ANGLE 0x30
+/* ...and stops (THIEF_IDLE) once it is back within CIRCLE_EXIT_ANGLE. */
+#define THIEF_CIRCLE_EXIT_ANGLE 0x20
+/* A GUARD thief at home steers around it once Spyro's bearing from the
+ * current node and its own bearing from home differ by over ORBIT_SLACK
+ * (ORBIT_TAUNT_SLACK while taunting). A residual steer error over
+ * STEER_STUCK_ERR counts a stuck frame, one under STEER_TAUNT_ERR taunts;
+ * STUCK_FRAMES of them with Spyro over BREAK_ANGLE off its home bearing break
+ * the orbit (THIEFSUB_BREAK); breaking, it rejoins the orbit when
+ * Spyro and it bear more than RETURN_ANGLE apart from home. */
+#define THIEF_ORBIT_SLACK 10
+#define THIEF_ORBIT_TAUNT_SLACK 0x28
+#define THIEF_STEER_STUCK_ERR 0x5A
+#define THIEF_STEER_TAUNT_ERR 0x1E
+#define THIEF_STUCK_FRAMES 0x1E
+#define THIEF_BREAK_ANGLE 0x20
+#define THIEF_RETURN_ANGLE 0x50
+/* A FLEE thief clear of both nodes reverses its ring once when the current
+ * and next nodes bear within FLEE_REVERSE_GAP of each other off Spyro's
+ * bearing; after that it reverses onto the next node when the current one is
+ * FLEE_SKIP_GAP nearer Spyro's bearing, the next is over FLEE_SKIP_CLEAR off
+ * it and the thief faces within FLEE_SKIP_FACING of Spyro. */
+#define THIEF_FLEE_REVERSE_GAP 0x28
+#define THIEF_FLEE_SKIP_GAP 0x1D
+#define THIEF_FLEE_SKIP_CLEAR 0x3C
+#define THIEF_FLEE_SKIP_FACING 0x3C
+/* A LEDGE thief jumps once Spyro is near and at most 0xC7 below it, probing
+ * the floor LEDGE_PROBE_RAISE up while airborne. */
+#define THIEF_LEDGE_JUMP_MIN_DZ (-0xC7)
+#define THIEF_LEDGE_PROBE_RAISE 0x1800
 /* Hit (THIEF_CAUGHT), a thief slides from KNOCK_SPEED (CHARGE_KNOCK_SPEED
  * when charged), losing KNOCK_DRAG a frame, and lets go of its egg on
  * EGG_RELEASE_FRAME of THIEF_ANIM_CAUGHT. */
@@ -828,6 +871,64 @@ enum GnastyAnim {
 #define GNASTY_SWIPE_RANGE 0xE10
 #define GNASTY_BURST_SPARK_LIFE 0x40 /* BurstActorWithSound spark life */
 #define GNASTY_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
+/* Waiting, he sights Spyro from SIGHT_HEIGHT above his feet; flamed into
+ * phase 3 he holds the escape shot ESCAPE_CAM_FRAMES. He starts throwing from
+ * GNASTY_WAIT once the camera looks within WAIT_VIEW_ANGLE of him, Spyro is
+ * within WAIT_HOME_RANGE of home and between THROW_MIN_RANGE and
+ * THROW_MAX_RANGE of him; on the main path he runs off when Spyro is below
+ * and within RUN_OFF_RANGE. Elsewhere he keeps throwing while the camera
+ * stays within THROW_VIEW_ANGLE and Spyro within THROW_KEEP_MIN ..
+ * THROW_KEEP_MAX, resting THROW_REST after a volley; bombs aim at the floor
+ * found BOMB_FLOOR_PROBE below Spyro. At the path end (GNASTY_STAND) he
+ * throws with Spyro within STAND_THROW_BAND past SWIPE_RANGE and rests
+ * SWIPE_REST after a swipe. */
+#define GNASTY_SIGHT_HEIGHT 0x3E8
+#define GNASTY_ESCAPE_CAM_FRAMES 0xA0
+#define GNASTY_WAIT_VIEW_ANGLE 0x1E
+#define GNASTY_WAIT_HOME_RANGE 0x3000
+#define GNASTY_THROW_MIN_RANGE 0x1800
+#define GNASTY_THROW_MAX_RANGE 0x6800
+#define GNASTY_RUN_OFF_RANGE 0x1388
+#define GNASTY_THROW_VIEW_ANGLE 0x28
+#define GNASTY_THROW_KEEP_MIN 0x1770
+#define GNASTY_THROW_KEEP_MAX 0x6D60
+#define GNASTY_THROW_REST 0x96
+#define GNASTY_BOMB_FLOOR_PROBE 0x1000
+#define GNASTY_STAND_THROW_BAND 0x16A8
+#define GNASTY_SWIPE_REST 0x78
+/* GNASTY_LOOKOUT runs on when Spyro is within LOOKOUT_RANGE and no more than
+ * -LOOKOUT_MIN_DZ below him (or within LOOKOUT_NEAR_RANGE at any height),
+ * and skips to his path end once Spyro is within LOOKOUT_RANGE of node 12.
+ * GNASTY_RUN arrives within RUN_NODE_RANGE of a node; from LATE_NODE he runs
+ * LATE_SPEED (LAST_SPEED from LAST_NODE), chased within CHASE_RANGE
+ * (CHASE_RANGE_FAST if last frame's speed was at least FAST_SPEED). Reaching
+ * node 1 with Spyro past LOOKOUT_RANGE he waits again; at the path's end he
+ * turns to throw if Spyro is past REVERSE_THROW_RANGE and nearest a node
+ * past REVERSE_THROW_NODE, else waits PATH_END_FRAMES (waking for Spyro below
+ * within PATH_END_WAKE_RANGE). The escape path arrives within
+ * ESCAPE_NODE_RANGE and stops at the door within DOOR_RANGE of node 6;
+ * GNASTY_TO_ESCAPE arrives within TO_ESCAPE_ARRIVE. */
+#define GNASTY_LOOKOUT_RANGE 0x2000
+#define GNASTY_LOOKOUT_MIN_DZ (-0x6A3)
+#define GNASTY_LOOKOUT_NEAR_RANGE 0x16A8
+#define GNASTY_LATE_NODE 0xE
+#define GNASTY_LAST_NODE 0x1D
+#define GNASTY_FAST_SPEED 0x10F
+#define GNASTY_RUN_NODE_RANGE 0x200
+#define GNASTY_REVERSE_THROW_RANGE 0x4800
+#define GNASTY_REVERSE_THROW_NODE 0x10
+#define GNASTY_PATH_END_FRAMES 0xC8
+#define GNASTY_PATH_END_WAKE_RANGE 0x251C
+#define GNASTY_ESCAPE_NODE_RANGE 0x12C
+#define GNASTY_DOOR_RANGE 0x258
+#define GNASTY_TO_ESCAPE_ARRIVE 0x320
+/* GNASTY_DEFEATED drops his three keys on these frames, swaps Spyro for a
+ * stand-in on STAND_IN_FRAME, then GNASTY_FADE_OUT fades over FADE_FRAMES. */
+#define GNASTY_DROP_KEY1_FRAME 6
+#define GNASTY_DROP_KEY2_FRAME 0xB
+#define GNASTY_DROP_KEY3_FRAME 0x10
+#define GNASTY_STAND_IN_FRAME 0xE
+#define GNASTY_FADE_FRAMES 0x3C
 
 /* ->mode of Blowhard, the level 16 boss (ACTOR_TYPE_BLOWHARD,
  * BlowhardState). Each of its three phases rises (floorZ + 0x578), hovers
@@ -1103,6 +1204,25 @@ enum ShepherdAnim {
 #define SHEPHERD_HOME_SPEED 0x5A
 #define SHEPHERD_HOME_ARRIVE 0x80
 #define SHEPHERD_HOME_REST 0x3C
+/* Path walking speeds (PivotActorAlongPath): the pair patrol, the plain
+ * patrol, and POST_RUN_PATH's run once roused. A pair walker turns to face
+ * its partner when within PAIR_MEET_RANGE of it, at most every
+ * PAIR_MEET_INTERVAL frames. */
+#define SHEPHERD_PAIR_WALK_SPEED 0x48
+#define SHEPHERD_PATROL_SPEED 0x78
+#define SHEPHERD_RUN_PATH_SPEED 0x8C
+#define SHEPHERD_PAIR_MEET_RANGE 0x8FC
+#define SHEPHERD_PAIR_MEET_INTERVAL 0x5A
+/* SHEPHERD_WATCH goes back to guarding when Spyro comes within
+ * WATCH_GUARD_RANGE and WATCH_GUARD_DZ of its height. */
+#define SHEPHERD_WATCH_GUARD_RANGE 0xC00
+#define SHEPHERD_WATCH_GUARD_DZ 0x258
+/* ShepherdState.flankTimer on an alert. */
+#define SHEPHERD_FLANK_FRAMES 0xB4
+/* SHEPHERD_LEAP_ON closes LEAP_STEP a frame on the partner's attach point
+ * (snapping onto it within that), matching its yaw within LEAP_ALIGN_RANGE. */
+#define SHEPHERD_LEAP_STEP 0xC8
+#define SHEPHERD_LEAP_ALIGN_RANGE 0x5DC
 #define SHEPHERD_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 #define SHEPHERD_KNOCK_DRAG 0x12 /* DriveActorTrackedMove friction */
 #define SHEPHERD_KNOCK_GRAVITY 0xC /* DriveActorTrackedMove gravity */
@@ -2400,16 +2520,19 @@ enum LungingGuardMode {
   LGUARD_PACE = 1,     /* paces its path once, then IDLE */
   LGUARD_LUNGE = 2,    /* lunges (the small kind bumps Spyro back) */
   LGUARD_KNOCKED = 3,  /* spins away, then bursts */
-  LGUARD_SHRINK = 10,  /* scales down to the other kind, then IDLE */
-  LGUARD_GROW = 20,    /* scales up and bursts into the other kind, then IDLE */
+  LGUARD_TO_BIG = 10,   /* a blasted small guard: bursts, then swells from
+                         * TO_BIG_SCALE (half size) to full as the big kind */
+  LGUARD_TO_SMALL = 20, /* a blasted big guard: dwindles to TO_SMALL_SCALE,
+                         * then bursts into the small kind */
   LGUARD_ESCORT = 30,  /* keeps its partner between itself and Spyro */
 };
 
 /* LungingGuardState.kind: the guard's current size (a big guard toggles it
  * as it shrinks and grows back). */
 enum LungingGuardKind {
-  LGKIND_SMALL = 0, /* lunges from close; a blast shrinks it away */
-  LGKIND_BIG = 1,   /* lunges from far; shrugs off a plain charge; a blast grows it */
+  LGKIND_SMALL = 0, /* lunges from close; a blast turns it big (LGUARD_TO_BIG) */
+  LGKIND_BIG = 1,   /* lunges from far; shrugs off a plain charge; a blast turns it
+                     * small (LGUARD_TO_SMALL) */
 };
 
 /* Lunging guard tuning. Hit it spins off at KNOCK_SPEED (CHARGE_KNOCK_SPEED
@@ -2418,9 +2541,12 @@ enum LungingGuardKind {
  * Spyro back at SMALL_BUMP_SPEED (SMALL_BUMP_VZ up), resting
  * SMALL_LUNGE_REST; a big one gives up past BIG_LUNGE_LEAVE (rest
  * BIG_LUNGE_REST) and skips to its strike within BIG_STRIKE_RANGE. A pacer
- * walks PACE_SPEED until Spyro is within PACE_STOP_RANGE. A blasted big one
- * grows to GROW_SCALE and bursts into the small kind; an escort orbits its
- * cannon at ESCORT_RADIUS, ESCORT_SPEED. */
+ * walks PACE_SPEED until Spyro is within PACE_STOP_RANGE. A knocked guard
+ * spins RandomSignedInRange(SPIN_MIN, SPIN_MAX) a frame, slides with
+ * KNOCK_DRAG / KNOCK_GRAVITY and bursts with BURST_SPARK_LIFE sparks; a size
+ * change bursts with TO_BIG_SPARK_LIFE / TO_SMALL_SPARK_LIFE. An escort orbits
+ * its cannon at ESCORT_RADIUS, ESCORT_SPEED, and holds off turning the cannon
+ * for ESCORT_TURN_DELAY after each lob. */
 #define LGUARD_KNOCK_SPEED 0xC8
 #define LGUARD_CHARGE_KNOCK_SPEED 0x15E
 #define LGUARD_LUNGE_DZ 0x190
@@ -2434,7 +2560,16 @@ enum LungingGuardKind {
 #define LGUARD_BIG_STRIKE_RANGE 0x9C4
 #define LGUARD_PACE_SPEED 0x8C
 #define LGUARD_PACE_STOP_RANGE 0xC00
-#define LGUARD_GROW_SCALE 0x38
+#define LGUARD_TO_BIG_SCALE 0x40   /* ->scale (half size) a small guard swells from */
+#define LGUARD_TO_SMALL_SCALE 0x38 /* ->scale (about 0.57x) a big guard dwindles to */
+#define LGUARD_SPIN_MIN 8
+#define LGUARD_SPIN_MAX 0xE
+#define LGUARD_KNOCK_DRAG 0xC
+#define LGUARD_KNOCK_GRAVITY 0x10
+#define LGUARD_BURST_SPARK_LIFE 0x18
+#define LGUARD_TO_BIG_SPARK_LIFE 0x28
+#define LGUARD_TO_SMALL_SPARK_LIFE 0x20
+#define LGUARD_ESCORT_TURN_DELAY 0x3C
 #define LGUARD_ESCORT_RADIUS 0x5DC
 #define LGUARD_ESCORT_SPEED 0x32
 /* The big-lunging-guard variant (ACTOR_TYPE_BIG_LUNGING_GUARD) shares these
@@ -2737,6 +2872,8 @@ enum GuardPairAnim {
 #define GPAIR_CUE_GAP 0x258
 #define GPAIR_SIGNAL_FRAME 8
 #define GPAIR_KNOCK_SPEED 0xF0
+#define GPAIR_ROUSE_SPEED 0x48 /* ->speed on rouse and on each charge; never read:
+                               * every way into KNOCKED stores KNOCK_SPEED first */
 #define GPAIR_KNOCK_DRAG 0x10
 #define GPAIR_KNOCK_CONTACT 0x1F4
 #define GPAIR_MOVE_RADIUS 0x2BC
@@ -3074,6 +3211,12 @@ enum BoulderThrowerAnim {
  * walks at PATROL_SPEED. A boulder spawns in its hands on frames 3..7 and
  * leaves on frame RELEASE_FRAME at ROCK_SPEED; it rests REST_FRAMES
  * (REST_FRAMES_B for the type-B thrower) between throws. */
+#define BTHROW_GRAB_FIRST_FRAME 3
+#define BTHROW_GRAB_LAST_FRAME 7
+#define BTHROW_ROCK_SPIN_MIN 7  /* RandomSignedInRange per axis */
+#define BTHROW_ROCK_SPIN_MAX 0xF
+#define BTHROW_KNOCK_DRAG 0xC   /* DriveActorTrackedMove friction */
+#define BTHROW_KNOCK_GRAVITY 0xA
 #define BTHROW_KNOCK_SPEED 0x118
 #define BTHROW_CHARGE_KNOCK_SPEED 0x15E
 #define BTHROW_KNOCK_VZ 0x1E
@@ -3107,6 +3250,36 @@ enum BoulderThrowerAnim {
 #define BTHROW_HURTLE_MAX_RANGE 0x9470
 #define BTHROW_FLUNG_SPEED 0x1C2
 #define BTHROW_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+/* The pair: a circler is lined up once its steer error is under
+ * PAIR_LINED_UP; the ready one goes back to circling once the partner's
+ * facing drifts PAIR_KEEP_ANGLE off it. A hurtle wobbles by JITTER_MIN ..
+ * JITTER_MAX, falls with HURTLE_GRAVITY, bends Spyro's knock toward its
+ * heading by HURTLE_KNOCK_BEND, jolts the camera look HURTLE_CAM_JOLT and
+ * recoils HURTLE_RECOIL_VZ up; a blocked hurtle bursts. On the way it blasts
+ * any ACTOR_TYPE_PLATFORM_POD within POD_BOX on both axes, POD_HIT_RANGE and
+ * POD_HIT_CONE of its heading. */
+#define BTHROW_PAIR_LINED_UP 6
+#define BTHROW_PAIR_KEEP_ANGLE 0xD
+#define BTHROW_JITTER_MIN 8
+#define BTHROW_JITTER_MAX 0xF
+#define BTHROW_HURTLE_GRAVITY 0x12
+#define BTHROW_HURTLE_KNOCK_BEND 0x20
+#define BTHROW_HURTLE_CAM_JOLT 0x28
+#define BTHROW_HURTLE_RECOIL_VZ 0x3C
+#define BTHROW_POD_BOX 0xBB8
+#define BTHROW_POD_HIT_RANGE 0x384
+#define BTHROW_POD_HIT_CONE 0x28
+/* The ride: told to ride, it skips to the first path node within
+ * RIDE_AHEAD_ANGLE ahead; it walks to the catcher at RIDE_WALK_SPEED, leaps
+ * at RIDE_LEAP_SPEED / RIDE_LEAP_VZ, and is flung on the catcher's
+ * FLING_FRAME to hurtle for FLUNG_FRAMES. */
+#define BTHROW_RIDE_AHEAD_ANGLE 0x40
+#define BTHROW_RIDE_CULL_RADIUS 0x28
+#define BTHROW_RIDE_WALK_SPEED 0x78
+#define BTHROW_RIDE_LEAP_SPEED 0x5A
+#define BTHROW_RIDE_LEAP_VZ 0x78
+#define BTHROW_FLING_FRAME 0xE
+#define BTHROW_FLUNG_FRAMES 0xB4
 
 /* ->mode of a gatekeeper (ACTOR_TYPE_GATEKEEPER / _B, GatekeeperState;
  * levels 21/22). Modes 40-44 hand out its run of keys (GatekeeperState.keys)
@@ -3179,6 +3352,35 @@ enum GatekeeperAnim {
 #define GATEKEEPER_RIDE_LEAP_SPEED 0x5A
 #define GATEKEEPER_RIDE_LEAP_VZ 0x78
 #define GATEKEEPER_BURST_SPARK_LIFE 0x34 /* BurstActorWithSound spark life */
+/* It swipes with Spyro more than SWIPE_MIN_BELOW and at most SWIPE_MAX_BELOW
+ * below it; the swipe hits on frames SWIPE_HIT_FIRST_FRAME ..
+ * SWIPE_HIT_LAST_FRAME. Knocked, it slides with KNOCK_DRAG / KNOCK_GRAVITY.
+ * The keys: armed once Spyro is within its first key range + KEY_ARM_SLACK
+ * (both << 10) and inside KEY_ARM_CONE of testFacing; each key goes once he
+ * faces it within KEY_FACING, on the swipe's KEY_RELEASE_FRAME. Its hurtle
+ * and ride mirror the boulder thrower's (BTHROW_*): HURTLE_GRAVITY,
+ * HURTLE_KNOCK_BEND, HURTLE_RECOIL_VZ, the platform-pod blast (POD_BOX,
+ * POD_HIT_RANGE, POD_HIT_CONE), RIDE_AHEAD_ANGLE, RIDE_CULL_RADIUS and
+ * FLING_FRAME. */
+#define GATEKEEPER_SWIPE_MIN_BELOW 0xC8
+#define GATEKEEPER_SWIPE_MAX_BELOW 0x577
+#define GATEKEEPER_SWIPE_HIT_FIRST_FRAME 6
+#define GATEKEEPER_SWIPE_HIT_LAST_FRAME 9
+#define GATEKEEPER_KNOCK_DRAG 0xE
+#define GATEKEEPER_KNOCK_GRAVITY 0xA
+#define GATEKEEPER_KEY_ARM_SLACK 6
+#define GATEKEEPER_KEY_ARM_CONE 0x1C
+#define GATEKEEPER_KEY_FACING 0x30
+#define GATEKEEPER_KEY_RELEASE_FRAME 6
+#define GATEKEEPER_HURTLE_GRAVITY 0x12
+#define GATEKEEPER_HURTLE_KNOCK_BEND 0x20
+#define GATEKEEPER_HURTLE_RECOIL_VZ 0x3C
+#define GATEKEEPER_POD_BOX 0xBB8
+#define GATEKEEPER_POD_HIT_RANGE 0x4B0
+#define GATEKEEPER_POD_HIT_CONE 0x28
+#define GATEKEEPER_RIDE_AHEAD_ANGLE 0x40
+#define GATEKEEPER_RIDE_CULL_RADIUS 0x28
+#define GATEKEEPER_FLING_FRAME 0xE
 
 /* ->mode of a tethered guard (ACTOR_TYPE_TETHERED_GUARD, TetherState; level
  * 15); the mode is also the animation index. TetherState.mode is the TetherCommand
@@ -3530,6 +3732,8 @@ enum ChargingYakMode {
 #define YAK_CALM_RANGE 0x2000
 #define YAK_PIN_HOLD_TICKS 3
 #define YAK_KNOCK_SPEED 0xF0
+#define YAK_ROUSE_SPEED 0x48 /* ->speed on rouse and on each charge; never read:
+                               * every way into KNOCKED stores KNOCK_SPEED first */
 #define YAK_KNOCK_DRAG 0x10
 #define YAK_KNOCK_CONTACT 0x1F4
 #define YAK_MOVE_RADIUS 0x2BC
@@ -3578,6 +3782,8 @@ enum ToughRamAnim {
 #define TRAM_PROBE_DEPTH 0x1000
 #define TRAM_FALL_DEPTH 0x800
 #define TRAM_KNOCK_SPEED 0x80
+#define TRAM_ROUSE_SPEED 0x48 /* ->speed on rouse and on each charge; never read:
+                               * every way into KNOCKED stores KNOCK_SPEED first */
 #define TRAM_GRAVITY 0xC
 #define TRAM_MAX_FALL 0xF0
 #define TRAM_BURST_SPARK_LIFE 0x18
@@ -4105,6 +4311,21 @@ enum LootThiefLeg {
 #define LTHIEF_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 #define LTHIEF_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 #define LTHIEF_KNOCK_GRAVITY 0xC /* DriveActorTrackedMove gravity */
+/* Knocked, it flies off along Spyro's facing bent toward "away from him" by
+ * at most LTHIEF_KNOCK_BEND_STEP (wider than the shared KNOCK_BEND_STEP). Its ring
+ * and spur legs arrive within NODE_RANGE of a node. On the cross path it
+ * dives for LTHIEF_DODGE_Z while facing within DODGE_FACING of Spyro,
+ * climbing at most DODGE_CLIMB_STEP a frame. It banks into turns, rolling at
+ * most MAX_ROLL (>> 4 into rotX). The intro flight's camera sits at
+ * INTRO_CAM_DISTANCE / INTRO_CAM_PITCH / INTRO_CAM_PITCH_BIAS (CAMP_*). */
+#define LTHIEF_KNOCK_BEND_STEP 0x28
+#define LTHIEF_NODE_RANGE 0x400
+#define LTHIEF_DODGE_FACING 0x40
+#define LTHIEF_DODGE_CLIMB_STEP 0x80
+#define LTHIEF_MAX_ROLL 0x200
+#define LTHIEF_INTRO_CAM_DISTANCE 0xC00
+#define LTHIEF_INTRO_CAM_PITCH 0x80
+#define LTHIEF_INTRO_CAM_PITCH_BIAS (-0x100)
 
 /* ->mode of a two-path runner (ACTOR_TYPE_TWO_PATH_RUNNER, RunnerState; level
  * 8); the mode is also the animation index. With RunnerState.mode TPARM_RUN it runs

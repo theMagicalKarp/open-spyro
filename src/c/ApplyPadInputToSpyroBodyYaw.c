@@ -23,8 +23,8 @@ int ApplyPadInputToSpyroBodyYaw(void) {
   if ((((PadSubstep *)pad)->stickActive != 0) &&
       ((((PadSubstep *)pad)->analog.word & PAD_LEFT_STICK_MASK) !=
        PAD_LEFT_STICK_CENTERED)) {
-    vec[0] = ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LX] - 0x7F;
-    vec[1] = ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LY] - 0x7F;
+    vec[0] = ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LX] - PAD_STICK_CENTER;
+    vec[1] = ((PadSubstep *)pad)->analog.axis[PAD_AXIS_LY] - PAD_STICK_CENTER;
     vec[2] = 0;
     mag = VectorLength(vec, VEC_LEN_XY);
     if (mag < 0x60) {

@@ -66,8 +66,8 @@ Actor *Level21_SpawnActor(int type, Actor *parent) {
     st->yaw = 0;
     st->roll = 0;
     rec->subMode = COLLECT_BOUNCE;
-    rec->cullRadius = 0x18;
-    rec->updateDist = 0x10;
+    rec->cullRadius = CULL_RADIUS(0x1800);
+    rec->updateDist = UPDATE_DIST(0x4000);
     rec->rotX = 0x20;
     rec->rotY = 0;
     rec->rotZ = 0;
@@ -101,7 +101,7 @@ Actor *Level21_SpawnActor(int type, Actor *parent) {
 
   case ACTOR_TYPE_DRAGON_EGG:
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     rec->updateDist = ACTOR_UPDATE_ALWAYS;
     if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
@@ -132,8 +132,8 @@ Actor *Level21_SpawnActor(int type, Actor *parent) {
     pos = &rec->posX;
     st->sparkle = BILLBOARD_NONE;
     rec->subMode = COLLECT_BOUNCE;
-    rec->cullRadius = 0x18;
-    rec->updateDist = 0x40;
+    rec->cullRadius = CULL_RADIUS(0x1800);
+    rec->updateDist = UPDATE_DIST(0x10000);
     rec->rotX = 0x20;
     rec->rotY = 0;
     rec->rotZ = 0;
@@ -195,7 +195,7 @@ Actor *Level21_SpawnActor(int type, Actor *parent) {
     int pitch;
 
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
     yaw = GetRandomU32() & 0xFFF;
@@ -230,7 +230,7 @@ Actor *Level21_SpawnActor(int type, Actor *parent) {
     int i;
 
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     rec->updateDist = ACTOR_UPDATE_ALWAYS;
     HideActorRenderRecord(rec);
     rec->tint0 = 0;
@@ -296,7 +296,7 @@ Actor *Level21_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_GLYPH_COMMA:
   case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
     InitActorRenderDefaults(rec);
-    rec->cullRadius = 0x20;
+    rec->cullRadius = CULL_RADIUS(0x2000);
     rec->updateDist = ACTOR_UPDATE_ALWAYS;
     HideActorRenderRecord(rec);
     break;

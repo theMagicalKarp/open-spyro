@@ -468,7 +468,7 @@ void PauseMenu_Draw(void) {
                 rp->rotZ = 0;
               }
               phase4 += 0xc;
-              g_pSpriteRecordWriteCursor->otBias = 0x7f;
+              g_pSpriteRecordWriteCursor->otBias = OT_BIAS_SPRITE;
               g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
               g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
               x += 0xa;
@@ -515,7 +515,7 @@ void PauseMenu_Draw(void) {
                 rp->rotZ = 0;
               }
               phase6 += 0xc;
-              g_pSpriteRecordWriteCursor->otBias = 0x7f;
+              g_pSpriteRecordWriteCursor->otBias = OT_BIAS_SPRITE;
               g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
               g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
               x += 0xa;
@@ -726,7 +726,7 @@ void PauseMenu_Draw(void) {
               << 0x10 >>
           0x19;
       g_pSpriteRecordWriteCursor->rotZ = g_adwHudIconSpinAngleBlock[0];
-      g_pSpriteRecordWriteCursor->otBias = 0x7f;
+      g_pSpriteRecordWriteCursor->otBias = OT_BIAS_SPRITE;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
       g_pSpriteRecordWriteCursor--;
@@ -744,7 +744,7 @@ void PauseMenu_Draw(void) {
         g_pSpriteRecordWriteCursor->rotZ =
             ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
-      g_pSpriteRecordWriteCursor->otBias = 0x7f;
+      g_pSpriteRecordWriteCursor->otBias = OT_BIAS_SPRITE;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
       {
@@ -855,7 +855,7 @@ void PauseMenu_Draw(void) {
           0x19;
       SCHED_FENCE();
       g_pSpriteRecordWriteCursor->rotZ = g_dwHudIconSpinAngle;
-      g_pSpriteRecordWriteCursor->otBias = 0x7f;
+      g_pSpriteRecordWriteCursor->otBias = OT_BIAS_SPRITE;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       g_pSpriteRecordWriteCursor->cullRadius = ACTOR_CULL_ALWAYS;
       g_pSpriteRecordWriteCursor--;
@@ -875,7 +875,7 @@ void PauseMenu_Draw(void) {
         g_pSpriteRecordWriteCursor->rotZ =
             ((unsigned short *)g_anCosineLut)[bob] >> 8;
       }
-      g_pSpriteRecordWriteCursor->otBias = 0x7f;
+      g_pSpriteRecordWriteCursor->otBias = OT_BIAS_SPRITE;
       i = 0;
       g_pSpriteRecordWriteCursor->tintMode = TINT_HUD;
       y = 0x7b;
