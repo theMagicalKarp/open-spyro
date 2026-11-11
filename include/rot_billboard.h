@@ -31,5 +31,9 @@ typedef struct RotBillboard {
  * a frame at a time and spawn a glint once it reaches GLINT_TICK, then
  * restart it at a random point below. */
 #define ROT_BILLBOARD_GLINT_TICK 0xF8
+/* A resting pickup's glint timer stops counting here. */
+#define ROT_BILLBOARD_GLINT_TIMER_CAP 0xFA
+/* A glint whose life is under this is fading out; its actor lets go of it. */
+#define ROT_BILLBOARD_FADING_LIFE 5
 
 #endif /* OPEN_SPYRO_ROT_BILLBOARD_H */

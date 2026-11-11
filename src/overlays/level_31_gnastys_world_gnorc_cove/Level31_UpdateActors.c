@@ -704,7 +704,7 @@ void Level31_UpdateActors(void) {
 
       toSpyro = ApproxDist2D(&actor->posX, &SPY.posX);
 
-      if (st->timer < 0xFA) {
+      if (st->timer < ROT_BILLBOARD_GLINT_TIMER_CAP) {
         st->timer += g_nFrameStep;
       }
 
@@ -721,7 +721,7 @@ void Level31_UpdateActors(void) {
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                         &actor->posX);
 
-          if (g_aRotBillboards[st->attach].life < 5) {
+          if (g_aRotBillboards[st->attach].life < ROT_BILLBOARD_FADING_LIFE) {
             st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {
@@ -1695,7 +1695,7 @@ void Level31_UpdateActors(void) {
                         g_aRotBillboards[st->attach].pos);
           AddVector(g_aRotBillboards[st->attach].pos, g_aRotBillboards[st->attach].pos,
                         &actor->posX);
-          if (g_aRotBillboards[st->attach].life < 5) {
+          if (g_aRotBillboards[st->attach].life < ROT_BILLBOARD_FADING_LIFE) {
             st->attach = ROT_BILLBOARD_NONE;
           }
         } else if (st->timer >= ROT_BILLBOARD_GLINT_TICK) {

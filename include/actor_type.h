@@ -172,7 +172,6 @@ typedef struct NameLetterState {
  * (TickSpyroGameplayFrame), and thrown / lobbed projectiles (levels 25, 26,
  * 28) burst once any coordinate falls below it. */
 #define WORLD_MIN_COORD 0x400
-#define BILLBOARD_NONE 0xFF          /* no g_aRotBillboards handle */
 /* Actor.probeDist sentinels (DriveActorTrackedMove; other values are the
  * ground-probe distance / 4, 0 = the default 0x12C). */
 #define ACTOR_PROBE_LIFT_ONLY 0xFE /* probe with MOVE_LIFT alone (no slide, no floor follow) */
