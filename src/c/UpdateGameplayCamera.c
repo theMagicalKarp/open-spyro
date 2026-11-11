@@ -1,6 +1,7 @@
 #include "camera.h"
 #include "funcs.h"
 #include "globals.h"
+#include "gpu_prim.h"
 #include "main_shared.h"
 #include "sdata.h"
 #include "vecmath.h"
@@ -79,10 +80,10 @@ void UpdateGameplayCamera(void) {
   int off3;
 
   SubtractVector(d, &CAM[CAM_EYE], g_anSpyroWorldPos);
-  far = VectorLength(d, VEC_LEN_XYZ) > 0x2000;
+  far = VectorLength(d, VEC_LEN_XYZ) > CAM_FAR_RANGE;
   CopyVector(saved, &CAM[CAM_EYE]);
   SubtractVector(d, &CAM[CAM_EYE], CAM);
-  n = VectorLength(d, VEC_LEN_XYZ) / 256 + 1;
+  n = VectorLength(d, VEC_LEN_XYZ) / CAM_STEP_LEN + 1;
   if (n >= 2) {
     d[0] /= n;
     d[1] /= n;
@@ -92,30 +93,31 @@ void UpdateGameplayCamera(void) {
   for (i = 0; i < n; i++) {
     AddVector(&CAM[CAM_EYE], &CAM[CAM_EYE], d);
     j = 0;
-    while (CollideSphereWithWorldAndActors(&CAM[CAM_EYE], 0x100, 0x100)) {
+    while (CollideSphereWithWorldAndActors(&CAM[CAM_EYE], CAM_COLLIDE_RADIUS,
+                                           CAM_COLLIDE_RADIUS)) {
       CopyVector(&CAM[CAM_EYE], g_anCollisionResolvedPos);
       j++;
       hit = 1;
-      if (j >= 6) {
+      if (j >= CAM_COLLIDE_TRIES) {
         break;
       }
     }
-    if (j == 6) {
+    if (j == CAM_COLLIDE_TRIES) {
       CopyVector(&CAM[CAM_EYE], saved);
       i = n;
     }
   }
   CAM[CAM_SNAPPED] = 0;
-  if (j < 6) {
+  if (j < CAM_COLLIDE_TRIES) {
     if (hit) {
       SubtractVector(saved, &CAM[CAM_EYE], CAM);
-      if (abs(saved[0]) < 0x20) {
+      if (abs(saved[0]) < CAM_SLIDE_SLOP) {
         saved[0] = 0;
       }
-      if (abs(saved[1]) < 0x20) {
+      if (abs(saved[1]) < CAM_SLIDE_SLOP) {
         saved[1] = 0;
       }
-      if (abs(saved[2]) < 0x20) {
+      if (abs(saved[2]) < CAM_SLIDE_SLOP) {
         saved[2] = 0;
       }
       AddVector(CAM, CAM, saved);
@@ -126,18 +128,19 @@ void UpdateGameplayCamera(void) {
   }
   g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
   CopyVector(d, g_anSpyroWorldPos);
-  d[2] -= 0x134;
+  d[2] -= CAM_LOS_DROP;
   if (!CheckLineOfSightSegment(CAM, d) || !CheckLineOfSightSegment(d, CAM)) {
     g_nCameraLosClear = 0;
     if (g_bSpyroOtBinBias < 0x7F) {
       g_bSpyroOtBinBias = 2;
     }
     g_nSpyroShadowOtBinBias = 0;
-    if (++g_nCameraStuckFrames >= 0x1F) {
-      for (j = 0; j < 5; j++) {
+    if (++g_nCameraStuckFrames >= CAM_RESEAT_FRAMES) {
+      for (j = 0; j < CAM_RESEAT_COUNT; j++) {
         *(int **)&CAM[CAM_TARGET_PARAMS] = &g_anCameraStuckReseatParams[j * 6];
         ResetCameraStateToTarget();
-        if (!CollideSphereWithWorldAndActors(&CAM[CAM_EYE], 0x100, 0x100) &&
+        if (!CollideSphereWithWorldAndActors(&CAM[CAM_EYE], CAM_COLLIDE_RADIUS,
+                                             CAM_COLLIDE_RADIUS) &&
             CheckLineOfSightSegment(&CAM[CAM_EYE], d) &&
             CheckLineOfSightSegment(d, &CAM[CAM_EYE])) {
           return;
@@ -146,10 +149,11 @@ void UpdateGameplayCamera(void) {
     }
     mask = 0;
     angles = *(CameraAngles *)&CAM[CAM_YAW];
-    for (j = 0; j < 5; j++) {
+    for (j = 0; j < CAM_ESCAPE_COUNT; j++) {
       off1 = j * sizeof(CameraEscapeOffset);
       TRY_ESCAPE(off1, 0);
-      if (!CollideSphereWithWorldAndActors(&CAM[CAM_EYE], 0x100, 0x100)) {
+      if (!CollideSphereWithWorldAndActors(&CAM[CAM_EYE], CAM_COLLIDE_RADIUS,
+                                           CAM_COLLIDE_RADIUS)) {
         mask |= 1 << j;
         if (CheckLineOfSightSegment(&CAM[CAM_EYE], d) &&
             CheckLineOfSightSegment(d, &CAM[CAM_EYE])) {
@@ -158,11 +162,12 @@ void UpdateGameplayCamera(void) {
       }
     }
     if (mask != 0) {
-      for (j = 0; j < 5; j++) {
+      for (j = 0; j < CAM_ESCAPE_COUNT; j++) {
         off2 = j * sizeof(CameraEscapeOffset);
         if ((mask >> j) & 1) {
           TRY_ESCAPE(off2, 1);
-          if (!CollideSphereWithWorldAndActors(&CAM[CAM_EYE], 0x100, 0x100) &&
+          if (!CollideSphereWithWorldAndActors(
+                  &CAM[CAM_EYE], CAM_COLLIDE_RADIUS, CAM_COLLIDE_RADIUS) &&
               CheckLineOfSightSegment(&CAM[CAM_EYE], d) &&
               CheckLineOfSightSegment(d, &CAM[CAM_EYE])) {
             FOUND();
@@ -171,11 +176,12 @@ void UpdateGameplayCamera(void) {
       }
     }
     if (mask != 0) {
-      for (j = 0; j < 5; j++) {
+      for (j = 0; j < CAM_ESCAPE_COUNT; j++) {
         off3 = j * sizeof(CameraEscapeOffset);
         if ((mask >> j) & 1) {
           TRY_ESCAPE(off3, 2);
-          if (!CollideSphereWithWorldAndActors(&CAM[CAM_EYE], 0x100, 0x100) &&
+          if (!CollideSphereWithWorldAndActors(
+                  &CAM[CAM_EYE], CAM_COLLIDE_RADIUS, CAM_COLLIDE_RADIUS) &&
               CheckLineOfSightSegment(&CAM[CAM_EYE], d) &&
               CheckLineOfSightSegment(d, &CAM[CAM_EYE])) {
             FOUND();
@@ -196,7 +202,10 @@ void UpdateGameplayCamera(void) {
   }
   if (g_nCameraCurrentMode < 0 ||
       (ProjectWorldPointGTEUnscaled(d, g_anSpyroWorldPos),
-       (unsigned)(d[0] - 0x21) < 0x1BF && (unsigned)(d[1] - 0x19) < 0xBF &&
+       (unsigned)(d[0] - (CAM_ONSCREEN_MARGIN_X + 1)) <
+               SCREEN_W - 2 * CAM_ONSCREEN_MARGIN_X - 1 &&
+           (unsigned)(d[1] - (CAM_ONSCREEN_MARGIN_Y + 1)) <
+               SCREEN_H - 2 * CAM_ONSCREEN_MARGIN_Y - 1 &&
            !far)) {
     g_nCameraStuckFrames = 0;
     return;

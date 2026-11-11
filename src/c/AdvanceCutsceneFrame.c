@@ -58,10 +58,10 @@ void AdvanceCutsceneFrame(int timer) {
         seg = t >> 1;
         frac = (t & 1) << 5;
       }
-      g_pActorListBase[i].anim = seg / 60;
-      g_pActorListBase[i].frame = seg % 60;
-      g_pActorListBase[i].nextAnim = (seg + 1) / 60;
-      g_pActorListBase[i].nextFrame = (seg + 1) % 60;
+      g_pActorListBase[i].anim = seg / CUTSCENE_ANIM_FRAMES;
+      g_pActorListBase[i].frame = seg % CUTSCENE_ANIM_FRAMES;
+      g_pActorListBase[i].nextAnim = (seg + 1) / CUTSCENE_ANIM_FRAMES;
+      g_pActorListBase[i].nextFrame = (seg + 1) % CUTSCENE_ANIM_FRAMES;
       g_pActorListBase[i].frameProgress = frac;
       hdr = g_pPathTableHead;
       a[0] = (hdr->track[i][seg] & 0x3FF00000) >> 12;
@@ -70,7 +70,7 @@ void AdvanceCutsceneFrame(int timer) {
       b[0] = (hdr->track[i][seg + 1] & 0x3FF00000) >> 12;
       b[1] = (hdr->track[i][seg + 1] & 0xFFC00) >> 2;
       b[2] = (hdr->track[i][seg + 1] & 0x3FF) << 8;
-      inv = 0x40 - frac;
+      inv = ANIM_STEP - frac;
       ap = g_pActorListBase;
       ap[i].posX = (a[0] * inv + b[0] * frac) >> 6;
       ap[i].posY = (a[1] * inv + b[1] * frac) >> 6;

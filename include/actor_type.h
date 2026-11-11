@@ -650,6 +650,27 @@ enum DropThrow {
   DROP_IN_PLACE = 5,        /* appears on the source with no velocity */
   DROP_HIGH_HOP = 6,        /* lands within 0x100 of the source with a high hop */
 };
+/* SpawnActorDeathDrop. A rolled drop takes a percentage roll: under
+ * DROP_LIFE_PERCENT an extra life, under DROP_BUTTERFLY_PERCENT a butterfly
+ * (while Sparx is below full health). A thrown drop leaves at HOP_VZ
+ * (HIGH_HOP_VZ) up, within DROP_HIGH_HOP_JITTER / DROP_SCATTER_JITTER of the
+ * source on X and Y, and falls DROP_GRAVITY a frame; it starts DROP_LIFT
+ * above the source. DROP_TUMBLE_IF_NEAR tumbles when charging Spyro is
+ * within DROP_TUMBLE_RANGE and DROP_TUMBLE_DZ. A landing spot steeper than
+ * DROP_MAX_SLOPE (8-bit angle) or inside a solid within DROP_CLEAR_RADIUS
+ * falls back to the source. */
+#define DROP_LIFE_PERCENT 2
+#define DROP_BUTTERFLY_PERCENT 12
+#define DROP_HOP_VZ 0x8C
+#define DROP_HIGH_HOP_VZ 0x12C
+#define DROP_HIGH_HOP_JITTER 0x100
+#define DROP_SCATTER_JITTER 0x200
+#define DROP_GRAVITY 10
+#define DROP_LIFT 0x100
+#define DROP_TUMBLE_RANGE 0x800
+#define DROP_TUMBLE_DZ 0x400
+#define DROP_MAX_SLOPE 0x18
+#define DROP_CLEAR_RADIUS 0xC8
 
 /* Waypoint path used by the path-following classes (10, 114, 339) and
  * FollowActorWaypointPath / PivotActorAlongPath: node count, current node,
