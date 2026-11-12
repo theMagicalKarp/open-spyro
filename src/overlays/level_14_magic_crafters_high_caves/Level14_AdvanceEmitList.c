@@ -164,21 +164,21 @@ void Level14_AdvanceEmitList(int step) {
           goto commit;
         }
       } else {
-        CopyVector(dir, (int *)(ORB_TARGET + 0xC));
+        CopyVector(dir, &ORB_OWNER->posX);
         dv[0] += LookupCosine(AGE << 7) >> 2;
         dv[1] += LookupSine(AGE << 7) >> 2;
         dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(dir, dir, pt);
         len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
-          int *owner = *(int **)ORB_TARGET;
+          int *owner = (int *)ORB_OWNER->state;
 
           if (owner[5] == 1) {
             owner[5] = 2;
             owner[0] = 0x20;
           }
           ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
-          VectorToSVectorShr2(VEL, (int *)(ORB_TARGET + 0xC));
+          VectorToSVectorShr2(VEL, &ORB_OWNER->posX);
           rise = GetRandomU32() & 0x7F;
           AGE = 0;
           VEL_U[2] += rise;
