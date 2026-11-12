@@ -1229,14 +1229,14 @@ extern unsigned char g_szEnteringDotsFmt[]; /* 0x80010af4: "ENTERING %s..." */
 extern unsigned char g_szTreasureFound[]; /* 0x80010b04: "TREASURE FOUND" */
 extern unsigned char g_szTotalTreasure[]; /* 0x80010b14: "TOTAL TREASURE" */
 extern char g_szQuitGamePrompt[]; /* 0x80010b24: "QUIT GAME?" */
-extern char g_szSoundEffects[]; /* 0x80010b30: "SOUND FX" */
-extern char g_szMusicVolume[]; /* 0x80010b40: "MUSIC" */
-extern char g_szSpeakerSetup[]; /* 0x80010b50: "SOUND" */
+extern char g_szSoundEffects[]; /* 0x80010b30: "SOUND EFFECTS" */
+extern char g_szMusicVolume[]; /* 0x80010b40: "MUSIC VOLUME" */
+extern char g_szSpeakerSetup[]; /* 0x80010b50: "SPEAKER SETUP" */
 extern char g_szVibration[]; /* 0x80010b60: "VIBRATION" */
 extern char g_szInventory[]; /* 0x80010b78: "INVENTORY" */
 extern char g_szExitLevel[]; /* 0x80010b84: "EXIT LEVEL" */
-extern char g_szQuitGame[]; /* 0x80010b90: "EXIT WORLD" */
-extern unsigned char g_szPressStart[]; /* 0x80010b9c: "PRESS X..." prompt string */
+extern char g_szQuitGame[]; /* 0x80010b90: "QUIT GAME" (pause menu item) */
+extern unsigned char g_szPressStart[]; /* 0x80010b9c: "PRESS START" */
 extern char g_szHiSpyro[]; /* 0x80010ba8 */
 extern char g_szSaveGame[]; /* 0x80010bb4 */
 extern char g_szReplayDragon[]; /* 0x80010bc0 */

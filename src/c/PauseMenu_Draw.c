@@ -257,7 +257,8 @@ void PauseMenu_Draw(void) {
       Actor *rec;
       unsigned char *fr;
       short *lut1, *lut2, *lut3, *lut4, *lut6, *lut7, *lut8, *lut9;
-      unsigned char nGlyphs;
+      unsigned char
+          nGlyphs; /* letters of the highlighted row the wobble rolls */
       int cur;
       Actor *rp;
       int n1, n2, n3, n4, n5, n6;
@@ -370,6 +371,7 @@ void PauseMenu_Draw(void) {
         BuildTextSprites(g_szSoundEffects, pos, optionsGlyph, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_SFX_VOLUME) {
           rec = g_pSpriteRecordWriteCursor;
+          /* 11 of SOUND EFFECTS' 12 letters: the last S never wobbles. */
           nGlyphs = 0xb;
         }
         pos[0] = 0x79;
