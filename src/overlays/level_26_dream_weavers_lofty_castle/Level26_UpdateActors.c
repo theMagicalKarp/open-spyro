@@ -80,7 +80,7 @@ void Level26_UpdateActors(void) {
   int col[3];
   int chestToSpyro[3];
   int keySlotOffset[3];
-  int t384[3];
+  int spyroDelta[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int ps[6];
@@ -2460,10 +2460,10 @@ void Level26_UpdateActors(void) {
 
         at = &actor->posX;
         if (ApproxDist2D(at, &spy->posX) < STATUE_NEAR_RANGE) {
-          SubtractVector(t384, at, &spy->posX);
-          t384[2] = (t384[2] * 3) >> 2;
+          SubtractVector(spyroDelta, at, &spy->posX);
+          spyroDelta[2] = (spyroDelta[2] * 3) >> 2;
 
-          if (VectorLength(t384, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
+          if (VectorLength(spyroDelta, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
             int facing;
 
             facing =
@@ -2769,9 +2769,9 @@ void Level26_UpdateActors(void) {
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, actor, 0);
-      SubtractVector(t384, &spy->posX, &actor->posX);
-      distance = VectorLength(t384, VEC_LEN_XY);
-      if (distance < st->radius && t384[2] >= -WHIRL_BELOW_REACH && t384[2] < st->spanZ &&
+      SubtractVector(spyroDelta, &spy->posX, &actor->posX);
+      distance = VectorLength(spyroDelta, VEC_LEN_XY);
+      if (distance < st->radius && spyroDelta[2] >= -WHIRL_BELOW_REACH && spyroDelta[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + WHIRL_TOP_MARGIN < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->requestMask = SPYRO_RQ_PENDING;
