@@ -283,7 +283,7 @@ void ChangeSpyroState(int state) {
       v[2] = g_anSineLut[ang] >> 7;
       RotateVectorByMatrix(g_anSpyroBodyMtx, v, v);
       g_pfnLevelEmitParticles(1, EMIT_DUST_PUFF, v, 1);
-      ang = (ang + 0x40) & 0xFF;
+      ang = (ang + ANGLE8_QUARTER) & ANGLE8_MASK;
     }
     SPY[SPY_SUBSTATE] = 0;
     ZeroVector(&SPY[SPY_CARRY]);

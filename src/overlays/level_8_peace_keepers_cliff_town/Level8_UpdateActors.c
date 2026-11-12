@@ -3784,7 +3784,7 @@ void Level8_UpdateActors(void) {
         SubtractVector(barrelAxis, PATH_PT(st->path, 1), PATH_PT(st->path, 0));
         pitch = ArcTan2(VectorLength(barrelAxis, VEC_LEN_XY), barrelAxis[2], ATAN_ANGLE8);
         actor->rotY = pitch - 0x40;
-        if (((unsigned int)(pitch + 0x40) & 0xFF) < CANNON_LOW_PITCH_SPAN) {
+        if (((unsigned int)(pitch + ANGLE8_QUARTER) & ANGLE8_MASK) < CANNON_LOW_PITCH_SPAN) {
           actor->rotY = CANNON_LOW_PITCH;
         }
         actor->rotZ = ArcTan2(barrelAxis[0], barrelAxis[1], ATAN_ANGLE8);
@@ -4100,10 +4100,10 @@ void Level8_UpdateActors(void) {
           y416[0] = (g_anCosineLut[bearing] * 3) >> 4;
           y416[1] = (g_anSineLut[bearing] * 3) >> 4;
           y416[2] = 0;
-          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          letterSide[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          letterSide[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           letterSide[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, letterSide, st->count - 1);
           LShiftVector3(letterSide, 1);

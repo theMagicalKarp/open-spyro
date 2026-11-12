@@ -1153,7 +1153,7 @@ void Level25_UpdateActors(void) {
           ANIM_QUEUE(actor, RSENTRY_FALL);
         }
         actor->rotY += 4;
-        TurnActorYawTowardAngle(actor, (st->dir + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
+        TurnActorYawTowardAngle(actor, (st->dir + ANGLE8_HALF) & ANGLE8_MASK, 0x10, 0x20, YAW_STEP_IN_BAND);
         DriveActorTrackedMove(actor, &st->speed, st->dir, &st->zSpeed, 0xC, 0xC);
         break;
 
@@ -1162,7 +1162,7 @@ void Level25_UpdateActors(void) {
             MOVED_LANDED) {
           ENTER_POSE(actor, RSENTRY_BURST);
         }
-        TurnActorYawTowardAngle(actor, (st->dir + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
+        TurnActorYawTowardAngle(actor, (st->dir + ANGLE8_HALF) & ANGLE8_MASK, 0x10, 0x20, YAW_STEP_IN_BAND);
         break;
 
       case RSENTRY_BURST:
@@ -3514,7 +3514,7 @@ void Level25_UpdateActors(void) {
         SubtractVector(s496, PATH_PT(st->path, 1), PATH_PT(st->path, 0));
         pitch = ArcTan2(VectorLength(s496, VEC_LEN_XY), s496[2], ATAN_ANGLE8);
         actor->rotY = pitch - 0x40;
-        if (((unsigned int)(pitch + 0x40) & 0xFF) < CANNON_LOW_PITCH_SPAN) {
+        if (((unsigned int)(pitch + ANGLE8_QUARTER) & ANGLE8_MASK) < CANNON_LOW_PITCH_SPAN) {
           actor->rotY = CANNON_LOW_PITCH;
         }
         actor->rotZ = ArcTan2(s496[0], s496[1], ATAN_ANGLE8);
@@ -3815,10 +3815,10 @@ void Level25_UpdateActors(void) {
           s576[0] = (g_anCosineLut[bearing] * 3) >> 4;
           s576[1] = (g_anSineLut[bearing] * 3) >> 4;
           s576[2] = 0;
-          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          letterSide[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          letterSide[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           letterSide[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, letterSide, st->count - 1);
           LShiftVector3(letterSide, 1);

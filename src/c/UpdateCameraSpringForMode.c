@@ -219,7 +219,7 @@ void UpdateCameraSpringForMode(void) {
           } else {
             *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideLeftBias;
           }
-          CAM[0x2B] = (g_nSpyroBodyYaw + 0x800) & 0xFFF;
+          CAM[0x2B] = (g_nSpyroBodyYaw + ANGLE12_HALF) & ANGLE12_MASK;
           g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
           g_nCameraSpringYaw = g_nCameraYaw;
           LoadCameraTargetAnglesFromMode();

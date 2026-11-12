@@ -3198,10 +3198,10 @@ void Level20_UpdateActors(void) {
           A376[0] = (g_anCosineLut[bearing] * 3) >> 4;
           A376[1] = (g_anSineLut[bearing] * 3) >> 4;
           A376[2] = 0;
-          A336[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          A336[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          A336[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          A336[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           A336[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, A336, st->count - 1);
           LShiftVector3(A336, 1);

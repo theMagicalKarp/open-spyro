@@ -846,7 +846,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
                                   ((g_nSpyroPitchRateAccum << 4) >> 6) -
                                   ((g_nSpyroBodyPitch << 6) >> 6);
         g_nSpyroBodyPitch =
-            (g_nSpyroBodyPitch + (g_nSpyroPitchRateAccum >> 6)) & 0xFFF;
+            (g_nSpyroBodyPitch + (g_nSpyroPitchRateAccum >> 6)) & ANGLE12_MASK;
         if (g_nSpyroBodyPitch > ANGLE12_HALF) {
           g_nSpyroBodyPitch -= ANGLE12_TURN;
         }
@@ -1011,10 +1011,12 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           r = gb[SPY_ROLL - SPY_GLIDE_BANK];
           if (r < -SPYRO_ROLL_QUARTER) {
             gb[0] = 1;
-            gb[SPY_BODY_YAW - SPY_GLIDE_BANK] = (yy + 0x800) & 0xFFF;
+            gb[SPY_BODY_YAW - SPY_GLIDE_BANK] =
+                (yy + ANGLE12_HALF) & ANGLE12_MASK;
             gb[SPY_ROLL - SPY_GLIDE_BANK] = (0x800 - r) & 0xFFF;
             g_nSpyroTurnRateAccum = 0;
-            g_nSpyroBodyPitch = (g_nSpyroBodyPitch + 0x800) & 0xFFF;
+            g_nSpyroBodyPitch =
+                (g_nSpyroBodyPitch + ANGLE12_HALF) & ANGLE12_MASK;
           }
           p = -g_nSpyroBodyPitch & ANGLE12_MASK;
           if (p > ANGLE12_HALF) {
@@ -1232,7 +1234,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (g_nSpyroSubstate == SPYRO_SUB_GLIDE_HOLD) {
         if (g_nReturnPortalLevelId == 0) {
           g_nSpyroBodyYawStep =
-              ((g_abSpyroRequestEuler[2] << 4) - g_nSpyroBodyYaw) & 0xFFF;
+              ((g_abSpyroRequestEuler[2] << 4) - g_nSpyroBodyYaw) &
+              ANGLE12_MASK;
           if (g_nSpyroBodyYawStep > ANGLE12_HALF) {
             g_nSpyroBodyYawStep -= ANGLE12_TURN;
           }
@@ -1559,7 +1562,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     if (g_nSpyroSpeedTarget < g_nSpyroTurnRateAccum) {
       g_nSpyroTurnRateAccum = g_nSpyroSpeedTarget;
     }
-    a = (ang + dt + 0x800) & 0xFFF;
+    a = (ang + dt + ANGLE12_HALF) & ANGLE12_MASK;
     /* The original tests type 0xFF here, though no scripted-camera actor
      * (exit whirlwind 9, fireball cannon 225, Blowhard 495) has it and both
      * arms bump the same word (obj2 == obj). */

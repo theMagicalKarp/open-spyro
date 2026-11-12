@@ -2593,7 +2593,7 @@ void Level31_UpdateActors(void) {
           st->sink = -0xA;
           actor->posZ = f + FLOATBARREL_TUMBLE_HEIGHT;
         }
-        if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, FLOATBARREL_TUMBLE_SPEED, 0x200,
+        if (MoveActorAlongAngle(actor, (actor->rotZ - ANGLE8_QUARTER) & ANGLE8_MASK, FLOATBARREL_TUMBLE_SPEED, 0x200,
                           0x200, MOVE_LIFT) != 0) {
           actor->mode = FLOATBARREL_BURST;
         }
@@ -2878,7 +2878,7 @@ void Level31_UpdateActors(void) {
           st->sink = -0xA;
           actor->posZ = f + FLOATBARREL_TUMBLE_HEIGHT;
         }
-        if (MoveActorAlongAngle(actor, (actor->rotZ - 0x40) & 0xFF, FLOATBARREL_TUMBLE_SPEED, 0x200,
+        if (MoveActorAlongAngle(actor, (actor->rotZ - ANGLE8_QUARTER) & ANGLE8_MASK, FLOATBARREL_TUMBLE_SPEED, 0x200,
                           0x200, MOVE_LIFT) != 0) {
           actor->mode = FLOATBARREL_BURST;
         }
@@ -4103,10 +4103,10 @@ void Level31_UpdateActors(void) {
           v480[0] = (g_anCosineLut[bearing] * 3) >> 4;
           v480[1] = (g_anSineLut[bearing] * 3) >> 4;
           v480[2] = 0;
-          v496[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          v496[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          v496[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          v496[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           v496[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, v496, st->count - 1);
           LShiftVector3(v496, 1);

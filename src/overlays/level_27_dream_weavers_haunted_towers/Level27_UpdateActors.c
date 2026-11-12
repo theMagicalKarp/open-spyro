@@ -1825,7 +1825,7 @@ void Level27_UpdateActors(void) {
         st->init = one;
         for (i = 0; i < 4; i++) {
           int d = 0x190;
-          int h = (actor->rotZ + 0x40) & 0xFF;
+          int h = (actor->rotZ + ANGLE8_QUARTER) & ANGLE8_MASK;
 
           st->part[i] = g_pfnLevelSpawnActor(ACTOR_TYPE_BREAKABLE_WALL_PART, actor);
           CopyVector(&st->part[i]->posX, &actor->posX);
@@ -1891,7 +1891,7 @@ void Level27_UpdateActors(void) {
               o->renderList = 0xA0;
               *(int *)&o->tint0 = ACTOR_TINT_NEUTRAL;
             }
-            a = (actor->rotZ + 0x40) & 0xFF;
+            a = (actor->rotZ + ANGLE8_QUARTER) & ANGLE8_MASK;
             dd = (i % 3 - 1) * 800;
             o->posX += (dd * g_anCosineLut[a]) >> 12;
             o->posY += (dd * g_anSineLut[a]) >> 12;
@@ -3956,10 +3956,10 @@ void Level27_UpdateActors(void) {
           g512[0] = (g_anCosineLut[bearing] * 3) >> 4;
           g512[1] = (g_anSineLut[bearing] * 3) >> 4;
           g512[2] = 0;
-          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          letterSide[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          letterSide[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           letterSide[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, letterSide, st->count - 1);
           LShiftVector3(letterSide, 1);

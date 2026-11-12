@@ -335,7 +335,7 @@ void DragonRescue_Update(void) {
 
           g_nDragonRescueOrbitStartYaw = g_abSpyroPersistentEuler[2] << 4;
           g_dwDragonRescueOrbitTargetYaw =
-              (g_dwDragonRescueOrbitTargetYaw + 0x800) & 0xFFF;
+              (g_dwDragonRescueOrbitTargetYaw + ANGLE12_HALF) & ANGLE12_MASK;
           g_nSpyroWorldPosY = y + (s >> 12);
           CopyVector(g_anCameraPos, REC(src));
         }

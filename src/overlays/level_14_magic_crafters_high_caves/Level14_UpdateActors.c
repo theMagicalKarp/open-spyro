@@ -5132,7 +5132,7 @@ void Level14_UpdateActors(void) {
           vecB[0] = g_anCosineLut[anglespyro + 64 & 0xFF] >> 5;
           vecB[1] = g_anSineLut[(anglespyro + 64) & 0xFF] >> 5;
           vecB[2] = 0;
-          anglespyro = (anglespyro + 0x80) & 0xFF;
+          anglespyro = (anglespyro + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);
           ScaleVector3Sat(vecC, vecB, st->count - 1);
           LShiftVector3(vecB, 1);

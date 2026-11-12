@@ -95,7 +95,7 @@ void DispatchSpyroPhysicsByState(void) {
       ang =
           (g_nSpyroBodyYaw - ArcTan2(g_anSpyroGroundNormal[0],
                                      g_anSpyroGroundNormal[1], ATAN_ANGLE12)) &
-          0xFFF;
+          ANGLE12_MASK;
       if (ang > ANGLE12_HALF) {
         ang -= ANGLE12_TURN;
       }

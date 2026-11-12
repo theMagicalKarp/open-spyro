@@ -3869,7 +3869,7 @@ void Level12_UpdateActors(void) {
               st->dist = ps->dist;
             }
             if (ps->heading != 0) {
-              st->heading = (ps->heading + 0x80) & 0xFF;
+              st->heading = (ps->heading + ANGLE8_HALF) & ANGLE8_MASK;
               SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist,
                             st->heading, 8, PATHGUARD_RING_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, PATHGUARD_MOVE_RADIUS,
                             PATHGUARD_WALL_RADIUS, MOVE_LIFT | MOVE_PASS_ACTORS | MOVE_FOLLOW_FLOOR | MOVE_SLIDE);
@@ -4909,10 +4909,10 @@ void Level12_UpdateActors(void) {
           svN[0] = (g_anCosineLut[bearing] * 3) >> 4;
           svN[1] = (g_anSineLut[bearing] * 3) >> 4;
           svN[2] = 0;
-          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          letterSide[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          letterSide[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           letterSide[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, letterSide, st->count - 1);
           LShiftVector3(letterSide, 1);

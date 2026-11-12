@@ -200,7 +200,7 @@ void Level8_BalloonistCutscene_Update(void)
             g_bSpyroAnimFrame = 0;
             g_bSpyroSubFrameTimer = 0;
             g_nSpyroAnimPlayRate = 8;
-            g_nActorCutsceneSpyroYawGoal = ((n * 0x10) - 0x800) & 0xFFF;
+            g_nActorCutsceneSpyroYawGoal = ((n * 0x10) - ANGLE12_HALF) & ANGLE12_MASK;
           }
           if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneSpyroYawGoal, g_nActorCutsceneSpyroYawStart))
           {
