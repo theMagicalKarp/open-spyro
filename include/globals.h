@@ -1187,8 +1187,8 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_dwBurstColorSparxFood / ExtraLife 0x8006e490 / 0x8006e494  0x2C-coded colour words (0x808080 / 0x008080)
  *       UpdateActors passes to emit effect 0xC for ACTOR_TYPE_SPARX_FOOD / EXTRA_LIFE in place of g_adwActorBurstColors;
  *       entries 5 and 6 of a 7-word colour table at 0x8006e47c
- *   g_anSparkleGlowDesc     0x8006e390  descriptor installed as FxNode.desc on every 9-point sparkle from
- *       AllocWorldSparkle (UpdateActors smoke/glow nodes); 42 small signed words, likely shape offsets
+ *   g_anSparxGlowShape      0x8006e390  FxNode.desc of Sparx's full-health glow (SparxState.glow):
+ *       SPARX_GLOW_POINTS (x, y) int pairs, a closed octagon +-48 wide by +-30 tall
  *   g_aSmokeJetEmitters     0x8006e614  3 x {short pos[3], vel[3]} jet origins/velocities, rotated by the
  *       actor matrix (two puffs per jet per frame)
  *   g_nCameraActiveTarget{Pitch,Distance,Roll,PitchBias,YawBias} 0x8007866c..7c  per-word views of

@@ -12,7 +12,7 @@
 #include "actor_type.h"
 #include "spyro_block.h"
 
-extern int g_anSparkleGlowDesc;
+extern int g_anSparxGlowShape; /* Sparx glow outline, SPARX_GLOW_POINTS (x, y) pairs */
 extern int g_anFlightTallyTintPresets[];
 extern int g_dwBurstColorSparxFood;
 extern int g_dwBurstColorExtraLife;

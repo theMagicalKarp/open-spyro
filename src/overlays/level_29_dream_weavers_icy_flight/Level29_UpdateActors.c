@@ -914,8 +914,8 @@ void Level29_UpdateActors(void) {
             st->glow->r = SPARX_GLOW_R;
             st->glow->g = SPARX_GLOW_G;
             st->glow->b = SPARX_GLOW_B;
-            st->glow->points = 9;
-            st->glow->desc = &g_anSparkleGlowDesc;
+            st->glow->points = SPARX_GLOW_POINTS;
+            st->glow->desc = &g_anSparxGlowShape;
           }
         } else {
           st->glow->size += SPARX_GLOW_GROW;
