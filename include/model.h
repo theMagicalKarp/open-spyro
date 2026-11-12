@@ -25,7 +25,7 @@ typedef struct AnimationHeader {
   void *m_LpFaces;
   void *m_LpColors;               /* 0x20 */
   unsigned int m_FrameWords[1];   /* 0x24 frame records. Spyro's anims: one
-                                   * word per frame, byte 3 the footstep sfx
+                                   * word per frame, byte 3 the frame's sfx
                                    * id (0xFF = none, TickSpyroGameplayFrame).
                                    * Actor anims: two words per frame, byte 3
                                    * a signed Model.m_Sounds index (< 0 none,

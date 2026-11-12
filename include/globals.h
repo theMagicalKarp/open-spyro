@@ -1060,8 +1060,8 @@ extern int g_nPortalCamPathReverseFlag;              /* 0x80078ca0 */
 extern int g_nSpyroFlightMode;                    /* 0x80078ca4: Spyro can fly: set on flight levels (and in Gnasty's Loot, LEVEL_GNASTYS_LOOT, once grounded), cleared on level exit. While set the glide/fly states take R1/L1 as substates 1/2 and the fall physics keeps tracking g_nSpyroFloorReferenceZ */
 extern int g_nSpyroChargeHoldFlag;                      /* 0x80078ca8 */
 extern int g_nSpyroGlideBankingFlag;                    /* 0x80078cac */
-extern unsigned int g_dwSpyroFootstepPrimarySfxKey;             /* 0x80078cbc */
-extern unsigned int g_dwSpyroFootstepSecondarySfxKey;           /* 0x80078cc0 */
+extern unsigned int g_dwSpyroAnimSfxPrevKey;             /* 0x80078cbc: last frame's frame word of Spyro's primary anim; its frame sound plays only when the word changes (TickSpyroGameplayFrame) */
+extern unsigned int g_dwSpyroLayer1SfxPrevKey;           /* 0x80078cc0: the same for anim layer 1 */
 extern int g_nSpyroGroundTriIndex;                       /* 0x80078ccc */
 extern int g_anSpyroGroundTriVerts[9];                /* 0x80078cd0 */
 extern void *g_pSpyroHazardRegionData;                /* 0x80078cf4 */
@@ -1463,7 +1463,7 @@ extern int g_nSpyroSwingEulerSpringAccum1; /* 0x80078c18 */
 extern int g_nSpyroSwingEulerSpringAccum2; /* 0x80078c1c */
 extern int g_anSpyroComposedBodyMtxBlock[]; /* 0x80078c20: g_anSpyroComposedBodyMtx */
 extern int g_nSpyroAnimLayer2GateFrames; /* 0x80078c44 */
-extern unsigned int g_adwSpyroFootstepSfxBlock[]; /* 0x80078cbc */
+extern unsigned int g_adwSpyroAnimSfxPrevKeyBlock[]; /* 0x80078cbc */
 extern int g_anSpyroGroundChunkBlock[]; /* 0x80078ccc */
 extern int g_nSaveSlotIndex; /* 0x80078d1c */
 extern int g_nSaveFileTag; /* 0x80078d20 */

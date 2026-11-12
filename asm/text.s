@@ -63752,8 +63752,8 @@ glabel TickSpyroGameplayFrame
     /* 3AE78 8004A678 3800A28C */  lw         $v0, 0x38($a1)
     /* 3AE7C 8004A67C 00000000 */  nop
     /* 3AE80 8004A680 21106200 */  addu       $v0, $v1, $v0
-    /* 3AE84 8004A684 0880033C */  lui        $v1, %hi(g_dwSpyroFootstepPrimarySfxKey)
-    /* 3AE88 8004A688 BC8C638C */  lw         $v1, %lo(g_dwSpyroFootstepPrimarySfxKey)($v1)
+    /* 3AE84 8004A684 0880033C */  lui        $v1, %hi(g_dwSpyroAnimSfxPrevKey)
+    /* 3AE88 8004A688 BC8C638C */  lw         $v1, %lo(g_dwSpyroAnimSfxPrevKey)($v1)
     /* 3AE8C 8004A68C 2400428C */  lw         $v0, 0x24($v0)
     /* 3AE90 8004A690 00000000 */  nop
     /* 3AE94 8004A694 04006210 */  beq        $v1, $v0, .L8004A6A8
@@ -63776,8 +63776,8 @@ glabel TickSpyroGameplayFrame
     /* 3AED4 8004A6D4 2400438C */  lw         $v1, 0x24($v0)
     /* 3AED8 8004A6D8 0880023C */  lui        $v0, %hi(g_bSpyroAnimLayer1Prev)
     /* 3AEDC 8004A6DC 728A4290 */  lbu        $v0, %lo(g_bSpyroAnimLayer1Prev)($v0)
-    /* 3AEE0 8004A6E0 0880073C */  lui        $a3, %hi(g_dwSpyroFootstepPrimarySfxKey)
-    /* 3AEE4 8004A6E4 BC8CE724 */  addiu      $a3, $a3, %lo(g_dwSpyroFootstepPrimarySfxKey)
+    /* 3AEE0 8004A6E0 0880073C */  lui        $a3, %hi(g_dwSpyroAnimSfxPrevKey)
+    /* 3AEE4 8004A6E4 BC8CE724 */  addiu      $a3, $a3, %lo(g_dwSpyroAnimSfxPrevKey)
     /* 3AEE8 8004A6E8 80100200 */  sll        $v0, $v0, 2
     /* 3AEEC 8004A6EC 21284400 */  addu       $a1, $v0, $a0
     /* 3AEF0 8004A6F0 0000E3AC */  sw         $v1, 0x0($a3)
@@ -63797,8 +63797,8 @@ glabel TickSpyroGameplayFrame
     /* 3AF28 8004A728 3800A28C */  lw         $v0, 0x38($a1)
     /* 3AF2C 8004A72C 00000000 */  nop
     /* 3AF30 8004A730 21106200 */  addu       $v0, $v1, $v0
-    /* 3AF34 8004A734 0880033C */  lui        $v1, %hi(g_dwSpyroFootstepSecondarySfxKey)
-    /* 3AF38 8004A738 C08C638C */  lw         $v1, %lo(g_dwSpyroFootstepSecondarySfxKey)($v1)
+    /* 3AF34 8004A734 0880033C */  lui        $v1, %hi(g_dwSpyroLayer1SfxPrevKey)
+    /* 3AF38 8004A738 C08C638C */  lw         $v1, %lo(g_dwSpyroLayer1SfxPrevKey)($v1)
     /* 3AF3C 8004A73C 2400428C */  lw         $v0, 0x24($v0)
     /* 3AF40 8004A740 00000000 */  nop
     /* 3AF44 8004A744 04006210 */  beq        $v1, $v0, .L8004A758
@@ -63828,8 +63828,8 @@ glabel TickSpyroGameplayFrame
     /* 3AFA0 8004A7A0 24104500 */  and        $v0, $v0, $a1
     /* 3AFA4 8004A7A4 0880013C */  lui        $at, %hi(g_dwSpyroRequestMask)
     /* 3AFA8 8004A7A8 4C8C22AC */  sw         $v0, %lo(g_dwSpyroRequestMask)($at)
-    /* 3AFAC 8004A7AC 0880013C */  lui        $at, %hi(g_dwSpyroFootstepSecondarySfxKey)
-    /* 3AFB0 8004A7B0 C08C24AC */  sw         $a0, %lo(g_dwSpyroFootstepSecondarySfxKey)($at)
+    /* 3AFAC 8004A7AC 0880013C */  lui        $at, %hi(g_dwSpyroLayer1SfxPrevKey)
+    /* 3AFB0 8004A7B0 C08C24AC */  sw         $a0, %lo(g_dwSpyroLayer1SfxPrevKey)($at)
     /* 3AFB4 8004A7B4 07006010 */  beqz       $v1, .L8004A7D4
     /* 3AFB8 8004A7B8 00000000 */   nop
     /* 3AFBC 8004A7BC 0780043C */  lui        $a0, %hi(g_dwPadStash)
