@@ -43,6 +43,7 @@
 #include "match_asm.h"
 #include "spyro_state.h"
 #include "emit_record.h"
+#include "actor_states.h"
 
 void Level13_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;
@@ -183,11 +184,11 @@ void Level13_AdvanceEmitList(int step) {
         SubtractVector(dir, dir, pt);
         len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
-          int *target = (int *)ORB_TARGET->state; /* a TetherState: [5] mode, [0] timer */
+          TetherState *target = ORB_TARGET->state;
 
-          if (target[5] == TCMD_BOUND) {
-            target[5] = TCMD_FREED; /* the orb frees a bound guard */
-            target[0] = 0x20;
+          if (target->mode == TCMD_BOUND) {
+            target->mode = TCMD_FREED; /* the orb frees a bound guard */
+            target->timer = TGUARD_ORB_FREE_FRAMES;
           }
           ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
           VectorToSVectorShr2(VEL, &ORB_TARGET->posX);

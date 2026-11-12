@@ -126,8 +126,8 @@ extern int g_nSparxHealth;
 /* EMIT_HOMING_ORB / EMIT_PATH_WISP: the mode halfword (ORB_TRAIL: falling
  * spark trail; ORB_ORBIT: circling its drift point VEL, the X / Y sweeps
  * signed by ORB_X_UP / ORB_Y_UP; neither: homing on ORB_TARGET, the actor
- * the word at 0x18 names (level 15's sentinel aims it at its linked actor
- * and the orb bumps that actor's state on arrival). */
+ * the word at 0x18 names (level 15's sentinel aims it at its linked guard,
+ * and on arrival the orb frees it if bound: TetherState TCMD_FREED). */
 #define ORB_MODE HS(0x1E)
 #define ORB_MODE_U HU(0x1E)
 #define ORB_TARGET ((struct Actor *)W(0x18))

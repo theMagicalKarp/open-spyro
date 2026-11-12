@@ -962,18 +962,6 @@ typedef struct BreakableRockState {
   int scorchBand; /* 0x10 StepActorScorchTint band */
 } BreakableRockState;
 
-typedef struct TetherState {
-  int timer;   /* 0x00 */
-  int knockSpeed;   /* 0x04 knockback speed */
-  int knockHeading; /* 0x08 knockback heading */
-  int link;    /* 0x0C walker to follow (index into g_pActorListBase), or -1;
-                * a sentinel powering a chain of guards reads it as the next
-                * guard (ending the chain when that isn't a tethered guard) */
-  int owner;   /* 0x10 actor whose loss frees this one; level data: ACTOR_TYPE_SENTINEL */
-  int mode;    /* 0x14 TetherCommand */
-  int stop;    /* 0x18 node of the sentinel's path where it powers this guard */
-} TetherState;
-
 /* The tethered guard's view of its link's state. For an ACTOR_TYPE_PATH_GUARD
  * link (level data) it is PathGuardState's path and flags, so `moving` == 1
  * is PATHGUARD_F_RING. */
