@@ -38,7 +38,7 @@ void StoryIntro_Draw(void) {
     rec = (int)g_pSpriteRecordWriteCursor;
     col[0] = 0xE;
     col[1] = 1;
-    col[2] = 0x1600;
+    col[2] = TEXT_TINY_DEPTH;
     if (g_nTitleExitPath == TITLE_EXIT_NEW_GAME) {
       pos[0] = 0x5C;
       BuildTextSprites(g_szInTheWorldOfDragons, pos, col, 0x10, TINT_HUD);

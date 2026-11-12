@@ -78,7 +78,7 @@ void SaveLoadMenu_Draw(void) {
       WAVE(rec, 10, SM[SM_PHASE]);
       size[0] = 0xE;
       size[1] = 1;
-      size[2] = 0x1600;
+      size[2] = TEXT_TINY_DEPTH;
       pos[2] = TEXT_SMALL_DEPTH;
       pos[0] = SM[SM_X_OFFSET] + 0x2D;
       BuildTextSprites(g_szPleaseRestartWith, pos, size, 0x10, TINT_HUD);
@@ -113,7 +113,7 @@ void SaveLoadMenu_Draw(void) {
       WAVE(rec, n, SM[SM_PHASE]);
       size[0] = 0xE;
       size[1] = 1;
-      size[2] = 0x1600;
+      size[2] = TEXT_TINY_DEPTH;
       pos[2] = TEXT_SMALL_DEPTH;
       pos[0] = SM[SM_X_OFFSET] + 0x3B;
       BuildTextSprites(g_szPleaseInsertThe, pos, size, 0x10, TINT_HUD);
@@ -133,7 +133,7 @@ void SaveLoadMenu_Draw(void) {
       WAVE(rec, 9, SM[SM_PHASE]);
       size[0] = 0xE;
       size[1] = 1;
-      size[2] = 0x1600;
+      size[2] = TEXT_TINY_DEPTH;
       pos[2] = TEXT_SMALL_DEPTH;
       pos[0] = SM[SM_X_OFFSET] + 0x3B;
       BuildTextSprites(g_szPleaseCheckThat, pos, size, 0x10, TINT_HUD);
@@ -177,7 +177,7 @@ void SaveLoadMenu_Draw(void) {
       size[1] = 1;
       size[2] = 0x1A00;
       pos[1] = 0x1D;
-      pos[2] = 0x1600;
+      pos[2] = TEXT_TINY_DEPTH;
       if (g_nSaveSlotSelected == 0) {
         pos[0] = g_nSaveMenuXOffset + 0x30;
         BuildTextSprites(g_szUiSlot1, pos, size, 0xE, TINT_HUD);

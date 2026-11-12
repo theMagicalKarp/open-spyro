@@ -71,7 +71,7 @@ void ActorCutscene_Draw(void) {
       pos[2] = TEXT_SMALL_DEPTH;
       attr[0] = 0xE;
       attr[1] = 1;
-      attr[2] = 0x1600;
+      attr[2] = TEXT_TINY_DEPTH;
       rec = g_pSpriteRecordWriteCursor;
       BuildTextSprites(buf, pos, attr, 0x10, TINT_GOLD);
 

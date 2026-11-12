@@ -322,7 +322,7 @@ void PauseMenu_Draw(void) {
       }
       pos[0] = 0xba;
       pos[1] = 0x52;
-      pos[2] = 0xc00;
+      pos[2] = TEXT_TITLE_DEPTH;
       BuildTextSpriteChain(g_szUiPaused, pos, 0x1c, TINT_HUD);
       if (g_nPauseMenuSubstate == PAUSE_PAGE_QUIT_CONFIRM) {
         quitGlyph[0] = 0x10;
@@ -363,7 +363,7 @@ void PauseMenu_Draw(void) {
         }
       } else if (g_nPauseMenuSubstate == PAUSE_PAGE_OPTIONS) {
         optionsGlyph[0] = 0xf;
-        optionsGlyph[2] = 0x1600;
+        optionsGlyph[2] = TEXT_TINY_DEPTH;
         optionsGlyph[1] = 1;
         pos[0] = 0x6b;
         pos[1] = 0x6c;

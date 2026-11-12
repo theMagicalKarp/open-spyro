@@ -159,6 +159,8 @@ typedef struct NameLetterState {
  * smaller (small caps). */
 #define TEXT_DEPTH 0x1100       /* the large first letters */
 #define TEXT_SMALL_DEPTH 0x1400 /* the small-caps letters; also small text's pos[2] */
+#define TEXT_TINY_DEPTH 0x1600  /* small text's small-caps letters (attr[2]) */
+#define TEXT_TITLE_DEPTH 0xC00  /* headlines (BuildTextSpriteChain: PAUSED, TIME ATTACK) */
 #define TINT_EXTRA_LIFE 0xC
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
 #define TINT_STATUE_SHARD 0xE

@@ -107,7 +107,7 @@ void Level6_BalloonistCutscene_Draw(void) {
         }
       } else if (g_nActorCutsceneSubstate[3] == BPAGE_ROSTER) {
         menuGlyph[0] = 0xE;
-        menuGlyph[2] = 0x1600;
+        menuGlyph[2] = TEXT_TINY_DEPTH;
         menuPos[2] = TEXT_SMALL_DEPTH;
         menuPos[0] = 0xF0;
         menuGlyph[1] = 1;
