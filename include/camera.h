@@ -147,6 +147,15 @@ enum CameraMode {
  * The passive follow holds the yaw below CAM_PASSIVE_MAX_SPEED (Spyro's
  * speed). Spring states clamp to CAM_SPRING_CLAMP (glide entry, the passive
  * re-engage) or CAM_SPRING_CLAMP_SWING (CAM_OPT_SMOOTH_SWING). */
+/* The six spring axes, in table-row / g_anCameraSpringDeltaState order. */
+enum CameraAxis {
+  CAM_AXIS_YAW = 0,
+  CAM_AXIS_PITCH = 1,
+  CAM_AXIS_DISTANCE = 2,
+  CAM_AXIS_ROLL = 3,
+  CAM_AXIS_PITCH_BIAS = 4,
+  CAM_AXIS_YAW_BIAS = 5,
+};
 #define CAM_SPRING_COLUMNS 6
 #define CAM_SPRING_ROW(axis) ((axis) * CAM_SPRING_COLUMNS)
 #define CAM_CHARGE_MIN_DRIVE 0x400

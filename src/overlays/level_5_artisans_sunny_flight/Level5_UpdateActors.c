@@ -905,8 +905,8 @@ void Level5_UpdateActors(void) {
             st->glow->r = SPARX_GLOW_R;
             st->glow->g = SPARX_GLOW_G;
             st->glow->b = SPARX_GLOW_B;
-            st->glow->points = 9;
-            st->glow->desc = &g_anSparkleGlowDesc;
+            st->glow->points = SPARX_GLOW_POINTS;
+            st->glow->desc = &g_anSparxGlowShape;
           }
         } else {
           st->glow->size += SPARX_GLOW_GROW;
@@ -1371,9 +1371,9 @@ void Level5_UpdateActors(void) {
         } else {
           TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, BANKER_TWEEN_SPEED, 0);
         }
-        d = (actor->rotZ - d) & 0xFF;
-        if (d > 0x80) {
-          d -= 0x100;
+        d = (actor->rotZ - d) & ANGLE8_MASK;
+        if (d > ANGLE8_HALF) {
+          d -= ANGLE8_TURN;
         }
         st->rollVel += ((-d << 8) - (st->rollVel << 3) - st->roll) >> 6;
         st->roll = (st->roll + st->rollVel) & 0xFFF;
@@ -2146,7 +2146,7 @@ void Level5_UpdateActors(void) {
           vecB[0] = g_anCosineLut[anglespyro + 64 & 0xFF] >> 5;
           vecB[1] = g_anSineLut[(anglespyro + 64) & 0xFF] >> 5;
           vecB[2] = 0;
-          anglespyro = (anglespyro + 0x80) & 0xFF;
+          anglespyro = (anglespyro + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);
           ScaleVector3Sat(vecC, vecB, st->count - 1);
           LShiftVector3(vecB, 1);

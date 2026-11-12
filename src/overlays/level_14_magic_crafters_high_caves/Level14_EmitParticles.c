@@ -24,8 +24,8 @@
  *   - Arms 0x45 and 0x49 are the same effect with two record layouts: 0x45 is
  *     a `dust` mote that keeps the emitter argument as an INT at +0x18 with a
  *     zero int at +0x1C (new `src`/`waypoint` fields on the dust struct), 0x49 is
- *     a `track` record that copies its own position into `vel[]` at +0x18 and
- *     carries `owner = rand()` / `orbitRadius = (rand() & 0x1F) + 0x20`.  Both end
+ *     an `orbitDot` record that copies its own position into `centre[]` at +0x18
+ *     and carries `phase = rand()` / `radius = (rand() & 0x1F) + 0x20`.  Both end
  *     in the SAME eight-way `switch (rand() & 7)` colour block (the level_25
  *     arm-0x42 palette) and `fx = 0x40`; gcc cross-jumps the two switches into
  *     one, which is why arm 0x45's table points into arm 0x49's body.
@@ -141,7 +141,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       jz = GetRandomU32() & 0x7E;
       bz = rec->u.plume.pos[2] - 0x3F;
       rec->u.plume.src = (int *)effectArg;
-      rec->u.plume.rise = 0;
+      rec->u.plume.rise = 0; /* ORB_MODE: start homing on its target */
       rec->u.plume.pos[2] = bz + jz;
       rec->u.plume.size = (GetRandomU32() & 0xF) + 0x18;
       rec->u.plume.spin = (GetRandomU32() & 7) + 0xF;
@@ -208,7 +208,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       SetVector3Magnitude(vt, 0x80);
       VectorToSVectorShr2(rec->u.track.vel, vt);
       rec->u.track.owner = (Actor *)effectArg - g_pActorListBase;
-      rec->u.track.orbitRadius = 0;
+      rec->u.track.unread1F = 0;
       rec->u.track.size = (GetRandomU32() & 0xF) + 0x18;
       rec->u.track.spin = (GetRandomU32() & 7) + 0xF;
       rec->u.track.fx = EMIT_FX_QUAD;
@@ -280,7 +280,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5;
+      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -360,7 +360,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.ribbon.pos, pos);
-      VectorToSVectorShr2(rec->u.ribbon.pos2, pos);
+      VectorToSVectorShr2(rec->u.ribbon.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         v = effectArg * 2;
       } else {
@@ -383,7 +383,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.band.pos, pos);
-      VectorToSVectorShr2(rec->u.band.pos2, pos);
+      VectorToSVectorShr2(rec->u.band.centre, pos);
       v = 0x30;
       z = i * 16;
       rec->u.band.size = v;
@@ -397,7 +397,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.band.texIndex = 0;
       rec->u.band.radius = 0x10;
       rec->u.band.angle = z;
-      rec->u.band.segment = i;
+      rec->u.band.index = i;
       break;
     }
     case EMIT_RISING_PUFF: {
@@ -406,7 +406,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      rec->u.spark.toggle = (int)GetRandomU32() % 2 + 1;
+      rec->u.spark.toggle = (int)GetRandomU32() % 2 + 1; /* RISE_SPEED_U: climbs 1 or 2 */
       rec->u.spark.size = 8;
       rec->u.spark.spin = GetRandomU32();
       rec->u.spark.r = 0x40;
@@ -648,15 +648,15 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
-      rec->u.track.pos[0] = (pos[0] >> 2) + (GetRandomU32() & 0xF) - 8;
-      rec->u.track.pos[1] = (pos[1] >> 2) + (GetRandomU32() & 0xF) - 8;
-      rec->u.track.pos[2] = (pos[2] >> 2) + (GetRandomU32() & 0xF) - 8;
-      rec->u.track.vel[0] = rec->u.track.pos[0];
-      rec->u.track.vel[1] = rec->u.track.pos[1];
-      rec->u.track.vel[2] = rec->u.track.pos[2];
-      rec->u.track.owner = GetRandomU32();
-      rec->u.track.orbitRadius = (GetRandomU32() & 0x1F) + 0x20;
-      rec->u.track.size = 2; /* a dot: the OT depth-bin bias */
+      rec->u.orbitDot.pos[0] = (pos[0] >> 2) + (GetRandomU32() & 0xF) - 8;
+      rec->u.orbitDot.pos[1] = (pos[1] >> 2) + (GetRandomU32() & 0xF) - 8;
+      rec->u.orbitDot.pos[2] = (pos[2] >> 2) + (GetRandomU32() & 0xF) - 8;
+      rec->u.orbitDot.centre[0] = rec->u.orbitDot.pos[0];
+      rec->u.orbitDot.centre[1] = rec->u.orbitDot.pos[1];
+      rec->u.orbitDot.centre[2] = rec->u.orbitDot.pos[2];
+      rec->u.orbitDot.phase = GetRandomU32();
+      rec->u.orbitDot.radius = (GetRandomU32() & 0x1F) + 0x20;
+      rec->u.orbitDot.depthBias = 2;
       switch (GetRandomU32() & 7) {
       case 0:
         rec->u.track.r = 0xFF;
@@ -708,7 +708,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.smear.pos, pos);
-      VectorToSVectorShr2(rec->u.smear.pos2, pos);
+      VectorToSVectorShr2(rec->u.smear.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         w = effectArg * 2;
       } else {

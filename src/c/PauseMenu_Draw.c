@@ -82,6 +82,8 @@ void PauseMenu_Draw(void) {
     BuildRenderEntityLists();
     h = DRAW_H;
     ComposeFrameScene();
+    /* The two do / while (0) groups are cse block boundaries (A200) that
+       keep the original's load / call order; they never loop. */
     do {
       strip = MENU_BACKDROP_X;
       RasterizeEmitList();
@@ -257,7 +259,8 @@ void PauseMenu_Draw(void) {
       Actor *rec;
       unsigned char *fr;
       short *lut1, *lut2, *lut3, *lut4, *lut6, *lut7, *lut8, *lut9;
-      unsigned char nGlyphs;
+      unsigned char
+          nGlyphs; /* letters of the highlighted row the wobble rolls */
       int cur;
       Actor *rp;
       int n1, n2, n3, n4, n5, n6;
@@ -321,7 +324,7 @@ void PauseMenu_Draw(void) {
       }
       pos[0] = 0xba;
       pos[1] = 0x52;
-      pos[2] = 0xc00;
+      pos[2] = TEXT_TITLE_DEPTH;
       BuildTextSpriteChain(g_szUiPaused, pos, 0x1c, TINT_HUD);
       if (g_nPauseMenuSubstate == PAUSE_PAGE_QUIT_CONFIRM) {
         quitGlyph[0] = 0x10;
@@ -362,7 +365,7 @@ void PauseMenu_Draw(void) {
         }
       } else if (g_nPauseMenuSubstate == PAUSE_PAGE_OPTIONS) {
         optionsGlyph[0] = 0xf;
-        optionsGlyph[2] = 0x1600;
+        optionsGlyph[2] = TEXT_TINY_DEPTH;
         optionsGlyph[1] = 1;
         pos[0] = 0x6b;
         pos[1] = 0x6c;
@@ -370,6 +373,7 @@ void PauseMenu_Draw(void) {
         BuildTextSprites(g_szSoundEffects, pos, optionsGlyph, 0x10, TINT_HUD);
         if (g_nPauseMenuCursor == OPTIONS_ROW_SFX_VOLUME) {
           rec = g_pSpriteRecordWriteCursor;
+          /* 11 of SOUND EFFECTS' 12 letters: the last S never wobbles. */
           nGlyphs = 0xb;
         }
         pos[0] = 0x79;

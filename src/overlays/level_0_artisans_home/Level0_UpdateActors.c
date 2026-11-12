@@ -1469,9 +1469,9 @@ void Level0_UpdateActors(void) {
 
         angle = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
-        angleDelta = (angle - actor->rotZ) & 0xFF;
-        if (angleDelta > 0x80) {
-          angleDelta -= 0x100;
+        angleDelta = (angle - actor->rotZ) & ANGLE8_MASK;
+        if (angleDelta > ANGLE8_HALF) {
+          angleDelta -= ANGLE8_TURN;
         }
 
         if (ABS2(angleDelta) < PENEMY_WALK_CONE) {
@@ -1523,9 +1523,9 @@ void Level0_UpdateActors(void) {
 
         angle = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
-        angleDelta = (angle - actor->rotZ) & 0xFF;
-        if (angleDelta > 0x80) {
-          angleDelta -= 0x100;
+        angleDelta = (angle - actor->rotZ) & ANGLE8_MASK;
+        if (angleDelta > ANGLE8_HALF) {
+          angleDelta -= ANGLE8_TURN;
         }
 
         if (ABS2(angleDelta) < PENEMY_WALK_CONE) {
@@ -1577,7 +1577,7 @@ void Level0_UpdateActors(void) {
         }
 
         actor->rotY += 4;
-        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
+        TurnActorYawTowardAngle(actor, (st->heading + ANGLE8_HALF) & ANGLE8_MASK, 0x10, 0x20, YAW_STEP_IN_BAND);
         DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC, 0xC);
         break;
       }
@@ -1591,7 +1591,7 @@ void Level0_UpdateActors(void) {
         }
 
         DriveActorTrackedMove(actor, &st->moveSpeed, st->heading, &st->zSpeed, 0xC, 0xC);
-        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
+        TurnActorYawTowardAngle(actor, (st->heading + ANGLE8_HALF) & ANGLE8_MASK, 0x10, 0x20, YAW_STEP_IN_BAND);
         break;
       }
 
@@ -1604,7 +1604,7 @@ void Level0_UpdateActors(void) {
           continue;
         }
 
-        TurnActorYawTowardAngle(actor, (st->heading + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
+        TurnActorYawTowardAngle(actor, (st->heading + ANGLE8_HALF) & ANGLE8_MASK, 0x10, 0x20, YAW_STEP_IN_BAND);
         break;
       }
 
@@ -1662,8 +1662,8 @@ void Level0_UpdateActors(void) {
             st->glow->r = SPARX_GLOW_R;
             st->glow->g = SPARX_GLOW_G;
             st->glow->b = SPARX_GLOW_B;
-            st->glow->points = 9;
-            st->glow->desc = &g_anSparkleGlowDesc;
+            st->glow->points = SPARX_GLOW_POINTS;
+            st->glow->desc = &g_anSparxGlowShape;
           }
         } else {
           st->glow->size += SPARX_GLOW_GROW;
@@ -2636,9 +2636,9 @@ void Level0_UpdateActors(void) {
 
         angle = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
-        previousAngle = (angle - actor->rotZ) & 0xFF;
-        if (previousAngle > 0x80) {
-          previousAngle -= 0x100;
+        previousAngle = (angle - actor->rotZ) & ANGLE8_MASK;
+        if (previousAngle > ANGLE8_HALF) {
+          previousAngle -= ANGLE8_TURN;
         }
         nextAngle = previousAngle;
 
@@ -3123,7 +3123,7 @@ void Level0_UpdateActors(void) {
           vecB[0] = g_anCosineLut[anglespyro + 64 & 0xFF] >> 5;
           vecB[1] = g_anSineLut[(anglespyro + 64) & 0xFF] >> 5;
           vecB[2] = 0;
-          anglespyro = (anglespyro + 0x80) & 0xFF;
+          anglespyro = (anglespyro + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);
           ScaleVector3Sat(vecC, vecB, st->count - 1);
           LShiftVector3(vecB, 1);

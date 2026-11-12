@@ -722,9 +722,8 @@ void UpdateSpyroStateBehavior(void) {
         if (b[SPYB_ANIM_CURRENT - 4 * SPY_AIRBORNE] ==
                 g_abSpyroStateAnimIndexMap[g_nSpyroState] &&
             b[SPYB_ANIM_FRAME - 4 * SPY_AIRBORNE] >=
-                g_abSpyroAnimDescTable[b[SPYB_ANIM_CURRENT - 4 * SPY_AIRBORNE] *
-                                           4 +
-                                       1] -
+                SPYRO_ANIM_DESC(b[SPYB_ANIM_CURRENT - 4 * SPY_AIRBORNE],
+                                SPYRO_ANIM_DESC_LOOP_END) -
                     1) {
           ChangeSpyroState(SPYRO_ST_IDLE);
           break;
@@ -782,7 +781,8 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     if (g_nSpyroGroundSlope < SLOPE_STEEP &&
-        g_bSpyroAnimFrame == g_abSpyroAnimDescTable[0x51] - 1 &&
+        g_bSpyroAnimFrame ==
+            SPYRO_ANIM_DESC(SPYRO_ANIMID_SLIDE, SPYRO_ANIM_DESC_LOOP_END) - 1 &&
         g_nSpyroFrameMotionLength < SPYRO_SLIDE_LAND_MOTION) {
       LAND_ON_GROUND();
       break;

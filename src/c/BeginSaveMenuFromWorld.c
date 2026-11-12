@@ -101,7 +101,8 @@ void BeginSaveMenuFromWorld(Actor *actor) {
     SubtractVector(vec, &g_pSparxActor->posX, &SPY_PREV[-6]);
     g_nSaveMenuSparxFromDist = VectorLength(vec, VEC_LEN_XY);
     g_nSaveMenuSparxToDist = 0x600;
-    g_nSaveMenuSparxToAngle = (g_nSaveMenuSpyroToYaw + 0x800) & 0xFFF;
+    g_nSaveMenuSparxToAngle =
+        (g_nSaveMenuSpyroToYaw + ANGLE12_HALF) & ANGLE12_MASK;
   }
   g_nSaveMenuCameraFromAngle =
       ArcTan2(g_anCameraPos[0] - SPY_PREV[-6],

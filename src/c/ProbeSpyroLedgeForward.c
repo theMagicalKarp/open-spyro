@@ -26,6 +26,8 @@ void ProbeSpyroLedgeForward(void) {
   RotateVectorByMatrix(g_anSpyroBodyMtx, from, from);
   anchor = SPY_VIA(g_anSpyroBodyMtx, SPY_BODY_MTX, SPY_POS);
   AddVector(from, from, anchor);
+  /* The do / while (0) ends cse's extended basic block (A200): the
+     match needs the block boundary, not the loop. */
   do {
     tp = to;
     ApplyActiveGteRotation(tp, tp);

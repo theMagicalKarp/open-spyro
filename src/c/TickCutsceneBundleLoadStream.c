@@ -134,6 +134,8 @@ void TickCutsceneBundleLoadStream(void) {
       int lba = *((volatile int *)(&g_nCdBaseLba));
       int id = *((volatile int *)(&g_nCutsceneId));
       void *dst = *((void *volatile *)(&g_pWorldUnpackHead));
+      /* Hard-register pins (A374 / F14j): each holds the register the
+         original uses for it, which settles the competing temps. */
       register int off asm("$3") =
           *((volatile int *)(&g_nWorldDataExtChunkOffset));
       StartCdReadAsync(lba, dst, extSize,

@@ -16,13 +16,9 @@
  * `rec[1]` terminator test -- as the shared base, which is how the whole
  * record ends up addressed off `rec + 1` with offsets 0x00..0x1D.
  *
- * Field map, in record-relative offsets:
- *   0x00  effect id                0x01  class / terminator
- *   0x02  age                      0x03  visible
- *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
- *                                  r/g/b triple for the fading classes)
- *   0x10..0x16  per-record velocity / colour bytes
- *   0x18  spin angle                0x1C  spark vel z   0x1E  phase toggle
+ * Field layout: one named view per effect arm, in level_advance_emit_list.h
+ * (POS / HEAD points, SIZE / SPIN / COL_* / FX, VEL, DRIFT, the swirl and
+ * orb fields); RasterizeEmitList's reading of each class is in emit_record.h.
  *
  * Eighteen arms transfer verbatim from the matched level_0 hub copy (which
  * in turn carries the level_6 / level_2 donors).  Three are new:
@@ -116,15 +112,15 @@ void Level12_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x19)) {
         FreeEmitListRecord(rec);
       } else {
-        SPIN += rec[0x1E];
+        SPIN += SPIN_RATE;
         if (AGE >= 0xD) {
           SIZE = (0x18 - AGE) * 4;
         } else {
           SIZE = AGE * 4;
         }
-        HU(0x4) += HU(0x18);
-        HU(0x6) += HU(0x1A);
-        HU(0x8) += HU(0x1C);
+        POS_U[0] += VEL_U[0];
+        POS_U[1] += VEL_U[1];
+        POS_U[2] += VEL_U[2];
         AGE++;
       }
       break;
@@ -139,7 +135,7 @@ void Level12_AdvanceEmitList(int step) {
       if (VISIBLE == 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(dir, &g_pActorListBase[rec[0x1E]].posX);
+        CopyVector(dir, &g_pActorListBase[TRACK_ACTOR].posX);
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;
@@ -158,8 +154,8 @@ void Level12_AdvanceEmitList(int step) {
           if (CLASS == EMIT_CLASS_ALT_LIT_QUAD) {
             if (len >= 0x3001) {
               SIZE = 4;
-              rec[0xF] = 0x40;
-              CLASS = 0;
+              FX = EMIT_FX_LINE;
+              CLASS = EMIT_CLASS_DOT;
               c = COL_R * 2;
               COL_R = c;
               COL_G *= 2;
@@ -168,7 +164,7 @@ void Level12_AdvanceEmitList(int step) {
           } else if (len < 0x2800) {
             CLASS = 3;
             DEPTH_BIAS = 4;
-            rec[0xF] = 0x2C;
+            FX = EMIT_FX_QUAD;
             TEX_INDEX = 0;
             c = COL_R >> 1;
             COL_R = c;
@@ -199,17 +195,17 @@ void Level12_AdvanceEmitList(int step) {
         FreeEmitListRecord(rec);
       } else {
         CopyVector(w, SPYRO_POS_VIA_LOCKOUT);
-        w[0] += LookupCosine(HS(0x18)) >> 4;
-        w[1] += LookupSine(HS(0x18)) >> 4;
+        w[0] += LookupCosine(ORBIT_ANGLE) >> 4;
+        w[1] += LookupSine(ORBIT_ANGLE) >> 4;
         w[2] += 0x100;
         VectorToSVectorShr2(POS, w);
-        HS(0x18) = HU(0x18) + 0x40;
-        SIZE = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
     case EMIT_BURST_SPARK:
-      AddSVector(POS, POS, &HS(0x12));
+      AddSVector(POS, POS, BURST_VEL);
       FADE_COL(8);
       if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
@@ -237,23 +233,23 @@ void Level12_AdvanceEmitList(int step) {
       short a;
 
       AddSVector(POS, POS, VEL);
-      a = HS(0x18);
+      a = VEL[0];
       if (a > 0) {
         a--;
-        HS(0x18) = a;
+        VEL[0] = a;
       } else if (a < 0) {
         a++;
-        HS(0x18) = a;
+        VEL[0] = a;
       }
-      a = HS(0x1A);
+      a = VEL[1];
       if (a > 0) {
         a--;
-        HS(0x1A) = a;
+        VEL[1] = a;
       } else if (a < 0) {
         a++;
-        HS(0x1A) = a;
+        VEL[1] = a;
       }
-      SPIN += rec[0x1E];
+      SPIN += SPIN_RATE;
       d = COL_B - g_nFrameStep;
       if (d <= 0) {
         FreeEmitListRecord(rec);
@@ -281,26 +277,26 @@ void Level12_AdvanceEmitList(int step) {
       if (COL_B < 0xF0) {
         COL_B += 4;
       }
-      JET_ANGLE += g_nFrameStep * 8;
+      RSWIRL_ANGLE += g_nFrameStep * 8;
       heat = 0x3F;
       if (g_nDragonRescueTimer < 0x40) {
         heat = g_nDragonRescueTimer;
       }
-      HS(0x18) = (JET_SEGMENT * (0x48 - heat)) >> 3;
-      HS(0x1A) = (((0x20 - JET_SEGMENT) * heat) >> 4) + 8;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[JET_ANGLE] * HS(0x1A)) >> 12);
-      HU(0x6) = HU(0x14) + ((g_anSineLut[JET_ANGLE] * HS(0x1A)) >> 12);
-      HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
+      RSWIRL_LIFT = (RSWIRL_BAND * (0x48 - heat)) >> 3;
+      RSWIRL_RADIUS = (((0x20 - RSWIRL_BAND) * heat) >> 4) + 8;
+      POS_U[0] = RSWIRL_CENTRE_U[0] + ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[1] = RSWIRL_CENTRE_U[1] + ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[2] = RSWIRL_CENTRE_U[2] + 0x20 + RSWIRL_LIFT_U;
       break;
     }
 
     case EMIT_DUST_PUFF: {
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
+      if (CLIMB_TOGGLE != 0) {
+        VEL_U[2]++;
       }
       c = COL_R - step;
-      HS(0x1E) = 1 - HU(0x1E);
+      CLIMB_TOGGLE = 1 - CLIMB_TOGGLE_U;
       SIZE += step * 2;
       if (c < 0) {
         c = 0;
@@ -330,12 +326,12 @@ void Level12_AdvanceEmitList(int step) {
 
       /* A short-lived midpoint relaxation -- the 0x46 shape without the
        * third jitter and without the colour ramp. */
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       r = GetRandomU32();
       j = d[0] - 1;
       j += r & 2;
@@ -344,9 +340,9 @@ void Level12_AdvanceEmitList(int step) {
       j = d[1] - 1;
       j += r & 2;
       d[1] = j;
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x8)) {
         FreeEmitListRecord(rec);
@@ -361,25 +357,25 @@ void Level12_AdvanceEmitList(int step) {
 
       for (i = 0; i < step; i++) {
         if (AGE & 1) {
-          HU(0x4) += HU(0x10);
-          HU(0x6) += HU(0x12);
-          HU(0x8) += HU(0x14);
+          POS_U[0] += DRIFT_U[0];
+          POS_U[1] += DRIFT_U[1];
+          POS_U[2] += DRIFT_U[2];
           if (AGE & 2) {
             /* the `- 1` has to stay int-wide: folded into the unsigned short
              * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
              * hoisted out of the loop as a constant in a callee-saved reg. */
             r = GetRandomU32();
-            j = HU(0x10) - 1;
+            j = DRIFT_U[0] - 1;
             j += r & 2;
-            HU(0x10) = j;
+            DRIFT_U[0] = j;
             r = GetRandomU32();
-            j = HU(0x12) - 1;
+            j = DRIFT_U[1] - 1;
             j += r & 2;
-            HU(0x12) = j;
+            DRIFT_U[1] = j;
             r = GetRandomU32();
-            j = HU(0x14) - 1;
+            j = DRIFT_U[2] - 1;
             j += r & 2;
-            HU(0x14) = j;
+            DRIFT_U[2] = j;
           }
         }
         AGE++;
@@ -395,12 +391,12 @@ void Level12_AdvanceEmitList(int step) {
       int j;
       int r;
 
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       r = GetRandomU32();
       j = d[0] - 1;
       j += r & 2;
@@ -412,9 +408,9 @@ void Level12_AdvanceEmitList(int step) {
       if (AGE & 1) {
         d[2]--;
       }
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
@@ -453,9 +449,9 @@ void Level12_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       } else {
-        d[0] = HS(0xA) - HS(0x4);
-        d[1] = HS(0xC) - HS(0x6);
-        d[2] = HS(0xE) - HS(0x8);
+        d[0] = HEAD[0] - POS[0];
+        d[1] = HEAD[1] - POS[1];
+        d[2] = HEAD[2] - POS[2];
         r = GetRandomU32();
         j = d[0] - 1;
         j += r & 2;
@@ -468,12 +464,12 @@ void Level12_AdvanceEmitList(int step) {
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
-        HS(0xA) = HU(0xA) + d[0];
-        HS(0xC) = HU(0xC) + d[1];
-        HS(0xE) = HU(0xE) + d[2];
-        HU(0x4) = HU(0xA) - d[0];
-        HU(0x6) = HU(0xC) - d[1];
-        HU(0x8) = HU(0xE) - d[2];
+        HEAD[0] = HEAD_U[0] + d[0];
+        HEAD[1] = HEAD_U[1] + d[1];
+        HEAD[2] = HEAD_U[2] + d[2];
+        POS_U[0] = HEAD_U[0] - d[0];
+        POS_U[1] = HEAD_U[1] - d[1];
+        POS_U[2] = HEAD_U[2] - d[2];
         COL1_R -= 2;
         COL1_G -= 2;
         COL1_B -= 4;
@@ -493,9 +489,9 @@ void Level12_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x30)) {
         FreeEmitListRecord(rec);
       } else {
-        d[0] = (HS(0x4) - HS(0xA)) >> 1;
-        d[1] = (HS(0x6) - HS(0xC)) >> 1;
-        d[2] = (HS(0x8) - HS(0xE)) >> 1;
+        d[0] = (POS[0] - HEAD[0]) >> 1;
+        d[1] = (POS[1] - HEAD[1]) >> 1;
+        d[2] = (POS[2] - HEAD[2]) >> 1;
         r = GetRandomU32();
         j = d[0] - 2;
         j += r & 4;
@@ -508,12 +504,12 @@ void Level12_AdvanceEmitList(int step) {
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
-        HU(0x4) += d[0];
-        HU(0x6) += d[1];
-        HU(0x8) += d[2];
-        HS(0xA) = HU(0x4) - d[0] * 2;
-        HS(0xC) = HU(0x6) - d[1] * 2;
-        HS(0xE) = HU(0x8) - d[2] * 2;
+        POS_U[0] += d[0];
+        POS_U[1] += d[1];
+        POS_U[2] += d[2];
+        HEAD[0] = POS_U[0] - d[0] * 2;
+        HEAD[1] = POS_U[1] - d[1] * 2;
+        HEAD[2] = POS_U[2] - d[2] * 2;
       }
       break;
     }
@@ -521,16 +517,16 @@ void Level12_AdvanceEmitList(int step) {
     case EMIT_DRIFT_STREAK: {
       short d[3];
 
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       d[1]++;
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGE >= 0x20) {
         FreeEmitListRecord(rec);
@@ -547,26 +543,26 @@ void Level12_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x28)) {
         FreeEmitListRecord(rec);
       } else {
-        HU(0x4) += HU(0x10);
-        HU(0x6) += HU(0x12);
-        HU(0x8) += HU(0x14);
+        POS_U[0] += DRIFT_U[0];
+        POS_U[1] += DRIFT_U[1];
+        POS_U[2] += DRIFT_U[2];
         r = GetRandomU32();
-        j = HU(0x10) - 1;
+        j = DRIFT_U[0] - 1;
         j += r & 2;
-        HU(0x10) = j;
+        DRIFT_U[0] = j;
         r = GetRandomU32();
-        j = HU(0x12) - 1;
+        j = DRIFT_U[1] - 1;
         j += r & 2;
-        HU(0x12) = j;
+        DRIFT_U[1] = j;
         r = GetRandomU32();
-        k = HU(0x14) - 1;
+        k = DRIFT_U[2] - 1;
         k += r & 2;
-        HU(0x14) = k;
-        if (HS(0x14) >= 3) {
-          HU(0x14) = 2;
+        DRIFT_U[2] = k;
+        if (DRIFT[2] >= 3) {
+          DRIFT_U[2] = 2;
         }
-        if (HS(0x14) < -4) {
-          HS(0x14) = -4;
+        if (DRIFT[2] < -4) {
+          DRIFT[2] = -4;
         }
         COL_R -= 2;
         COL_G -= 2;
@@ -578,15 +574,15 @@ void Level12_AdvanceEmitList(int step) {
     case EMIT_FLAME_STREAK: {
       short d[3];
 
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
@@ -605,16 +601,16 @@ void Level12_AdvanceEmitList(int step) {
     case EMIT_FALLING_STREAK_BURST: {
       short d[3];
 
-      d[0] = HU(0xA) - HU(0x4);
-      d[1] = HU(0xC) - HU(0x6);
-      d[2] = HU(0xE) - HU(0x8);
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = HEAD_U[0] - POS_U[0];
+      d[1] = HEAD_U[1] - POS_U[1];
+      d[2] = HEAD_U[2] - POS_U[2];
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       d[2]--;
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);

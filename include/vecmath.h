@@ -16,6 +16,8 @@
  * 4.12 factor"). */
 #define FIXED_ONE 0x1000
 
+#include "angle.h"
+
 /* Trig: sine/cosine of a 12-bit angle (result 12-bit fraction), linearly
  * interpolated between the 256 entries of g_anSineLut / g_anCosineLut. */
 int LookupSine(int angle);

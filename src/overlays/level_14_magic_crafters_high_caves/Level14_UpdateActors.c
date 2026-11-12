@@ -234,9 +234,9 @@ typedef struct CarrierState {
   if (TurnActorYawTowardAngle(a, h, k1, k2, YAW_STEP_IN_BAND) != 0) {                                   \
     MoveActorAlongHeading(a, d, 0, 0x200, MOVE_SLIDE);                                       \
   } else {                                                                     \
-    h = ((h) - (a)->rotZ) & 0xFF;                                             \
-    if (h > 0x80) {                                                            \
-      h -= 0x100;                                                              \
+    h = ((h) - (a)->rotZ) & ANGLE8_MASK;                                             \
+    if (h > ANGLE8_HALF) {                                                            \
+      h -= ANGLE8_TURN;                                                              \
     }                                                                          \
     d -= ABS2(h) << (sh);                                                      \
     if (d > 0) {                                                               \
@@ -273,7 +273,7 @@ void Level14_UpdateActors(void) {
   int svK[3];
   int prevPos[3];
   int v376[3];
-  int t392[3][3];
+  int triVerts[3][3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int ps[6];
@@ -364,10 +364,10 @@ void Level14_UpdateActors(void) {
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
-              int yaw = g_nCameraEulerPitch & 0xFFF;
+              int yaw = g_nCameraEulerPitch & ANGLE12_MASK;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -410,7 +410,7 @@ void Level14_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & DROP_ROLL_BIT))) {
           Actor *scan;
           int self;
 
@@ -832,10 +832,10 @@ void Level14_UpdateActors(void) {
                                   ATAN_ANGLE8) -
                     0x80;
 
-            d = (d - b) & 0xFF;
+            d = (d - b) & ANGLE8_MASK;
 
-            if (d > 0x80) {
-              d -= 0x100;
+            if (d > ANGLE8_HALF) {
+              d -= ANGLE8_TURN;
             }
             if (ABS(d) > THIEF_CIRCLE_ENTER_ANGLE) {
               actor->mode = THIEF_CIRCLE;
@@ -1262,9 +1262,9 @@ void Level14_UpdateActors(void) {
           a = (a - ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                                  actor->posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8)) &
-              0xFF;
-          if (a > 0x80) {
-            a -= 0x100;
+              ANGLE8_MASK;
+          if (a > ANGLE8_HALF) {
+            a -= ANGLE8_TURN;
           }
           if (ABS(a) < THIEF_CIRCLE_EXIT_ANGLE) {
             ENTER_POSE(actor, THIEF_IDLE);
@@ -2008,9 +2008,9 @@ void Level14_UpdateActors(void) {
             ScaleVector3ByRatio(svF, d, CARRIER_MAX_PULL);
           }
           AddVector(cf + 1, svF, &SPY.posX);
-          h = (actor->rotZ - SPY.bodyRotZ) & 0xFF;
-          if (h > 0x80) {
-            h -= 0x100;
+          h = (actor->rotZ - SPY.bodyRotZ) & ANGLE8_MASK;
+          if (h > ANGLE8_HALF) {
+            h -= ANGLE8_TURN;
           }
           if (h < -CARRIER_CARRY_YAW_STEP) {
             h = -CARRIER_CARRY_YAW_STEP;
@@ -2034,9 +2034,9 @@ void Level14_UpdateActors(void) {
 
           *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_YAW | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           CopyVector(cf + 1, &SPY.posX);
-          h = (actor->rotZ - SPY.bodyRotZ) & 0xFF;
-          if (h > 0x80) {
-            h -= 0x100;
+          h = (actor->rotZ - SPY.bodyRotZ) & ANGLE8_MASK;
+          if (h > ANGLE8_HALF) {
+            h -= ANGLE8_TURN;
           }
           if (h < -CARRIER_PICKUP_YAW_STEP) {
             h = -CARRIER_PICKUP_YAW_STEP;
@@ -2093,9 +2093,9 @@ void Level14_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, YAW_STEP_IN_BAND) != 0) {
             MoveActorAlongHeading(actor, CARRIER_SPEED, 0, CARRIER_MOVE_RADIUS, MOVE_SLIDE);
           } else {
-            h = (h - actor->rotZ) & 0xFF;
-            if (h > 0x80) {
-              h -= 0x100;
+            h = (h - actor->rotZ) & ANGLE8_MASK;
+            if (h > ANGLE8_HALF) {
+              h -= ANGLE8_TURN;
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
@@ -2148,9 +2148,9 @@ void Level14_UpdateActors(void) {
               if (TurnActorYawTowardAngle(actor, h, 0x10, 0x30, YAW_STEP_IN_BAND) != 0) {
                 MoveActorAlongHeading(actor, d, 0, 0, 0);
               } else {
-                h = (h - actor->rotZ) & 0xFF;
-                if (h > 0x80) {
-                  h -= 0x100;
+                h = (h - actor->rotZ) & ANGLE8_MASK;
+                if (h > ANGLE8_HALF) {
+                  h -= ANGLE8_TURN;
                 }
                 d -= ABS2(h) << 4;
                 if (d > 0) {
@@ -2235,9 +2235,9 @@ void Level14_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, YAW_STEP_IN_BAND) != 0) {
             MoveActorAlongHeading(actor, CARRIER_SPEED, 0, CARRIER_MOVE_RADIUS, MOVE_SLIDE);
           } else {
-            h = (h - actor->rotZ) & 0xFF;
-            if (h > 0x80) {
-              h -= 0x100;
+            h = (h - actor->rotZ) & ANGLE8_MASK;
+            if (h > ANGLE8_HALF) {
+              h -= ANGLE8_TURN;
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
@@ -2289,9 +2289,9 @@ void Level14_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, YAW_STEP_IN_BAND) != 0) {
             MoveActorAlongHeading(actor, CARRIER_SPEED, 0, CARRIER_MOVE_RADIUS, MOVE_SLIDE);
           } else {
-            h = (h - actor->rotZ) & 0xFF;
-            if (h > 0x80) {
-              h -= 0x100;
+            h = (h - actor->rotZ) & ANGLE8_MASK;
+            if (h > ANGLE8_HALF) {
+              h -= ANGLE8_TURN;
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
@@ -2667,8 +2667,8 @@ void Level14_UpdateActors(void) {
             st->glow->r = SPARX_GLOW_R;
             st->glow->g = SPARX_GLOW_G;
             st->glow->b = SPARX_GLOW_B;
-            st->glow->points = 9;
-            st->glow->desc = &g_anSparkleGlowDesc;
+            st->glow->points = SPARX_GLOW_POINTS;
+            st->glow->desc = &g_anSparxGlowShape;
           }
         } else {
           st->glow->size += SPARX_GLOW_GROW;
@@ -3657,10 +3657,10 @@ void Level14_UpdateActors(void) {
       {
         int d = (ArcTan2(svK[0] - actor->posX, svK[1] - actor->posY, ATAN_ANGLE8) -
                  actor->rotZ) &
-                0xFF;
+                ANGLE8_MASK;
 
-        if (d > 0x80) {
-          d -= 0x100;
+        if (d > ANGLE8_HALF) {
+          d -= ANGLE8_TURN;
         }
         if (d > WISP_TURN_STEP) {
           d = WISP_TURN_STEP;
@@ -3863,11 +3863,11 @@ void Level14_UpdateActors(void) {
 
       if (st->riding != 0) {
         if (st->node >= 0) {
-          UnpackWorldCollisionTri(st->node, t392[0]);
+          UnpackWorldCollisionTri(st->node, triVerts[0]);
           ZeroVector(v376);
           for (i = 0; i < 3; i++) {
-            SubtractVector(t392[i], t392[i], st->pts[i]);
-            AddVector(v376, v376, t392[i]);
+            SubtractVector(triVerts[i], triVerts[i], st->pts[i]);
+            AddVector(v376, v376, triVerts[i]);
           }
           v376[0] /= 3;
           v376[1] /= 3;
@@ -4385,7 +4385,7 @@ void Level14_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
       TumbleState *st = actor->state;
-      register int i asm("$16");
+      register int i asm("$16"); /* s0, as in the original (A374) */
 
       if (st->life > 0) {
         if (actor->drawn == 0) {
@@ -5132,7 +5132,7 @@ void Level14_UpdateActors(void) {
           vecB[0] = g_anCosineLut[anglespyro + 64 & 0xFF] >> 5;
           vecB[1] = g_anSineLut[(anglespyro + 64) & 0xFF] >> 5;
           vecB[2] = 0;
-          anglespyro = (anglespyro + 0x80) & 0xFF;
+          anglespyro = (anglespyro + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);
           ScaleVector3Sat(vecC, vecB, st->count - 1);
           LShiftVector3(vecB, 1);

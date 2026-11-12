@@ -126,7 +126,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       jz = GetRandomU32() & 0x7E;
       bz = rec->u.plume.pos[2] - 0x3F;
       rec->u.plume.src = (int *)effectArg;
-      rec->u.plume.rise = 0;
+      rec->u.plume.rise = 0; /* ORB_MODE: start homing on its target */
       rec->u.plume.pos[2] = bz + jz;
       rec->u.plume.size = (GetRandomU32() & 0xF) + 0x18;
       rec->u.plume.spin = (GetRandomU32() & 7) + 0xF;
@@ -193,7 +193,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       SetVector3Magnitude(vt, 0x80);
       VectorToSVectorShr2(rec->u.track.vel, vt);
       rec->u.track.owner = (Actor *)effectArg - g_pActorListBase;
-      rec->u.track.orbitRadius = 0;
+      rec->u.track.unread1F = 0;
       rec->u.track.size = (GetRandomU32() & 0xF) + 0x18;
       rec->u.track.spin = (GetRandomU32() & 7) + 0xF;
       rec->u.track.fx = EMIT_FX_QUAD;
@@ -265,7 +265,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5;
+      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -345,7 +345,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.ribbon.pos, pos);
-      VectorToSVectorShr2(rec->u.ribbon.pos2, pos);
+      VectorToSVectorShr2(rec->u.ribbon.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         v = effectArg * 2;
       } else {
@@ -401,7 +401,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.band.pos, pos);
-      VectorToSVectorShr2(rec->u.band.pos2, pos);
+      VectorToSVectorShr2(rec->u.band.centre, pos);
       v = 0x30;
       z = i * 16;
       rec->u.band.size = v;
@@ -415,7 +415,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.band.texIndex = 0;
       rec->u.band.radius = 0x10;
       rec->u.band.angle = z;
-      rec->u.band.segment = i;
+      rec->u.band.index = i;
       break;
     }
     case EMIT_DUST_PUFF: {
@@ -572,7 +572,7 @@ void Level13_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.smear.pos, pos);
-      VectorToSVectorShr2(rec->u.smear.pos2, pos);
+      VectorToSVectorShr2(rec->u.smear.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         w = effectArg * 2;
       } else {

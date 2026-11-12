@@ -159,6 +159,8 @@ typedef struct NameLetterState {
  * smaller (small caps). */
 #define TEXT_DEPTH 0x1100       /* the large first letters */
 #define TEXT_SMALL_DEPTH 0x1400 /* the small-caps letters; also small text's pos[2] */
+#define TEXT_TINY_DEPTH 0x1600  /* small text's small-caps letters (attr[2]) */
+#define TEXT_TITLE_DEPTH 0xC00  /* headlines (BuildTextSpriteChain: PAUSED, TIME ATTACK) */
 #define TINT_EXTRA_LIFE 0xC
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
 #define TINT_STATUE_SHARD 0xE
@@ -185,6 +187,11 @@ typedef struct NameLetterState {
 #define GATE_CHUNK_ALWAYS 0xFF     /* ->gateChunk: no chunk gate, always drawn */
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
                                   * checkpoint kill set, IsActorInCheckpointKillSet) */
+#define DROP_ROLL_BIT 0x80       /* ->dropKind bit 7: no fixed drop. Only DROP_GEM_ROLL
+                                  * carries it: level data holds 0, 0x0E, 0x10, 0x22,
+                                  * 0x53..0x57 or 0xFF, and BuildLoadedLevelRuntime
+                                  * rewrites a respawned kill to 0xFF. A follower
+                                  * takes over a parent that is dormant or has it. */
 
 /* Bosses and big actors take Spyro's 2D distance from ApproxDist2D, then
  * measure it exactly (VectorLength VEC_LEN_XY) once the estimate is under

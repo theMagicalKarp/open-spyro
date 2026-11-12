@@ -326,7 +326,7 @@ extern unsigned char g_abSpyroStateTransitionAnimMatrix[2025];        /* 0x8006b
 extern unsigned char g_abSpyroStateAnimIndexMap[48];                  /* 0x8006c470 */
 extern unsigned char g_abSpyroAnimDescTable[192];                     /* 0x8006c4a0: SPYRO_ANIMID_COUNT 4-byte records (loop start / loop end / frame count / rate, SPYRO_ANIM_DESC_*), then the per-anim SPYRO_ANIM_NO_OVERLAY bytes (spyro_state.h) */
 extern unsigned char g_abSpyroStateCameraMode;                        /* 0x8006c588 */
-extern int g_anSpyroSlopeSpeedTargets[6];                    /* 0x8006c5b8 */
+extern int g_anSpyroSlopeSpeedTargets[6];                    /* 0x8006c5b8: walk speed down / across / up a slope, flat then steepest (SLOPE_SPEED_*): 4608 x 3, then 5184 / 4608 / 960 */
 extern unsigned char g_abSpyroEulerRateRampUp[12];                    /* 0x8006c6f8 */
 extern unsigned char g_abSpyroEulerRateRampSigned[13];                /* 0x8006c704 */
 extern int g_anSpyroWallNudgeAngleByProbeMask[16];           /* 0x8006c714 */
@@ -1187,8 +1187,8 @@ extern unsigned char g_abAssetDirectoryBuffer[600]; /* 0x8007aa38 */
  *   g_dwBurstColorSparxFood / ExtraLife 0x8006e490 / 0x8006e494  0x2C-coded colour words (0x808080 / 0x008080)
  *       UpdateActors passes to emit effect 0xC for ACTOR_TYPE_SPARX_FOOD / EXTRA_LIFE in place of g_adwActorBurstColors;
  *       entries 5 and 6 of a 7-word colour table at 0x8006e47c
- *   g_anSparkleGlowDesc     0x8006e390  descriptor installed as FxNode.desc on every 9-point sparkle from
- *       AllocWorldSparkle (UpdateActors smoke/glow nodes); 42 small signed words, likely shape offsets
+ *   g_anSparxGlowShape      0x8006e390  FxNode.desc of Sparx's full-health glow (SparxState.glow):
+ *       SPARX_GLOW_POINTS (x, y) int pairs, a closed octagon +-48 wide by +-30 tall
  *   g_aSmokeJetEmitters     0x8006e614  3 x {short pos[3], vel[3]} jet origins/velocities, rotated by the
  *       actor matrix (two puffs per jet per frame)
  *   g_nCameraActiveTarget{Pitch,Distance,Roll,PitchBias,YawBias} 0x8007866c..7c  per-word views of
@@ -1229,14 +1229,14 @@ extern unsigned char g_szEnteringDotsFmt[]; /* 0x80010af4: "ENTERING %s..." */
 extern unsigned char g_szTreasureFound[]; /* 0x80010b04: "TREASURE FOUND" */
 extern unsigned char g_szTotalTreasure[]; /* 0x80010b14: "TOTAL TREASURE" */
 extern char g_szQuitGamePrompt[]; /* 0x80010b24: "QUIT GAME?" */
-extern char g_szSoundEffects[]; /* 0x80010b30: "SOUND FX" */
-extern char g_szMusicVolume[]; /* 0x80010b40: "MUSIC" */
-extern char g_szSpeakerSetup[]; /* 0x80010b50: "SOUND" */
+extern char g_szSoundEffects[]; /* 0x80010b30: "SOUND EFFECTS" */
+extern char g_szMusicVolume[]; /* 0x80010b40: "MUSIC VOLUME" */
+extern char g_szSpeakerSetup[]; /* 0x80010b50: "SPEAKER SETUP" */
 extern char g_szVibration[]; /* 0x80010b60: "VIBRATION" */
 extern char g_szInventory[]; /* 0x80010b78: "INVENTORY" */
 extern char g_szExitLevel[]; /* 0x80010b84: "EXIT LEVEL" */
-extern char g_szQuitGame[]; /* 0x80010b90: "EXIT WORLD" */
-extern unsigned char g_szPressStart[]; /* 0x80010b9c: "PRESS X..." prompt string */
+extern char g_szQuitGame[]; /* 0x80010b90: "QUIT GAME" (pause menu item) */
+extern unsigned char g_szPressStart[]; /* 0x80010b9c: "PRESS START" */
 extern char g_szHiSpyro[]; /* 0x80010ba8 */
 extern char g_szSaveGame[]; /* 0x80010bb4 */
 extern char g_szReplayDragon[]; /* 0x80010bc0 */

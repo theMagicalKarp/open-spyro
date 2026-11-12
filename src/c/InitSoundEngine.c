@@ -20,12 +20,12 @@ void InitSoundEngine(void) {
   *(int *)common = SPU_COMMON_MVOL | SPU_COMMON_CDVOL;
   g_nSfxMixVolume_blk[0] = SPU_VOLUME_MAX;
   g_nSoundMasterVolume = 0x1000;
-  g_anSpuCommonVolAttr[0] = SPU_MASTER_VOLUME;
-  g_anSpuCommonVolAttr[1] = SPU_MASTER_VOLUME;
+  g_anSpuCommonVolAttr[SPU_COMMON_MVOL_L] = SPU_MASTER_VOLUME;
+  g_anSpuCommonVolAttr[SPU_COMMON_MVOL_R] = SPU_MASTER_VOLUME;
   cd = SPU_CD_VOLUME;
   g_nCdAudioVolume_blk = cd;
-  g_anSpuCommonVolAttr[6] = cd;
-  g_anSpuCommonVolAttr[7] = cd;
+  g_anSpuCommonVolAttr[SPU_COMMON_CDVOL_L] = cd;
+  g_anSpuCommonVolAttr[SPU_COMMON_CDVOL_R] = cd;
   g_nMusicVolumeFadeTarget = -1;
   SetSpuCommonAttr(common);
 

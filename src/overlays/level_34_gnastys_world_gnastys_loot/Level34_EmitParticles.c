@@ -157,7 +157,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5;
+      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -239,7 +239,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.ribbon.pos, pos);
-      VectorToSVectorShr2(rec->u.ribbon.pos2, pos);
+      VectorToSVectorShr2(rec->u.ribbon.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         v = effectArg * 2;
       } else {
@@ -465,7 +465,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.smear.pos, pos);
-      VectorToSVectorShr2(rec->u.smear.pos2, pos);
+      VectorToSVectorShr2(rec->u.smear.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         w = effectArg * 2;
       } else {

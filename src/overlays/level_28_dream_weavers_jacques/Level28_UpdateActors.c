@@ -78,7 +78,7 @@ void Level28_UpdateActors(void) {
   int riderPt2[3]; /* sp 352 */
   int g368[3];
   int keySlotOffset[3];
-  int g400[3];
+  int spyroDelta[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int g448[3];
@@ -172,10 +172,10 @@ void Level28_UpdateActors(void) {
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
-              int yaw = g_nCameraEulerPitch & 0xFFF;
+              int yaw = g_nCameraEulerPitch & ANGLE12_MASK;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -218,7 +218,7 @@ void Level28_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & DROP_ROLL_BIT))) {
           Actor *scan;
           int self;
 
@@ -1593,8 +1593,8 @@ void Level28_UpdateActors(void) {
             st->glow->r = SPARX_GLOW_R;
             st->glow->g = SPARX_GLOW_G;
             st->glow->b = SPARX_GLOW_B;
-            st->glow->points = 9;
-            st->glow->desc = &g_anSparkleGlowDesc;
+            st->glow->points = SPARX_GLOW_POINTS;
+            st->glow->desc = &g_anSparxGlowShape;
           }
         } else {
           fx->size += SPARX_GLOW_GROW;
@@ -2720,10 +2720,10 @@ void Level28_UpdateActors(void) {
 
         at = &actor->posX;
         if (ApproxDist2D(at, &spy->posX) < STATUE_NEAR_RANGE) {
-          SubtractVector(g400, at, &spy->posX);
-          g400[2] = (g400[2] * 3) >> 2;
+          SubtractVector(spyroDelta, at, &spy->posX);
+          spyroDelta[2] = (spyroDelta[2] * 3) >> 2;
 
-          if (VectorLength(g400, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
+          if (VectorLength(spyroDelta, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
             int facing;
 
             facing =
@@ -2901,9 +2901,9 @@ void Level28_UpdateActors(void) {
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, actor, 0);
-      SubtractVector(g400, &spy->posX, &actor->posX);
-      distance = VectorLength(g400, VEC_LEN_XY);
-      if (distance < st->radius && g400[2] >= -WHIRL_BELOW_REACH && g400[2] < st->spanZ &&
+      SubtractVector(spyroDelta, &spy->posX, &actor->posX);
+      distance = VectorLength(spyroDelta, VEC_LEN_XY);
+      if (distance < st->radius && spyroDelta[2] >= -WHIRL_BELOW_REACH && spyroDelta[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + WHIRL_TOP_MARGIN < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->requestMask = SPYRO_RQ_PENDING;
@@ -2964,7 +2964,7 @@ void Level28_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
       TumbleState *st = actor->state;
-      register int i asm("$16");
+      register int i asm("$16"); /* s0, as in the original (A374) */
 
       if (st->life > 0) {
         if (actor->drawn == 0) {
@@ -3391,10 +3391,10 @@ void Level28_UpdateActors(void) {
           g448[0] = (g_anCosineLut[bearing] * 3) >> 4;
           g448[1] = (g_anSineLut[bearing] * 3) >> 4;
           g448[2] = 0;
-          g464[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          g464[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          g464[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          g464[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           g464[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, g464, st->count - 1);
           LShiftVector3(g464, 1);

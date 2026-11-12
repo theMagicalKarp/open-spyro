@@ -7,6 +7,7 @@
 #include "pad_buttons.h"
 #include "spyro_block.h"
 #include "spyro_state.h"
+#include "vecmath.h"
 
 /* Pulls the floor reference toward the fall reference, at most 64 up and
    16 down per frame. */
@@ -94,33 +95,36 @@ void DispatchSpyroPhysicsByState(void) {
       ang =
           (g_nSpyroBodyYaw - ArcTan2(g_anSpyroGroundNormal[0],
                                      g_anSpyroGroundNormal[1], ATAN_ANGLE12)) &
-          0xFFF;
-      if (ang > 0x800) {
-        ang -= 0x1000;
+          ANGLE12_MASK;
+      if (ang > ANGLE12_HALF) {
+        ang -= ANGLE12_TURN;
       }
       t = (SPY[SPY_GROUND_SLOPE] << 12) / (SLOPE_STEEP - 1);
       ang = abs(ang);
-      if (ang > 0x400) {
-        a = g_anSpyroSlopeSpeedTargets[2] +
-            ((t * (g_anSpyroSlopeSpeedTargets[5] -
-                   g_anSpyroSlopeSpeedTargets[2])) >>
+      if (ang > ANGLE12_QUARTER) { /* facing uphill */
+        a = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_UP] +
+            ((t * (g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_UP +
+                                              SLOPE_SPEED_STEEPEST] -
+                   g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_UP])) >>
              12);
-        ang = 0x800 - ang;
+        ang = ANGLE12_HALF - ang;
       } else {
-        a = g_anSpyroSlopeSpeedTargets[0] +
-            ((t * (g_anSpyroSlopeSpeedTargets[3] -
-                   g_anSpyroSlopeSpeedTargets[0])) >>
+        a = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN] +
+            ((t * (g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN +
+                                              SLOPE_SPEED_STEEPEST] -
+                   g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN])) >>
              12);
       }
-      b = g_anSpyroSlopeSpeedTargets[1] +
-          ((t *
-            (g_anSpyroSlopeSpeedTargets[4] - g_anSpyroSlopeSpeedTargets[1])) >>
+      b = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_ACROSS] +
+          ((t * (g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_ACROSS +
+                                            SLOPE_SPEED_STEEPEST] -
+                 g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_ACROSS])) >>
            12);
       a = (a * LookupCosine(ang)) >> 12;
       b = (b * LookupSine(ang)) >> 12;
       g_nSpyroMoveTargetMag = IntegerSqrt(a * a + b * b);
     } else {
-      g_nSpyroMoveTargetMag = g_anSpyroSlopeSpeedTargets[0];
+      g_nSpyroMoveTargetMag = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN];
     }
     if (SPY[SPY_STATE] == SPYRO_ST_STOP) {
       CopyVector(puff, &SPY[SPY_MOTION]);

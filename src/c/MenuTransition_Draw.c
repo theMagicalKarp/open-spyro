@@ -105,6 +105,8 @@ void MenuTransition_Draw(void) {
     break;
   }
   case 1: {
+    /* Hard-register pins (A374 / F14j): each holds the register the
+       original uses for it, which settles the competing temps. */
     register DRAWENV *env asm("$4");
 
     g_dwSkyFadeColor = 0;

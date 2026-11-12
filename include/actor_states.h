@@ -52,6 +52,9 @@ typedef struct SparxState {
 
 /* SparxState.glow's FxNode.size grows to this at full health. */
 #define SPARX_GLOW_MAX_SIZE 0x400
+/* Its shape (FxNode.desc): g_anSparxGlowShape's (x, y) int pairs, a closed
+ * octagon +-48 wide by +-30 tall (the first point repeated at the end). */
+#define SPARX_GLOW_POINTS 9
 
 /* Crystal dragon statue (ACTOR_TYPE_DRAGON_STATUE). The UpdateActors clones
  * shake it and, once Spyro is close, count the rescue or hand it to

@@ -19,7 +19,7 @@
 
 /* Eases an angle from `from` toward `to` by t/0x2000 along the short arc. */
 #define LERP_ANGLE(to, from, t)                                                \
-  ((((to) - (from)) & 0xFFF) < 0x801                                           \
+  (ANGLE12_SHORT_WAY_UP((to), (from))                                          \
        ? (from) + ((AbsAngleDelta12((to), (from)) * (t)) >> 13)                \
        : (from) - ((AbsAngleDelta12((to), (from)) * (t)) >> 13))
 
@@ -47,7 +47,7 @@ void SaveMenu_Update(void) {
     if (SM[SM_PHASE] < 0x40) {
       Actor *actor;
 
-      t = LookupSine((SM[SM_PHASE] << 5) - 0x400) + 0x1000;
+      t = SINE_EASE(SM[SM_PHASE] << 5);
       actor = &g_pActorListBase[((SaveHostState *)ACT->state)->anchor];
       if (actor->mode == CHECKPT_FLASH) {
         actor->subMode += g_nFrameStep;
@@ -115,7 +115,7 @@ void SaveMenu_Update(void) {
             ArcTan2(VectorLength(vec, VEC_LEN_XY), -vec[2], ATAN_ANGLE12);
         g_nCameraEulerYaw = ArcTan2(vec[0], vec[1], ATAN_ANGLE12);
       }
-      if (((SM[SM_SPYRO_TO_YAW] - SM[SM_SPYRO_FROM_YAW]) & 0xFFF) < 0x801) {
+      if (ANGLE12_SHORT_WAY_UP(SM[SM_SPYRO_TO_YAW], SM[SM_SPYRO_FROM_YAW])) {
         g_abSpyroPersistentEuler[2] =
             (SM[SM_SPYRO_FROM_YAW] +
              ((AbsAngleDelta12(SM[SM_SPYRO_TO_YAW], SM[SM_SPYRO_FROM_YAW]) *

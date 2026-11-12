@@ -85,6 +85,8 @@ void Titlescreen_Update(void) {
 
       if (g_nTitleMode.subState == TITLE_ATTRACT_LOAD) {
         /* kick off loading titlescreen data from the CD */
+        /* StartCdReadAsync's lba in a0 and the sector offset in a3, as in
+         * the original (A374). */
         register int cd asm("$4");
         register int t asm("$7");
         cd = *((volatile int *) &g_nCdBaseLba.baseLba);

@@ -80,7 +80,7 @@ void Level26_UpdateActors(void) {
   int col[3];
   int chestToSpyro[3];
   int keySlotOffset[3];
-  int t384[3];
+  int spyroDelta[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int ps[6];
@@ -172,10 +172,10 @@ void Level26_UpdateActors(void) {
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
-              int yaw = g_nCameraEulerPitch & 0xFFF;
+              int yaw = g_nCameraEulerPitch & ANGLE12_MASK;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -218,7 +218,7 @@ void Level26_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & DROP_ROLL_BIT))) {
           Actor *scan;
           int self;
 
@@ -778,9 +778,9 @@ void Level26_UpdateActors(void) {
 
           TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
           r = actor->rotY;
-          e = -r & 0xFF;
-          if (e > 0x80) {
-            e -= 0x100;
+          e = -r & ANGLE8_MASK;
+          if (e > ANGLE8_HALF) {
+            e -= ANGLE8_TURN;
           }
           if (e > 2) {
             e = 2;
@@ -817,9 +817,9 @@ void Level26_UpdateActors(void) {
           ang = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY,
                               ATAN_ANGLE8);
-          a = (ang - actor->rotZ) & 0xFF;
-          if (a > 0x80) {
-            a -= 0x100;
+          a = (ang - actor->rotZ) & ANGLE8_MASK;
+          if (a > ANGLE8_HALF) {
+            a -= ANGLE8_TURN;
           }
           if (ABS2(a) < CPGUARD_RETURN_CONE) {
             d >>= 4;
@@ -847,9 +847,9 @@ void Level26_UpdateActors(void) {
           }
           ang = ArcTan2(st->home[0] - actor->posX,
                               st->home[1] - actor->posY, ATAN_ANGLE8);
-          a = (ang - actor->rotZ) & 0xFF;
-          if (a > 0x80) {
-            a -= 0x100;
+          a = (ang - actor->rotZ) & ANGLE8_MASK;
+          if (a > ANGLE8_HALF) {
+            a -= ANGLE8_TURN;
           }
           if (ABS2(a) < CPGUARD_RETURN_CONE) {
             d >>= 4;
@@ -1680,8 +1680,8 @@ void Level26_UpdateActors(void) {
             st->glow->r = SPARX_GLOW_R;
             st->glow->g = SPARX_GLOW_G;
             st->glow->b = SPARX_GLOW_B;
-            st->glow->points = 9;
-            st->glow->desc = &g_anSparkleGlowDesc;
+            st->glow->points = SPARX_GLOW_POINTS;
+            st->glow->desc = &g_anSparxGlowShape;
           }
         } else {
           fx->size += SPARX_GLOW_GROW;
@@ -2460,10 +2460,10 @@ void Level26_UpdateActors(void) {
 
         at = &actor->posX;
         if (ApproxDist2D(at, &spy->posX) < STATUE_NEAR_RANGE) {
-          SubtractVector(t384, at, &spy->posX);
-          t384[2] = (t384[2] * 3) >> 2;
+          SubtractVector(spyroDelta, at, &spy->posX);
+          spyroDelta[2] = (spyroDelta[2] * 3) >> 2;
 
-          if (VectorLength(t384, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
+          if (VectorLength(spyroDelta, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
             int facing;
 
             facing =
@@ -2769,9 +2769,9 @@ void Level26_UpdateActors(void) {
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, actor, 0);
-      SubtractVector(t384, &spy->posX, &actor->posX);
-      distance = VectorLength(t384, VEC_LEN_XY);
-      if (distance < st->radius && t384[2] >= -WHIRL_BELOW_REACH && t384[2] < st->spanZ &&
+      SubtractVector(spyroDelta, &spy->posX, &actor->posX);
+      distance = VectorLength(spyroDelta, VEC_LEN_XY);
+      if (distance < st->radius && spyroDelta[2] >= -WHIRL_BELOW_REACH && spyroDelta[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + WHIRL_TOP_MARGIN < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->requestMask = SPYRO_RQ_PENDING;
@@ -2832,7 +2832,7 @@ void Level26_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
       TumbleState *st = actor->state;
-      register int i asm("$16");
+      register int i asm("$16"); /* s0, as in the original (A374) */
 
       if (st->life > 0) {
         if (actor->drawn == 0) {
@@ -3665,10 +3665,10 @@ void Level26_UpdateActors(void) {
           t472[0] = (g_anCosineLut[bearing] * 3) >> 4;
           t472[1] = (g_anSineLut[bearing] * 3) >> 4;
           t472[2] = 0;
-          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          letterSide[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          letterSide[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           letterSide[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, letterSide, st->count - 1);
           LShiftVector3(letterSide, 1);

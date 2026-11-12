@@ -60,13 +60,13 @@ void Level20_UpdateActors(void) {
   int homingStep[3];
   int sparxToTarget[3];
   int A256[3];
-  int A272[3];
+  int twinklePos[3];
   int A288[3];
   int A304[3];
-  int A320[3];
+  int sparkVel[3];
   int A336[3];
-  int A352[3];
-  int A368[2];
+  int attachPt[3];
+  int nearestPt[2];
   int A376[3];
   int letterSlot[3];
   int A408[3];
@@ -154,10 +154,10 @@ void Level20_UpdateActors(void) {
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
-              int yaw = g_nCameraEulerPitch & 0xFFF;
+              int yaw = g_nCameraEulerPitch & ANGLE12_MASK;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -1335,8 +1335,8 @@ void Level20_UpdateActors(void) {
             st->glow->r = SPARX_GLOW_R;
             st->glow->g = SPARX_GLOW_G;
             st->glow->b = SPARX_GLOW_B;
-            st->glow->points = 9;
-            st->glow->desc = &g_anSparkleGlowDesc;
+            st->glow->points = SPARX_GLOW_POINTS;
+            st->glow->desc = &g_anSparxGlowShape;
           }
         } else {
           fx->size += SPARX_GLOW_GROW;
@@ -2347,7 +2347,7 @@ void Level20_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
       TumbleState *st = actor->state;
-      register int i asm("$16");
+      register int i asm("$16"); /* s0, as in the original (A374) */
 
       if (st->life > 0) {
         if (actor->drawn == 0) {
@@ -2387,11 +2387,11 @@ void Level20_UpdateActors(void) {
 
           do {
             i += 1;
-            A272[0] = (GetRandomU32() & 0xFE) - 0x7F;
-            A272[1] = (GetRandomU32() & 0xFE) - 0x7F;
-            A272[2] = (GetRandomU32() & 0xFE) - 0x40;
-            AddVector(A272, A272, &actor->posX);
-            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, A272, 1);
+            twinklePos[0] = (GetRandomU32() & 0xFE) - 0x7F;
+            twinklePos[1] = (GetRandomU32() & 0xFE) - 0x7F;
+            twinklePos[2] = (GetRandomU32() & 0xFE) - 0x40;
+            AddVector(twinklePos, twinklePos, &actor->posX);
+            g_pfnLevelEmitParticles(1, EMIT_TWINKLE, twinklePos, 1);
           } while (i < 3);
         }
 
@@ -2529,10 +2529,10 @@ void Level20_UpdateActors(void) {
             A304[0] += g_anCosineLut[j * 43] >> 6;
             A304[1] += g_anSineLut[j * 43] >> 6;
             A304[2] += 0x28;
-            A320[0] = g_anCosineLut[j * 43] >> 7;
-            A320[1] = g_anSineLut[j * 43] >> 7;
-            A320[2] = 0x10;
-            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, A304, (int)A320);
+            sparkVel[0] = g_anCosineLut[j * 43] >> 7;
+            sparkVel[1] = g_anSineLut[j * 43] >> 7;
+            sparkVel[2] = 0x10;
+            g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL, A304, (int)sparkVel);
           }
           DespawnActorRecord(st->prize);
           actor->killGroup &= ACTOR_KILL_GROUP_MASK;
@@ -2831,8 +2831,8 @@ void Level20_UpdateActors(void) {
           st->tether = g_pfnLevelSpawnActor(ACTOR_TYPE_LURKER_TETHER, actor);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, A336);
-          GetActorAttachPoint(actor, 1, A352);
-          AddVector(&st->tether->posX, A336, A352);
+          GetActorAttachPoint(actor, 1, attachPt);
+          AddVector(&st->tether->posX, A336, attachPt);
           RShiftVector3(&st->tether->posX, 1);
           SubtractVector(A336, &st->tether->posX, &spy->posX);
           k = LURKER_TETHER_SCALE_NUM / VectorLength(A336, VEC_LEN_XYZ);
@@ -2861,13 +2861,13 @@ void Level20_UpdateActors(void) {
               continue;
             }
           } else if (dist >= LURKER_CHASE_MIN_RANGE) {
-            FindNearestPathPointToSpyro(st->path, A368);
-            if (st->path->cur != A368[0] &&
+            FindNearestPathPointToSpyro(st->path, nearestPt);
+            if (st->path->cur != nearestPt[0] &&
                 dist - ApproxDist2D((int *)&g_anSpyroWorldPos,
                                      PATH_PT(st->path,
-                                             A368[0])) >=
+                                             nearestPt[0])) >=
                     LURKER_CHASE_GAIN) {
-              st->path->cur = A368[0];
+              st->path->cur = nearestPt[0];
               actor->mode = LURKER_AIM;
               continue;
             }
@@ -2954,12 +2954,12 @@ void Level20_UpdateActors(void) {
 
         ANIM_GO(actor, LURKER_ANIM_LASH);
         RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
-        GetActorAttachPoint(actor, 0, A352);
+        GetActorAttachPoint(actor, 0, attachPt);
         GetActorAttachPoint(actor, 1, A376);
-        AddVector(&st->tether->posX, A352, A376);
+        AddVector(&st->tether->posX, attachPt, A376);
         RShiftVector3(&st->tether->posX, 1);
-        SubtractVector(A352, &st->tether->posX, (int *)&g_anSpyroWorldPos);
-        d = VectorLength(A352, VEC_LEN_XYZ) + 0x1F4;
+        SubtractVector(attachPt, &st->tether->posX, (int *)&g_anSpyroWorldPos);
+        d = VectorLength(attachPt, VEC_LEN_XYZ) + 0x1F4;
         if (d < LURKER_TETHER_MIN) {
           d = LURKER_TETHER_MIN;
         }
@@ -3198,10 +3198,10 @@ void Level20_UpdateActors(void) {
           A376[0] = (g_anCosineLut[bearing] * 3) >> 4;
           A376[1] = (g_anSineLut[bearing] * 3) >> 4;
           A376[2] = 0;
-          A336[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          A336[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          A336[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          A336[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           A336[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, A336, st->count - 1);
           LShiftVector3(A336, 1);

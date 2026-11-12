@@ -7,6 +7,7 @@
 #include "main_shared.h"
 #include "match_asm.h"
 #include "sky.h"
+#include "vecmath.h"
 
 /* Update for GS_ACTOR_CUTSCENE (level-transition title card, 0x800324d8,
    0x548).
@@ -172,7 +173,7 @@ void ActorCutscene_Update(void) {
          where AbsAngleDelta12 wants them, so the call needs no setup. */
       goal = g_nActorCutsceneCamYawGoal;
       start = g_nActorCutsceneCamYawStart;
-      if (((goal - start) & 0xFFF) < 0x801) {
+      if (ANGLE12_SHORT_WAY_UP(goal, start)) {
         yaw = g_nActorCutsceneCamYawStart +
               ((AbsAngleDelta12(goal, start) * ease) >> 13);
       } else {

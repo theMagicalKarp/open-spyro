@@ -88,6 +88,8 @@
 #include "level_sfx.h"
 #include "cd_stream.h"
 #include "level_id.h"
+#include "angle.h"
+#include "spyro_block.h"
 
 void Level3_BalloonistCutscene_Update(void)
 {
@@ -121,7 +123,7 @@ void Level3_BalloonistCutscene_Update(void)
         t = g_nActorCutsceneTimer[0];
         if (t < 0x60)
       {
-        cn = LookupSine(((t << 11) / 96) - 0x400) + 0x1000;
+        cn = SINE_EASE((t << 11) / 96);
         if (g_nActorCutsceneTimer[0] == g_nFrameStep)
         {
           if (g_pSparxActor != 0)
@@ -153,8 +155,8 @@ void Level3_BalloonistCutscene_Update(void)
         if (t < 0x18)
         {
           int m;
-          sn = LookupSine(((t << 11) / 24) - 0x400) + 0x1000;
-          if (((g_nActorCutsceneSpyroYawGoal - g_nActorCutsceneSpyroYawStart) & 0xFFF) < 0x801)
+          sn = SINE_EASE((t << 11) / 24);
+          if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneSpyroYawGoal, g_nActorCutsceneSpyroYawStart))
           {
             m = (AbsAngleDelta12(g_nActorCutsceneSpyroYawGoal, g_nActorCutsceneSpyroYawStart) * sn) >> 13; k = g_nActorCutsceneSpyroYawStart + m;
           }
@@ -169,7 +171,7 @@ void Level3_BalloonistCutscene_Update(void)
           if (t < 0x48)
         {
           int sn;
-          sn = LookupSine((((t - 0x18) << 11) / 48) - 0x400) + 0x1000;
+          sn = SINE_EASE(((t - 0x18) << 11) / 48);
           SubtractVector(vecA, &g_nActorCutsceneTimer[8], &g_nActorCutsceneTimer[5]);
           ScaleVector3Sat(vecA, vecA, sn);
           RShiftVector3(vecA, 0xD);
@@ -186,7 +188,7 @@ void Level3_BalloonistCutscene_Update(void)
         }
         else
         {
-          sn = LookupSine((((t - 0x48) << 11) / 24) - 0x400) + 0x1000;
+          sn = SINE_EASE(((t - 0x48) << 11) / 24);
           if ((g_nActorCutsceneTimer[0] - g_nFrameStep) < 0x48)
           {
             int m;
@@ -199,9 +201,9 @@ void Level3_BalloonistCutscene_Update(void)
             g_bSpyroAnimFrame = 0;
             g_bSpyroSubFrameTimer = 0;
             g_nSpyroAnimPlayRate = 8;
-            g_nActorCutsceneSpyroYawGoal = ((n * 0x10) - 0x800) & 0xFFF;
+            g_nActorCutsceneSpyroYawGoal = ((n * 0x10) - ANGLE12_HALF) & ANGLE12_MASK;
           }
-          if (((g_nActorCutsceneSpyroYawGoal - g_nActorCutsceneSpyroYawStart) & 0xFFF) < 0x801)
+          if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneSpyroYawGoal, g_nActorCutsceneSpyroYawStart))
           {
             int k; k = g_nActorCutsceneSpyroYawStart + ((AbsAngleDelta12(g_nActorCutsceneSpyroYawGoal, g_nActorCutsceneSpyroYawStart) * sn) >> 13);
             EBB_BREAK();
@@ -222,7 +224,7 @@ void Level3_BalloonistCutscene_Update(void)
         ApplyEulerRotation((int *) (&g_abSpyroPersistentEuler[0]), (int *) (&g_abSpyroPersistentEuler[0x28]), 0);
         SampleSpyroShadowRingHeights(1);
         TickSpyroAttackEffects(g_nFrameStep);
-        if (((g_nActorCutsceneCamYawGoal[0] - g_nActorCutsceneCamYawGoal[-6]) & 0xFFF) < 0x801)
+        if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneCamYawGoal[0], g_nActorCutsceneCamYawGoal[-6]))
         {
           yaw = g_nActorCutsceneCamYawGoal[-6] + ((AbsAngleDelta12(g_nActorCutsceneCamYawGoal[0], g_nActorCutsceneCamYawGoal[-6]) * cn) >> 13);
         }
@@ -503,7 +505,7 @@ void Level3_BalloonistCutscene_Update(void)
         t = g_nActorCutsceneTimer[0];
         if (t < 0x66)
       {
-        cn = LookupSine(((t << 11) / 102) - 0x400) + 0x1000;
+        cn = SINE_EASE((t << 11) / 102);
         if (g_nActorCutsceneTimer[0] == g_nFrameStep)
         {
           g_pActorCutsceneRecord->gateChunk = GATE_CHUNK_ALWAYS;
@@ -539,7 +541,7 @@ void Level3_BalloonistCutscene_Update(void)
           g_nSpyroWorldPosY = g_nActorCutsceneSpyroFromY + (((g_nActorCutsceneSpyroToY - g_nActorCutsceneSpyroFromY) * t) / 48);
           g_nSpyroWorldPosZ = g_nActorCutsceneSpyroFromZ + ((LookupSine(t << 5) * 0xA) / 36);
           g_nSpyroGroundHeightZ = FindGroundHeightBelow(g_anSpyroWorldPos, 0x10000);
-          ApplyEulerRotation(&g_anSpyroWorldPos[3], &g_anSpyroWorldPos[13], 0);
+          ApplyEulerRotation(&g_anSpyroWorldPos[SPY_PERSISTENT_EULER], &g_anSpyroWorldPos[SPY_BODY_MTX], 0);
           SampleSpyroShadowRingHeights(1);
         }
         else
@@ -569,7 +571,7 @@ void Level3_BalloonistCutscene_Update(void)
             g_nSpyroWorldPosZ = g_nActorCutsceneSpyroFromZ + (LookupSine(t << 5) >> 2);
           }
         }
-        if (((g_nActorCutsceneCamYawGoal[0] - g_nActorCutsceneCamYawGoal[-6]) & 0xFFF) < 0x801)
+        if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneCamYawGoal[0], g_nActorCutsceneCamYawGoal[-6]))
         {
           yaw = g_nActorCutsceneCamYawGoal[-6] + ((AbsAngleDelta12(g_nActorCutsceneCamYawGoal[0], g_nActorCutsceneCamYawGoal[-6]) * cn) >> 13);
         }
@@ -704,8 +706,8 @@ void Level3_BalloonistCutscene_Update(void)
         t = g_nActorCutsceneTimer[0];
         if (t < 0x100)
       {
-        cn = LookupSine(((t << 11) >> 8) - 0x400) + 0x1000;
-        if (((g_nActorCutsceneCamYawStart - g_nActorCutsceneCamYawGoal_s) & 0xFFF) < 0x801)
+        cn = SINE_EASE((t << 11) >> 8);
+        if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneCamYawStart, g_nActorCutsceneCamYawGoal_s))
         {
           yaw = g_nActorCutsceneCamYawGoal_s + ((AbsAngleDelta12(g_nActorCutsceneCamYawStart, g_nActorCutsceneCamYawGoal_s) * cn) >> 13);
         }
@@ -810,7 +812,7 @@ void Level3_BalloonistCutscene_Update(void)
         g_nSpyroWorldPosY = g_nActorCutsceneSpyroFromY + (((g_nActorCutsceneSpyroToY - g_nActorCutsceneSpyroFromY) * t) >> 6);
         g_nSpyroWorldPosZ = g_nActorCutsceneSpyroToZ + ((LookupSine((t * 0x18) + 0x200) * (g_nActorCutsceneSpyroFromZ - g_nActorCutsceneSpyroToZ)) / 2896);
         g_nSpyroGroundHeightZ = FindGroundHeightBelow(g_anSpyroWorldPos, 0x10000);
-        ApplyEulerRotation(&g_anSpyroWorldPos[3], &g_anSpyroWorldPos[13], 0);
+        ApplyEulerRotation(&g_anSpyroWorldPos[SPY_PERSISTENT_EULER], &g_anSpyroWorldPos[SPY_BODY_MTX], 0);
         SampleSpyroShadowRingHeights(1);
         if (g_nActorCutsceneTimer[0] >= 0x20)
         {

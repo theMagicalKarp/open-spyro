@@ -40,7 +40,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       int src;                   /* 0x18 the emitter argument it tracks */
       int waypoint;                 /* 0x1C index into the waypoint list at src (EMIT_PATH_DOT) */
     } dust;
-    struct {                     /* class 2 -- ribbon (2nd point at 0x12) */
+    struct {                     /* class 2 -- ribbon: EMIT_RISING_SPIRAL */
       short pos[3];              /* 0x04 */
       unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
       unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
@@ -50,11 +50,11 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char fx;          /* 0x0F */
       unsigned char texIndex;       /* 0x10 sub-record (texture) index */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
-      short pos2[3];             /* 0x12 */
+      short centre[3];           /* 0x12 the point circles centre[0..1] */
       unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
       unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
     } ribbon;
-    struct {                     /* class 2 -- band (shorts at 0x18 / 0x1A) */
+    struct {                     /* class 2 -- band: EMIT_RESCUE_SWIRL's ring of stacked bands */
       short pos[3];              /* 0x04 */
       unsigned char size;        /* 0x0A billboard half-size (scales the spun corners) */
       unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
@@ -64,13 +64,13 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char fx;          /* 0x0F */
       unsigned char texIndex;       /* 0x10 sub-record (texture) index */
       unsigned char depthBias;       /* 0x11 OT depth-bin bias */
-      short pos2[3];             /* 0x12 */
-      short lift;               /* 0x18 fire-jet height lift (scaled by segment and heat) */
-      short radius;               /* 0x1A fire-jet ring radius */
-      unsigned char angle;       /* 0x1C fire-jet spin angle (LUT index, += step*8) */
-      unsigned char segment;       /* 0x1D fire-jet segment index */
+      short centre[3];           /* 0x12 the ring's centre */
+      short lift;               /* 0x18 height above centre (re-shaped by index and the rescue timer) */
+      short radius;               /* 0x1A ring radius */
+      unsigned char angle;       /* 0x1C ring spin angle (LUT index, += step*8) */
+      unsigned char index;       /* 0x1D band index up the stack */
     } band;
-    struct {                     /* class 0 -- smear (2nd point at 0x10) */
+    struct {                     /* class 0 -- smear: EMIT_RISING_SPIRAL_SMEAR */
       short pos[3];              /* 0x04 */
       unsigned char depthBias;   /* 0x0A OT depth-bin bias (a dot's) */
       unsigned char spin;        /* 0x0B spin angle (8-bit; RasterizeEmitList turns the quad by it) */
@@ -78,7 +78,7 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       unsigned char g;           /* 0x0D */
       unsigned char b;           /* 0x0E */
       unsigned char fx;          /* 0x0F */
-      short pos2[3];             /* 0x10 */
+      short centre[3];           /* 0x10 the point circles centre[0..1] */
       short pad16;               /* 0x16 */
       unsigned char angle;       /* 0x18 swirl angle (LUT index, += step*4) */
       unsigned char radius;       /* 0x19 swirl radius (grows by step; freed past 0xC0) */
@@ -111,11 +111,24 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       short pad[3];              /* 0x12 */
       short vel[3];              /* 0x18 */
       unsigned char owner;       /* 0x1E actor index into the pool */
-      unsigned char orbitRadius;       /* 0x1F orbit radius (EMIT_ORBIT_DOT) */
+      unsigned char unread1F;    /* 0x1F written 0, never read */
     } track;
+    struct {                     /* class 0 -- EMIT_ORBIT_DOT */
+      unsigned short pos[3];     /* 0x04 */
+      unsigned char depthBias;   /* 0x0A OT depth-bin bias (a dot's) */
+      unsigned char pad0B;       /* 0x0B */
+      unsigned char r;           /* 0x0C */
+      unsigned char g;           /* 0x0D */
+      unsigned char b;           /* 0x0E */
+      unsigned char fx;          /* 0x0F */
+      short pad10[4];            /* 0x10 */
+      short centre[3];           /* 0x18 the point it circles (and rises from) */
+      unsigned char phase;       /* 0x1E orbit phase offset (random) */
+      unsigned char radius;      /* 0x1F orbit radius */
+    } orbitDot;
     struct {                     /* classes 1 / 4 -- streak */
-      unsigned short a[3];       /* 0x04 head */
-      unsigned short b[3];       /* 0x0A tail */
+      unsigned short a[3];       /* 0x04 trailing end (the streaks pull it after b) */
+      unsigned short b[3];       /* 0x0A leading end (emitted at a + 2 x velocity) */
       unsigned char c0[4];       /* 0x10 colour at a; [3] the GPU code (EMIT_FX_LINE_G2) */
       unsigned char c1[4];       /* 0x14 colour at b; [3] the OT-bin bias */
     } line;

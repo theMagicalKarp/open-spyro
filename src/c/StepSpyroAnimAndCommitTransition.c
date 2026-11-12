@@ -21,6 +21,8 @@ int StepSpyroAnimAndCommitTransition(int step) {
   wrap = 0x10;
   if (((unsigned int)(sum & 0xFF)) >= wrap) {
     timer[0] = sum - wrap;
+    /* The do / while (0) ends cse's extended basic block (A200): the
+       match needs the block boundary, not the loop. */
     do {
       frame = g_bSpyroAnimFrame;
       cur = g_bSpyroAnimCurrent;

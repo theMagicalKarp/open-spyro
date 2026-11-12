@@ -79,7 +79,7 @@ void ChangeSpyroState(int state) {
 
     g_nSpyroSubstate = 0;
     t = g_abSpyroIdleDelayRandTable[GetRandomU32() & 7] *
-        g_abSpyroAnimDescTable[2];
+        SPYRO_ANIM_DESC(SPYRO_ANIMID_IDLE, SPYRO_ANIM_DESC_FRAMES);
     g_nSpyroGravityStep = -SPYRO_LIGHT_FALL_ACCEL;
     g_nSpyroLateJumpAllowed = 1;
     g_nSpyroIdleAnimTimeout = t - 2;
@@ -112,33 +112,36 @@ void ChangeSpyroState(int state) {
 
       a = (g_nSpyroBodyYaw - ArcTan2(g_anSpyroGroundNormal[0],
                                      g_anSpyroGroundNormal[1], ATAN_ANGLE12)) &
-          0xFFF;
-      if (a > 0x800) {
-        a -= 0x1000;
+          ANGLE12_MASK;
+      if (a > ANGLE12_HALF) {
+        a -= ANGLE12_TURN;
       }
       k = (g_nSpyroGroundSlope << 12) / (SLOPE_STEEP - 1);
       a = abs(a);
-      if (a > 0x400) {
-        a = 0x800 - a;
-        base = g_anSpyroSlopeSpeedTargets[2] +
-               ((k * (g_anSpyroSlopeSpeedTargets[5] -
-                      g_anSpyroSlopeSpeedTargets[2])) >>
+      if (a > ANGLE12_QUARTER) { /* facing uphill */
+        a = ANGLE12_HALF - a;
+        base = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_UP] +
+               ((k * (g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_UP +
+                                                 SLOPE_SPEED_STEEPEST] -
+                      g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_UP])) >>
                 12);
       } else {
-        base = g_anSpyroSlopeSpeedTargets[0] +
-               ((k * (g_anSpyroSlopeSpeedTargets[3] -
-                      g_anSpyroSlopeSpeedTargets[0])) >>
+        base = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN] +
+               ((k * (g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN +
+                                                 SLOPE_SPEED_STEEPEST] -
+                      g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN])) >>
                 12);
       }
-      side = g_anSpyroSlopeSpeedTargets[1] +
-             ((k * (g_anSpyroSlopeSpeedTargets[4] -
-                    g_anSpyroSlopeSpeedTargets[1])) >>
+      side = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_ACROSS] +
+             ((k * (g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_ACROSS +
+                                               SLOPE_SPEED_STEEPEST] -
+                    g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_ACROSS])) >>
               12);
       base = (base * LookupCosine(a)) >> 12;
       side = (side * LookupSine(a)) >> 12;
       g_nSpyroMoveTargetMag = IntegerSqrt(base * base + side * side);
     } else {
-      g_nSpyroMoveTargetMag = g_anSpyroSlopeSpeedTargets[0];
+      g_nSpyroMoveTargetMag = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN];
     }
     g_nSpyroLateJumpAllowed = 1;
     if (g_nSpyroScriptedMoveMode != 0) {
@@ -222,10 +225,10 @@ void ChangeSpyroState(int state) {
                     (unsigned char *)SPY + SPYB_VOICE_MARKER + 1);
     g_pSpyroHomingTargetActor = 0;
     {
-      int t = (g_nSpyroBodyYaw - g_nCameraEulerYaw) & 0xFFF;
+      int t = (g_nSpyroBodyYaw - g_nCameraEulerYaw) & ANGLE12_MASK;
 
-      if (t > 0x800) {
-        t -= 0x1000;
+      if (t > ANGLE12_HALF) {
+        t -= ANGLE12_TURN;
       }
       if (abs(t) <= SPYRO_HOMING_CONE) {
         break;
@@ -242,9 +245,10 @@ void ChangeSpyroState(int state) {
           int da;
 
           SubtractVector(d, &actor->posX, from);
-          a = (ArcTan2(d[0], d[1], ATAN_ANGLE12) - g_nSpyroBodyYaw) & 0xFFF;
-          if (a > 0x800) {
-            a -= 0x1000;
+          a = (ArcTan2(d[0], d[1], ATAN_ANGLE12) - g_nSpyroBodyYaw) &
+              ANGLE12_MASK;
+          if (a > ANGLE12_HALF) {
+            a -= ANGLE12_TURN;
           }
           da = abs(a);
           if (da < SPYRO_HOMING_CONE) {
@@ -282,7 +286,7 @@ void ChangeSpyroState(int state) {
       v[2] = g_anSineLut[ang] >> 7;
       RotateVectorByMatrix(g_anSpyroBodyMtx, v, v);
       g_pfnLevelEmitParticles(1, EMIT_DUST_PUFF, v, 1);
-      ang = (ang + 0x40) & 0xFF;
+      ang = (ang + ANGLE8_QUARTER) & ANGLE8_MASK;
     }
     SPY[SPY_SUBSTATE] = 0;
     ZeroVector(&SPY[SPY_CARRY]);
@@ -423,9 +427,9 @@ void ChangeSpyroState(int state) {
           ((g_nSpyroScriptedLiftRise << 10) >> 10) + 0x400;
       g_nSpyroScriptedLiftTurn = ((g_pScriptedCameraActor->rotZ << 4) -
                                   g_nSpyroBodyYaw - g_nSpyroScriptedLiftTurn) &
-                                 0xFFF;
-      if (g_nSpyroScriptedLiftTurn > 0x800) {
-        g_nSpyroScriptedLiftTurn -= 0x1000;
+                                 ANGLE12_MASK;
+      if (g_nSpyroScriptedLiftTurn > ANGLE12_HALF) {
+        g_nSpyroScriptedLiftTurn -= ANGLE12_TURN;
       }
     } else {
       CopyVector(&SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);
@@ -446,7 +450,7 @@ void ChangeSpyroState(int state) {
     int t;
 
     g_nSpyroSubstate = 0;
-    t = g_abSpyroAnimDescTable[state * 4 + 2];
+    t = SPYRO_ANIM_DESC(state, SPYRO_ANIM_DESC_FRAMES);
     g_nSpyroGravityStep = -SPYRO_GROUND_PRESS;
     g_nSpyroIdleAnimTimeout = t << 4;
     break;

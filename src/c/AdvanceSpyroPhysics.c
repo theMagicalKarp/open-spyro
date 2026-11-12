@@ -212,9 +212,10 @@ int AdvanceSpyroPhysics(void) {
         int a;
         unsigned int lock;
 
-        a = (g_pScriptedCameraActor->rotZ - (g_nCameraEulerYaw >> 4)) & 0xFF;
-        if (a > 0x80) {
-          a -= 0x100;
+        a = (g_pScriptedCameraActor->rotZ - (g_nCameraEulerYaw >> 4)) &
+            ANGLE8_MASK;
+        if (a > ANGLE8_HALF) {
+          a -= ANGLE8_TURN;
         }
         lock = m | SPYRO_RQ_FREEZE_INPUT;
         if (abs(a) < LOCK_ON_ALIGN_ANGLE) {
@@ -228,9 +229,9 @@ int AdvanceSpyroPhysics(void) {
               a = ((ArcTan2(e[0], e[1], ATAN_ANGLE8) -
                     g_pScriptedCameraActor->rotZ) +
                    0x80) &
-                  0xFF;
-              if (a > 0x80) {
-                a -= 0x100;
+                  ANGLE8_MASK;
+              if (a > ANGLE8_HALF) {
+                a -= ANGLE8_TURN;
               }
               if (g_nActiveLevelId == LEVEL_PEACE_KEEPERS) {
                 side = LOCK_ON_CONE_PEACE_KEEPERS;
@@ -262,9 +263,9 @@ int AdvanceSpyroPhysics(void) {
                 }
                 a = t << 4;
                 SCHED_FENCE();
-                a = (a - g_nSpyroMoveTargetYaw) & 0xFFF;
-                if (a > 0x800) {
-                  a -= 0x1000;
+                a = (a - g_nSpyroMoveTargetYaw) & ANGLE12_MASK;
+                if (a > ANGLE12_HALF) {
+                  a -= ANGLE12_TURN;
                 }
                 if (abs(a) < LOCK_ON_ORBIT_MATCH) {
                   if (g_nSpyroState != SPYRO_ST_SCRIPTED_WALK) {

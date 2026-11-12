@@ -52,7 +52,7 @@ int ComputeCameraToTargetAngle(int *target) {
         goto spring;
       }
     }
-    g_nCameraYaw = (yaw + 0x800) & 0xFFF;
+    g_nCameraYaw = (yaw + ANGLE12_HALF) & ANGLE12_MASK;
     goto flip;
   spring:
     g_nCameraYaw = g_nCameraSpringYaw;

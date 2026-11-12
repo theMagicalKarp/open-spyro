@@ -13,6 +13,7 @@
 
 #define SPY_POS            0x00 /* g_anSpyroWorldPos */
 #define SPY_POS_Z          0x02 /* g_nSpyroWorldPosZ */
+#define SPY_PERSISTENT_EULER 0x03 /* g_abSpyroPersistentEuler (bytes) */
 #define SPY_BODY_MTX       0x0D /* g_anSpyroBodyMtx */
 #define SPY_TRIGGER_FLAGS  0x0B /* g_dwSpyroTriggerEventFlags */
 #define SPY_ANIM_PLAY_RATE 0x16 /* g_nSpyroAnimPlayRate */

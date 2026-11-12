@@ -101,6 +101,14 @@ typedef enum SpyroState
  * down, i.e. a ceiling). */
 #define SLOPE_FLAT 0x0C       /* below: flat enough to launch a charge jump */
 #define SLOPE_STEEP 0x17      /* at or above: too steep to stand; Spyro slides or falls */
+/* g_anSpyroSlopeSpeedTargets: Spyro's ground speed facing down, across and
+ * up a slope, on the flat ([0..2]) and at the steepest standable slope
+ * (+ SLOPE_SPEED_STEEPEST); the walk lerps between them by the slope and
+ * blends down / up with across by the facing's angle to the fall line. */
+#define SLOPE_SPEED_DOWN 0
+#define SLOPE_SPEED_ACROSS 1
+#define SLOPE_SPEED_UP 2
+#define SLOPE_SPEED_STEEPEST 3
 #define SLOPE_NUDGE_MAX 0x20  /* below: still floor, so the wall probes may nudge */
 #define SLOPE_GROUND_MAX 0x21 /* below: counts as ground (clears the airborne count) */
 #define SLOPE_CEILING 0x400   /* the probe hit a downward-facing surface */
@@ -564,6 +572,8 @@ enum SpyroAnimId {
 #define SPYRO_ANIM_DESC_LOOP_END 1   /* one past the loop's last frame */
 #define SPYRO_ANIM_DESC_FRAMES 2     /* frame count (layer 1 holds the last one) */
 #define SPYRO_ANIM_DESC_RATE 3       /* play rate (g_nSpyroFlameAnimRate) */
+/* Field `f` (SPYRO_ANIM_DESC_*) of animation `anim`'s record. */
+#define SPYRO_ANIM_DESC(anim, f) g_abSpyroAnimDescTable[(anim) * 4 + (f)]
 /* Nonzero: the animation keeps the overlay layers off (the flame breath is
  * cancelled, a layer-2 request is dropped). */
 #define SPYRO_ANIM_NO_OVERLAY(anim)                                            \

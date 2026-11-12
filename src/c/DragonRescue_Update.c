@@ -74,18 +74,20 @@ typedef struct CamPathKey {
 #define SRCS (((struct { char *volatile p; } *)&g_pDragonRescueSourceActor)->p)
 #define OTY ((int)g_dwDragonRescueOrbitTargetYaw)
 
-/* Frames between keyframes of a mesh's animation for its frame-rate code. */
+/* Timer ticks between keyframes of a mesh's animation for its frame rate:
+ * the timer advances by g_nFrameStep (two per 30 Hz frame) and a rate of
+ * ANIM_RATE_TICKS(n) steps a frame every n frames, so a keyframe lasts 2n. */
 #define FRAME_STEP(model, step)                                                \
   {                                                                            \
     int rate = ((AnimationHeader *)(FIRST_ANIM(model)))->m_ProgressPerTick;    \
                                                                                \
-    if (rate == 0x10) {                                                        \
+    if (rate == ANIM_RATE_TICKS(4)) {                                          \
       step = 8;                                                                \
-    } else if (rate == 0x15) {                                                 \
+    } else if (rate == ANIM_RATE_TICKS(3)) {                                   \
       step = 6;                                                                \
     } else {                                                                   \
       step = 2;                                                                \
-      if (rate == 0x20) {                                                      \
+      if (rate == ANIM_RATE_TICKS(2)) {                                        \
         step = 4;                                                              \
       }                                                                        \
     }                                                                          \
@@ -242,7 +244,7 @@ void DragonRescue_Update(void) {
                          g_nDragonRescueSweepDurationFrames -
                      0x400) +
           0x1000;
-      if (((OTY - g_nDragonRescueOrbitStartYaw) & 0xFFF) < 0x801) {
+      if (ANGLE12_SHORT_WAY_UP(OTY, g_nDragonRescueOrbitStartYaw)) {
         a = g_nDragonRescueOrbitStartYaw +
             ((AbsAngleDelta12(OTY, g_nDragonRescueOrbitStartYaw) * t) >> 13);
       } else {
@@ -265,7 +267,7 @@ void DragonRescue_Update(void) {
         int dir = ArcTan2(vec[0], vec[1], ATAN_ANGLE8);
 
         if (AbsAngleDelta8(dir, g_abSpyroPersistentEuler[2]) >= 4) {
-          if (((dir - g_abSpyroPersistentEuler[2]) & 0xFF) < 0x81) {
+          if (ANGLE8_SHORT_WAY_UP(dir, g_abSpyroPersistentEuler[2])) {
             g_abSpyroPersistentEuler[2] =
                 g_abSpyroPersistentEuler[2] +
                 (AbsAngleDelta8(dir, g_abSpyroPersistentEuler[2]) >> 2);
@@ -283,7 +285,7 @@ void DragonRescue_Update(void) {
       if (g_nSpyroAnimPlayRate_blk[0] > 0x10) {
         g_nSpyroAnimPlayRate_blk[0] = 0x10;
       }
-      if (((GB[GB_CAM_TARGET_YAW] - GB[GB_CAM_START_YAW]) & 0xFFF) < 0x801) {
+      if (ANGLE12_SHORT_WAY_UP(GB[GB_CAM_TARGET_YAW], GB[GB_CAM_START_YAW])) {
         a = GB[GB_CAM_START_YAW] +
             ((AbsAngleDelta12(GB[GB_CAM_TARGET_YAW], GB[GB_CAM_START_YAW]) *
               t) >>
@@ -333,12 +335,12 @@ void DragonRescue_Update(void) {
 
           g_nDragonRescueOrbitStartYaw = g_abSpyroPersistentEuler[2] << 4;
           g_dwDragonRescueOrbitTargetYaw =
-              (g_dwDragonRescueOrbitTargetYaw + 0x800) & 0xFFF;
+              (g_dwDragonRescueOrbitTargetYaw + ANGLE12_HALF) & ANGLE12_MASK;
           g_nSpyroWorldPosY = y + (s >> 12);
           CopyVector(g_anCameraPos, REC(src));
         }
       }
-      if (((OTY - g_nDragonRescueOrbitStartYaw) & 0xFFF) < 0x801) {
+      if (ANGLE12_SHORT_WAY_UP(OTY, g_nDragonRescueOrbitStartYaw)) {
         a = g_nDragonRescueOrbitStartYaw +
             (AbsAngleDelta12(OTY, g_nDragonRescueOrbitStartYaw) *
              (g_nDragonRescueTimer - g_nDragonRescueSweepDurationFrames)) /

@@ -261,7 +261,7 @@ void Level5_FlightResults_Draw(void)
       }
       pos[0] = 0x10C - (strlen((char *)buf) * 0xC);
       pos[1] = 0x1E;
-      pos[2] = 0xC00;
+      pos[2] = TEXT_TITLE_DEPTH;
       BuildTextSpriteChain(buf, pos, 0x18, TINT_HUD);
       fp = g_pSpriteRecordWriteCursor - 1;
       g_pSpriteRecordWriteCursor = fp;
@@ -598,7 +598,7 @@ void Level5_FlightResults_Draw(void)
       int *q2;
       pos[0] = 0x88;
       pos[1] = 0x28;
-      pos[2] = 0xC00;
+      pos[2] = TEXT_TITLE_DEPTH;
       BuildTextSpriteChain("TIME ATTACK", pos, 0x18, TINT_HUD);
       EmitRadialShadedLine(0x3C, 0x3D, 0x1C4, 0x3D);
       pos[0] = 0x140;
@@ -657,7 +657,7 @@ void Level5_FlightResults_Draw(void)
         count = strlen((char *)buf);
         pos[0] = 0x10C - (count * 0xC);
         pos[1] = 0x96;
-        pos[2] = 0xC00;
+        pos[2] = TEXT_TITLE_DEPTH;
         BuildTextSpriteChain(buf, pos, 0x18, TINT_HUD);
         rec = g_pSpriteRecordWriteCursor;
         i = 0;
@@ -682,7 +682,7 @@ void Level5_FlightResults_Draw(void)
         short *lut;
         pos[0] = 0x94;
         pos[1] = 0x96;
-        pos[2] = 0xC00;
+        pos[2] = TEXT_TITLE_DEPTH;
         BuildTextSpriteChain("NEW RECORD", pos, 0x18, TINT_RED);
         count = 0xA;
         i = 0;

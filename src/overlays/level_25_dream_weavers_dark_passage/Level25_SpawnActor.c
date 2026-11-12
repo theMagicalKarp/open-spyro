@@ -146,8 +146,8 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     rec->rotX = 0;
     turn = ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8);
-    if (turn > 0x80) {
-      turn -= 0x100;
+    if (turn > ANGLE8_HALF) {
+      turn -= ANGLE8_TURN;
     }
     if (turn < -0x10) {
       turn = -0x10;
@@ -173,8 +173,8 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     rec->rotX = 0;
     turn = ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8);
-    if (turn > 0x80) {
-      turn -= 0x100;
+    if (turn > ANGLE8_HALF) {
+      turn -= ANGLE8_TURN;
     }
     if (turn < -0x10) {
       turn = -0x10;
@@ -312,8 +312,8 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     rec->rotX = 0;
     turn = ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8);
-    if (turn > 0x80) {
-      turn -= 0x100;
+    if (turn > ANGLE8_HALF) {
+      turn -= ANGLE8_TURN;
     }
     if (turn < -0x10) {
       turn = -0x10;
@@ -326,8 +326,8 @@ Actor *Level25_SpawnActor(int type, Actor *parent) {
     pdir = parent->rotZ;
     diff = rec->rotZ - pdir;
     delta = (unsigned char)diff;
-    if (delta > 0x80) {
-      delta -= 0x100;
+    if (delta > ANGLE8_HALF) {
+      delta -= ANGLE8_TURN;
     }
     if (abs(delta) > 0x10) {
       rec->rotZ = pdir;

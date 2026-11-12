@@ -30,7 +30,7 @@ void DrawDragonRescuedBanner(void) {
 
   pos[0] = 0x150 - w;
   pos[1] = 0xC8;
-  pos[2] = 0xC00;
+  pos[2] = TEXT_TITLE_DEPTH;
   BuildTextSpriteChain(name, pos, 0x1A, TINT_GOLD);
 
   phase = 0;

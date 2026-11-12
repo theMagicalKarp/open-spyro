@@ -2,27 +2,27 @@
 #include "globals.h"
 
 /* Set ->mode to `value` for every actor in the pickup group
-   named by actor's ->group whose current mode is < 0x80 and not
-   equal to `match` (0x8003b47c). Out-of-range group index applies the same
-   guarded write to the passed actor itself. */
+   named by actor's ->group whose current mode is live (< ACTOR_MODE_DORMANT)
+   and not equal to `match` (0x8003b47c). Out-of-range group index applies the
+   same guarded write to the passed actor itself. */
 void SetActorGroupStateExcept(Actor *actor, int value, int match) {
   unsigned short *ptr;
   int idx;
   int group;
-  unsigned int type;
+  unsigned int mode;
 
   group = actor->group;
   if (group >= g_nLevelPickupTableCount) {
-    type = actor->mode;
-    if (type < 0x80 && type != match) {
+    mode = actor->mode;
+    if (mode < ACTOR_MODE_DORMANT && mode != match) {
       actor->mode = value;
     }
   } else {
     ptr = g_pLevelPickupTableEntries[group];
     do {
       idx = *ptr & 0x7FFF;
-      type = g_pActorListBase[idx].mode;
-      if (type < 0x80 && type != match) {
+      mode = g_pActorListBase[idx].mode;
+      if (mode < ACTOR_MODE_DORMANT && mode != match) {
         g_pActorListBase[idx].mode = value;
       }
     } while ((short)*ptr++ >= 0);

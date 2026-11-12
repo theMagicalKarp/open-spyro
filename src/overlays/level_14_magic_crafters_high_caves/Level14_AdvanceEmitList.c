@@ -27,6 +27,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
+#include "actor_modes.h"
 #include "actor_type.h"
 #include "match_asm.h"
 #include "spyro_state.h"
@@ -98,7 +99,7 @@ void Level14_AdvanceEmitList(int step) {
     {
       int len;
       int near;
-      int spin;
+      int rise;
       int rx;
       int ry;
       int jx;
@@ -113,43 +114,43 @@ void Level14_AdvanceEmitList(int step) {
        */
       KEEP_IN_REG(burst);
       SVectorToVectorShl2(pt, POS);
-      if (HU(0x1E) & 8) {
+      if (ORB_MODE_U & ORB_TRAIL) {
         if (AGE >= 0x30) {
           FreeEmitListRecord(rec);
           break;
         }
         rx = GetRandomU32();
-        jx = HU(0x18) - 3;
+        jx = VEL_U[0] - 3;
         jx += rx & 6;
-        HU(0x18) = jx;
+        VEL_U[0] = jx;
         ry = GetRandomU32();
-        jy = HU(0x1A) - 3;
+        jy = VEL_U[1] - 3;
         jy += ry & 6;
-        HU(0x1A) = jy;
-        HU(0x1C)++;
-        if (HS(0x1C) >= 0x11) {
-          HU(0x1C) = 0x10;
+        VEL_U[1] = jy;
+        VEL_U[2]++;
+        if (VEL[2] >= 0x11) {
+          VEL_U[2] = 0x10;
         }
-        pt[0] += HS(0x18);
-        pt[1] += HS(0x1A);
-        pt[2] -= HS(0x1C);
+        pt[0] += VEL[0];
+        pt[1] += VEL[1];
+        pt[2] -= VEL[2];
         goto commit;
-      } else if (HU(0x1E) & 1) {
+      } else if (ORB_MODE_U & ORB_ORBIT) {
         if (AGE >= 0x30) {
           AGE = 0;
-          HS(0x18) = (GetRandomU32() & 6) - 3;
-          HS(0x1A) = (GetRandomU32() & 6) - 3;
-          HU(0x1C) = 0;
-          HS(0x1E) = 8;
+          VEL[0] = (GetRandomU32() & 6) - 3;
+          VEL[1] = (GetRandomU32() & 6) - 3;
+          VEL_U[2] = 0;
+          ORB_MODE = ORB_TRAIL;
           goto measure;
         } else {
           SVectorToVectorShl2(dv, VEL);
-          if (HU(0x1E) & 2) {
+          if (ORB_MODE_U & ORB_X_UP) {
             dv[0] += (AGE * LookupCosine(AGE << 7)) >> 7;
           } else {
             dv[0] -= (AGE * LookupCosine(AGE << 7)) >> 7;
           }
-          if (HU(0x1E) & 4) {
+          if (ORB_MODE_U & ORB_Y_UP) {
             dv[1] += (AGE * LookupSine(AGE << 7)) >> 7;
           } else {
             dv[1] -= (AGE * LookupSine(AGE << 7)) >> 7;
@@ -164,24 +165,24 @@ void Level14_AdvanceEmitList(int step) {
           goto commit;
         }
       } else {
-        CopyVector(dir, (int *)(W(0x18) + 0xC));
+        CopyVector(dir, &ORB_TARGET->posX);
         dv[0] += LookupCosine(AGE << 7) >> 2;
         dv[1] += LookupSine(AGE << 7) >> 2;
         dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(dir, dir, pt);
         len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
-          int *owner = *(int **)W(0x18);
+          int *target = (int *)ORB_TARGET->state; /* a TetherState: [5] mode, [0] timer */
 
-          if (owner[5] == 1) {
-            owner[5] = 2;
-            owner[0] = 0x20;
+          if (target[5] == TCMD_BOUND) {
+            target[5] = TCMD_FREED; /* the orb frees a bound guard */
+            target[0] = 0x20;
           }
-          HS(0x1E) = (GetRandomU32() & 6) + 1;
-          VectorToSVectorShr2(VEL, (int *)(W(0x18) + 0xC));
-          spin = GetRandomU32() & 0x7F;
+          ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
+          VectorToSVectorShr2(VEL, &ORB_TARGET->posX);
+          rise = GetRandomU32() & 0x7F;
           AGE = 0;
-          HU(0x1C) += spin;
+          VEL_U[2] += rise;
           goto measure;
         }
         ScaleVector3ByRatio(dir, len, 0x100);
@@ -201,8 +202,8 @@ void Level14_AdvanceEmitList(int step) {
           COL_G = 0xFF;
           COL_B = 0xFF;
           SIZE = 4;
-          CLASS = 0;
-          rec[0xF] = 0x40;
+          CLASS = EMIT_CLASS_DOT;
+          FX = EMIT_FX_LINE;
         }
       } else if (len < 0x2800) {
         CLASS = burst;
@@ -210,7 +211,7 @@ void Level14_AdvanceEmitList(int step) {
         COL_G = 0x80;
         COL_B = 0x80;
         DEPTH_BIAS = 4;
-        rec[0xF] = 0x2C;
+        FX = EMIT_FX_QUAD;
         TEX_INDEX = 0;
         SIZE = (GetRandomU32() & 0xF) + 0x18;
         SPIN = (GetRandomU32() & 0x7) + 0xF;
@@ -233,15 +234,15 @@ void Level14_AdvanceEmitList(int step) {
       } else {
         SVectorToVectorShl2(qa, POS);
         rq = GetRandomU32();
-        jq = HU(0x18) - 3;
+        jq = VEL_U[0] - 3;
         jq += rq & 6;
-        HU(0x18) = jq;
+        VEL_U[0] = jq;
         rr = GetRandomU32();
-        jr = HU(0x1A) - 3;
-        dec = HU(0x1C) - 1;
+        jr = VEL_U[1] - 3;
+        dec = VEL_U[2] - 1;
         jr += rr & 6;
-        HU(0x1A) = jr;
-        HU(0x1C) = dec;
+        VEL_U[1] = jr;
+        VEL_U[2] = dec;
         SVectorToVectorShl2(qb, VEL);
         RShiftVector3(qb, 2);
         AddVector(qa, qa, qb);
@@ -267,7 +268,7 @@ void Level14_AdvanceEmitList(int step) {
         goto expire;
       } else {
         bolt = v;
-        CopyVector(bolt, &g_pActorListBase[rec[0x1E]].posX);
+        CopyVector(bolt, &g_pActorListBase[TRACK_ACTOR].posX);
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;
@@ -290,8 +291,8 @@ void Level14_AdvanceEmitList(int step) {
           if (CLASS == burst) {
             if (len >= 0x3001) {
               SIZE = 4;
-              rec[0xF] = 0x40;
-              CLASS = 0;
+              FX = EMIT_FX_LINE;
+              CLASS = EMIT_CLASS_DOT;
               c = COL_R * 2;
               COL_R = c;
               COL_G *= 2;
@@ -300,7 +301,7 @@ void Level14_AdvanceEmitList(int step) {
           } else if (len < 0x2800) {
             CLASS = burst;
             DEPTH_BIAS = 4;
-            rec[0xF] = 0x2C;
+            FX = EMIT_FX_QUAD;
             TEX_INDEX = 0;
             c = COL_R >> 1;
             COL_R = c;
@@ -332,17 +333,17 @@ void Level14_AdvanceEmitList(int step) {
         goto expire;
       } else {
         CopyVector(w, SPYRO_POS_VIA_LOCKOUT);
-        w[0] += LookupCosine(HS(0x18)) >> 4;
-        w[1] += LookupSine(HS(0x18)) >> 4;
+        w[0] += LookupCosine(ORBIT_ANGLE) >> 4;
+        w[1] += LookupSine(ORBIT_ANGLE) >> 4;
         w[2] += 0x100;
         VectorToSVectorShr2(POS, w);
-        HS(0x18) = HU(0x18) + 0x40;
-        SIZE = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
     case EMIT_BURST_SPARK:
-      AddSVector(POS, POS, &HS(0x12));
+      AddSVector(POS, POS, BURST_VEL);
       FADE_COL(8);
       if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
@@ -400,11 +401,11 @@ void Level14_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SPIRAL_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
-      HU(0x8) += *(const int *)&g_nFrameStep * 6;
+      POS_U[2] += *(const int *)&g_nFrameStep * 6;
       SPIN += 4;
-      HU(0x6) = HU(0x14) + (s >> 12);
+      POS_U[1] = SPIRAL_CENTRE_U[1] + (s >> 12);
       if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
@@ -424,21 +425,21 @@ void Level14_AdvanceEmitList(int step) {
       if (COL_B < 0xF0) {
         COL_B += 4;
       }
-      JET_ANGLE += g_nFrameStep * 8;
+      RSWIRL_ANGLE += g_nFrameStep * 8;
       heat = 0x3F;
       if (g_nDragonRescueTimer < 0x40) {
         heat = g_nDragonRescueTimer;
       }
-      HS(0x18) = (JET_SEGMENT * (0x48 - heat)) >> 3;
-      HS(0x1A) = (((0x20 - JET_SEGMENT) * heat) >> 4) + 8;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[JET_ANGLE] * HS(0x1A)) >> 12);
-      HU(0x6) = HU(0x14) + ((g_anSineLut[JET_ANGLE] * HS(0x1A)) >> 12);
-      HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
+      RSWIRL_LIFT = (RSWIRL_BAND * (0x48 - heat)) >> 3;
+      RSWIRL_RADIUS = (((0x20 - RSWIRL_BAND) * heat) >> 4) + 8;
+      POS_U[0] = RSWIRL_CENTRE_U[0] + ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[1] = RSWIRL_CENTRE_U[1] + ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[2] = RSWIRL_CENTRE_U[2] + 0x20 + RSWIRL_LIFT_U;
       break;
     }
 
     case EMIT_RISING_PUFF:
-      HU(0x8) += HU(0x1E);
+      POS_U[2] += RISE_SPEED_U;
       SIZE++;
       FADE_COL(step2);
       AGE += step;
@@ -461,11 +462,11 @@ void Level14_AdvanceEmitList(int step) {
       int c;
 
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
+      if (CLIMB_TOGGLE != 0) {
+        VEL_U[2]++;
       }
       c = COL_R - step;
-      HS(0x1E) = 1 - HU(0x1E);
+      CLIMB_TOGGLE = 1 - CLIMB_TOGGLE_U;
       SIZE += step2;
       if (c < 0) {
         c = 0;
@@ -496,25 +497,25 @@ void Level14_AdvanceEmitList(int step) {
 
       for (i = 0; i < step; i++) {
         if (AGE & 1) {
-          HU(0x4) += HU(0x10);
-          HU(0x6) += HU(0x12);
-          HU(0x8) += HU(0x14);
+          POS_U[0] += DRIFT_U[0];
+          POS_U[1] += DRIFT_U[1];
+          POS_U[2] += DRIFT_U[2];
           if (AGE & 2) {
             /* the `- 1` has to stay int-wide: folded into the unsigned short
              * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
              * hoisted out of the loop as a constant in a callee-saved reg. */
             r = GetRandomU32();
-            j = HU(0x10) - 1;
+            j = DRIFT_U[0] - 1;
             j += r & 2;
-            HU(0x10) = j;
+            DRIFT_U[0] = j;
             r = GetRandomU32();
-            j = HU(0x12) - 1;
+            j = DRIFT_U[1] - 1;
             j += r & 2;
-            HU(0x12) = j;
+            DRIFT_U[1] = j;
             r = GetRandomU32();
-            j = HU(0x14) - 1;
+            j = DRIFT_U[2] - 1;
             j += r & 2;
-            HU(0x14) = j;
+            DRIFT_U[2] = j;
           }
         }
         AGE++;
@@ -532,19 +533,19 @@ void Level14_AdvanceEmitList(int step) {
       int *hop;
       int len;
 
-      path = (unsigned char *)W(0x18);
+      path = (unsigned char *)PDOT_PATH;
       base = cur;
       SVectorToVectorShl2(base, POS);
       hop = adv;
-      CopyVector(hop, (int *)&path[W(0x1C) * 0x10 + 8]);
+      CopyVector(hop, (int *)&path[PDOT_WAYPOINT * 0x10 + 8]);
       adv[0] += LookupCosine(AGE << 7) >> 2;
       adv[1] += LookupSine(AGE << 7) >> 2;
       adv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
       SubtractVector(hop, hop, base);
       len = VectorLength(hop, VEC_LEN_XYZ);
       if (len < 0x401) {
-        W(0x1C)++;
-        if (W(0x1C) >= path[0]) {
+        PDOT_WAYPOINT++;
+        if (PDOT_WAYPOINT >= path[0]) {
           FreeEmitListRecord(rec);
           break;
         }
@@ -564,12 +565,12 @@ void Level14_AdvanceEmitList(int step) {
       int j;
       int r;
 
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       r = GetRandomU32();
       j = d[0] - 1;
       j += r & 2;
@@ -581,9 +582,9 @@ void Level14_AdvanceEmitList(int step) {
       if (AGE & 1) {
         d[2]--;
       }
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x20)) {
         goto expire;
@@ -623,9 +624,9 @@ void Level14_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x20)) {
         goto expire;
       } else {
-        d[0] = HS(0xA) - HS(0x4);
-        d[1] = HS(0xC) - HS(0x6);
-        d[2] = HS(0xE) - HS(0x8);
+        d[0] = HEAD[0] - POS[0];
+        d[1] = HEAD[1] - POS[1];
+        d[2] = HEAD[2] - POS[2];
         r = GetRandomU32();
         j = d[0] - 1;
         j += r & 2;
@@ -638,12 +639,12 @@ void Level14_AdvanceEmitList(int step) {
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
-        HS(0xA) = HU(0xA) + d[0];
-        HS(0xC) = HU(0xC) + d[1];
-        HS(0xE) = HU(0xE) + d[2];
-        HU(0x4) = HU(0xA) - d[0];
-        HU(0x6) = HU(0xC) - d[1];
-        HU(0x8) = HU(0xE) - d[2];
+        HEAD[0] = HEAD_U[0] + d[0];
+        HEAD[1] = HEAD_U[1] + d[1];
+        HEAD[2] = HEAD_U[2] + d[2];
+        POS_U[0] = HEAD_U[0] - d[0];
+        POS_U[1] = HEAD_U[1] - d[1];
+        POS_U[2] = HEAD_U[2] - d[2];
         COL1_R -= 2;
         COL1_G -= 2;
         COL1_B -= 4;
@@ -664,9 +665,9 @@ void Level14_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x30)) {
         goto expire;
       } else {
-        d[0] = (HS(0x4) - HS(0xA)) >> 1;
-        d[1] = (HS(0x6) - HS(0xC)) >> 1;
-        d[2] = (HS(0x8) - HS(0xE)) >> 1;
+        d[0] = (POS[0] - HEAD[0]) >> 1;
+        d[1] = (POS[1] - HEAD[1]) >> 1;
+        d[2] = (POS[2] - HEAD[2]) >> 1;
         r = GetRandomU32();
         j = d[0] - 2;
         j += r & 4;
@@ -679,12 +680,12 @@ void Level14_AdvanceEmitList(int step) {
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
-        HU(0x4) += d[0];
-        HU(0x6) += d[1];
-        HU(0x8) += d[2];
-        HS(0xA) = HU(0x4) - d[0] * 2;
-        HS(0xC) = HU(0x6) - d[1] * 2;
-        HS(0xE) = HU(0x8) - d[2] * 2;
+        POS_U[0] += d[0];
+        POS_U[1] += d[1];
+        POS_U[2] += d[2];
+        HEAD[0] = POS_U[0] - d[0] * 2;
+        HEAD[1] = POS_U[1] - d[1] * 2;
+        HEAD[2] = POS_U[2] - d[2] * 2;
       }
       break;
     }
@@ -694,13 +695,13 @@ void Level14_AdvanceEmitList(int step) {
         FreeEmitListRecord(rec);
         break;
       }
-      HS(0x4) = (rec[0x1F] * LookupCosine((rec[0x1E] + AGE) << 6)) >> 10;
-      HS(0x6) = (rec[0x1F] * LookupSine((rec[0x1E] + AGE) << 6)) >> 10;
-      HS(0x8) = AGE * 2;
+      POS[0] = (ODOT_RADIUS * LookupCosine((ODOT_PHASE + AGE) << 6)) >> 10;
+      POS[1] = (ODOT_RADIUS * LookupSine((ODOT_PHASE + AGE) << 6)) >> 10;
+      POS[2] = AGE * 2;
       AGE++;
-      HU(0x4) += HU(0x18);
-      HU(0x6) += HU(0x1A);
-      HU(0x8) += HU(0x1C);
+      POS_U[0] += ODOT_CENTRE_U[0];
+      POS_U[1] += ODOT_CENTRE_U[1];
+      POS_U[2] += ODOT_CENTRE_U[2];
       break;
 
     case EMIT_RISING_SPIRAL_SMEAR:
@@ -709,10 +710,10 @@ void Level14_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      HU(0x4) = HU(0x10) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SMEAR_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
-      HU(0x8) += g_nFrameStep * 6;
-      HU(0x6) = HU(0x12) + (s >> 12);
+      POS_U[2] += g_nFrameStep * 6;
+      POS_U[1] = SMEAR_CENTRE_U[1] + (s >> 12);
       if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
@@ -723,16 +724,16 @@ void Level14_AdvanceEmitList(int step) {
     {
       short d[3];
 
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       d[1]++;
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGE >= 0x20) {
         FreeEmitListRecord(rec);
@@ -750,26 +751,26 @@ void Level14_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x28)) {
         goto expire;
       } else {
-        HU(0x4) += HU(0x10);
-        HU(0x6) += HU(0x12);
-        HU(0x8) += HU(0x14);
+        POS_U[0] += DRIFT_U[0];
+        POS_U[1] += DRIFT_U[1];
+        POS_U[2] += DRIFT_U[2];
         r = GetRandomU32();
-        j = HU(0x10) - 1;
+        j = DRIFT_U[0] - 1;
         j += r & 2;
-        HU(0x10) = j;
+        DRIFT_U[0] = j;
         r = GetRandomU32();
-        j = HU(0x12) - 1;
+        j = DRIFT_U[1] - 1;
         j += r & 2;
-        HU(0x12) = j;
+        DRIFT_U[1] = j;
         r = GetRandomU32();
-        k = HU(0x14) - 1;
+        k = DRIFT_U[2] - 1;
         k += r & 2;
-        HU(0x14) = k;
-        if (HS(0x14) >= 3) {
-          HU(0x14) = 2;
+        DRIFT_U[2] = k;
+        if (DRIFT[2] >= 3) {
+          DRIFT_U[2] = 2;
         }
-        if (HS(0x14) < -4) {
-          HS(0x14) = -4;
+        if (DRIFT[2] < -4) {
+          DRIFT[2] = -4;
         }
         COL_R -= 2;
         COL_G -= 2;
@@ -782,15 +783,15 @@ void Level14_AdvanceEmitList(int step) {
     {
       short d[3];
 
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x18)) {
         goto expire;
@@ -810,16 +811,16 @@ void Level14_AdvanceEmitList(int step) {
     {
       short d[3];
 
-      d[0] = HU(0xA) - HU(0x4);
-      d[1] = HU(0xC) - HU(0x6);
-      d[2] = HU(0xE) - HU(0x8);
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = HEAD_U[0] - POS_U[0];
+      d[1] = HEAD_U[1] - POS_U[1];
+      d[2] = HEAD_U[2] - POS_U[2];
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       d[2]--;
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);

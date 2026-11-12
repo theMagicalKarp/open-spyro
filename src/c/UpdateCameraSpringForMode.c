@@ -122,13 +122,13 @@ void UpdateCameraSpringForMode(void) {
       if (left == 0) {
         break;
       }
-      d = (g_nCameraYaw - 0x800 + g_nSpyroBodyYaw) & 0xFFF;
-      if (d > 0x800) {
-        d -= 0x1000;
+      d = (g_nCameraYaw - 0x800 + g_nSpyroBodyYaw) & ANGLE12_MASK;
+      if (d > ANGLE12_HALF) {
+        d -= ANGLE12_TURN;
       }
-      p = (g_nCameraPitch - g_anCameraParamDefault[1]) & 0xFFF;
-      if (p > 0x800) {
-        p -= 0x1000;
+      p = (g_nCameraPitch - g_anCameraParamDefault[1]) & ANGLE12_MASK;
+      if (p > ANGLE12_HALF) {
+        p -= ANGLE12_TURN;
       }
       if (abs(d) < CAM_REENGAGE_YAW && abs(p) < CAM_REENGAGE_PITCH) {
         break;
@@ -210,23 +210,23 @@ void UpdateCameraSpringForMode(void) {
     if (g_nCameraCollisionRetries == 0) {
       if (g_nSpyroFlightMode != 0) {
         if (g_nSpyroSubstate == SPYRO_SUB_GLIDE_L1) {
-          yaw = (yaw - g_nCameraEulerYaw) & 0xFFF;
-          if (yaw > 0x800) {
-            yaw -= 0x1000;
+          yaw = (yaw - g_nCameraEulerYaw) & ANGLE12_MASK;
+          if (yaw > ANGLE12_HALF) {
+            yaw -= ANGLE12_TURN;
           }
           if (yaw > 0) {
             *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideRightBias;
           } else {
             *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideLeftBias;
           }
-          CAM[0x2B] = (g_nSpyroBodyYaw + 0x800) & 0xFFF;
+          CAM[0x2B] = (g_nSpyroBodyYaw + ANGLE12_HALF) & ANGLE12_MASK;
           g_nCameraTargetInverted = ComputeCameraToTargetAngle(CAM);
           g_nCameraSpringYaw = g_nCameraYaw;
           LoadCameraTargetAnglesFromMode();
         } else if (g_nSpyroSubstate == SPYRO_SUB_GLIDE_R1) {
-          yaw = (yaw - g_nCameraEulerYaw) & 0xFFF;
-          if (yaw > 0x800) {
-            yaw -= 0x1000;
+          yaw = (yaw - g_nCameraEulerYaw) & ANGLE12_MASK;
+          if (yaw > ANGLE12_HALF) {
+            yaw -= ANGLE12_TURN;
           }
           if (yaw > CAM_GLIDE_BIAS_ANGLE) {
             *(int **)&s[S_TARGET_PARAMS] = g_anCameraParamGlideRightBias;

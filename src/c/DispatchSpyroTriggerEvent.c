@@ -27,7 +27,7 @@ typedef struct {
    level transition or repositions the destination actor on the near side of its
    portal plane. */
 void DispatchSpyroTriggerEvent(int idx, int event) {
-  int tmp[3];
+  int fromPlane[3];
   unsigned char *rec;
   int *data;
   int *ready;
@@ -87,8 +87,10 @@ void DispatchSpyroTriggerEvent(int idx, int event) {
     if (LEVEL_IN_WORLD(g_nActiveLevelId) != LEVEL_HOME_SLOT) {
       g_nReturnPortalLevelId = g_nActiveLevelId;
     }
-    SubtractVector(tmp, ready - (SPY_SPARX_HEALTH - SPY_POS), ENT->pts[1]);
-    d = -tmp[0] * ENT->nx - tmp[1] * ENT->ny - tmp[2] * ENT->nz;
+    SubtractVector(fromPlane, ready - (SPY_SPARX_HEALTH - SPY_POS),
+                   ENT->pts[1]);
+    d = -fromPlane[0] * ENT->nx - fromPlane[1] * ENT->ny -
+        fromPlane[2] * ENT->nz;
     a = ENT->actor;
     if (a < 0) {
       g_nCdStreamState = LSTREAM_PRESERVE;

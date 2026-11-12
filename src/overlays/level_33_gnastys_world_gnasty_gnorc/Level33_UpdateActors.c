@@ -236,7 +236,7 @@ void Level33_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & DROP_ROLL_BIT))) {
           Actor *scan;
           int self;
 
@@ -1111,8 +1111,8 @@ void Level33_UpdateActors(void) {
             st->glow->r = SPARX_GLOW_R;
             st->glow->g = SPARX_GLOW_G;
             st->glow->b = SPARX_GLOW_B;
-            st->glow->points = 9;
-            st->glow->desc = &g_anSparkleGlowDesc;
+            st->glow->points = SPARX_GLOW_POINTS;
+            st->glow->desc = &g_anSparxGlowShape;
           }
         } else {
           fx->size += SPARX_GLOW_GROW;
@@ -1703,7 +1703,7 @@ void Level33_UpdateActors(void) {
       }
 
       if ((unsigned)(actor->mode - GNASTY_DEFEATED) < 2) { /* DEFEATED or FADE_OUT */
-        int ca = (SPY.bodyRotZ + 0x40) & 0xFF;
+        int ca = (SPY.bodyRotZ + ANGLE8_QUARTER) & ANGLE8_MASK;
         int *anc;
 
         AddVector(PATH_PT(st->path, 0), &actor->posX,
@@ -2716,7 +2716,7 @@ void Level33_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
       TumbleState *st = actor->state;
-      register int i asm("$16");
+      register int i asm("$16"); /* s0, as in the original (A374) */
 
       if (st->life > 0) {
         if (actor->drawn == 0) {
@@ -3182,10 +3182,10 @@ void Level33_UpdateActors(void) {
           s448[0] = (g_anCosineLut[bearing] * 3) >> 4;
           s448[1] = (g_anSineLut_s[bearing] * 3) >> 4;
           s448[2] = 0;
-          s480[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          s480[1] = (unsigned short)g_anSineLut_s[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          s480[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          s480[1] = (unsigned short)g_anSineLut_s[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           s480[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, s480, st->count - 1);
           LShiftVector3(s480, 1);

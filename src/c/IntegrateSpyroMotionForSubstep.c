@@ -134,10 +134,10 @@ static inline int *Opaque(int *p) {
 /* Ease the pitch toward a yaw-rate-dependent bank. */
 #define PITCH_TOWARD_TURN()                                                    \
   {                                                                            \
-    p = (-g_nSpyroBodyYawStep * 8 - g_nSpyroBodyPitch) & 0xFFF;                \
+    p = (-g_nSpyroBodyYawStep * 8 - g_nSpyroBodyPitch) & ANGLE12_MASK;         \
                                                                                \
-    if (p > 0x800) {                                                           \
-      p -= 0x1000;                                                             \
+    if (p > ANGLE12_HALF) {                                                    \
+      p -= ANGLE12_TURN;                                                       \
     }                                                                          \
     if (p > 0x10) {                                                            \
       p = 0x10;                                                                \
@@ -237,10 +237,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     if (g_nSpyroScriptedMoveMode == 0) {
       ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
     } else {
-      int d = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & 0xFFF;
+      int d = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & ANGLE12_MASK;
 
-      if (d > 0x800) {
-        d -= 0x1000;
+      if (d > ANGLE12_HALF) {
+        d -= ANGLE12_TURN;
       }
       if (abs(d) < 0x10) {
         ChangeSpyroState(SPYRO_ST_IDLE);
@@ -450,9 +450,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       int d;
 
       ComputeSpyroMoveTargetFromPad(g_nSpyroMoveTargetMag);
-      d = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & 0xFFF;
-      if (d > 0x800) {
-        d -= 0x1000;
+      d = (g_nSpyroMoveTargetYaw - g_nSpyroBodyYaw) & ANGLE12_MASK;
+      if (d > ANGLE12_HALF) {
+        d -= ANGLE12_TURN;
       }
       if (d > 0x20) {
         d = 0x20;
@@ -562,10 +562,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       IntegrateSpyroBodyEuler(g_nSpyroBodyYawStep);
       if (g_pSpyroHomingTargetActor != 0 &&
           g_nSpyroStateTimer < SPYRO_HOMING_TICKS) {
-        d = (SPY[SPY_BODY_YAW] - g_anCameraEulerYawBlock[0]) & 0xFFF;
+        d = (SPY[SPY_BODY_YAW] - g_anCameraEulerYawBlock[0]) & ANGLE12_MASK;
 
-        if (d > 0x800) {
-          d -= 0x1000;
+        if (d > ANGLE12_HALF) {
+          d -= ANGLE12_TURN;
         }
         if (abs(d) >= SPYRO_HOMING_CONE) {
           int l;
@@ -575,9 +575,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           l = VectorLength(toHomingTarget, VEC_LEN_XYZ);
           d = (ArcTan2(toHomingTarget[0], toHomingTarget[1], ATAN_ANGLE12) -
                SPY[SPY_BODY_YAW]) &
-              0xFFF;
-          if (d > 0x800) {
-            d -= 0x1000;
+              ANGLE12_MASK;
+          if (d > ANGLE12_HALF) {
+            d -= ANGLE12_TURN;
           }
           if (abs(d) < SPYRO_HOMING_CONE && l < SPYRO_HOMING_RANGE) {
             d >>= 2;
@@ -805,9 +805,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           }
         }
         SPY[SPY_BODY_YAW] = (SPY[SPY_BODY_YAW] + w) & 0xFFF;
-        g_nSpyroBodyRoll = (g_nSpyroBodyRoll + x) & 0xFFF;
-        if (g_nSpyroBodyRoll > 0x800) {
-          g_nSpyroBodyRoll -= 0x1000;
+        g_nSpyroBodyRoll = (g_nSpyroBodyRoll + x) & ANGLE12_MASK;
+        if (g_nSpyroBodyRoll > ANGLE12_HALF) {
+          g_nSpyroBodyRoll -= ANGLE12_TURN;
         }
         if (g_nSpyroBodyRoll > SPYRO_FLY_MAX_ROLL) {
           g_nSpyroBodyRoll = SPYRO_FLY_MAX_ROLL;
@@ -846,9 +846,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
                                   ((g_nSpyroPitchRateAccum << 4) >> 6) -
                                   ((g_nSpyroBodyPitch << 6) >> 6);
         g_nSpyroBodyPitch =
-            (g_nSpyroBodyPitch + (g_nSpyroPitchRateAccum >> 6)) & 0xFFF;
-        if (g_nSpyroBodyPitch > 0x800) {
-          g_nSpyroBodyPitch -= 0x1000;
+            (g_nSpyroBodyPitch + (g_nSpyroPitchRateAccum >> 6)) & ANGLE12_MASK;
+        if (g_nSpyroBodyPitch > ANGLE12_HALF) {
+          g_nSpyroBodyPitch -= ANGLE12_TURN;
         }
         if (g_nSpyroBodyPitch > SPYRO_FLY_MAX_PITCH) {
           g_nSpyroBodyPitch = SPYRO_FLY_MAX_PITCH;
@@ -877,9 +877,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
                       sp + (SPY_VELOCITY - SPY_SPEED), (int *)q);
             q = (ArcTan2(scratch[0], scratch[1], ATAN_ANGLE12) -
                  g_nSpyroBodyYaw) &
-                0xFFF;
-            if (q > 0x800) {
-              q -= 0x1000;
+                ANGLE12_MASK;
+            if (q > ANGLE12_HALF) {
+              q -= ANGLE12_TURN;
             }
             q = (q * z) >> 15;
             if (q < -0x20) {
@@ -895,9 +895,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       }
       case SPYRO_SUB_GLIDE_R1: {
         SPY[SPY_BODY_YAW] &= 0xFFF;
-        g_nSpyroBodyRoll = (g_nSpyroBodyRoll + SPYRO_ROLL_RATE) & 0xFFF;
-        if (g_nSpyroBodyRoll > 0x800) {
-          g_nSpyroBodyRoll -= 0x1000;
+        g_nSpyroBodyRoll = (g_nSpyroBodyRoll + SPYRO_ROLL_RATE) & ANGLE12_MASK;
+        if (g_nSpyroBodyRoll > ANGLE12_HALF) {
+          g_nSpyroBodyRoll -= ANGLE12_TURN;
         }
         if (g_nSpyroBodyRoll > SPYRO_ROLL_QUARTER) {
           g_nSpyroGlideBankingFlag = 1;
@@ -907,9 +907,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           }
           g_nSpyroGlideBankingFlag = 0;
         }
-        p = -SPY[SPY_PITCH] & 0xFFF;
-        if (p > 0x800) {
-          p -= 0x1000;
+        p = -SPY[SPY_PITCH] & ANGLE12_MASK;
+        if (p > ANGLE12_HALF) {
+          p -= ANGLE12_TURN;
         }
         if (p > 0x10) {
           p = 0x10;
@@ -946,10 +946,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         if (gb[0] != 0) {
           int dz;
 
-          x = -g_nSpyroBodyRoll & 0xFFF;
+          x = -g_nSpyroBodyRoll & ANGLE12_MASK;
 
-          if (x > 0x800) {
-            x -= 0x1000;
+          if (x > ANGLE12_HALF) {
+            x -= ANGLE12_TURN;
           }
           dz = g_nSpyroMotionAux - g_nSpyroWorldPosZ;
           x += (dz - (g_anSpyroMotionVec[2] >> 5)) >> 2;
@@ -959,9 +959,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           if (x < -SPYRO_ROLL_RATE) {
             x = -SPYRO_ROLL_RATE;
           }
-          g_nSpyroBodyRoll = (g_nSpyroBodyRoll + x) & 0xFFF;
-          if (g_nSpyroBodyRoll > 0x800) {
-            g_nSpyroBodyRoll -= 0x1000;
+          g_nSpyroBodyRoll = (g_nSpyroBodyRoll + x) & ANGLE12_MASK;
+          if (g_nSpyroBodyRoll > ANGLE12_HALF) {
+            g_nSpyroBodyRoll -= ANGLE12_TURN;
           }
           g_nSpyroBodyYaw &= 0xFFF;
           if (abs(g_nSpyroBodyPitch) < 0x40) {
@@ -973,10 +973,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             }
             g_nSpyroBodyPitch = 0;
           } else {
-            p = -g_nSpyroBodyPitch & 0xFFF;
+            p = -g_nSpyroBodyPitch & ANGLE12_MASK;
 
-            if (p > 0x800) {
-              p -= 0x1000;
+            if (p > ANGLE12_HALF) {
+              p -= ANGLE12_TURN;
             }
             if (p > 0x10) {
               p = 0x10;
@@ -995,8 +995,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
                 (gb[SPY_PITCH - SPY_GLIDE_BANK] + g_nSpyroTurnRateAccum) &
                 0xFFF;
           }
-          if (SPY[SPY_PITCH] > 0x800) {
-            SPY[SPY_PITCH] -= 0x1000;
+          if (SPY[SPY_PITCH] > ANGLE12_HALF) {
+            SPY[SPY_PITCH] -= ANGLE12_TURN;
           }
         } else {
           int yy = gb[SPY_BODY_YAW - SPY_GLIDE_BANK] & 0xFFF;
@@ -1005,20 +1005,22 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           gb[SPY_BODY_YAW - SPY_GLIDE_BANK] = yy;
           gb[SPY_ROLL - SPY_GLIDE_BANK] =
               (gb[SPY_ROLL - SPY_GLIDE_BANK] + SPYRO_ROLL_RATE) & 0xFFF;
-          if (gb[SPY_ROLL - SPY_GLIDE_BANK] > 0x800) {
-            gb[SPY_ROLL - SPY_GLIDE_BANK] -= 0x1000;
+          if (gb[SPY_ROLL - SPY_GLIDE_BANK] > ANGLE12_HALF) {
+            gb[SPY_ROLL - SPY_GLIDE_BANK] -= ANGLE12_TURN;
           }
           r = gb[SPY_ROLL - SPY_GLIDE_BANK];
           if (r < -SPYRO_ROLL_QUARTER) {
             gb[0] = 1;
-            gb[SPY_BODY_YAW - SPY_GLIDE_BANK] = (yy + 0x800) & 0xFFF;
+            gb[SPY_BODY_YAW - SPY_GLIDE_BANK] =
+                (yy + ANGLE12_HALF) & ANGLE12_MASK;
             gb[SPY_ROLL - SPY_GLIDE_BANK] = (0x800 - r) & 0xFFF;
             g_nSpyroTurnRateAccum = 0;
-            g_nSpyroBodyPitch = (g_nSpyroBodyPitch + 0x800) & 0xFFF;
+            g_nSpyroBodyPitch =
+                (g_nSpyroBodyPitch + ANGLE12_HALF) & ANGLE12_MASK;
           }
-          p = -g_nSpyroBodyPitch & 0xFFF;
-          if (p > 0x800) {
-            p -= 0x1000;
+          p = -g_nSpyroBodyPitch & ANGLE12_MASK;
+          if (p > ANGLE12_HALF) {
+            p -= ANGLE12_TURN;
           }
           if (p > 0x10) {
             p = 0x10;
@@ -1057,9 +1059,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
           ActivateScriptedCameraView(
               SCRIPTED_CAM_VIEW_AT_POS(g_anSpyroDeathCamRecordBlock));
         }
-        x = (SPYRO_ROLL_QUARTER - SPY[SPY_ROLL]) & 0xFFF;
-        if (x > 0x800) {
-          x -= 0x1000;
+        x = (SPYRO_ROLL_QUARTER - SPY[SPY_ROLL]) & ANGLE12_MASK;
+        if (x > ANGLE12_HALF) {
+          x -= ANGLE12_TURN;
         }
         if (x > SPYRO_ROLL_RATE) {
           x = SPYRO_ROLL_RATE;
@@ -1069,14 +1071,14 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         }
         SPY[SPY_ROLL] = (SPY[SPY_ROLL] + x) & 0xFFF;
         g_nSpyroBodyYaw &= 0xFFF;
-        if (SPY[SPY_ROLL] > 0x800) {
-          SPY[SPY_ROLL] -= 0x1000;
+        if (SPY[SPY_ROLL] > ANGLE12_HALF) {
+          SPY[SPY_ROLL] -= ANGLE12_TURN;
         }
         p = 0x40;
         if (abs(SPY[SPY_ROLL] - SPYRO_ROLL_QUARTER) >= 0x80) {
-          p = -g_nSpyroBodyPitch & 0xFFF;
-          if (p > 0x800) {
-            p -= 0x1000;
+          p = -g_nSpyroBodyPitch & ANGLE12_MASK;
+          if (p > ANGLE12_HALF) {
+            p -= ANGLE12_TURN;
           }
           if (p > 0x10) {
             p = 0x10;
@@ -1114,16 +1116,16 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         }
         SPY[SPY_ROLL] = (SPY[SPY_ROLL] + y) & 0xFFF;
         g_abSpyroPersistentEuler[1] = SPY[SPY_ROLL] >> 4;
-        if (SPY[SPY_ROLL] > 0x800) {
-          SPY[SPY_ROLL] -= 0x1000;
+        if (SPY[SPY_ROLL] > ANGLE12_HALF) {
+          SPY[SPY_ROLL] -= ANGLE12_TURN;
         }
         BuildSpyroVelocityFromBodyEuler();
         if (g_nSpyroInputBlankCountdown <= 0) {
           g_nSpyroInputBlankCountdown = 1;
         }
-        p = (-g_nSpyroBodyYawStep * 8 - g_nSpyroBodyPitch) & 0xFFF;
-        if (p > 0x800) {
-          p -= 0x1000;
+        p = (-g_nSpyroBodyYawStep * 8 - g_nSpyroBodyPitch) & ANGLE12_MASK;
+        if (p > ANGLE12_HALF) {
+          p -= ANGLE12_TURN;
         }
         if (p > 0x10) {
           p = 0x10;
@@ -1232,9 +1234,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       if (g_nSpyroSubstate == SPYRO_SUB_GLIDE_HOLD) {
         if (g_nReturnPortalLevelId == 0) {
           g_nSpyroBodyYawStep =
-              ((g_abSpyroRequestEuler[2] << 4) - g_nSpyroBodyYaw) & 0xFFF;
-          if (g_nSpyroBodyYawStep > 0x800) {
-            g_nSpyroBodyYawStep -= 0x1000;
+              ((g_abSpyroRequestEuler[2] << 4) - g_nSpyroBodyYaw) &
+              ANGLE12_MASK;
+          if (g_nSpyroBodyYawStep > ANGLE12_HALF) {
+            g_nSpyroBodyYawStep -= ANGLE12_TURN;
           }
           g_nSpyroBodyYawStep <<= 4;
           if (g_nSpyroBodyYawStep < -0x10) {
@@ -1281,9 +1284,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             if (d < 0x200) {
               LEVEL_GLIDE_HANDOFF();
             } else if (d < 0x800) {
-              y = (-0x100 - g_nSpyroBodyRoll) & 0xFFF;
-              if (y > 0x800) {
-                y -= 0x1000;
+              y = (-0x100 - g_nSpyroBodyRoll) & ANGLE12_MASK;
+              if (y > ANGLE12_HALF) {
+                y -= ANGLE12_TURN;
               }
               y >>= 2;
               if (y < -0x3C) {
@@ -1300,9 +1303,9 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             y = 0x1E;
             if ((unsigned int)(g_nSpyroBodyRoll + 0x100) > 0x500) {
               g_nSpyroGlideBankingFlag = 1;
-              y = (-0x400 - g_nSpyroBodyRoll) & 0xFFF;
-              if (y > 0x800) {
-                y -= 0x1000;
+              y = (-0x400 - g_nSpyroBodyRoll) & ANGLE12_MASK;
+              if (y > ANGLE12_HALF) {
+                y -= ANGLE12_TURN;
               }
               if (g_nActiveLevelId == LEVEL_CLIFF_TOWN && abs(y) < 0x100) {
                 g_nCameraNextMode = (&g_abSpyroStateCameraMode)[g_nSpyroState];
@@ -1321,8 +1324,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         }
         SPY[SPY_ROLL] = (SPY[SPY_ROLL] + y) & 0xFFF;
         g_abSpyroPersistentEuler[1] = SPY[SPY_ROLL] >> 4;
-        if (SPY[SPY_ROLL] > 0x800) {
-          SPY[SPY_ROLL] -= 0x1000;
+        if (SPY[SPY_ROLL] > ANGLE12_HALF) {
+          SPY[SPY_ROLL] -= ANGLE12_TURN;
         }
         BuildSpyroVelocityFromBodyEuler();
         if (g_nSpyroInputBlankCountdown <= 0) {
@@ -1397,10 +1400,11 @@ void IntegrateSpyroMotionForSubstep(int substep) {
       liftStep[1] = (m * LookupSine(g_nSpyroBodyYaw)) >> 12;
       AddVector(liftStep, liftStep, zb + 0x5D);
     } else {
-      a = (g_nSpyroBodyYaw - (g_pScriptedCameraActor->rotZ << 4)) & 0xFFF;
+      a = (g_nSpyroBodyYaw - (g_pScriptedCameraActor->rotZ << 4)) &
+          ANGLE12_MASK;
       m = reach;
-      if (a > 0x800) {
-        a -= 0x1000;
+      if (a > ANGLE12_HALF) {
+        a -= ANGLE12_TURN;
       }
       if (abs(a) < 0x100) {
         m += 0x800;
@@ -1558,7 +1562,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     if (g_nSpyroSpeedTarget < g_nSpyroTurnRateAccum) {
       g_nSpyroTurnRateAccum = g_nSpyroSpeedTarget;
     }
-    a = (ang + dt + 0x800) & 0xFFF;
+    a = (ang + dt + ANGLE12_HALF) & ANGLE12_MASK;
     /* The original tests type 0xFF here, though no scripted-camera actor
      * (exit whirlwind 9, fireball cannon 225, Blowhard 495) has it and both
      * arms bump the same word (obj2 == obj). */

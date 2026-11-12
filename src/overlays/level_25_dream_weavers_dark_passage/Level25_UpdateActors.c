@@ -85,7 +85,7 @@ void Level25_UpdateActors(void) {
   int col[3];
   int svW[3];
   int sparkLead[3];
-  int v250[3];
+  int spyroDelta[3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int ps[6];
@@ -182,10 +182,10 @@ void Level25_UpdateActors(void) {
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
-              int yaw = g_nCameraEulerPitch & 0xFFF;
+              int yaw = g_nCameraEulerPitch & ANGLE12_MASK;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -228,7 +228,7 @@ void Level25_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & DROP_ROLL_BIT))) {
           Actor *scan;
           int self;
 
@@ -1153,7 +1153,7 @@ void Level25_UpdateActors(void) {
           ANIM_QUEUE(actor, RSENTRY_FALL);
         }
         actor->rotY += 4;
-        TurnActorYawTowardAngle(actor, (st->dir + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
+        TurnActorYawTowardAngle(actor, (st->dir + ANGLE8_HALF) & ANGLE8_MASK, 0x10, 0x20, YAW_STEP_IN_BAND);
         DriveActorTrackedMove(actor, &st->speed, st->dir, &st->zSpeed, 0xC, 0xC);
         break;
 
@@ -1162,7 +1162,7 @@ void Level25_UpdateActors(void) {
             MOVED_LANDED) {
           ENTER_POSE(actor, RSENTRY_BURST);
         }
-        TurnActorYawTowardAngle(actor, (st->dir + 0x80) & 0xFF, 0x10, 0x20, YAW_STEP_IN_BAND);
+        TurnActorYawTowardAngle(actor, (st->dir + ANGLE8_HALF) & ANGLE8_MASK, 0x10, 0x20, YAW_STEP_IN_BAND);
         break;
 
       case RSENTRY_BURST:
@@ -1920,8 +1920,8 @@ void Level25_UpdateActors(void) {
             st->glow->r = SPARX_GLOW_R;
             st->glow->g = SPARX_GLOW_G;
             st->glow->b = SPARX_GLOW_B;
-            st->glow->points = 9;
-            st->glow->desc = &g_anSparkleGlowDesc;
+            st->glow->points = SPARX_GLOW_POINTS;
+            st->glow->desc = &g_anSparxGlowShape;
           }
         } else {
           fx->size += SPARX_GLOW_GROW;
@@ -2721,10 +2721,10 @@ void Level25_UpdateActors(void) {
 
         at = &actor->posX;
         if (ApproxDist2D(at, &spy->posX) < STATUE_NEAR_RANGE) {
-          SubtractVector(v250, at, &spy->posX);
-          v250[2] = (v250[2] * 3) >> 2;
+          SubtractVector(spyroDelta, at, &spy->posX);
+          spyroDelta[2] = (spyroDelta[2] * 3) >> 2;
 
-          if (VectorLength(v250, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
+          if (VectorLength(spyroDelta, VEC_LEN_XYZ) < STATUE_TOUCH_RADIUS) {
             int facing;
 
             facing =
@@ -2902,9 +2902,9 @@ void Level25_UpdateActors(void) {
       PlaySoundEffect(g_pLevelSampleBankHeader[SFX_WHIRLWIND], actor, SFX_MODE_3D, &actor->voiceRow);
       if ((GetRandomU32() & 1) == 0)
         g_pfnLevelEmitParticles(1, EMIT_ACTOR_PLUME, actor, 0);
-      SubtractVector(v250, &SPY.posX, &actor->posX);
-      distance = VectorLength(v250, VEC_LEN_XY);
-      if (distance < st->radius && v250[2] >= -WHIRL_BELOW_REACH && v250[2] < st->spanZ &&
+      SubtractVector(spyroDelta, &SPY.posX, &actor->posX);
+      distance = VectorLength(spyroDelta, VEC_LEN_XY);
+      if (distance < st->radius && spyroDelta[2] >= -WHIRL_BELOW_REACH && spyroDelta[2] < st->spanZ &&
           (SPY.state == SPYRO_ST_LIFT || SPY.posZ + WHIRL_TOP_MARGIN < actor->posZ + st->spanZ)) {
         spyro = &SPY;
         spyro->requestMask = SPYRO_RQ_PENDING;
@@ -2965,7 +2965,7 @@ void Level25_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
       TumbleState *st = actor->state;
-      register int i asm("$16");
+      register int i asm("$16"); /* s0, as in the original (A374) */
 
       if (st->life > 0) {
         if (actor->drawn == 0) {
@@ -3514,7 +3514,7 @@ void Level25_UpdateActors(void) {
         SubtractVector(s496, PATH_PT(st->path, 1), PATH_PT(st->path, 0));
         pitch = ArcTan2(VectorLength(s496, VEC_LEN_XY), s496[2], ATAN_ANGLE8);
         actor->rotY = pitch - 0x40;
-        if (((unsigned int)(pitch + 0x40) & 0xFF) < CANNON_LOW_PITCH_SPAN) {
+        if (((unsigned int)(pitch + ANGLE8_QUARTER) & ANGLE8_MASK) < CANNON_LOW_PITCH_SPAN) {
           actor->rotY = CANNON_LOW_PITCH;
         }
         actor->rotZ = ArcTan2(s496[0], s496[1], ATAN_ANGLE8);
@@ -3815,10 +3815,10 @@ void Level25_UpdateActors(void) {
           s576[0] = (g_anCosineLut[bearing] * 3) >> 4;
           s576[1] = (g_anSineLut[bearing] * 3) >> 4;
           s576[2] = 0;
-          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
-          letterSide[1] = (unsigned short)g_anSineLut[(bearing + 0x40) & 0xFF] << 16 >> 21;
+          letterSide[0] = (unsigned short)g_anCosineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
+          letterSide[1] = (unsigned short)g_anSineLut[(bearing + ANGLE8_QUARTER) & ANGLE8_MASK] << 16 >> 21;
           letterSide[2] = 0;
-          bearing = (bearing + 0x80) & 0xFF;
+          bearing = (bearing + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = bearing + ((g_anCosineLut[actor->subMode] * 3) >> 9);
           ScaleVector3Sat(letterSlot, letterSide, st->count - 1);
           LShiftVector3(letterSide, 1);

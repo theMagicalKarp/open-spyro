@@ -344,13 +344,13 @@ void Credits_Update(void) {
           int slot = 0;
           int colon = 0;
           struct {
-            int x;
+            int x; /* BuildTextSprites' pen (pos[3]) and glyph attr[3] */
             int y;
-            int col;
+            int z; /* first letters' depth */
             int pad0C;
-            int adv;
-            int one;
-            int big;
+            int adv;       /* glyph width */
+            int smallDrop; /* small-caps letters: this much lower ... */
+            int smallZ;    /* ... and at this depth */
           } st;
           int n;
           int lift;
@@ -368,10 +368,10 @@ void Credits_Update(void) {
           }
           st.x = 0x100;
           y0 = LINES[cur].y;
-          st.col = 0x12B3;
+          st.z = 0x12B3;
           st.adv = 0xE;
-          st.one = 1;
-          st.big = 0x1600;
+          st.smallDrop = 1;
+          st.smallZ = TEXT_TINY_DEPTH;
           st.y = y0;
           s = LINES[cur].text;
           c = *s;
@@ -413,10 +413,10 @@ void Credits_Update(void) {
               }
               g->x = st.x;
               g->y = st.y;
-              g->z = st.col;
+              g->z = st.z;
               if (upper == 0) {
-                g->y = g->y + st.one;
-                g->z = st.big;
+                g->y = g->y + st.smallDrop;
+                g->z = st.smallZ;
               }
               c = *s;
               if ((unsigned int)(c - '0') < 10) {
