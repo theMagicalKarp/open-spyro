@@ -38,6 +38,7 @@
 #include "vecmath.h"
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
+#include "actor_modes.h"
 #include "actor_type.h"
 #include "match_asm.h"
 #include "spyro_state.h"
@@ -175,21 +176,21 @@ void Level13_AdvanceEmitList(int step) {
           goto commit;
         }
       } else {
-        CopyVector(dir, &ORB_OWNER->posX);
+        CopyVector(dir, &ORB_TARGET->posX);
         dv[0] += LookupCosine(AGE << 7) >> 2;
         dv[1] += LookupSine(AGE << 7) >> 2;
         dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(dir, dir, pt);
         len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
-          int *owner = (int *)ORB_OWNER->state;
+          int *target = (int *)ORB_TARGET->state; /* a TetherState: [5] mode, [0] timer */
 
-          if (owner[5] == 1) {
-            owner[5] = 2;
-            owner[0] = 0x20;
+          if (target[5] == TCMD_BOUND) {
+            target[5] = TCMD_FREED; /* the orb frees a bound guard */
+            target[0] = 0x20;
           }
           ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
-          VectorToSVectorShr2(VEL, &ORB_OWNER->posX);
+          VectorToSVectorShr2(VEL, &ORB_TARGET->posX);
           rise = GetRandomU32() & 0x7F;
           AGE = 0;
           VEL_U[2] += rise;

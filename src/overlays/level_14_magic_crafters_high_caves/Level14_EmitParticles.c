@@ -141,7 +141,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       jz = GetRandomU32() & 0x7E;
       bz = rec->u.plume.pos[2] - 0x3F;
       rec->u.plume.src = (int *)effectArg;
-      rec->u.plume.rise = 0;
+      rec->u.plume.rise = 0; /* ORB_MODE: start homing on its target */
       rec->u.plume.pos[2] = bz + jz;
       rec->u.plume.size = (GetRandomU32() & 0xF) + 0x18;
       rec->u.plume.spin = (GetRandomU32() & 7) + 0xF;

@@ -125,11 +125,12 @@ extern int g_nSparxHealth;
 #define WISP_WAYPOINT rec[0x1A]
 /* EMIT_HOMING_ORB / EMIT_PATH_WISP: the mode halfword (ORB_TRAIL: falling
  * spark trail; ORB_ORBIT: circling its drift point VEL, the X / Y sweeps
- * signed by ORB_X_UP / ORB_Y_UP; neither: homing back on the actor that
- * threw it, ORB_OWNER, the word at 0x18). */
+ * signed by ORB_X_UP / ORB_Y_UP; neither: homing on ORB_TARGET, the actor
+ * the word at 0x18 names (level 15's sentinel aims it at its linked actor
+ * and the orb bumps that actor's state on arrival). */
 #define ORB_MODE HS(0x1E)
 #define ORB_MODE_U HU(0x1E)
-#define ORB_OWNER ((struct Actor *)W(0x18))
+#define ORB_TARGET ((struct Actor *)W(0x18))
 #define ORB_ORBIT 1
 #define ORB_X_UP 2
 #define ORB_Y_UP 4
