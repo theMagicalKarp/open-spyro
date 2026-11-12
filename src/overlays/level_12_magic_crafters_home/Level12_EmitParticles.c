@@ -166,7 +166,7 @@ void Level12_EmitParticles(int count, int type, int *pos, int effectArg) {
       SetVector3Magnitude(vt, 0x80);
       VectorToSVectorShr2(rec->u.track.vel, vt);
       rec->u.track.owner = (Actor *)effectArg - g_pActorListBase;
-      rec->u.track.orbitRadius = 0;
+      rec->u.track.unread1F = 0;
       rec->u.track.size = (GetRandomU32() & 0xF) + 0x18;
       rec->u.track.spin = (GetRandomU32() & 7) + 0xF;
       rec->u.track.fx = EMIT_FX_QUAD;

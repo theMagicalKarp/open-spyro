@@ -114,7 +114,9 @@ extern int g_nSparxHealth;
 #define PLUME_TOP HS(0x1E)
 /* EMIT_SMOKE_PUFF: its climb per tick, slowing by 2 to 0. */
 #define SMOKE_RISE W(0x18)
-/* EMIT_ORBIT_DOT: the orbit's phase offset (added to AGE, << 6) and radius. */
+/* EMIT_ORBIT_DOT: the point it circles (rising AGE * 2 above it), the
+ * orbit's phase offset (added to AGE, << 6) and radius. */
+#define ODOT_CENTRE_U ((unsigned short *)(rec + 0x18))
 #define ODOT_PHASE rec[0x1E]
 #define ODOT_RADIUS rec[0x1F]
 /* The actor-tracking sparks / orbs: pool index of the actor they chase. */

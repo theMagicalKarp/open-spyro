@@ -24,8 +24,8 @@
  *   - Arms 0x45 and 0x49 are the same effect with two record layouts: 0x45 is
  *     a `dust` mote that keeps the emitter argument as an INT at +0x18 with a
  *     zero int at +0x1C (new `src`/`waypoint` fields on the dust struct), 0x49 is
- *     a `track` record that copies its own position into `vel[]` at +0x18 and
- *     carries `owner = rand()` / `orbitRadius = (rand() & 0x1F) + 0x20`.  Both end
+ *     an `orbitDot` record that copies its own position into `centre[]` at +0x18
+ *     and carries `phase = rand()` / `radius = (rand() & 0x1F) + 0x20`.  Both end
  *     in the SAME eight-way `switch (rand() & 7)` colour block (the level_25
  *     arm-0x42 palette) and `fx = 0x40`; gcc cross-jumps the two switches into
  *     one, which is why arm 0x45's table points into arm 0x49's body.
@@ -208,7 +208,7 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       SetVector3Magnitude(vt, 0x80);
       VectorToSVectorShr2(rec->u.track.vel, vt);
       rec->u.track.owner = (Actor *)effectArg - g_pActorListBase;
-      rec->u.track.orbitRadius = 0;
+      rec->u.track.unread1F = 0;
       rec->u.track.size = (GetRandomU32() & 0xF) + 0x18;
       rec->u.track.spin = (GetRandomU32() & 7) + 0xF;
       rec->u.track.fx = EMIT_FX_QUAD;
@@ -648,15 +648,15 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->phase = GetRandomU32() & 0xF;
       rec->visible = 1;
-      rec->u.track.pos[0] = (pos[0] >> 2) + (GetRandomU32() & 0xF) - 8;
-      rec->u.track.pos[1] = (pos[1] >> 2) + (GetRandomU32() & 0xF) - 8;
-      rec->u.track.pos[2] = (pos[2] >> 2) + (GetRandomU32() & 0xF) - 8;
-      rec->u.track.vel[0] = rec->u.track.pos[0];
-      rec->u.track.vel[1] = rec->u.track.pos[1];
-      rec->u.track.vel[2] = rec->u.track.pos[2];
-      rec->u.track.owner = GetRandomU32();
-      rec->u.track.orbitRadius = (GetRandomU32() & 0x1F) + 0x20;
-      rec->u.track.size = 2; /* a dot: the OT depth-bin bias */
+      rec->u.orbitDot.pos[0] = (pos[0] >> 2) + (GetRandomU32() & 0xF) - 8;
+      rec->u.orbitDot.pos[1] = (pos[1] >> 2) + (GetRandomU32() & 0xF) - 8;
+      rec->u.orbitDot.pos[2] = (pos[2] >> 2) + (GetRandomU32() & 0xF) - 8;
+      rec->u.orbitDot.centre[0] = rec->u.orbitDot.pos[0];
+      rec->u.orbitDot.centre[1] = rec->u.orbitDot.pos[1];
+      rec->u.orbitDot.centre[2] = rec->u.orbitDot.pos[2];
+      rec->u.orbitDot.phase = GetRandomU32();
+      rec->u.orbitDot.radius = (GetRandomU32() & 0x1F) + 0x20;
+      rec->u.orbitDot.depthBias = 2;
       switch (GetRandomU32() & 7) {
       case 0:
         rec->u.track.r = 0xFF;

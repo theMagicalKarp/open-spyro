@@ -698,9 +698,9 @@ void Level14_AdvanceEmitList(int step) {
       POS[1] = (ODOT_RADIUS * LookupSine((ODOT_PHASE + AGE) << 6)) >> 10;
       POS[2] = AGE * 2;
       AGE++;
-      POS_U[0] += VEL_U[0];
-      POS_U[1] += VEL_U[1];
-      POS_U[2] += VEL_U[2];
+      POS_U[0] += ODOT_CENTRE_U[0];
+      POS_U[1] += ODOT_CENTRE_U[1];
+      POS_U[2] += ODOT_CENTRE_U[2];
       break;
 
     case EMIT_RISING_SPIRAL_SMEAR:

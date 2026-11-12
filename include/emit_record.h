@@ -111,11 +111,24 @@ typedef struct Emit {   /* one 0x20-byte emit-list record */
       short pad[3];              /* 0x12 */
       short vel[3];              /* 0x18 */
       unsigned char owner;       /* 0x1E actor index into the pool */
-      unsigned char orbitRadius;       /* 0x1F orbit radius (EMIT_ORBIT_DOT) */
+      unsigned char unread1F;    /* 0x1F written 0, never read */
     } track;
+    struct {                     /* class 0 -- EMIT_ORBIT_DOT */
+      unsigned short pos[3];     /* 0x04 */
+      unsigned char depthBias;   /* 0x0A OT depth-bin bias (a dot's) */
+      unsigned char pad0B;       /* 0x0B */
+      unsigned char r;           /* 0x0C */
+      unsigned char g;           /* 0x0D */
+      unsigned char b;           /* 0x0E */
+      unsigned char fx;          /* 0x0F */
+      short pad10[4];            /* 0x10 */
+      short centre[3];           /* 0x18 the point it circles (and rises from) */
+      unsigned char phase;       /* 0x1E orbit phase offset (random) */
+      unsigned char radius;      /* 0x1F orbit radius */
+    } orbitDot;
     struct {                     /* classes 1 / 4 -- streak */
-      unsigned short a[3];       /* 0x04 head */
-      unsigned short b[3];       /* 0x0A tail */
+      unsigned short a[3];       /* 0x04 trailing end (the streaks pull it after b) */
+      unsigned short b[3];       /* 0x0A leading end (emitted at a + 2 x velocity) */
       unsigned char c0[4];       /* 0x10 colour at a; [3] the GPU code (EMIT_FX_LINE_G2) */
       unsigned char c1[4];       /* 0x14 colour at b; [3] the OT-bin bias */
     } line;
