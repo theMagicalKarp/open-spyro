@@ -114,7 +114,7 @@ void Level13_AdvanceEmitList(int step) {
     {
       int len;
       int near;
-      int spin;
+      int rise;
       int rx;
       int ry;
       int jx;
@@ -195,9 +195,9 @@ void Level13_AdvanceEmitList(int step) {
           }
           ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
           VectorToSVectorShr2(VEL, (int *)(ORB_TARGET + 0xC));
-          spin = GetRandomU32() & 0x7F;
+          rise = GetRandomU32() & 0x7F;
           AGE = 0;
-          VEL_U[2] += spin;
+          VEL_U[2] += rise;
           goto measure;
         }
         ScaleVector3ByRatio(dir, len, 0x100);

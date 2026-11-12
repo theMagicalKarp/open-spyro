@@ -273,7 +273,7 @@ void Level14_UpdateActors(void) {
   int svK[3];
   int prevPos[3];
   int v376[3];
-  int t392[3][3];
+  int triVerts[3][3];
   int sparkleTwinkle[3];
   int shardTwinkle[3];
   int ps[6];
@@ -3863,11 +3863,11 @@ void Level14_UpdateActors(void) {
 
       if (st->riding != 0) {
         if (st->node >= 0) {
-          UnpackWorldCollisionTri(st->node, t392[0]);
+          UnpackWorldCollisionTri(st->node, triVerts[0]);
           ZeroVector(v376);
           for (i = 0; i < 3; i++) {
-            SubtractVector(t392[i], t392[i], st->pts[i]);
-            AddVector(v376, v376, t392[i]);
+            SubtractVector(triVerts[i], triVerts[i], st->pts[i]);
+            AddVector(v376, v376, triVerts[i]);
           }
           v376[0] /= 3;
           v376[1] /= 3;

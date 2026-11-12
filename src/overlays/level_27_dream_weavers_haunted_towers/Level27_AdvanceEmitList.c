@@ -323,7 +323,7 @@ void Level27_AdvanceEmitList(int step) {
 
     case EMIT_PATH_WISP: {
       int len;
-      int spin;
+      int rise;
       int rx;
       int ry;
       int jx;
@@ -410,9 +410,9 @@ void Level27_AdvanceEmitList(int step) {
             actor->subMode = 1;
             ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
             VectorToSVectorShr2(VEL, &actor->posX);
-            spin = GetRandomU32() & 0x7F;
+            rise = GetRandomU32() & 0x7F;
             AGE = 0;
-            VEL_U[2] += spin;
+            VEL_U[2] += rise;
             break;
           }
         }
