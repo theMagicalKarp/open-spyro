@@ -1845,9 +1845,9 @@ void Level32_UpdateActors(void) {
                                 g_bSpyroPersistentEulerZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
         actor->flags = 0;
         c = st->heldLob;
-        if (c != 0 && c != (Actor *)-1 && c->type == ACTOR_TYPE_LOB_GUNNER_LOB && c->subMode == 0 &&
+        if (c != 0 && c != (Actor *)-1 && c->type == ACTOR_TYPE_LOB_GUNNER_LOB && c->subMode == LGLOB_HELD &&
             c->mode < ACTOR_MODE_DORMANT) {
-          c->subMode = 1;
+          c->subMode = LGLOB_LET_GO;
           st->heldLob->mode = LGLOB_DESPAWN;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
@@ -1969,7 +1969,7 @@ void Level32_UpdateActors(void) {
             q->life = LOBGUN_LOB_LIFE;
             q->heading = ArcTan2(o150[0] - actor->posX, o150[1] - actor->posY,
                                   ATAN_ANGLE8);
-            st->heldLob->subMode = 1;
+            st->heldLob->subMode = LGLOB_LET_GO;
             st->heldLob = (Actor *)-1;
           }
         }
@@ -2148,7 +2148,7 @@ void Level32_UpdateActors(void) {
       LobState *q = actor->state;
       int i;
 
-      if (actor->subMode == 0) {
+      if (actor->subMode == LGLOB_HELD) {
         continue;
       }
       switch (actor->mode) {

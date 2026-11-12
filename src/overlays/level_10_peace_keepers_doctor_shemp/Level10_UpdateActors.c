@@ -3434,10 +3434,10 @@ void Level10_UpdateActors(void) {
           st->homeHeading = actor->rotZ;
         }
         if (link != 0 && TICK_DOWN(st->wait) != 0 &&
-            actor->subMode == 0 && link->mode == SGUARD_IDLE && d < st->range << 10 &&
+            actor->subMode == GLOOK_SUB_ARMED && link->mode == SGUARD_IDLE && d < st->range << 10 &&
             actor->posZ < SPY.posZ &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < GLOOK_ROUSE_DZ) {
-          actor->subMode = 1;
+          actor->subMode = GLOOK_SUB_ROUSED;
           ANIM_GO(actor, GLOOK_ANIM_STAND);
           actor->mode = GLOOK_ROUSE;
           continue;
@@ -3545,7 +3545,7 @@ void Level10_UpdateActors(void) {
           if (ls->watch != -1) {
             st->link = ls->watch;
             ls->watch = -1;
-            actor->subMode = 0;
+            actor->subMode = GLOOK_SUB_ARMED;
             if (ls->chaseDelay != 0) {
               st->wait = ls->chaseDelay;
               ls->chaseDelay = 0;

@@ -2647,10 +2647,10 @@ void Level8_UpdateActors(void) {
           st->init = 1;
           st->homeHeading = actor->rotZ;
         }
-        if (link != 0 && actor->subMode == 0 && link->mode == TPRUNNER_IDLE &&
+        if (link != 0 && actor->subMode == GLOOK_SUB_ARMED && link->mode == TPRUNNER_IDLE &&
             d < st->range << 10 && actor->posZ < SPY.posZ &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < GLOOK_ROUSE_DZ) {
-          actor->subMode = 1;
+          actor->subMode = GLOOK_SUB_ROUSED;
           ANIM_GO(actor, GLOOK_ANIM_STAND);
           actor->mode = GLOOK_ROUSE;
           continue;

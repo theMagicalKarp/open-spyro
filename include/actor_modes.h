@@ -3115,6 +3115,12 @@ enum ChargingRamMode {
 #define REWARD_BURST_IDLE 0
 #define REWARD_BURST_TRIGGERED 1
 
+/* A level 19 bolt sentry's held bolt (ACTOR_TYPE_AIMED_BOLT) and carried egg
+ * despawn once it sets their ->subMode to BSENTRY_DISMISS: on the release
+ * frame (the hit lands on Spyro directly) or when it is knocked. */
+#define BSENTRY_KEEP 0
+#define BSENTRY_DISMISS 1
+
 /* ->mode of a rock thrower (ACTOR_TYPE_ROCK_THROWER, RockThrowerState;
  * level 27); the mode is also the animation index. */
 enum RockThrowerMode {
@@ -5036,6 +5042,12 @@ enum GuardLookoutMode {
   GLOOK_ROUSE = 10,  /* turns to its guard and wakes it on frame 5, then WATCH */
 };
 
+/* A lookout's ->subMode: it rouses each guard only once. Level 10's re-arms
+ * when the roused guard names a next one (ShempGuardState.watch), which
+ * becomes its link; level 8's never re-arms. */
+#define GLOOK_SUB_ARMED 0
+#define GLOOK_SUB_ROUSED 1
+
 /* A lookout's animations (GLOOK_WATCH's own index, 0, is its stand facing
  * Spyro). Far from Spyro it loops IDLE (frames 5..0xF, a random 3..5 times),
  * then picks FIDGET (one in five) or STAND; near him it alternates the watch
@@ -5114,6 +5126,10 @@ enum LobGunnerLobMode {
   LGLOB_BURST = 1,   /* knocks Spyro back when near, sparks, despawns */
   LGLOB_DESPAWN = 2, /* set by the gunner: knocked holding it, or no arc to the target */
 };
+/* The lob's ->subMode: HELD in the gunner's hand (it does nothing), LET_GO
+ * once thrown (or dropped with LGLOB_DESPAWN). */
+#define LGLOB_HELD 0
+#define LGLOB_LET_GO 1
 
 /* ->mode of the level 22 platform pod (ACTOR_TYPE_PLATFORM_POD,
  * PlatformPodState); the mode is also the animation index. */

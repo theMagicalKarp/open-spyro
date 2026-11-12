@@ -276,10 +276,12 @@ typedef struct FollowState {
 #define FOLLOWER_DROP_PROBE_DEPTH (GROUND_PROBE_LIFT + 0x1000)
 
 /* A held follower's ->subMode is FOLLOWER_HELD; any other value starts the
- * release, as does the parent going dormant: any SetActorGroupSubstate
- * on the follower's pickup group (e.g. the level 4 spinner's (leader, 1) when
- * Spyro's attack knocks it) releases it. */
+ * release, as does the parent going dormant. Gnasty Gnorc sets
+ * FOLLOWER_RELEASE on his key followers as he escapes and when beaten; any
+ * SetActorGroupSubstate on the follower's pickup group (e.g. the level 4
+ * spinner's (leader, 1) when Spyro's attack knocks it) releases it too. */
 #define FOLLOWER_HELD 0
+#define FOLLOWER_RELEASE 1
 
 /* Case 173 — the level key (ACTOR_TYPE_KEY): rocks in place and sparkles;
  * touching it sets g_nLevelKeyState = 1, and the locked chest (174) then

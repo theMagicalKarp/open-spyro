@@ -125,7 +125,7 @@ typedef struct GnastyState {
   unsigned char *home;      /* 0xC8 */
   int camTimer;             /* 0xCC */
   int voice;                  /* 0xD0 */
-  int drop[3];              /* 0xD4 key actors dropped while hit */
+  int drop[3];              /* 0xD4 key followers released while hit (level data: ACTOR_TYPE_FOLLOWER) */
   L33Trail trails[3][150];  /* 0xE0 one per live bomb */
 } GnastyState;
 
@@ -1614,7 +1614,7 @@ void Level33_UpdateActors(void) {
           PathData *t;
 
           ModifyWorldChunkAnimFlags(GNASTY_CHUNK_ESCAPE, CHUNK_ANIM_RESUME, 0);
-          g_pActorListBase[st->key].subMode = 1;
+          g_pActorListBase[st->key].subMode = FOLLOWER_RELEASE;
           st->camTimer = GNASTY_ESCAPE_CAM_FRAMES;
           st->vSpeed = 0;
           st->queuedJumpSpeed = 0;
@@ -1974,15 +1974,15 @@ void Level33_UpdateActors(void) {
         g_nCinematicActive = 1;
         DriveActorTrackedMove(actor, &st->speed, st->knockHeading, 0, GNASTY_KNOCK_DRAG, 0);
         if (st->drop[0] != -1 && actor->nextFrame >= GNASTY_DROP_KEY1_FRAME) {
-          g_pActorListBase[st->drop[0]].subMode = 1;
+          g_pActorListBase[st->drop[0]].subMode = FOLLOWER_RELEASE;
           st->drop[0] = -1;
         }
         if (st->drop[1] != -1 && actor->nextFrame >= GNASTY_DROP_KEY2_FRAME) {
-          g_pActorListBase[st->drop[1]].subMode = 1;
+          g_pActorListBase[st->drop[1]].subMode = FOLLOWER_RELEASE;
           st->drop[1] = -1;
         }
         if (st->drop[2] != -1 && actor->nextFrame >= GNASTY_DROP_KEY3_FRAME) {
-          g_pActorListBase[st->drop[2]].subMode = 1;
+          g_pActorListBase[st->drop[2]].subMode = FOLLOWER_RELEASE;
           st->drop[2] = -1;
         }
         if (g_nSpyroDrawSuppressed == 0 && actor->nextFrame >= GNASTY_STAND_IN_FRAME) {

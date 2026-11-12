@@ -527,7 +527,7 @@ void Level19_UpdateActors(void) {
     case ACTOR_TYPE_CARRIED_EGG: {
       Actor **st = actor->state;
 
-      if (actor->subMode != 0 || (*st)->mode != BSENTRY_THROW) {
+      if (actor->subMode != BSENTRY_KEEP || (*st)->mode != BSENTRY_THROW) {
         DespawnActorRecord(actor);
         continue;
       }
@@ -3506,11 +3506,11 @@ void Level19_UpdateActors(void) {
           bs->parent = actor;
         }
         if (actor->nextFrame >= BSENTRY_RELEASE_FRAME && st->bolt != 0) {
-          st->bolt->subMode = 1;
+          st->bolt->subMode = BSENTRY_DISMISS;
           st->bolt = 0;
           if (st->fx != 0) {
             if (st->fx->mode < ACTOR_MODE_DORMANT) {
-              st->fx->subMode = 1;
+              st->fx->subMode = BSENTRY_DISMISS;
             }
             st->fx = 0;
           }
@@ -3539,7 +3539,7 @@ void Level19_UpdateActors(void) {
 
       case BSENTRY_KNOCKED:
         if (st->bolt != 0) {
-          st->bolt->subMode = 1;
+          st->bolt->subMode = BSENTRY_DISMISS;
           st->bolt = 0;
         }
         if (st->speed > 0) {
@@ -3624,7 +3624,7 @@ void Level19_UpdateActors(void) {
     case ACTOR_TYPE_AIMED_BOLT: {
       AimedBoltState *st = actor->state;
 
-      if (actor->subMode != 0) {
+      if (actor->subMode != BSENTRY_KEEP) {
         DespawnActorRecord(actor);
         continue;
       }
