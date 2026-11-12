@@ -37,7 +37,7 @@
  *
  * Arm 0x15's third read of g_nFrameStep goes through a const-qualified deref.
  * That is load-bearing, not decoration: without it sched1 makes the load
- * TRUE-dependent on the `HU(0x4)` store three statements above (a store
+ * TRUE-dependent on the `POS_U[0]` store three statements above (a store
  * through `rec` may alias the global), which lifts the whole `* 6` chain to
  * dependence depth 16 -- one above the `SPIN += 4` byte store -- and the
  * two independent chains come out complete-then-complete instead of the
@@ -113,7 +113,7 @@ void Level25_AdvanceEmitList(int step) {
       }
       p[0] += (amp * LookupCosine(ang)) >> 12;
       p[1] += (amp * LookupSine(ang)) >> 12;
-      p[2] = HS(0x8) * 4 + 0x40;
+      p[2] = POS[2] * 4 + 0x40;
       if (z < p[2] || AGE >= 0xC9) {
         FreeEmitListRecord(rec);
       } else {
@@ -246,11 +246,11 @@ void Level25_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = HU(0x12) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
-      HU(0x8) += *(const int *)&g_nFrameStep * 6;
+      POS_U[2] += *(const int *)&g_nFrameStep * 6;
       SPIN += 4;
-      HU(0x6) = HU(0x14) + (s >> 12);
+      POS_U[1] = HU(0x14) + (s >> 12);
       if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
@@ -276,9 +276,9 @@ void Level25_AdvanceEmitList(int step) {
       }
       HS(0x18) = (JET_SEGMENT * (0x48 - heat)) >> 3;
       HS(0x1A) = (((0x20 - JET_SEGMENT) * heat) >> 4) + 8;
-      HU(0x4) = HU(0x12) + ((g_anCosineLut[JET_ANGLE] * HS(0x1A)) >> 12);
-      HU(0x6) = HU(0x14) + ((g_anSineLut[JET_ANGLE] * HS(0x1A)) >> 12);
-      HU(0x8) = HU(0x16) + 0x20 + HU(0x18);
+      POS_U[0] = HU(0x12) + ((g_anCosineLut[JET_ANGLE] * HS(0x1A)) >> 12);
+      POS_U[1] = HU(0x14) + ((g_anSineLut[JET_ANGLE] * HS(0x1A)) >> 12);
+      POS_U[2] = HU(0x16) + 0x20 + HU(0x18);
       break;
     }
 
@@ -287,9 +287,9 @@ void Level25_AdvanceEmitList(int step) {
        * written out rather than going through AddSVector().  The age
        * increment is the LAST statement -- writing it first costs 22 insns
        * of scheduling in this arm. */
-      HU(0x4) += HU(0x18);
-      HU(0x6) += HU(0x1A);
-      HU(0x8) += HU(0x1C);
+      POS_U[0] += HU(0x18);
+      POS_U[1] += HU(0x1A);
+      POS_U[2] += HU(0x1C);
       SPIN += rec[0x1E];
       AGE++;
       if (AGED_OR_CULLED(0x20)) {
@@ -335,9 +335,9 @@ void Level25_AdvanceEmitList(int step) {
 
       for (i = 0; i < step; i++) {
         if (AGE & 1) {
-          HU(0x4) += HU(0x10);
-          HU(0x6) += HU(0x12);
-          HU(0x8) += HU(0x14);
+          POS_U[0] += HU(0x10);
+          POS_U[1] += HU(0x12);
+          POS_U[2] += HU(0x14);
           if (AGE & 2) {
             /* the `- 1` has to stay int-wide: folded into the unsigned short
              * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
@@ -369,12 +369,12 @@ void Level25_AdvanceEmitList(int step) {
       int j;
       int r;
 
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       r = GetRandomU32();
       j = d[0] - 1;
       j += r & 2;
@@ -386,9 +386,9 @@ void Level25_AdvanceEmitList(int step) {
       if (AGE & 1) {
         d[2]--;
       }
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
@@ -427,9 +427,9 @@ void Level25_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
       } else {
-        d[0] = HS(0xA) - HS(0x4);
-        d[1] = HS(0xC) - HS(0x6);
-        d[2] = HS(0xE) - HS(0x8);
+        d[0] = HEAD[0] - POS[0];
+        d[1] = HEAD[1] - POS[1];
+        d[2] = HEAD[2] - POS[2];
         r = GetRandomU32();
         j = d[0] - 1;
         j += r & 2;
@@ -442,12 +442,12 @@ void Level25_AdvanceEmitList(int step) {
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
-        HS(0xA) = HU(0xA) + d[0];
-        HS(0xC) = HU(0xC) + d[1];
-        HS(0xE) = HU(0xE) + d[2];
-        HU(0x4) = HU(0xA) - d[0];
-        HU(0x6) = HU(0xC) - d[1];
-        HU(0x8) = HU(0xE) - d[2];
+        HEAD[0] = HEAD_U[0] + d[0];
+        HEAD[1] = HEAD_U[1] + d[1];
+        HEAD[2] = HEAD_U[2] + d[2];
+        POS_U[0] = HEAD_U[0] - d[0];
+        POS_U[1] = HEAD_U[1] - d[1];
+        POS_U[2] = HEAD_U[2] - d[2];
         COL1_R -= 2;
         COL1_G -= 2;
         COL1_B -= 4;
@@ -467,9 +467,9 @@ void Level25_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x30)) {
         FreeEmitListRecord(rec);
       } else {
-        d[0] = (HS(0x4) - HS(0xA)) >> 1;
-        d[1] = (HS(0x6) - HS(0xC)) >> 1;
-        d[2] = (HS(0x8) - HS(0xE)) >> 1;
+        d[0] = (POS[0] - HEAD[0]) >> 1;
+        d[1] = (POS[1] - HEAD[1]) >> 1;
+        d[2] = (POS[2] - HEAD[2]) >> 1;
         r = GetRandomU32();
         j = d[0] - 2;
         j += r & 4;
@@ -482,21 +482,21 @@ void Level25_AdvanceEmitList(int step) {
         j = d[2] - 1;
         j += r & 2;
         d[2] = j;
-        HU(0x4) += d[0];
-        HU(0x6) += d[1];
-        HU(0x8) += d[2];
-        HS(0xA) = HU(0x4) - d[0] * 2;
-        HS(0xC) = HU(0x6) - d[1] * 2;
-        HS(0xE) = HU(0x8) - d[2] * 2;
+        POS_U[0] += d[0];
+        POS_U[1] += d[1];
+        POS_U[2] += d[2];
+        HEAD[0] = POS_U[0] - d[0] * 2;
+        HEAD[1] = POS_U[1] - d[1] * 2;
+        HEAD[2] = POS_U[2] - d[2] * 2;
       }
       break;
     }
 
     case EMIT_YELLOW_DUST:
       /* The drifting mote: no colour ramp, dies on the visible byte first. */
-      HU(0x4) += HU(0x10);
-      HU(0x6) += HU(0x12);
-      HU(0x8) += HU(0x14);
+      POS_U[0] += HU(0x10);
+      POS_U[1] += HU(0x12);
+      POS_U[2] += HU(0x14);
       COL_G -= 0xF;
       AGE++;
       if (VISIBLE == 0 || AGE >= 0x11) {
@@ -509,10 +509,10 @@ void Level25_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      HU(0x4) = HU(0x10) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = HU(0x10) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
-      HU(0x8) += g_nFrameStep * 6;
-      HU(0x6) = HU(0x12) + (s >> 12);
+      POS_U[2] += g_nFrameStep * 6;
+      POS_U[1] = HU(0x12) + (s >> 12);
       if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
@@ -522,16 +522,16 @@ void Level25_AdvanceEmitList(int step) {
     case EMIT_DRIFT_STREAK: {
       short d[3];
 
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       d[1]++;
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGE >= 0x20) {
         FreeEmitListRecord(rec);
@@ -548,9 +548,9 @@ void Level25_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x28)) {
         FreeEmitListRecord(rec);
       } else {
-        HU(0x4) += HU(0x10);
-        HU(0x6) += HU(0x12);
-        HU(0x8) += HU(0x14);
+        POS_U[0] += HU(0x10);
+        POS_U[1] += HU(0x12);
+        POS_U[2] += HU(0x14);
         r = GetRandomU32();
         j = HU(0x10) - 1;
         j += r & 2;
@@ -579,15 +579,15 @@ void Level25_AdvanceEmitList(int step) {
     case EMIT_FLAME_STREAK: {
       short d[3];
 
-      d[0] = (HS(0xA) - HS(0x4)) >> 1;
-      d[1] = (HS(0xC) - HS(0x6)) >> 1;
-      d[2] = (HS(0xE) - HS(0x8)) >> 1;
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      d[0] = (HEAD[0] - POS[0]) >> 1;
+      d[1] = (HEAD[1] - POS[1]) >> 1;
+      d[2] = (HEAD[2] - POS[2]) >> 1;
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x18)) {
         FreeEmitListRecord(rec);
@@ -606,16 +606,16 @@ void Level25_AdvanceEmitList(int step) {
     case EMIT_FALLING_STREAK_BURST: {
       short d[3];
 
-      d[0] = HU(0xA) - HU(0x4);
-      d[1] = HU(0xC) - HU(0x6);
-      d[2] = HU(0xE) - HU(0x8);
-      HU(0x4) += d[0];
-      HU(0x6) += d[1];
-      HU(0x8) += d[2];
+      d[0] = HEAD_U[0] - POS_U[0];
+      d[1] = HEAD_U[1] - POS_U[1];
+      d[2] = HEAD_U[2] - POS_U[2];
+      POS_U[0] += d[0];
+      POS_U[1] += d[1];
+      POS_U[2] += d[2];
       d[2]--;
-      HU(0xA) += d[0];
-      HU(0xC) += d[1];
-      HU(0xE) += d[2];
+      HEAD_U[0] += d[0];
+      HEAD_U[1] += d[1];
+      HEAD_U[2] += d[2];
       AGE++;
       if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);

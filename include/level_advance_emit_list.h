@@ -50,6 +50,11 @@ extern int g_nSparxHealth;
 #define HU(n) (*(unsigned short *)(rec + (n))) /* u16 field at +n */
 #define W(n) (*(int *)(rec + (n)))             /* s32 field at +n */
 #define POS ((short *)(rec + 4))               /* tail point, svector */
+#define POS_U ((unsigned short *)(rec + 4))    /* POS through its unsigned view */
+/* A streak's head point (the LINE_G2's second vertex; the quad classes keep
+ * SIZE / SPIN / colour there instead). */
+#define HEAD ((short *)(rec + 0xA))
+#define HEAD_U ((unsigned short *)(rec + 0xA))
 #define VEL ((short *)(rec + 0x18))            /* velocity / spin, svector */
 /* A billboard's half-size and 8-bit spin angle (RasterizeEmitList scales and
  * turns the quad's corners by them); every arm that touches them is a quad
