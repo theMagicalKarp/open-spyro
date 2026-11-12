@@ -51738,8 +51738,8 @@ glabel ChangeSpyroState
     /* 302B4 8003FAB4 0880103C */  lui        $s0, %hi(g_nSpyroSubstate)
     /* 302B8 8003FAB8 D48A1026 */  addiu      $s0, $s0, %lo(g_nSpyroSubstate)
     /* 302BC 8003FABC 000000AE */  sw         $zero, 0x0($s0)
-    /* 302C0 8003FAC0 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 302C4 8003FAC4 B88B638C */  lw         $v1, %lo(g_nSpyroInputLockoutCountdown)($v1)
+    /* 302C0 8003FAC0 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 302C4 8003FAC4 B88B638C */  lw         $v1, %lo(g_nSpyroInvulnFrames)($v1)
     /* 302C8 8003FAC8 80FF0224 */  addiu      $v0, $zero, -0x80
     /* 302CC 8003FACC 0880013C */  lui        $at, %hi(g_nSpyroGravityStep)
     /* 302D0 8003FAD0 A48B22AC */  sw         $v0, %lo(g_nSpyroGravityStep)($at)
@@ -53212,8 +53212,8 @@ glabel ApplySpyroTriggerEvents
     /* 31790 80040F90 96040108 */  j          .L80041258
     /* 31794 80040F94 21100000 */   addu      $v0, $zero, $zero
   .L80040F98:
-    /* 31798 80040F98 0880023C */  lui        $v0, %hi(g_nSpyroInputLockoutCountdown)
-    /* 3179C 80040F9C B88B428C */  lw         $v0, %lo(g_nSpyroInputLockoutCountdown)($v0)
+    /* 31798 80040F98 0880023C */  lui        $v0, %hi(g_nSpyroInvulnFrames)
+    /* 3179C 80040F9C B88B428C */  lw         $v0, %lo(g_nSpyroInvulnFrames)($v0)
     /* 317A0 80040FA0 00000000 */  nop
     /* 317A4 80040FA4 08004010 */  beqz       $v0, .L80040FC8
     /* 317A8 80040FA8 0EFE0224 */   addiu     $v0, $zero, -0x1F2
@@ -53309,8 +53309,8 @@ glabel ApplySpyroTriggerEvents
     /* 318F0 800410F0 9AFA000C */  jal        ChangeSpyroState
     /* 318F4 800410F4 00000000 */   nop
   .L800410F8:
-    /* 318F8 800410F8 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 318FC 800410FC B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 318F8 800410F8 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 318FC 800410FC B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 31900 80041100 0000628C */  lw         $v0, 0x0($v1)
     /* 31904 80041104 00000000 */  nop
     /* 31908 80041108 5A004228 */  slti       $v0, $v0, 0x5A
@@ -53343,14 +53343,14 @@ glabel ApplySpyroTriggerEvents
     /* 31968 80041168 FFFF4224 */  addiu      $v0, $v0, -0x1
     /* 3196C 8004116C 000002AE */  sw         $v0, 0x0($s0)
   .L80041170:
-    /* 31970 80041170 0880023C */  lui        $v0, %hi(g_nSpyroInputLockoutCountdown)
-    /* 31974 80041174 B88B428C */  lw         $v0, %lo(g_nSpyroInputLockoutCountdown)($v0)
+    /* 31970 80041170 0880023C */  lui        $v0, %hi(g_nSpyroInvulnFrames)
+    /* 31974 80041174 B88B428C */  lw         $v0, %lo(g_nSpyroInvulnFrames)($v0)
     /* 31978 80041178 00000000 */  nop
     /* 3197C 8004117C 5A004228 */  slti       $v0, $v0, 0x5A
     /* 31980 80041180 03004010 */  beqz       $v0, .L80041190
     /* 31984 80041184 5A000224 */   addiu     $v0, $zero, 0x5A
-    /* 31988 80041188 0880013C */  lui        $at, %hi(g_nSpyroInputLockoutCountdown)
-    /* 3198C 8004118C B88B22AC */  sw         $v0, %lo(g_nSpyroInputLockoutCountdown)($at)
+    /* 31988 80041188 0880013C */  lui        $at, %hi(g_nSpyroInvulnFrames)
+    /* 3198C 8004118C B88B22AC */  sw         $v0, %lo(g_nSpyroInvulnFrames)($at)
   .L80041190:
     /* 31990 80041190 9AFA000C */  jal        ChangeSpyroState
     /* 31994 80041194 1D000424 */   addiu     $a0, $zero, 0x1D
@@ -53441,8 +53441,8 @@ glabel DispatchSpyroChargeStateChanges
     /* 31AA4 800412A4 4E050108 */  j          .L80041538
     /* 31AA8 800412A8 21100000 */   addu      $v0, $zero, $zero
   .L800412AC:
-    /* 31AAC 800412AC 0880063C */  lui        $a2, %hi(g_nSpyroInputLockoutCountdown)
-    /* 31AB0 800412B0 B88BC624 */  addiu      $a2, $a2, %lo(g_nSpyroInputLockoutCountdown)
+    /* 31AAC 800412AC 0880063C */  lui        $a2, %hi(g_nSpyroInvulnFrames)
+    /* 31AB0 800412B0 B88BC624 */  addiu      $a2, $a2, %lo(g_nSpyroInvulnFrames)
     /* 31AB4 800412B4 0000C48C */  lw         $a0, 0x0($a2)
     /* 31AB8 800412B8 00000000 */  nop
     /* 31ABC 800412BC 02008010 */  beqz       $a0, .L800412C8
@@ -53600,14 +53600,14 @@ glabel DispatchSpyroChargeStateChanges
     /* 31CDC 800414DC FFFF4224 */  addiu      $v0, $v0, -0x1
     /* 31CE0 800414E0 000002AE */  sw         $v0, 0x0($s0)
   .L800414E4:
-    /* 31CE4 800414E4 0880023C */  lui        $v0, %hi(g_nSpyroInputLockoutCountdown)
-    /* 31CE8 800414E8 B88B428C */  lw         $v0, %lo(g_nSpyroInputLockoutCountdown)($v0)
+    /* 31CE4 800414E4 0880023C */  lui        $v0, %hi(g_nSpyroInvulnFrames)
+    /* 31CE8 800414E8 B88B428C */  lw         $v0, %lo(g_nSpyroInvulnFrames)($v0)
     /* 31CEC 800414EC 00000000 */  nop
     /* 31CF0 800414F0 5A004228 */  slti       $v0, $v0, 0x5A
     /* 31CF4 800414F4 03004010 */  beqz       $v0, .L80041504
     /* 31CF8 800414F8 5A000224 */   addiu     $v0, $zero, 0x5A
-    /* 31CFC 800414FC 0880013C */  lui        $at, %hi(g_nSpyroInputLockoutCountdown)
-    /* 31D00 80041500 B88B22AC */  sw         $v0, %lo(g_nSpyroInputLockoutCountdown)($at)
+    /* 31CFC 800414FC 0880013C */  lui        $at, %hi(g_nSpyroInvulnFrames)
+    /* 31D00 80041500 B88B22AC */  sw         $v0, %lo(g_nSpyroInvulnFrames)($at)
   .L80041504:
     /* 31D04 80041504 9AFA000C */  jal        ChangeSpyroState
     /* 31D08 80041508 1D000424 */   addiu     $a0, $zero, 0x1D
@@ -56604,8 +56604,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 34898 80044098 08004000 */  jr         $v0
     /* 3489C 8004409C 00000000 */   nop
   jlabel .L800440A0
-    /* 348A0 800440A0 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 348A4 800440A4 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 348A0 800440A0 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 348A4 800440A4 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 348A8 800440A8 0000628C */  lw         $v0, 0x0($v1)
     /* 348AC 800440AC 00000000 */  nop
     /* 348B0 800440B0 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -56653,8 +56653,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3494C 8004414C CF1D0108 */  j          .L8004773C
     /* 34950 80044150 000043AC */   sw        $v1, 0x0($v0)
   jlabel .L80044154
-    /* 34954 80044154 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 34958 80044158 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 34954 80044154 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 34958 80044158 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 3495C 8004415C 0000628C */  lw         $v0, 0x0($v1)
     /* 34960 80044160 00000000 */  nop
     /* 34964 80044164 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -56799,8 +56799,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 34B5C 8004435C F51D0108 */  j          .L800477D4
     /* 34B60 80044360 00000000 */   nop
   jlabel .L80044364
-    /* 34B64 80044364 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 34B68 80044368 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 34B64 80044364 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 34B68 80044368 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 34B6C 8004436C 0000628C */  lw         $v0, 0x0($v1)
     /* 34B70 80044370 00000000 */  nop
     /* 34B74 80044374 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -56852,8 +56852,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 34C18 80044418 FD1D0108 */  j          .L800477F4
     /* 34C1C 8004441C 00000000 */   nop
   jlabel .L80044420
-    /* 34C20 80044420 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 34C24 80044424 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 34C20 80044420 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 34C24 80044424 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 34C28 80044428 0000628C */  lw         $v0, 0x0($v1)
     /* 34C2C 8004442C 00000000 */  nop
     /* 34C30 80044430 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -57005,8 +57005,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 34E48 80044648 001E0108 */  j          .L80047800
     /* 34E4C 8004464C 21288000 */   addu      $a1, $a0, $zero
   jlabel .L80044650
-    /* 34E50 80044650 0880103C */  lui        $s0, %hi(g_nSpyroInputLockoutCountdown)
-    /* 34E54 80044654 B88B1026 */  addiu      $s0, $s0, %lo(g_nSpyroInputLockoutCountdown)
+    /* 34E50 80044650 0880103C */  lui        $s0, %hi(g_nSpyroInvulnFrames)
+    /* 34E54 80044654 B88B1026 */  addiu      $s0, $s0, %lo(g_nSpyroInvulnFrames)
     /* 34E58 80044658 0000028E */  lw         $v0, 0x0($s0)
     /* 34E5C 8004465C 00000000 */  nop
     /* 34E60 80044660 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -57162,8 +57162,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 350A0 800448A0 B91E0108 */  j          .L80047AE4
     /* 350A4 800448A4 00000000 */   nop
   jlabel .L800448A8
-    /* 350A8 800448A8 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 350AC 800448AC B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 350A8 800448A8 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 350AC 800448AC B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 350B0 800448B0 0000628C */  lw         $v0, 0x0($v1)
     /* 350B4 800448B4 00000000 */  nop
     /* 350B8 800448B8 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -57309,8 +57309,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 352C4 80044AC4 B91E0108 */  j          .L80047AE4
     /* 352C8 80044AC8 00000000 */   nop
   jlabel .L80044ACC
-    /* 352CC 80044ACC 0880103C */  lui        $s0, %hi(g_nSpyroInputLockoutCountdown)
-    /* 352D0 80044AD0 B88B1026 */  addiu      $s0, $s0, %lo(g_nSpyroInputLockoutCountdown)
+    /* 352CC 80044ACC 0880103C */  lui        $s0, %hi(g_nSpyroInvulnFrames)
+    /* 352D0 80044AD0 B88B1026 */  addiu      $s0, $s0, %lo(g_nSpyroInvulnFrames)
     /* 352D4 80044AD4 0000028E */  lw         $v0, 0x0($s0)
     /* 352D8 80044AD8 00000000 */  nop
     /* 352DC 80044ADC FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -57373,8 +57373,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 353B8 80044BB8 CF100108 */  j          .L8004433C
     /* 353BC 80044BBC 00000000 */   nop
   jlabel .L80044BC0
-    /* 353C0 80044BC0 0880113C */  lui        $s1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 353C4 80044BC4 B88B3126 */  addiu      $s1, $s1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 353C0 80044BC0 0880113C */  lui        $s1, %hi(g_nSpyroInvulnFrames)
+    /* 353C4 80044BC4 B88B3126 */  addiu      $s1, $s1, %lo(g_nSpyroInvulnFrames)
     /* 353C8 80044BC8 0000228E */  lw         $v0, 0x0($s1)
     /* 353CC 80044BCC 00000000 */  nop
     /* 353D0 80044BD0 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -57717,8 +57717,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 358BC 800450BC F91D0108 */  j          .L800477E4
     /* 358C0 800450C0 40FF4224 */   addiu     $v0, $v0, -0xC0
   jlabel .L800450C4
-    /* 358C4 800450C4 0880043C */  lui        $a0, %hi(g_nSpyroInputLockoutCountdown)
-    /* 358C8 800450C8 B88B8424 */  addiu      $a0, $a0, %lo(g_nSpyroInputLockoutCountdown)
+    /* 358C4 800450C4 0880043C */  lui        $a0, %hi(g_nSpyroInvulnFrames)
+    /* 358C8 800450C8 B88B8424 */  addiu      $a0, $a0, %lo(g_nSpyroInvulnFrames)
     /* 358CC 800450CC 0000828C */  lw         $v0, 0x0($a0)
     /* 358D0 800450D0 00000000 */  nop
     /* 358D4 800450D4 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -57818,8 +57818,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 35A28 80045228 B91E0108 */  j          .L80047AE4
     /* 35A2C 8004522C 000062AC */   sw        $v0, 0x0($v1)
   jlabel .L80045230
-    /* 35A30 80045230 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 35A34 80045234 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 35A30 80045230 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 35A34 80045234 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 35A38 80045238 0000628C */  lw         $v0, 0x0($v1)
     /* 35A3C 8004523C 00000000 */  nop
     /* 35A40 80045240 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -59509,8 +59509,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 3723C 80046A3C B91E0108 */  j          .L80047AE4
     /* 37240 80046A40 000062AC */   sw        $v0, 0x0($v1)
   jlabel .L80046A44
-    /* 37244 80046A44 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 37248 80046A48 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 37244 80046A44 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 37248 80046A48 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 3724C 80046A4C 0000628C */  lw         $v0, 0x0($v1)
     /* 37250 80046A50 00000000 */  nop
     /* 37254 80046A54 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -59529,8 +59529,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37284 80046A84 141D0108 */  j          .L80047450
     /* 37288 80046A88 00DD4228 */   slti      $v0, $v0, -0x2300
   jlabel .L80046A8C
-    /* 3728C 80046A8C 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 37290 80046A90 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 3728C 80046A8C 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 37290 80046A90 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 37294 80046A94 0000628C */  lw         $v0, 0x0($v1)
     /* 37298 80046A98 00000000 */  nop
     /* 3729C 80046A9C FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -59760,8 +59760,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 375E0 80046DE0 B91E0108 */  j          .L80047AE4
     /* 375E4 80046DE4 00000000 */   nop
   jlabel .L80046DE8
-    /* 375E8 80046DE8 0880113C */  lui        $s1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 375EC 80046DEC B88B3126 */  addiu      $s1, $s1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 375E8 80046DE8 0880113C */  lui        $s1, %hi(g_nSpyroInvulnFrames)
+    /* 375EC 80046DEC B88B3126 */  addiu      $s1, $s1, %lo(g_nSpyroInvulnFrames)
     /* 375F0 80046DF0 0000228E */  lw         $v0, 0x0($s1)
     /* 375F4 80046DF4 00000000 */  nop
     /* 375F8 80046DF8 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -59827,8 +59827,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 376D8 80046ED8 001E0108 */  j          .L80047800
     /* 376DC 80046EDC 21280002 */   addu      $a1, $s0, $zero
   jlabel .L80046EE0
-    /* 376E0 80046EE0 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 376E4 80046EE4 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 376E0 80046EE0 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 376E4 80046EE4 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 376E8 80046EE8 0000628C */  lw         $v0, 0x0($v1)
     /* 376EC 80046EEC 00000000 */  nop
     /* 376F0 80046EF0 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -60058,8 +60058,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37A40 80047240 C91D0108 */  j          .L80047724
     /* 37A44 80047244 000062AC */   sw        $v0, 0x0($v1)
   jlabel .L80047248
-    /* 37A48 80047248 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 37A4C 8004724C B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 37A48 80047248 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 37A4C 8004724C B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 37A50 80047250 0000628C */  lw         $v0, 0x0($v1)
     /* 37A54 80047254 00000000 */  nop
     /* 37A58 80047258 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -60203,8 +60203,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 37C60 80047460 B91E0108 */  j          .L80047AE4
     /* 37C64 80047464 00000000 */   nop
   jlabel .L80047468
-    /* 37C68 80047468 0880063C */  lui        $a2, %hi(g_nSpyroInputLockoutCountdown)
-    /* 37C6C 8004746C B88BC624 */  addiu      $a2, $a2, %lo(g_nSpyroInputLockoutCountdown)
+    /* 37C68 80047468 0880063C */  lui        $a2, %hi(g_nSpyroInvulnFrames)
+    /* 37C6C 8004746C B88BC624 */  addiu      $a2, $a2, %lo(g_nSpyroInvulnFrames)
     /* 37C70 80047470 0880053C */  lui        $a1, %hi(g_pScriptedCameraActor)
     /* 37C74 80047474 7C8CA58C */  lw         $a1, %lo(g_pScriptedCameraActor)($a1)
     /* 37C78 80047478 0000C28C */  lw         $v0, 0x0($a2)
@@ -60458,8 +60458,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 38010 80047810 B91E0108 */  j          .L80047AE4
     /* 38014 80047814 00000000 */   nop
   jlabel .L80047818
-    /* 38018 80047818 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 3801C 8004781C B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 38018 80047818 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 3801C 8004781C B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 38020 80047820 0000628C */  lw         $v0, 0x0($v1)
     /* 38024 80047824 00000000 */  nop
     /* 38028 80047828 FFFF4224 */  addiu      $v0, $v0, -0x1
@@ -60468,8 +60468,8 @@ glabel IntegrateSpyroMotionForSubstep
     /* 38034 80047834 B91E0108 */  j          .L80047AE4
     /* 38038 80047838 000060AC */   sw        $zero, 0x0($v1)
   jlabel .L8004783C
-    /* 3803C 8004783C 0880033C */  lui        $v1, %hi(g_nSpyroInputLockoutCountdown)
-    /* 38040 80047840 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInputLockoutCountdown)
+    /* 3803C 8004783C 0880033C */  lui        $v1, %hi(g_nSpyroInvulnFrames)
+    /* 38040 80047840 B88B6324 */  addiu      $v1, $v1, %lo(g_nSpyroInvulnFrames)
     /* 38044 80047844 0000628C */  lw         $v0, 0x0($v1)
     /* 38048 80047848 00000000 */  nop
     /* 3804C 8004784C FFFF4224 */  addiu      $v0, $v0, -0x1

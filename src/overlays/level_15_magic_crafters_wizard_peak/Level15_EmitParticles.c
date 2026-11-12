@@ -310,7 +310,7 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.texIndex = 0;
       break;
     }
-    case EMIT_SPYRO_ORBIT_SPARKLE: {
+    case EMIT_SPYRO_HURT_SPARKLE: {
       rec = (Emit *)AllocEmitListRecord(EMIT_CLASS_ALT_LIT_QUAD);
       rec->type = type;
       rec->phase = GetRandomU32() & 0x1F;

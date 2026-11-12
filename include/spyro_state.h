@@ -268,6 +268,12 @@ typedef enum SpyroState
 #define SPYRO_FLY_CLIMB_LEVEL_VZ 0x600 /* FLY_CLIMB rising slower: back to FLY */
 #define SPYRO_FLY_DIVE_LEVEL_VZ 0xC00  /* FLY_DIVE falling slower: back to FLY */
 
+/* A hit (or a hazard) leaves Spyro invulnerable for this many frames
+ * (g_nSpyroInvulnFrames, ticked down by IntegrateSpyroMotionForSubstep):
+ * damage events are masked meanwhile, and the hurt sparkles
+ * (EMIT_SPYRO_HURT_SPARKLE) circle him until it runs out. */
+#define SPYRO_HIT_INVULN_FRAMES 0x5A
+
 /* Four separate 0x1E00 limits: */
 #define SPYRO_HURT_KNOCK_MAX_SPEED 0x1E00 /* HURT / HURT_TINT: cap on the knock-back
                                            * velocity (the reversed motion) */

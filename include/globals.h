@@ -1027,7 +1027,7 @@ extern int g_nSpyroGlideSpentFlag;                       /* 0x80078ba8 1 once Sp
 extern int g_nSpyroGlideQueued;                       /* 0x80078bac: Cross pressed again mid-jump (glide not spent): SPYRO_ST_JUMP / SUPERCHARGE_AIR glide (or fly) once Spyro starts falling; cleared entering JUMP / FALL / GLIDE_DROP */
 extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
 extern int g_nSpyroLateJumpAllowed;                   /* 0x80078bb4: ChangeSpyroState sets 1 entering a grounded state, 0 entering an airborne one (jump, fall, glide, fly, lift, charge air) or a slide: Spyro left the ground without jumping. SUPERCHARGE_AIR still takes a Cross jump in its first 4 frames; FALL tests it too, but FALL entry clears it, so that test never passes */
-extern int g_nSpyroInputLockoutCountdown;               /* 0x80078bb8 */
+extern int g_nSpyroInvulnFrames;               /* 0x80078bb8: post-hit invulnerability frames left (SPYRO_HIT_INVULN_FRAMES on a hit or hazard; IntegrateSpyroMotionForSubstep ticks it to 0). While nonzero ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges mask the damage events; the hurt sparkles live until it ends. Nothing reads it to gate pad input */
 extern int g_nSparxHealth;                           /* 0x80078bbc: Sparx health: 3 gold, 2 blue, 1 green, 0 Sparx gone, -1 after the fatal hit. Hits decrement it (ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges pick the death state once it goes negative); the Sparx actor eating a butterfly adds 1; a new game sets 3. */
 extern int g_nSpyroHazardSinkDepth;                         /* 0x80078bc0 */
 extern int g_nSpyroFirstContactSurfaceType;                 /* 0x80078bc4 */
@@ -1451,7 +1451,7 @@ extern int g_nSpyroCarryMotionY; /* 0x80078b44 */
 extern int g_nSpyroVelocityY; /* 0x80078b50: g_anSpyroVelocity[1] */
 extern int g_nSpyroMotionZ; /* 0x80078b6c: g_anSpyroMotionVec[2] */
 extern int g_nSpyroGravityStep_blk[]; /* 0x80078ba4: held-base view of g_nSpyroGravityStep (clamp/increment sites) */
-extern int g_anSpyroInputLockoutBlock[]; /* 0x80078bb8: g_nSpyroInputLockoutCountdown */
+extern int g_anSpyroInvulnFramesBlock[]; /* 0x80078bb8: g_nSpyroInvulnFrames */
 extern int g_anSpyroFlameStateBlock[]; /* 0x80078bf0: g_nSpyroFlameState */
 extern int g_anSpyroFlameTimerBlock[]; /* 0x80078bf8: g_nSpyroFlameTimer */
 extern int g_anSpyroSwingTargetBlock[]; /* 0x80078bfc */

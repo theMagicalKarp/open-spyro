@@ -223,7 +223,10 @@ enum EmitEffect {
                               * SUPERCHARGE, and an airborne charge while supercharged): a
                               * spark at the velocity effectArg points to, red / orange /
                               * yellow / grey by g_nSpyroMotionSpeed (SUPERCHARGE_TRAIL_*) */
-  EMIT_SPYRO_ORBIT_SPARKLE = 0xA, /* sparkle circling Spyro; freed when he is hidden */
+  EMIT_SPYRO_HURT_SPARKLE = 0xA, /* one of the 5 sparkles ChangeSpyroState spreads round Spyro
+                                 * entering a hurt / knockback / hazard / pinned-death state;
+                                 * circles him while g_nSpyroInvulnFrames runs, freed when it
+                                 * ends, he is hidden, or a hazard kills him (Sparx health < 0) */
   EMIT_FADING_SPARK = 0x10,  /* spark from pos[0..2] at velocity pos[3..5]; effectArg ->
                               * {size, grey >> 3}; all channels fade by 4 a frame */
   EMIT_SPARK_RGB = 0x11,     /* spark from pos[0..2] at velocity pos[3..5]; effectArg ->
