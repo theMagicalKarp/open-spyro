@@ -174,8 +174,8 @@ void Level28_UpdateActors(void) {
             if (depth < drop) {
               int yaw = g_nCameraEulerPitch & 0xFFF;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;

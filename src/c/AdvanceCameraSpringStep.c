@@ -3,6 +3,7 @@
 #include "main_shared.h"
 #include "sdata.h"
 #include "spyro_state.h"
+#include "vecmath.h"
 
 /* Held-base view of g_anCameraSpringDeltaState. */
 /* Scalar view of g_anCameraSpringDeltaState[0]. */
@@ -15,8 +16,8 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
 #define ANGLE_DELTA(target, spring)                                            \
   {                                                                            \
     delta = ((target) - (spring)) & 0xFFF;                                     \
-    if (delta > 0x800) {                                                       \
-      delta -= 0x1000;                                                         \
+    if (delta > ANGLE12_HALF) {                                                \
+      delta -= ANGLE12_TURN;                                                   \
     }                                                                          \
   }
 

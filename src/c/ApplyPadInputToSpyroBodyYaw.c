@@ -5,6 +5,7 @@
 #include "pad.h"
 #include "spyro_block.h"
 #include "spyro_state.h"
+#include "vecmath.h"
 
 /* 0x8003d840 (236 bytes) — steer Spyro's move-target yaw from the analog
    stick.  While the stick is engaged (stickActive set and the left-stick axes
@@ -33,8 +34,8 @@ int ApplyPadInputToSpyroBodyYaw(void) {
       EBB_BREAK();
       yaw = g_anSpyroMoveTargetYawBlock[SPY_BODY_YAW - SPY_MOVE_TARGET_YAW];
       delta = (tgt - yaw) & 0xFFF;
-      if (delta > 0x800) {
-        delta -= 0x1000;
+      if (delta > ANGLE12_HALF) {
+        delta -= ANGLE12_TURN;
       }
       if (abs(delta) > SPYRO_PIVOT_TURN) {
         g_nSpyroSubstate = SPYRO_SUB_WALK_PIVOT;

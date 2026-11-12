@@ -173,8 +173,8 @@ void Level31_UpdateActors(void) {
             if (depth < drop) {
               int yaw = g_nCameraEulerPitch & 0xFFF;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -2655,8 +2655,8 @@ void Level31_UpdateActors(void) {
                                ATAN_ANGLE8) -
                  st->heading) &
                 0xFF;
-            if (d > 0x80) {
-              d -= 0x100;
+            if (d > ANGLE8_HALF) {
+              d -= ANGLE8_TURN;
             }
             d = ABS(d);
             if (d >= FLOATBARREL_SEEK_CONE) {

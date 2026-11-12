@@ -1470,8 +1470,8 @@ void Level0_UpdateActors(void) {
         angle = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
         angleDelta = (angle - actor->rotZ) & 0xFF;
-        if (angleDelta > 0x80) {
-          angleDelta -= 0x100;
+        if (angleDelta > ANGLE8_HALF) {
+          angleDelta -= ANGLE8_TURN;
         }
 
         if (ABS2(angleDelta) < PENEMY_WALK_CONE) {
@@ -1524,8 +1524,8 @@ void Level0_UpdateActors(void) {
         angle = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
         angleDelta = (angle - actor->rotZ) & 0xFF;
-        if (angleDelta > 0x80) {
-          angleDelta -= 0x100;
+        if (angleDelta > ANGLE8_HALF) {
+          angleDelta -= ANGLE8_TURN;
         }
 
         if (ABS2(angleDelta) < PENEMY_WALK_CONE) {
@@ -2637,8 +2637,8 @@ void Level0_UpdateActors(void) {
         angle = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY, ATAN_ANGLE8);
         previousAngle = (angle - actor->rotZ) & 0xFF;
-        if (previousAngle > 0x80) {
-          previousAngle -= 0x100;
+        if (previousAngle > ANGLE8_HALF) {
+          previousAngle -= ANGLE8_TURN;
         }
         nextAngle = previousAngle;
 

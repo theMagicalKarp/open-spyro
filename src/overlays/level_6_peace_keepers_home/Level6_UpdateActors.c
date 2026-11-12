@@ -631,8 +631,8 @@ void Level6_UpdateActors(void) {
 
             d = (d - b) & 0xFF;
 
-            if (d > 0x80) {
-              d -= 0x100;
+            if (d > ANGLE8_HALF) {
+              d -= ANGLE8_TURN;
             }
             if (ABS(d) > THIEF_CIRCLE_ENTER_ANGLE) {
               actor->mode = THIEF_CIRCLE;
@@ -1057,8 +1057,8 @@ void Level6_UpdateActors(void) {
                                  actor->posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8)) &
               0xFF;
-          if (a > 0x80) {
-            a -= 0x100;
+          if (a > ANGLE8_HALF) {
+            a -= ANGLE8_TURN;
           }
           if (ABS(a) < THIEF_CIRCLE_EXIT_ANGLE) {
             ENTER_POSE(actor, THIEF_IDLE);
@@ -3360,8 +3360,8 @@ void Level6_UpdateActors(void) {
                                ATAN_ANGLE8) -
                  actor->rotZ) &
                 0xFF;
-          if (ang > 0x80) {
-            ang -= 0x100;
+          if (ang > ANGLE8_HALF) {
+            ang -= ANGLE8_TURN;
           }
           ang = ABS(ang);
           if (ang >= FBCANNON_SEEK_CONE) {

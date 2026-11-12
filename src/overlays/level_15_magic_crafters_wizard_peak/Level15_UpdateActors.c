@@ -168,8 +168,8 @@ void Level15_UpdateActors(void) {
             if (depth < drop) {
               int yaw = g_nCameraEulerPitch & 0xFFF;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -526,8 +526,8 @@ void Level15_UpdateActors(void) {
 
             d = (d - b) & 0xFF;
 
-            if (d > 0x80) {
-              d -= 0x100;
+            if (d > ANGLE8_HALF) {
+              d -= ANGLE8_TURN;
             }
             if (ABS(d) > THIEF_CIRCLE_ENTER_ANGLE) {
               actor->mode = THIEF_CIRCLE;
@@ -951,8 +951,8 @@ void Level15_UpdateActors(void) {
                                  actor->posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8)) &
               0xFF;
-          if (a > 0x80) {
-            a -= 0x100;
+          if (a > ANGLE8_HALF) {
+            a -= ANGLE8_TURN;
           }
           if (ABS(a) < THIEF_CIRCLE_EXIT_ANGLE) {
             ENTER_POSE(actor, THIEF_IDLE);
@@ -3297,8 +3297,8 @@ void Level15_UpdateActors(void) {
                  actor->rotZ) &
                 0xFF;
 
-        if (d > 0x80) {
-          d -= 0x100;
+        if (d > ANGLE8_HALF) {
+          d -= ANGLE8_TURN;
         }
         if (d < -8) {
           d = -8;
@@ -3511,8 +3511,8 @@ void Level15_UpdateActors(void) {
                  actor->rotZ) &
                 0xFF;
 
-        if (d > 0x80) {
-          d -= 0x100;
+        if (d > ANGLE8_HALF) {
+          d -= ANGLE8_TURN;
         }
         if (d > WISP_TURN_STEP) {
           d = WISP_TURN_STEP;

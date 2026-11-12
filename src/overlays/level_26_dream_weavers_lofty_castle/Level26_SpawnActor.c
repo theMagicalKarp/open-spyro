@@ -125,8 +125,8 @@ Actor *Level26_SpawnActor(int type, Actor *parent) {
     rec->rotX = 0;
     turn = ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos),
                          g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8);
-    if (turn > 0x80) {
-      turn -= 0x100;
+    if (turn > ANGLE8_HALF) {
+      turn -= ANGLE8_TURN;
     }
     if (turn < -0x10) {
       turn = -0x10;

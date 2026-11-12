@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "spyro_state.h"
+#include "vecmath.h"
 
 /* Held base at g_nSpyroGroundSlope: the slope test, the first persistent-
    euler byte (-0xA4) and the three call-argument addresses (euler -0xA4, body
@@ -52,12 +53,12 @@ void UpdateSpyroFlightAttitudeNearGround(void) {
                       ATAN_ANGLE12);
     ang[1] = -ArcTan2(vec[2], vec[0], ATAN_ANGLE12);
     ang[0] = (ang[0] - g_nSpyroBodyPitch) & 0xfff;
-    if (ang[0] > 0x800) {
-      ang[0] -= 0x1000;
+    if (ang[0] > ANGLE12_HALF) {
+      ang[0] -= ANGLE12_TURN;
     }
     ang[1] = (ang[1] - g_nSpyroBodyRoll) & 0xfff;
-    if (ang[1] > 0x800) {
-      ang[1] -= 0x1000;
+    if (ang[1] > ANGLE12_HALF) {
+      ang[1] -= ANGLE12_TURN;
     }
     g_nSpyroPitchSpringVel +=
         ((ang[0] << 2) >> 4) - ((g_nSpyroPitchSpringVel << 4) >> 6);
@@ -66,12 +67,12 @@ void UpdateSpyroFlightAttitudeNearGround(void) {
     ang[0] = g_nSpyroPitchSpringVel >> 2;
     ang[1] = g_nSpyroRollSpringVel >> 2;
     g_nSpyroBodyPitch = (g_nSpyroBodyPitch + ang[0]) & 0xfff;
-    if (g_nSpyroBodyPitch > 0x800) {
-      g_nSpyroBodyPitch -= 0x1000;
+    if (g_nSpyroBodyPitch > ANGLE12_HALF) {
+      g_nSpyroBodyPitch -= ANGLE12_TURN;
     }
     g_nSpyroBodyRoll = (g_nSpyroBodyRoll + ang[1]) & 0xfff;
-    if (g_nSpyroBodyRoll > 0x800) {
-      g_nSpyroBodyRoll -= 0x1000;
+    if (g_nSpyroBodyRoll > ANGLE12_HALF) {
+      g_nSpyroBodyRoll -= ANGLE12_TURN;
     }
     p = SLOPE_BASE - 0xa4;
     if ((unsigned char)(SLOPE_BASE[-0xa4] - 0x20) > 0xc0 &&

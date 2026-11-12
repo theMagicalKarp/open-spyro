@@ -242,8 +242,8 @@ void Level19_UpdateActors(void) {
             if (depth < drop) {
               int yaw = g_nCameraEulerPitch & 0xFFF;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -3652,8 +3652,8 @@ void Level19_UpdateActors(void) {
                  actor->rotZ) &
                 0xFF;
 
-        if (t > 0x80) {
-          t -= 0x100;
+        if (t > ANGLE8_HALF) {
+          t -= ANGLE8_TURN;
         }
         if (t > AIMBOLT_TURN_STEP) {
           t = AIMBOLT_TURN_STEP;
@@ -3666,8 +3666,8 @@ void Level19_UpdateActors(void) {
                            st->target[2] - actor->posZ, ATAN_ANGLE8) -
              actor->rotY) &
             0xFF;
-        if (t > 0x80) {
-          t -= 0x100;
+        if (t > ANGLE8_HALF) {
+          t -= ANGLE8_TURN;
         }
         if (t > AIMBOLT_TURN_STEP) {
           t = AIMBOLT_TURN_STEP;

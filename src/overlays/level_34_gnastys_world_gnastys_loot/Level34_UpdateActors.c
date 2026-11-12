@@ -171,8 +171,8 @@ void Level34_UpdateActors(void) {
             if (depth < drop) {
               int yaw = g_nCameraEulerPitch & 0xFFF;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -1737,8 +1737,8 @@ void Level34_UpdateActors(void) {
             }
           }
           yaw = (actor->rotZ - yaw) & 0xFF;
-          if (yaw > 0x80) {
-            yaw -= 0x100;
+          if (yaw > ANGLE8_HALF) {
+            yaw -= ANGLE8_TURN;
           }
           st->rollVel += ((-yaw << 8) - (st->rollVel << 3) - st->roll) >> 6;
           st->roll = (st->roll + st->rollVel) & 0xFFF;

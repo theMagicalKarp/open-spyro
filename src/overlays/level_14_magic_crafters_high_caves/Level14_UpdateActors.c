@@ -235,8 +235,8 @@ typedef struct CarrierState {
     MoveActorAlongHeading(a, d, 0, 0x200, MOVE_SLIDE);                                       \
   } else {                                                                     \
     h = ((h) - (a)->rotZ) & 0xFF;                                             \
-    if (h > 0x80) {                                                            \
-      h -= 0x100;                                                              \
+    if (h > ANGLE8_HALF) {                                                            \
+      h -= ANGLE8_TURN;                                                              \
     }                                                                          \
     d -= ABS2(h) << (sh);                                                      \
     if (d > 0) {                                                               \
@@ -366,8 +366,8 @@ void Level14_UpdateActors(void) {
             if (depth < drop) {
               int yaw = g_nCameraEulerPitch & 0xFFF;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -834,8 +834,8 @@ void Level14_UpdateActors(void) {
 
             d = (d - b) & 0xFF;
 
-            if (d > 0x80) {
-              d -= 0x100;
+            if (d > ANGLE8_HALF) {
+              d -= ANGLE8_TURN;
             }
             if (ABS(d) > THIEF_CIRCLE_ENTER_ANGLE) {
               actor->mode = THIEF_CIRCLE;
@@ -1263,8 +1263,8 @@ void Level14_UpdateActors(void) {
                                  actor->posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8)) &
               0xFF;
-          if (a > 0x80) {
-            a -= 0x100;
+          if (a > ANGLE8_HALF) {
+            a -= ANGLE8_TURN;
           }
           if (ABS(a) < THIEF_CIRCLE_EXIT_ANGLE) {
             ENTER_POSE(actor, THIEF_IDLE);
@@ -2009,8 +2009,8 @@ void Level14_UpdateActors(void) {
           }
           AddVector(cf + 1, svF, &SPY.posX);
           h = (actor->rotZ - SPY.bodyRotZ) & 0xFF;
-          if (h > 0x80) {
-            h -= 0x100;
+          if (h > ANGLE8_HALF) {
+            h -= ANGLE8_TURN;
           }
           if (h < -CARRIER_CARRY_YAW_STEP) {
             h = -CARRIER_CARRY_YAW_STEP;
@@ -2035,8 +2035,8 @@ void Level14_UpdateActors(void) {
           *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_YAW | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           CopyVector(cf + 1, &SPY.posX);
           h = (actor->rotZ - SPY.bodyRotZ) & 0xFF;
-          if (h > 0x80) {
-            h -= 0x100;
+          if (h > ANGLE8_HALF) {
+            h -= ANGLE8_TURN;
           }
           if (h < -CARRIER_PICKUP_YAW_STEP) {
             h = -CARRIER_PICKUP_YAW_STEP;
@@ -2094,8 +2094,8 @@ void Level14_UpdateActors(void) {
             MoveActorAlongHeading(actor, CARRIER_SPEED, 0, CARRIER_MOVE_RADIUS, MOVE_SLIDE);
           } else {
             h = (h - actor->rotZ) & 0xFF;
-            if (h > 0x80) {
-              h -= 0x100;
+            if (h > ANGLE8_HALF) {
+              h -= ANGLE8_TURN;
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
@@ -2149,8 +2149,8 @@ void Level14_UpdateActors(void) {
                 MoveActorAlongHeading(actor, d, 0, 0, 0);
               } else {
                 h = (h - actor->rotZ) & 0xFF;
-                if (h > 0x80) {
-                  h -= 0x100;
+                if (h > ANGLE8_HALF) {
+                  h -= ANGLE8_TURN;
                 }
                 d -= ABS2(h) << 4;
                 if (d > 0) {
@@ -2236,8 +2236,8 @@ void Level14_UpdateActors(void) {
             MoveActorAlongHeading(actor, CARRIER_SPEED, 0, CARRIER_MOVE_RADIUS, MOVE_SLIDE);
           } else {
             h = (h - actor->rotZ) & 0xFF;
-            if (h > 0x80) {
-              h -= 0x100;
+            if (h > ANGLE8_HALF) {
+              h -= ANGLE8_TURN;
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
@@ -2290,8 +2290,8 @@ void Level14_UpdateActors(void) {
             MoveActorAlongHeading(actor, CARRIER_SPEED, 0, CARRIER_MOVE_RADIUS, MOVE_SLIDE);
           } else {
             h = (h - actor->rotZ) & 0xFF;
-            if (h > 0x80) {
-              h -= 0x100;
+            if (h > ANGLE8_HALF) {
+              h -= ANGLE8_TURN;
             }
             d -= ABS2(h) << 4;
             if (d > 0) {
@@ -3659,8 +3659,8 @@ void Level14_UpdateActors(void) {
                  actor->rotZ) &
                 0xFF;
 
-        if (d > 0x80) {
-          d -= 0x100;
+        if (d > ANGLE8_HALF) {
+          d -= ANGLE8_TURN;
         }
         if (d > WISP_TURN_STEP) {
           d = WISP_TURN_STEP;

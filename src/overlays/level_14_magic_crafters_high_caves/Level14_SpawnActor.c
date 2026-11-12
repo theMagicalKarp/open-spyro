@@ -310,8 +310,8 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     rec->posZ = parent->posZ + 0x300;
     dx = g_anSpyroWorldPos[0] - rec->posX;
     turn = (ArcTan2(dx, g_nSpyroWorldPosY - rec->posY, ATAN_ANGLE8) - parent->rotZ) & 0xFF;
-    if (turn > 0x80) {
-      turn -= 0x100;
+    if (turn > ANGLE8_HALF) {
+      turn -= ANGLE8_TURN;
     }
     if (turn < -0x20) {
       turn = -0x20;
@@ -323,8 +323,8 @@ Actor *Level14_SpawnActor(int type, Actor *parent) {
     dist = ApproxDist2D(&rec->posX, (int *)g_anSpyroWorldPos);
     dz = rec->posZ - 0x164;
     turn = (ArcTan2(dist, g_nSpyroGroundHeightZ - dz, ATAN_ANGLE8) - parent->rotY) & 0xFF;
-    if (turn > 0x80) {
-      turn -= 0x100;
+    if (turn > ANGLE8_HALF) {
+      turn -= ANGLE8_TURN;
     }
     if (turn < -0x30) {
       turn = -0x30;

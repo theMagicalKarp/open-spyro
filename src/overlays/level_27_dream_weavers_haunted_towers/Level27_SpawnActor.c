@@ -140,8 +140,8 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
                             ATAN_ANGLE8) -
               parent->rotY) &
              0xFF;
-      if (turn > 0x80) {
-        turn -= 0x100;
+      if (turn > ANGLE8_HALF) {
+        turn -= ANGLE8_TURN;
       }
       if (turn < -0x10) {
         turn = -0x10;

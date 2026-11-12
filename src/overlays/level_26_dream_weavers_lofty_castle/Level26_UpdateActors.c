@@ -174,8 +174,8 @@ void Level26_UpdateActors(void) {
             if (depth < drop) {
               int yaw = g_nCameraEulerPitch & 0xFFF;
 
-              if (yaw > 0x800) {
-                yaw -= 0x1000;
+              if (yaw > ANGLE12_HALF) {
+                yaw -= ANGLE12_TURN;
               }
               if (yaw < -LEVELEXIT_LEAVE_PITCH) {
                 g_abLevelExited[g_nLevelIndex] = 1;
@@ -779,8 +779,8 @@ void Level26_UpdateActors(void) {
           TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
           r = actor->rotY;
           e = -r & 0xFF;
-          if (e > 0x80) {
-            e -= 0x100;
+          if (e > ANGLE8_HALF) {
+            e -= ANGLE8_TURN;
           }
           if (e > 2) {
             e = 2;
@@ -818,8 +818,8 @@ void Level26_UpdateActors(void) {
                               st->path->nodes[st->path->cur].y - actor->posY,
                               ATAN_ANGLE8);
           a = (ang - actor->rotZ) & 0xFF;
-          if (a > 0x80) {
-            a -= 0x100;
+          if (a > ANGLE8_HALF) {
+            a -= ANGLE8_TURN;
           }
           if (ABS2(a) < CPGUARD_RETURN_CONE) {
             d >>= 4;
@@ -848,8 +848,8 @@ void Level26_UpdateActors(void) {
           ang = ArcTan2(st->home[0] - actor->posX,
                               st->home[1] - actor->posY, ATAN_ANGLE8);
           a = (ang - actor->rotZ) & 0xFF;
-          if (a > 0x80) {
-            a -= 0x100;
+          if (a > ANGLE8_HALF) {
+            a -= ANGLE8_TURN;
           }
           if (ABS2(a) < CPGUARD_RETURN_CONE) {
             d >>= 4;

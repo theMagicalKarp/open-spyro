@@ -113,8 +113,8 @@ void ChangeSpyroState(int state) {
       a = (g_nSpyroBodyYaw - ArcTan2(g_anSpyroGroundNormal[0],
                                      g_anSpyroGroundNormal[1], ATAN_ANGLE12)) &
           0xFFF;
-      if (a > 0x800) {
-        a -= 0x1000;
+      if (a > ANGLE12_HALF) {
+        a -= ANGLE12_TURN;
       }
       k = (g_nSpyroGroundSlope << 12) / (SLOPE_STEEP - 1);
       a = abs(a);
@@ -224,8 +224,8 @@ void ChangeSpyroState(int state) {
     {
       int t = (g_nSpyroBodyYaw - g_nCameraEulerYaw) & 0xFFF;
 
-      if (t > 0x800) {
-        t -= 0x1000;
+      if (t > ANGLE12_HALF) {
+        t -= ANGLE12_TURN;
       }
       if (abs(t) <= SPYRO_HOMING_CONE) {
         break;
@@ -243,8 +243,8 @@ void ChangeSpyroState(int state) {
 
           SubtractVector(d, &actor->posX, from);
           a = (ArcTan2(d[0], d[1], ATAN_ANGLE12) - g_nSpyroBodyYaw) & 0xFFF;
-          if (a > 0x800) {
-            a -= 0x1000;
+          if (a > ANGLE12_HALF) {
+            a -= ANGLE12_TURN;
           }
           da = abs(a);
           if (da < SPYRO_HOMING_CONE) {
@@ -424,8 +424,8 @@ void ChangeSpyroState(int state) {
       g_nSpyroScriptedLiftTurn = ((g_pScriptedCameraActor->rotZ << 4) -
                                   g_nSpyroBodyYaw - g_nSpyroScriptedLiftTurn) &
                                  0xFFF;
-      if (g_nSpyroScriptedLiftTurn > 0x800) {
-        g_nSpyroScriptedLiftTurn -= 0x1000;
+      if (g_nSpyroScriptedLiftTurn > ANGLE12_HALF) {
+        g_nSpyroScriptedLiftTurn -= ANGLE12_TURN;
       }
     } else {
       CopyVector(&SPY[SPY_VELOCITY], &SPY[SPY_MOTION]);

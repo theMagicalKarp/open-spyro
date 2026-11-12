@@ -16,6 +16,14 @@
  * 4.12 factor"). */
 #define FIXED_ONE 0x1000
 
+/* A whole and a half turn of a 12-bit / 8-bit angle: a wrapped delta
+ * (a - b) & mask past HALF is taken the short way round by subtracting TURN
+ * (and one below -HALF by adding it). */
+#define ANGLE12_TURN 0x1000
+#define ANGLE12_HALF 0x800
+#define ANGLE8_TURN 0x100
+#define ANGLE8_HALF 0x80
+
 /* Trig: sine/cosine of a 12-bit angle (result 12-bit fraction), linearly
  * interpolated between the 256 entries of g_anSineLut / g_anCosineLut. */
 int LookupSine(int angle);

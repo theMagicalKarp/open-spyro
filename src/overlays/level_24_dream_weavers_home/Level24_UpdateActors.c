@@ -718,8 +718,8 @@ void Level24_UpdateActors(void) {
                                ATAN_ANGLE8) -
                  actor->rotZ) &
                 0xFF;
-          if (ang > 0x80) {
-            ang -= 0x100;
+          if (ang > ANGLE8_HALF) {
+            ang -= ANGLE8_TURN;
           }
           ang = ABS(ang);
           if (ang >= CCANNON_SEEK_CONE) {

@@ -1177,8 +1177,8 @@ void Level23_UpdateActors(void) {
           st->path->cur = 0;
         }
         d = (actor->rotZ - d) & 0xFF;
-        if (d > 0x80) {
-          d -= 0x100;
+        if (d > ANGLE8_HALF) {
+          d -= ANGLE8_TURN;
         }
         st->rollVel += ((-d * 0xC0) - (st->rollVel << 3) - st->roll) >> 6;
         st->roll = (st->roll + st->rollVel) & 0xFFF;
@@ -1443,8 +1443,8 @@ void Level23_UpdateActors(void) {
           TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, BANKER_TWEEN_SPEED, 0);
         }
         d = (actor->rotZ - d) & 0xFF;
-        if (d > 0x80) {
-          d -= 0x100;
+        if (d > ANGLE8_HALF) {
+          d -= ANGLE8_TURN;
         }
         st->rollVel += ((-d << 8) - (st->rollVel << 3) - st->roll) >> 6;
         st->roll = (st->roll + st->rollVel) & 0xFFF;

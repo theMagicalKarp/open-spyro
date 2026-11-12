@@ -7,6 +7,7 @@
 #include "pad_buttons.h"
 #include "spyro_block.h"
 #include "spyro_state.h"
+#include "vecmath.h"
 
 /* Pulls the floor reference toward the fall reference, at most 64 up and
    16 down per frame. */
@@ -95,8 +96,8 @@ void DispatchSpyroPhysicsByState(void) {
           (g_nSpyroBodyYaw - ArcTan2(g_anSpyroGroundNormal[0],
                                      g_anSpyroGroundNormal[1], ATAN_ANGLE12)) &
           0xFFF;
-      if (ang > 0x800) {
-        ang -= 0x1000;
+      if (ang > ANGLE12_HALF) {
+        ang -= ANGLE12_TURN;
       }
       t = (SPY[SPY_GROUND_SLOPE] << 12) / (SLOPE_STEEP - 1);
       ang = abs(ang);
