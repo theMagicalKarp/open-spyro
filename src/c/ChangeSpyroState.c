@@ -118,27 +118,30 @@ void ChangeSpyroState(int state) {
       }
       k = (g_nSpyroGroundSlope << 12) / (SLOPE_STEEP - 1);
       a = abs(a);
-      if (a > 0x400) {
-        a = 0x800 - a;
-        base = g_anSpyroSlopeSpeedTargets[2] +
-               ((k * (g_anSpyroSlopeSpeedTargets[5] -
-                      g_anSpyroSlopeSpeedTargets[2])) >>
+      if (a > ANGLE12_QUARTER) { /* facing uphill */
+        a = ANGLE12_HALF - a;
+        base = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_UP] +
+               ((k * (g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_UP +
+                                                 SLOPE_SPEED_STEEPEST] -
+                      g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_UP])) >>
                 12);
       } else {
-        base = g_anSpyroSlopeSpeedTargets[0] +
-               ((k * (g_anSpyroSlopeSpeedTargets[3] -
-                      g_anSpyroSlopeSpeedTargets[0])) >>
+        base = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN] +
+               ((k * (g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN +
+                                                 SLOPE_SPEED_STEEPEST] -
+                      g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN])) >>
                 12);
       }
-      side = g_anSpyroSlopeSpeedTargets[1] +
-             ((k * (g_anSpyroSlopeSpeedTargets[4] -
-                    g_anSpyroSlopeSpeedTargets[1])) >>
+      side = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_ACROSS] +
+             ((k * (g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_ACROSS +
+                                               SLOPE_SPEED_STEEPEST] -
+                    g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_ACROSS])) >>
               12);
       base = (base * LookupCosine(a)) >> 12;
       side = (side * LookupSine(a)) >> 12;
       g_nSpyroMoveTargetMag = IntegerSqrt(base * base + side * side);
     } else {
-      g_nSpyroMoveTargetMag = g_anSpyroSlopeSpeedTargets[0];
+      g_nSpyroMoveTargetMag = g_anSpyroSlopeSpeedTargets[SLOPE_SPEED_DOWN];
     }
     g_nSpyroLateJumpAllowed = 1;
     if (g_nSpyroScriptedMoveMode != 0) {

@@ -96,14 +96,14 @@ void AdvanceCameraSpringStep(int column) {
                g_nCameraCollisionRetries == 0 &&
                g_nCameraSpringSuppressFlag == 0) {
       delta = 0;
-      g_anCameraSpringDeltaState[0] = 0;
+      g_anCameraSpringDeltaState[CAM_AXIS_YAW] = 0;
     } else if (g_nCameraCurrentMode == CAM_MODE_HAZARD) {
       delta = 0;
     } else {
       ANGLE_DELTA(g_nCameraTargetYaw, g_nCameraSpringYaw);
     }
   }
-  SPRING(0);
+  SPRING(CAM_AXIS_YAW);
   if (g_nSpyroState == SPYRO_ST_GLIDE &&
       g_nSpyroSubstate == SPYRO_SUB_GLIDE_ENTER) {
     int *p = g_anCameraSpringDeltaStateBlock;
@@ -129,7 +129,7 @@ void AdvanceCameraSpringStep(int column) {
        g_nCameraCurrentMode == CAM_HELD)) {
     CLAMP_STATE(g_nCameraSpringYawDelta, CAM_SPRING_CLAMP);
   }
-  APPLY(0);
+  APPLY(CAM_AXIS_YAW);
 
   if (PASSIVE_HOLD()) {
     goto hold;
@@ -137,55 +137,58 @@ void AdvanceCameraSpringStep(int column) {
   if ((g_dwActiveCameraOptions & CAM_OPT_PASSIVE_FOLLOW) &&
       g_nSpyroState == SPYRO_ST_FALL && g_nCameraCollisionRetries == 0) {
     delta = 0;
-    g_anCameraSpringDeltaState[1] = 0;
+    g_anCameraSpringDeltaState[CAM_AXIS_PITCH] = 0;
   } else if (g_nCameraCurrentMode == CAM_MODE_HAZARD) {
   hold:
     delta = 0;
   } else {
     ANGLE_DELTA(g_nCameraTargetPitch, g_nCameraSpringPitch);
   }
-  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(1) + column];
-  SPRING(1);
+  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(CAM_AXIS_PITCH) + column];
+  SPRING(CAM_AXIS_PITCH);
   if ((g_dwActiveCameraOptions & CAM_OPT_SMOOTH_SWING) &&
       g_nCameraCurrentMode == (CAM_HELD | CAM_MODE_FREE_LOOK) &&
       g_nCameraCollisionRetries == 0) {
     CLAMP_STATE(g_nCameraSpringPitchDelta, CAM_SPRING_CLAMP_SWING);
   }
-  APPLY(1);
+  APPLY(CAM_AXIS_PITCH);
 
   if (PASSIVE_HOLD() || g_nCameraCurrentMode == CAM_MODE_HAZARD) {
     delta = 0;
   } else {
     delta = g_nCameraTargetDistance - g_nCameraSpringDistance;
   }
-  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(2) + column];
-  SPRING(2);
-  APPLY(2);
+  drive =
+      g_anCameraSpringDriveGains[CAM_SPRING_ROW(CAM_AXIS_DISTANCE) + column];
+  SPRING(CAM_AXIS_DISTANCE);
+  APPLY(CAM_AXIS_DISTANCE);
 
   if (PASSIVE_HOLD() || g_nCameraCurrentMode == CAM_MODE_HAZARD) {
     delta = 0;
   } else {
     ANGLE_DELTA(g_nCameraTargetRoll, g_nCameraSpringRoll);
   }
-  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(3) + column];
-  SPRING(3);
-  APPLY(3);
+  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(CAM_AXIS_ROLL) + column];
+  SPRING(CAM_AXIS_ROLL);
+  APPLY(CAM_AXIS_ROLL);
 
   if (PASSIVE_HOLD() || g_nCameraCurrentMode == CAM_MODE_HAZARD) {
     delta = 0;
   } else {
     ANGLE_DELTA(g_nCameraTargetPitchBias, g_nCameraSpringPitchBias);
   }
-  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(4) + column];
-  SPRING(4);
-  APPLY(4);
+  drive =
+      g_anCameraSpringDriveGains[CAM_SPRING_ROW(CAM_AXIS_PITCH_BIAS) + column];
+  SPRING(CAM_AXIS_PITCH_BIAS);
+  APPLY(CAM_AXIS_PITCH_BIAS);
 
   if (PASSIVE_HOLD() || g_nCameraCurrentMode == CAM_MODE_HAZARD) {
     delta = 0;
   } else {
     ANGLE_DELTA(g_nCameraTargetYawBias, g_nCameraSpringYawBias);
   }
-  drive = g_anCameraSpringDriveGains[CAM_SPRING_ROW(5) + column];
-  SPRING(5);
-  APPLY(5);
+  drive =
+      g_anCameraSpringDriveGains[CAM_SPRING_ROW(CAM_AXIS_YAW_BIAS) + column];
+  SPRING(CAM_AXIS_YAW_BIAS);
+  APPLY(CAM_AXIS_YAW_BIAS);
 }
