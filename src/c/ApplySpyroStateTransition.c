@@ -115,7 +115,8 @@ void ApplySpyroStateTransition(void) {
       break;
     }
     {
-      unsigned char end = g_abSpyroAnimDescTable[g_bSpyroAnimCurrent * 4 + 1];
+      unsigned char end =
+          SPYRO_ANIM_DESC(g_bSpyroAnimCurrent, SPYRO_ANIM_DESC_LOOP_END);
 
       g_bSpyroSubFrameTimer = 4;
       g_nSpyroAnimMode = SPYRO_ANIM_HOLD_END;
@@ -143,7 +144,7 @@ void ApplySpyroStateTransition(void) {
     g_bSpyroFramePrev = frame;
     next = g_abSpyroStateAnimIndexMap[state];
     g_bSpyroAnimCurrent = next;
-    first = g_abSpyroAnimDescTable[next * 4];
+    first = SPYRO_ANIM_DESC(next, SPYRO_ANIM_DESC_LOOP_START);
     g_bSpyroSubFrameTimer = 2;
     g_nSpyroPrevState = state;
     g_bSpyroAnimFrame = first;

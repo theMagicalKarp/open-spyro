@@ -79,7 +79,7 @@ void ChangeSpyroState(int state) {
 
     g_nSpyroSubstate = 0;
     t = g_abSpyroIdleDelayRandTable[GetRandomU32() & 7] *
-        g_abSpyroAnimDescTable[2];
+        SPYRO_ANIM_DESC(SPYRO_ANIMID_IDLE, SPYRO_ANIM_DESC_FRAMES);
     g_nSpyroGravityStep = -SPYRO_LIGHT_FALL_ACCEL;
     g_nSpyroLateJumpAllowed = 1;
     g_nSpyroIdleAnimTimeout = t - 2;
@@ -447,7 +447,7 @@ void ChangeSpyroState(int state) {
     int t;
 
     g_nSpyroSubstate = 0;
-    t = g_abSpyroAnimDescTable[state * 4 + 2];
+    t = SPYRO_ANIM_DESC(state, SPYRO_ANIM_DESC_FRAMES);
     g_nSpyroGravityStep = -SPYRO_GROUND_PRESS;
     g_nSpyroIdleAnimTimeout = t << 4;
     break;

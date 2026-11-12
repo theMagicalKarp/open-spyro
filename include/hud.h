@@ -20,6 +20,11 @@
 /* Icon actor record `slot` (a constant slot folds to the same address). */
 #define HUD_ICON_SLOT(slot) HUD_ICON((slot) * ACTOR_SIZE)
 
+/* A byte field of icon `slot` as an element of the byte array itself (the
+ * form the subMode RMWs need, see UpdateHudCounters). */
+#define HUD_ICON_BYTE(slot, field) \
+  g_aHudIconActorRecords[(slot) * ACTOR_SIZE + ACTOR_OFFSET(field)]
+
 /* The 12 icon slots, one counter per run: digits first, then its icon
  * (InitHudCounters types the icons, SetHudCounterDigits fills the digits,
  * OffsetHudIconRollAxis rolls a digit run plus its icon in and out). */

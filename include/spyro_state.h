@@ -564,6 +564,8 @@ enum SpyroAnimId {
 #define SPYRO_ANIM_DESC_LOOP_END 1   /* one past the loop's last frame */
 #define SPYRO_ANIM_DESC_FRAMES 2     /* frame count (layer 1 holds the last one) */
 #define SPYRO_ANIM_DESC_RATE 3       /* play rate (g_nSpyroFlameAnimRate) */
+/* Field `f` (SPYRO_ANIM_DESC_*) of animation `anim`'s record. */
+#define SPYRO_ANIM_DESC(anim, f) g_abSpyroAnimDescTable[(anim) * 4 + (f)]
 /* Nonzero: the animation keeps the overlay layers off (the flame breath is
  * cancelled, a layer-2 request is dropped). */
 #define SPYRO_ANIM_NO_OVERLAY(anim)                                            \

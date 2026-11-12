@@ -55,8 +55,8 @@ void TickSpyroAnimStateMachine(void) {
   step:
     prev = g_abSpyroAnimPrevBlock;
     if (StepSpyroAnimAndCommitTransition(
-            g_abSpyroAnimDescTable[*prev * 4 + 3]) != 0) {
-      if (*prev == 0x1A) {
+            SPYRO_ANIM_DESC(*prev, SPYRO_ANIM_DESC_RATE)) != 0) {
+      if (*prev == SPYRO_ANIMID_HURT_PINNED) {
         PlaySoundEffect(LEVEL_SFX(SFX_SPYRO_HURT_EXIT),
                         (Actor *)SPY_FROM_ANIM_PREV(prev, 0), SFX_MODE_PANNED,
                         0);
