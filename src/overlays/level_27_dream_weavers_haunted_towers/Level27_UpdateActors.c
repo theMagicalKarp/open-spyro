@@ -1608,7 +1608,7 @@ void Level27_UpdateActors(void) {
         c->spin[2] = RandomSignedInRange(7, 0xF);
         c->grav = -ROCKTHROW_DROP_GRAVITY;
         if (st->flags & ROCKTHROW_F_ESCORT) {
-          g_pActorListBase[st->partner].subMode = 1;
+          g_pActorListBase[st->partner].subMode = SFGIVER_CUE_WALK;
         }
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -1656,11 +1656,11 @@ void Level27_UpdateActors(void) {
 
       case ROCKTHROW_THROW:
         TrackEntityYawTowardSpyro(actor, 8, 0, YAW_HOLD_IN_BAND);
-        if (actor->nextFrame >= ROCKTHROW_THROW_FRAME && g_nCinematicActive == 0 && actor->subMode == 0) {
+        if (actor->nextFrame >= ROCKTHROW_THROW_FRAME && g_nCinematicActive == 0 && actor->subMode == ROCKTHROW_ROCK_HELD) {
           Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_FALLING_CHUNK, actor);
           FallingChunkState *c;
 
-          actor->subMode = 1;
+          actor->subMode = ROCKTHROW_ROCK_THROWN;
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, &o->posX);
           o->rotZ = ArcTan2(g_anSpyroWorldPos - o->posX, g_nSpyroWorldPosY - o->posY, ATAN_ANGLE8);
@@ -1677,7 +1677,7 @@ void Level27_UpdateActors(void) {
           c->unread0E = 0;
         }
         if (g_nActorAnimDone != 0) {
-          actor->subMode = 0;
+          actor->subMode = ROCKTHROW_ROCK_HELD;
           st->timer = ROCKTHROW_THROW_GAP;
           ENTER_POSE(actor, ROCKTHROW_WATCH);
         }
@@ -1717,7 +1717,7 @@ void Level27_UpdateActors(void) {
         }
         if (st->trig != 0) {
           st->flags = one;
-          g_pActorListBase[st->partner].subMode = 1;
+          g_pActorListBase[st->partner].subMode = SFGIVER_CUE_WALK;
           actor->mode = ROCKTHROW_WATCH;
           continue;
         }
@@ -1943,8 +1943,8 @@ void Level27_UpdateActors(void) {
           actor->posZ -= SFGIVER_CIRCLE_DROP;
           continue;
         }
-        if (actor->subMode != 0) {
-          actor->subMode = 0;
+        if (actor->subMode != SFGIVER_CUE_NONE) {
+          actor->subMode = SFGIVER_CUE_NONE;
           st->cool = 0;
           actor->mode = SFGIVER_WALK;
           continue;

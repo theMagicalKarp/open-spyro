@@ -2775,6 +2775,11 @@ enum SuperflameGiverMode {
   SFGIVER_CIRCLE = 4, /* alerted: circles path node 0 until its guard is gone */
 };
 
+/* ->subMode while SFGIVER_IDLE: a cue from its partner (level 27's escort
+ * rock thrower, tripped or knocked) sends it to SFGIVER_WALK. */
+#define SFGIVER_CUE_NONE 0
+#define SFGIVER_CUE_WALK 1
+
 /* ->subMode while SFGIVER_GRANT. */
 enum SuperflameGiverSub {
   SFGIVER_SUB_APPROACH = 0, /* floats to Spyro's front */
@@ -3105,6 +3110,11 @@ enum ChargingRamMode {
 #define CRAM_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
 #define CRAM_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 
+/* ->subMode of a level 6 reward burst: the fireball cannon prefers it as a
+ * target, and a fireball that bursts there (FireballState.link) triggers it. */
+#define REWARD_BURST_IDLE 0
+#define REWARD_BURST_TRIGGERED 1
+
 /* ->mode of a rock thrower (ACTOR_TYPE_ROCK_THROWER, RockThrowerState;
  * level 27); the mode is also the animation index. */
 enum RockThrowerMode {
@@ -3115,6 +3125,11 @@ enum RockThrowerMode {
   ROCKTHROW_ESCORT = 4,  /* follows its partner until Spyro trips its box */
   ROCKTHROW_TURN = 10,   /* turns to Spyro, then WATCH */
 };
+
+/* ->subMode of a rock thrower in ROCKTHROW_THROW: set once this throw's
+ * ACTOR_TYPE_FALLING_CHUNK has spawned, cleared when the throw ends. */
+#define ROCKTHROW_ROCK_HELD 0
+#define ROCKTHROW_ROCK_THROWN 1
 
 /* A rock thrower's animations besides the poses equal to its mode. */
 enum RockThrowerAnim {
@@ -4547,6 +4562,14 @@ enum PartnerBouncerMode {
   PBOUNCER_THROWN = 2, /* superflamed, or its partner went: thrown off, then FALL */
   PBOUNCER_FALL = 3,   /* falls until it lands (burst) or drops out of the level */
 };
+/* ->subMode of a partner bouncer: its platform's cue, PBOUNCER_CUE_TOP while
+ * the platform's bob phase (counting down from 0xFF) is still >=
+ * PPLAT_TOP_PHASE, i.e. near the top. Cued, it bounces with Spyro within
+ * PBOUNCER_BOUNCE_RANGE (2D) and below it by less than that. */
+#define PBOUNCER_CUE_NONE 0
+#define PBOUNCER_CUE_TOP 1
+#define PPLAT_TOP_PHASE 0xDD
+#define PBOUNCER_BOUNCE_RANGE 0xC00
 #define PBOUNCER_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
 #define PBOUNCER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 #define PBOUNCER_KNOCK_GRAVITY 0x10 /* DriveActorTrackedMove gravity */

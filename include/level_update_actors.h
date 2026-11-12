@@ -276,10 +276,9 @@ typedef struct FollowState {
 #define FOLLOWER_DROP_PROBE_DEPTH (GROUND_PROBE_LIFT + 0x1000)
 
 /* A held follower's ->subMode is FOLLOWER_HELD; any other value starts the
- * release, as does the parent going dormant. It is a group-wide signal:
- * SetActorGroupSubstate(leader, 1) stamps it on a whole pickup group (the
- * literal-1 callers are the level 4 spinner when Spyro's attack knocks it
- * and the level 22 Metalhead at each phase arrival). */
+ * release, as does the parent going dormant: any SetActorGroupSubstate
+ * on the follower's pickup group (e.g. the level 4 spinner's (leader, 1) when
+ * Spyro's attack knocks it) releases it. */
 #define FOLLOWER_HELD 0
 
 /* Case 173 — the level key (ACTOR_TYPE_KEY): rocks in place and sparkles;

@@ -877,7 +877,7 @@ void Level22_UpdateActors(void) {
       case METALHEAD_PHASE_ARRIVE:
         if (TrackEntityYawTowardSpyro(actor, 6, 4, YAW_STEP_IN_BAND) != 0) {
           actor->group = ++st->phase;
-          SetActorGroupSubstate(actor, 1);
+          SetActorGroupSubstate(actor, BTHROW_ROUSE); /* wakes the phase's throwers */
           actor->group = 0xFF;
           actor->subMode = MHEAD_CATCH_NONE;
           ENTER_POSE(actor, METALHEAD_IDLE);
@@ -1655,7 +1655,7 @@ void Level22_UpdateActors(void) {
              AbsAngleDelta8(st->testFacing,
                            ArcTan2(spy->posX - actor->posX,
                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < GATEKEEPER_KEY_ARM_CONE)) {
-          g_pActorListBase[st->keys[st->idx]].subMode = 1;
+          g_pActorListBase[st->keys[st->idx]].subMode = BTHROW_ROUSE;
           actor->mode++;
           break;
         }
@@ -1701,10 +1701,10 @@ void Level22_UpdateActors(void) {
         if (k == -1) {
           break;
         }
-        g_pActorListBase[k].subMode = 1;
+        g_pActorListBase[k].subMode = BTHROW_ROUSE;
         st->keys[st->idx] = -1;
         if (++st->idx < st->count) {
-          g_pActorListBase[st->keys[st->idx]].subMode = 1;
+          g_pActorListBase[st->keys[st->idx]].subMode = BTHROW_ROUSE;
         }
         actor->mode = GATEKEEPER_KEYS_RECOVER;
         continue;

@@ -1059,12 +1059,12 @@ void Level21_UpdateActors(void) {
       case BTHROW_RIDE_FACE: {
         Actor *catcher = &g_pActorListBase[st->catcher];
 
-        if (catcher->subMode != 0) {
+        if (catcher->subMode != MHEAD_CATCH_NONE) {
           st->heading = ArcTan2(catcher->posX - actor->posX, catcher->posY - actor->posY,
                                   ATAN_ANGLE8);
           st->speed = BTHROW_RIDE_LEAP_SPEED;
           st->zSpeed = BTHROW_RIDE_LEAP_VZ;
-          catcher->subMode = 2;
+          catcher->subMode = MHEAD_CATCH_GO;
           actor->mode++;
           break;
         }
@@ -1281,7 +1281,7 @@ void Level21_UpdateActors(void) {
              AbsAngleDelta8(st->testFacing,
                            ArcTan2(spy->posX - actor->posX,
                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < GATEKEEPER_KEY_ARM_CONE)) {
-          g_pActorListBase[st->keys[st->idx]].subMode = 1;
+          g_pActorListBase[st->keys[st->idx]].subMode = BTHROW_ROUSE;
           actor->mode++;
           break;
         }
@@ -1327,10 +1327,10 @@ void Level21_UpdateActors(void) {
         if (k == -1) {
           break;
         }
-        g_pActorListBase[k].subMode = 1;
+        g_pActorListBase[k].subMode = BTHROW_ROUSE;
         st->keys[st->idx] = -1;
         if (++st->idx < st->count) {
-          g_pActorListBase[st->keys[st->idx]].subMode = 1;
+          g_pActorListBase[st->keys[st->idx]].subMode = BTHROW_ROUSE;
         }
         actor->mode = GATEKEEPER_KEYS_RECOVER;
         continue;
@@ -1426,12 +1426,12 @@ void Level21_UpdateActors(void) {
       case GATEKEEPER_RIDE_FACE: {
         Actor *catcher = &g_pActorListBase[st->catcher];
 
-        if (catcher->subMode != 0) {
+        if (catcher->subMode != MHEAD_CATCH_NONE) {
           st->heading = ArcTan2(catcher->posX - actor->posX, catcher->posY - actor->posY,
                                   ATAN_ANGLE8);
           st->speed = GATEKEEPER_RIDE_LEAP_SPEED;
           st->zSpeed = GATEKEEPER_RIDE_LEAP_VZ;
-          catcher->subMode = 2;
+          catcher->subMode = MHEAD_CATCH_GO;
           actor->mode++;
           break;
         }
@@ -3207,8 +3207,9 @@ void Level21_UpdateActors(void) {
                                     ATAN_ANGLE8),
                       6, 0, YAW_HOLD_IN_BAND);
         if (g_nActorAnimDone != 0) {
-          g_pActorListBase[st->target].subMode = 1;
-          st->target = *(int *)g_pActorListBase[st->target].state;
+          /* Prod the thrower awake, then run on to its partner. */
+          g_pActorListBase[st->target].subMode = BTHROW_ROUSE;
+          st->target = ((BoulderThrowerState *)g_pActorListBase[st->target].state)->partner;
           ENTER_POSE(actor, RUNNER_RUN);
         }
         continue;

@@ -3447,7 +3447,7 @@ void Level6_UpdateActors(void) {
             PlayActorMeshVoice(actor, SHOT_VOICE_BURST, 0);
             actor->mode = SHOT_BURST;
             if (st->link != -1) {
-              g_pActorListBase[st->link].subMode = 1;
+              g_pActorListBase[st->link].subMode = REWARD_BURST_TRIGGERED;
             }
           }
           if (st->age >= 9 && st->delay == 0 &&
@@ -3455,7 +3455,7 @@ void Level6_UpdateActors(void) {
             PlayActorMeshVoice(actor, SHOT_VOICE_BURST, 0);
             actor->mode = SHOT_BURST;
             if (st->link != -1) {
-              g_pActorListBase[st->link].subMode = 1;
+              g_pActorListBase[st->link].subMode = REWARD_BURST_TRIGGERED;
             }
           }
         }
@@ -4343,7 +4343,7 @@ void Level6_UpdateActors(void) {
         DespawnActorRecord(actor);
         continue;
       }
-      if (actor->subMode != 1) {
+      if (actor->subMode != REWARD_BURST_TRIGGERED) {
         continue;
       }
       if (*burst == 0) {

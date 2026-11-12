@@ -2930,8 +2930,8 @@ void Level14_UpdateActors(void) {
           actor->posZ -= SFGIVER_CIRCLE_DROP;
           continue;
         }
-        if (actor->subMode != 0) {
-          actor->subMode = 0;
+        if (actor->subMode != SFGIVER_CUE_NONE) {
+          actor->subMode = SFGIVER_CUE_NONE;
           st->cool = 0;
           actor->mode = SFGIVER_WALK;
           continue;

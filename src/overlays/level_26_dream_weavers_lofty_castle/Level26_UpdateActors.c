@@ -2624,10 +2624,10 @@ void Level26_UpdateActors(void) {
         } else {
           actor->posZ = st->baseZ + ((g_anCosineLut[st->phase] + 0x1000) >> 5);
         }
-        if (st->phase >= 0xDD) {
-          g_pActorListBase[st->partner].subMode = 1;
+        if (st->phase >= PPLAT_TOP_PHASE) {
+          g_pActorListBase[st->partner].subMode = PBOUNCER_CUE_TOP;
         } else {
-          g_pActorListBase[st->partner].subMode = 0;
+          g_pActorListBase[st->partner].subMode = PBOUNCER_CUE_NONE;
         }
         if (TICK_DOWN(st->phase) != 0) {
           st->phase = 0xFF;
@@ -2678,9 +2678,9 @@ void Level26_UpdateActors(void) {
 
       switch (actor->mode) {
       case PBOUNCER_RIDE:
-        if (ApproxDist2D(&actor->posX, &spy->posX) < 0xC00 &&
-            (unsigned int)(actor->posZ - SPY.posZ - 1) < 0xBFF &&
-            actor->subMode != 0) {
+        if (ApproxDist2D(&actor->posX, &spy->posX) < PBOUNCER_BOUNCE_RANGE &&
+            (unsigned int)(actor->posZ - SPY.posZ - 1) < PBOUNCER_BOUNCE_RANGE - 1 &&
+            actor->subMode != PBOUNCER_CUE_NONE) {
           ENTER_POSE(actor, PBOUNCER_BOUNCE);
         }
         break;
