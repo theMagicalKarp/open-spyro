@@ -27,6 +27,8 @@ void BeginDragonRescue(Actor *actor) {
   int *dragons;
   int prevDragons;
   int idx;
+  /* Hard-register pins (A374 / F14j): each holds the register the
+     original uses for it, which settles the competing temps. */
   register int one asm("$4");
   st = actor->state;
   if (((g_nActiveLevelId == LEVEL_ARTISANS) && (st->cutsceneId == 1)) &&

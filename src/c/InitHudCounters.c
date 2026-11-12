@@ -44,6 +44,8 @@ void InitHudCounters(int layout_butterflies) {
   int gems;
   int lives;
   int rectY;
+  /* Hard-register pins (A374 / F14j): each holds the register the
+     original uses for it, which settles the competing temps. */
   register int dragons asm("$2");
   int worldEggs;
   int keyState;

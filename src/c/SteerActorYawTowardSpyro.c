@@ -72,6 +72,8 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
     next = animId + 1;
     if (*dirp == 1) {
       if (actor->nextAnim != animId) {
+        /* Hard-register pins (A374 / F14j): each holds the register the
+           original uses for it, which settles the competing temps. */
         register int old asm("$2");
         int oldFrame;
         g_nActorAnimDone = 0;

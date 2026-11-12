@@ -40,6 +40,8 @@ extern int *g_apActorMeshTable; /* 0x80076378 */
    address becomes the base for m_AnimationVertices and for the packed 21-bit
    (>> 1) vertex offset in every m_FrameWords word. */
 void InstallSpyroAnimStream(int *table) {
+  /* Hard-register pins (A374 / F14j): each holds the register the
+     original uses for it, which settles the competing temps. */
   register int *stream asm("$6") = table;
   int i;
   int *anim;

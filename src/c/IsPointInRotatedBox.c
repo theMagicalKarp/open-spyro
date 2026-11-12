@@ -36,6 +36,8 @@ int IsPointInRotatedBox(int *pos, TriggerBox *box) {
   out[1] = ay;
 
   {
+    /* Hard-register pins (A374 / F14j): each holds the register the
+       original uses for it, which settles the competing temps. */
     register int r asm("$2") = 0;
 
     if (rx < box->halfWidth) {
