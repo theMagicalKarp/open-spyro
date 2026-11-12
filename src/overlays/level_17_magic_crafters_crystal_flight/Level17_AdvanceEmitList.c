@@ -18,13 +18,9 @@
  * induction variable: the terminator test then sits at offset 0 (not a giv
  * at all), and the base falls to whichever address the last arm touches.
  *
- * Field map, in record-relative offsets:
- *   0x00  effect id                0x01  class / terminator
- *   0x02  age                      0x03  visible
- *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
- *                                  r/g/b triple for the fading classes)
- *   0x10..0x16  per-record velocity / colour bytes
- *   0x18  spin angle               0x1C  spark vel z   0x1E  phase toggle
+ * Field layout: one named view per effect arm, in level_advance_emit_list.h
+ * (POS / HEAD points, SIZE / SPIN / COL_* / FX, VEL, DRIFT, the swirl and
+ * orb fields); RasterizeEmitList's reading of each class is in emit_record.h.
  *
  * Word-identical (bar branch displacements) to the copies in
  * level_11_peace_keepers_night_flight and

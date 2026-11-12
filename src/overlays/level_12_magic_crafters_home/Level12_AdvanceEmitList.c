@@ -16,13 +16,9 @@
  * `rec[1]` terminator test -- as the shared base, which is how the whole
  * record ends up addressed off `rec + 1` with offsets 0x00..0x1D.
  *
- * Field map, in record-relative offsets:
- *   0x00  effect id                0x01  class / terminator
- *   0x02  age                      0x03  visible
- *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
- *                                  r/g/b triple for the fading classes)
- *   0x10..0x16  per-record velocity / colour bytes
- *   0x18  spin angle                0x1C  spark vel z   0x1E  phase toggle
+ * Field layout: one named view per effect arm, in level_advance_emit_list.h
+ * (POS / HEAD points, SIZE / SPIN / COL_* / FX, VEL, DRIFT, the swirl and
+ * orb fields); RasterizeEmitList's reading of each class is in emit_record.h.
  *
  * Eighteen arms transfer verbatim from the matched level_0 hub copy (which
  * in turn carries the level_6 / level_2 donors).  Three are new:

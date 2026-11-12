@@ -12,14 +12,9 @@
  * giv off it, which is how the whole record ends up addressed off `rec + 1`
  * with offsets 0x00..0x1D.
  *
- * Field map, in record-relative offsets:
- *   0x00  effect id                0x01  class / terminator
- *   0x02  age                      0x03  visible
- *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
- *                                  r/g/b triple for the fading classes)
- *   0x10..0x16  per-record velocity / colour bytes
- *   0x18  spin angle (a source pointer in classes 0x4 / 0x6, a byte angle
- *         pair in 0x15 / 0x4C)      0x1C  spark vel z   0x1E  phase toggle
+ * Field layout: one named view per effect arm, in level_advance_emit_list.h
+ * (POS / HEAD points, SIZE / SPIN / COL_* / FX, VEL, DRIFT, the swirl and
+ * orb fields); RasterizeEmitList's reading of each class is in emit_record.h.
  *
  * Beyond the shared ground-level arm set this variant adds the two wizard
  * classes 0x4 and 0x5, and takes 0x7 / 0x41 from the level_12 body.

@@ -37,15 +37,9 @@
  * visible byte has been cleared), hands it back with FreeEmitListRecord().  The walk
  * stops at the terminator record, whose class byte at +0x01 is 0xFF.
  *
- * Field map, in record-relative offsets:
- *   0x00  effect id                0x01  class / terminator
- *   0x02  age                      0x03  visible
- *   0x04/0x06/0x08  tail point     0x0A/0x0C/0x0E  head point (also the
- *                                  r/g/b triple for the fading classes)
- *   0x10..0x16  per-record velocity / colour bytes
- *   0x18  actor id (class 0x1D) / spin angle / source pointer
- *   0x19  patrol node index        0x1A  waypoint index (class 0x1D)
- *   0x1C  spark vel z              0x1E  phase toggle / flag bits
+ * Field layout: one named view per effect arm, in level_advance_emit_list.h
+ * (POS / HEAD points, SIZE / SPIN / COL_* / FX, VEL, DRIFT, the swirl and
+ * orb fields); RasterizeEmitList's reading of each class is in emit_record.h.
  *
  * Beyond the shared ground-level arm set this variant adds 0x1D (the ghost,
  * a three-sub-state patrol) and 0x1F (a long-lived plain drifter), and takes
