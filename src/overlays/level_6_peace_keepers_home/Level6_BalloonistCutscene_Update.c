@@ -89,6 +89,7 @@
 #include "cd_stream.h"
 #include "level_id.h"
 #include "angle.h"
+#include "spyro_block.h"
 
 void Level6_BalloonistCutscene_Update(void)
 {
@@ -540,7 +541,7 @@ void Level6_BalloonistCutscene_Update(void)
           g_nSpyroWorldPosY = g_nActorCutsceneSpyroFromY + (((g_nActorCutsceneSpyroToY - g_nActorCutsceneSpyroFromY) * t) / 48);
           g_nSpyroWorldPosZ = g_nActorCutsceneSpyroFromZ + ((LookupSine(t << 5) * 0xA) / 36);
           g_nSpyroGroundHeightZ = FindGroundHeightBelow(g_anSpyroWorldPos, 0x10000);
-          ApplyEulerRotation(&g_anSpyroWorldPos[3], &g_anSpyroWorldPos[13], 0);
+          ApplyEulerRotation(&g_anSpyroWorldPos[SPY_PERSISTENT_EULER], &g_anSpyroWorldPos[SPY_BODY_MTX], 0);
           SampleSpyroShadowRingHeights(1);
         }
         else
@@ -811,7 +812,7 @@ void Level6_BalloonistCutscene_Update(void)
         g_nSpyroWorldPosY = g_nActorCutsceneSpyroFromY + (((g_nActorCutsceneSpyroToY - g_nActorCutsceneSpyroFromY) * t) >> 6);
         g_nSpyroWorldPosZ = g_nActorCutsceneSpyroToZ + ((LookupSine((t * 0x18) + 0x200) * (g_nActorCutsceneSpyroFromZ - g_nActorCutsceneSpyroToZ)) / 2896);
         g_nSpyroGroundHeightZ = FindGroundHeightBelow(g_anSpyroWorldPos, 0x10000);
-        ApplyEulerRotation(&g_anSpyroWorldPos[3], &g_anSpyroWorldPos[13], 0);
+        ApplyEulerRotation(&g_anSpyroWorldPos[SPY_PERSISTENT_EULER], &g_anSpyroWorldPos[SPY_BODY_MTX], 0);
         SampleSpyroShadowRingHeights(1);
         if (g_nActorCutsceneTimer[0] >= 0x20)
         {

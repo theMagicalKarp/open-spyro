@@ -60,6 +60,12 @@ typedef struct SpuVoiceRow {
 /* SpuCommonAttr mask bits: the master and CD volume pairs. */
 #define SPU_COMMON_MVOL 0x03
 #define SPU_COMMON_CDVOL 0xC0
+/* g_anSpuCommonVolAttr (the shorts after the mask): mvol, mvolmode, mvolx,
+ * then cd.volume, each a left / right pair. */
+#define SPU_COMMON_MVOL_L 0
+#define SPU_COMMON_MVOL_R 1
+#define SPU_COMMON_CDVOL_L 6
+#define SPU_COMMON_CDVOL_R 7
 /* The options screens' volume settings run 0..VOLUME_STEPS; music maps a
  * step to CD volume << MUSIC_VOLUME_SHIFT (10 steps = SPU_CD_VOLUME). */
 #define VOLUME_STEPS 10
