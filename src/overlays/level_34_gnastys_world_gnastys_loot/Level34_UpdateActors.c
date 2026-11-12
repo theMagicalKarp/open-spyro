@@ -2037,7 +2037,7 @@ void Level34_UpdateActors(void) {
       if (ks >= ACTOR_MODE_DORMANT || (kt == ACTOR_TYPE_LANE_PATROLLER && ks == LANEPAT_KNOCKED)) {
         open = 1;
       }
-      if (actor->subMode == 0) {
+      if (actor->subMode == LVORTEX_SUB_SHUT) {
         if (open) {
           actor->rotX = (unsigned short)g_anCosineLut[st->phase] >> 7;
           actor->rotY = (unsigned short)g_anSineLut[st->phase] >> 7;
@@ -2068,7 +2068,7 @@ void Level34_UpdateActors(void) {
           actor->groundCode = 0;
           actor->scale = ACTOR_SCALE_HALF;
           actor->gateChunk = GATE_CHUNK_ALWAYS;
-          actor->subMode = 1;
+          actor->subMode = LVORTEX_SUB_OPENED;
           st->mode = one;
         }
         if (st->spark != ROT_BILLBOARD_NONE && actor->cullRadius != ACTOR_CULL_HIDDEN) {
@@ -2104,7 +2104,7 @@ void Level34_UpdateActors(void) {
           actor->gateChunk = GATE_CHUNK_ALWAYS;
           break;
         }
-        actor->subMode = 1;
+        actor->subMode = LVORTEX_SUB_OPENED;
         st->mode = one;
         g_nLevelKeyState = one;
         break;
@@ -2120,7 +2120,7 @@ void Level34_UpdateActors(void) {
           g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
           ResetSpyroLinearMotion();
           ZeroVector(&spyc->headLook);
-          actor->subMode = 2;
+          actor->subMode = LVORTEX_SUB_RIDING;
           actor->rotX = 0;
           actor->rotY = 0;
           actor->rotZ = g_bSpyroPersistentEulerZ + 0x80;

@@ -1400,19 +1400,19 @@ void Level26_UpdateActors(void) {
 
       case ESCORT_HOLD:
         if (st->partner >= 0) {
-          g_pActorListBase[st->partner].subMode |= 1 << st->slot;
+          g_pActorListBase[st->partner].subMode |= ESCORT_SLOT_BIT(st->slot);
           if (g_pActorListBase[st->partner].mode == ESCORT_BREAK_AWAY) {
             actor->mode = ESCORT_BREAK_AWAY;
             st->speed = ESCORT_BREAK_SPEED;
             st->timer = ESCORT_BREAK_TICKS;
           }
-        } else if (actor->subMode == 6 &&
+        } else if (actor->subMode == ESCORT_WINGS_HELD &&
                    ApproxDist2D(&g_pActorListBase[st->leader].posX, &SPY.posX) <
                        ESCORT_BREAK_RANGE) {
-          int *ls = g_pActorListBase[st->leader].state;
+          WhirlwindState *ls = g_pActorListBase[st->leader].state;
 
           actor->mode = ESCORT_BREAK_AWAY;
-          ls[2] = 0x10;
+          ls->flags = WHIRL_F_MARK;
           st->speed = ESCORT_BREAK_SPEED;
           st->timer = ESCORT_BREAK_TICKS;
         }

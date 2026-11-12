@@ -2980,7 +2980,7 @@ void Level12_UpdateActors(void) {
         int range;
 
         dist = ApproxDist2D(&actor->posX, &SPY.posX);
-        if (st->friend >= 0 && (st->mode != VROLE_PAIR || actor->subMode == 0) &&
+        if (st->friend >= 0 && (st->mode != VROLE_PAIR || actor->subMode == VPAIR_WAITING) &&
             (GetRandomU32() & 1)) {
           g_pfnLevelEmitParticles(1, EMIT_TRACKING_SPARK, actor, (int)(&g_pActorListBase[st->friend]));
         }
@@ -3073,14 +3073,14 @@ void Level12_UpdateActors(void) {
             SetActorGroupStateExcept(actor, VILLAGER_PANIC, VILLAGER_KNOCKED);
           }
         } else if (st->mode == VROLE_PAIR) {
-          if (actor->subMode == 0 &&
+          if (actor->subMode == VPAIR_WAITING &&
               (ApproxDist2D(&actor->posX, &SPY.posX) < VILLAGER_PAIR_WAKE_RANGE ||
                g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT)) {
             ModifyWorldChunkAnimFlags(st->chunkAnim, CHUNK_ANIM_RESUME, 0);
-            actor->subMode = 1;
-            st->timer = 0x46;
+            actor->subMode = VPAIR_STARTED;
+            st->timer = VPAIR_CUE_DELAY;
           } else if (TICK_DOWN(st->timer) == 2) {
-            g_pActorListBase[st->link].subMode = 1;
+            g_pActorListBase[st->link].subMode = VPAIR_STARTED;
           }
           if ((g_pActorListBase[st->link].nextAnim == VILLAGER_KNOCKED || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) &&
               ApproxDist2D(&actor->posX, &SPY.posX) <
@@ -3453,14 +3453,14 @@ void Level12_UpdateActors(void) {
             ENTER_POSE(actor, SHEPHERD_RECOVER);
           }
           switch (actor->subMode) {
-          case 0: {
+          case SHEPHERD_COVER_THROW: {
             int ang = ArcTan2(partner->posX - actor->posX,
                                     partner->posY - actor->posY, ATAN_ANGLE8);
 
             ANIM_GO(actor, SHEPHERD_ANIM_THROW);
             TurnActorYawTowardAngle(actor, ang, 4, 0, YAW_HOLD_IN_BAND);
             if (ApproxDist2D(&actor->posX, &SPY.posX) < SHEPHERD_COVER_GUARD_RANGE) {
-              actor->subMode = 1;
+              actor->subMode = SHEPHERD_COVER_GUARD;
             }
             if (g_nActorAnimNewFrame != 0 && actor->nextFrame == SHEPHERD_THROW_FRAME) {
               Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SHEPHERD_THROW, actor);
@@ -3476,14 +3476,14 @@ void Level12_UpdateActors(void) {
             }
             break;
           }
-          case 1: {
+          case SHEPHERD_COVER_GUARD: {
             int *pos = &actor->posX;
             int d = ApproxDist2D(pos, &spy->posX);
 
             ANIM_GO(actor, SHEPHERD_IDLE);
             TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
             if (d > SHEPHERD_COVER_RELEASE_RANGE) {
-              actor->subMode = 0;
+              actor->subMode = SHEPHERD_COVER_THROW;
             }
             if (TICK_DOWN(st->timer) &&
                 ApproxDist2D(pos, &spy->posX) < near &&
@@ -3770,7 +3770,7 @@ void Level12_UpdateActors(void) {
         if (actor->posZ == floor + actor->floorOffset) {
           CopyVector(st->home, PATH_PT(st->path, 0));
           st->timer = 0x14;
-          actor->subMode = 1;
+          actor->subMode = SHEPHERD_COVER_GUARD;
           actor->mode = SHEPHERD_CHASE;
           continue;
         }
@@ -3785,7 +3785,7 @@ void Level12_UpdateActors(void) {
         if (TurnActorYawTowardAngle(actor, ang, 4, 0x14, one)) {
           MoveActorAlongHeading(actor, SHEPHERD_HOME_SPEED, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX, st->home) < SHEPHERD_HOME_ARRIVE) {
-            actor->subMode = 1;
+            actor->subMode = SHEPHERD_COVER_GUARD;
             st->timer = SHEPHERD_HOME_REST;
             st->vz = 0;
             ENTER_POSE(actor, SHEPHERD_IDLE);

@@ -1131,6 +1131,14 @@ enum ShepherdPost {
                                   * partner knocked: POST_WATCH and RECOVER */
 };
 
+/* ->subMode of a SHEPHERD_POST_COVER shepherd while SHEPHERD_IDLE. Landing
+ * from SHEPHERD_THROWN (then CHASE) and arriving home from GO_HOME both
+ * reset it to GUARD. */
+enum ShepherdCoverStep {
+  SHEPHERD_COVER_THROW = 0, /* throws crooks toward its partner; Spyro within COVER_GUARD_RANGE: GUARD */
+  SHEPHERD_COVER_GUARD = 1, /* faces Spyro, swings when he is close; beyond COVER_RELEASE_RANGE: THROW */
+};
+
 /* A shepherd's animations, from the modes that play them. */
 enum ShepherdAnim {
   SHEPHERD_ANIM_RUN = 1,
@@ -2090,6 +2098,15 @@ enum VillagerRole {
   VROLE_LEADER = 3, /* held by its link, a caster sorcerer: at the sorcerer's path node 7
                      * sends it to SORCERER_STEP_REST */
 };
+/* ->subMode of a VROLE_PAIR villager: WAITING sparkles toward its friend;
+ * Spyro within PAIR_WAKE_RANGE (or its link gone) starts its chunk anim and
+ * STARTED, and VPAIR_CUE_DELAY frames later it sets its link's subMode to
+ * STARTED too, so the pair talk in turn. */
+enum VillagerPairStep {
+  VPAIR_WAITING = 0,
+  VPAIR_STARTED = 1,
+};
+#define VPAIR_CUE_DELAY 0x46
 
 /* ->mode of a post guard (ACTOR_TYPE_POST_GUARD, PostState; level 2).
  * POSTGUARD_IDLE runs PostState.mode's role (waits between its two posts,
@@ -4484,6 +4501,12 @@ enum FormationEscortMode {
  * spirals out BREAK_SPIRAL ahead of the bearing from the leader, speeding up
  * from BREAK_SPEED to MAX_SPEED and rising with it, then bursts after
  * BREAK_TICKS. */
+/* The lead escort's ->subMode collects a bit (1 << slot) from each partner
+ * holding formation; it breaks away only once slots 1 and 2 both hold, and
+ * then marks the leader whirlwind (WhirlwindState.flags = WHIRL_F_MARK only,
+ * dropping its idle / gate bits). */
+#define ESCORT_SLOT_BIT(slot) (1 << (slot))
+#define ESCORT_WINGS_HELD (ESCORT_SLOT_BIT(1) | ESCORT_SLOT_BIT(2))
 #define ESCORT_TWEEN_SPEED 0x20
 #define ESCORT_SLOT_ANGLE 0x55
 #define ESCORT_RING_RADIUS 0x600
@@ -5263,6 +5286,13 @@ enum LootVortexStage {
   LVORTEX_OPEN = 1,   /* Spyro walks into its pad facing the target: ACTIVE */
   LVORTEX_ACTIVE = 2, /* freezes Spyro and plays its sequence; when he is free again: FINISH */
   LVORTEX_FINISH = 3, /* runs its chunk anim, resets the camera stick and the key state */
+};
+/* ->subMode of a loot vortex: only SHUT runs the spin / sparkle / touch
+ * test. */
+enum LootVortexSub {
+  LVORTEX_SUB_SHUT = 0,   /* spins once open; touched (or its loot thief beaten): OPENED */
+  LVORTEX_SUB_OPENED = 1, /* hidden; g_nLevelKeyState set */
+  LVORTEX_SUB_RIDING = 2, /* Spyro stepped onto its pad (LVORTEX_ACTIVE) */
 };
 /* A loot vortex opens once its key actor is dormant or, for a lane
  * patroller key, knocked; Spyro then collects it within TOUCH_RANGE (2D and
