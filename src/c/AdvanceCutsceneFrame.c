@@ -11,7 +11,8 @@
    current path node (timer>>1, stride 0x18) into the camera pos/euler
    globals, then for each cutscene actor derives a segment index + 1/64
    fraction from the progress rate of its model's first animation
-   (m_ProgressPerTick 0x10: /8, 0x15: /6, 0x20: /4, else /2), writes the
+   (m_ProgressPerTick ANIM_RATE_TICKS(n) holds a keyframe 2n timer ticks:
+   0x10 /8, 0x15 /6, 0x20 /4, else /2), writes the
    seg/60 keyframe split into the actor record and lerps the packed 10-bit
    path points into the actor position. */
 void AdvanceCutsceneFrame(int timer) {
@@ -41,15 +42,15 @@ void AdvanceCutsceneFrame(int timer) {
       rate = ((Model *)g_apActorMeshTable_1[i])
                  ->m_Animations[0]
                  ->m_ProgressPerTick;
-      if (rate == 0x10) {
+      if (rate == ANIM_RATE_TICKS(4)) {
         int t = g_pPathTableHead->frame;
         seg = t >> 3;
         frac = (t & 7) << 3;
-      } else if (rate == 0x15) {
+      } else if (rate == ANIM_RATE_TICKS(3)) {
         int t = g_pPathTableHead->frame;
         seg = t / 6;
         frac = (t % 6) * 10;
-      } else if (rate == 0x20) {
+      } else if (rate == ANIM_RATE_TICKS(2)) {
         int t = g_pPathTableHead->frame;
         seg = t >> 2;
         frac = (t & 3) << 4;

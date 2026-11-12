@@ -74,18 +74,20 @@ typedef struct CamPathKey {
 #define SRCS (((struct { char *volatile p; } *)&g_pDragonRescueSourceActor)->p)
 #define OTY ((int)g_dwDragonRescueOrbitTargetYaw)
 
-/* Frames between keyframes of a mesh's animation for its frame-rate code. */
+/* Timer ticks between keyframes of a mesh's animation for its frame rate:
+ * the timer advances by g_nFrameStep (two per 30 Hz frame) and a rate of
+ * ANIM_RATE_TICKS(n) steps a frame every n frames, so a keyframe lasts 2n. */
 #define FRAME_STEP(model, step)                                                \
   {                                                                            \
     int rate = ((AnimationHeader *)(FIRST_ANIM(model)))->m_ProgressPerTick;    \
                                                                                \
-    if (rate == 0x10) {                                                        \
+    if (rate == ANIM_RATE_TICKS(4)) {                                          \
       step = 8;                                                                \
-    } else if (rate == 0x15) {                                                 \
+    } else if (rate == ANIM_RATE_TICKS(3)) {                                   \
       step = 6;                                                                \
     } else {                                                                   \
       step = 2;                                                                \
-      if (rate == 0x20) {                                                      \
+      if (rate == ANIM_RATE_TICKS(2)) {                                        \
         step = 4;                                                              \
       }                                                                        \
     }                                                                          \
