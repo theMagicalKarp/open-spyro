@@ -33,7 +33,7 @@ int ApplyPadInputToSpyroBodyYaw(void) {
       tgt = g_anSpyroMoveTargetYawBlock[0];
       EBB_BREAK();
       yaw = g_anSpyroMoveTargetYawBlock[SPY_BODY_YAW - SPY_MOVE_TARGET_YAW];
-      delta = (tgt - yaw) & 0xFFF;
+      delta = (tgt - yaw) & ANGLE12_MASK;
       if (delta > ANGLE12_HALF) {
         delta -= ANGLE12_TURN;
       }

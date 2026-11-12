@@ -168,7 +168,7 @@ void Level7_UpdateActors(void) {
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
-              int yaw = g_nCameraEulerPitch & 0xFFF;
+              int yaw = g_nCameraEulerPitch & ANGLE12_MASK;
 
               if (yaw > ANGLE12_HALF) {
                 yaw -= ANGLE12_TURN;
@@ -638,7 +638,7 @@ void Level7_UpdateActors(void) {
                                   ATAN_ANGLE8) -
                     0x80;
 
-            d = (d - b) & 0xFF;
+            d = (d - b) & ANGLE8_MASK;
 
             if (d > ANGLE8_HALF) {
               d -= ANGLE8_TURN;
@@ -1064,7 +1064,7 @@ void Level7_UpdateActors(void) {
           a = (a - ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                                  actor->posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8)) &
-              0xFF;
+              ANGLE8_MASK;
           if (a > ANGLE8_HALF) {
             a -= ANGLE8_TURN;
           }

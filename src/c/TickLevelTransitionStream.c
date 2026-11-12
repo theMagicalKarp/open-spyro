@@ -283,7 +283,7 @@ void TickLevelTransitionStream(int full) {
       break;
     }
     if (g_nReturnPortalLevelId != 0) {
-      d = (g_nSpyroBodyYaw + g_nCameraYaw) & 0xFFF;
+      d = (g_nSpyroBodyYaw + g_nCameraYaw) & ANGLE12_MASK;
       if (d > ANGLE12_HALF) {
         d -= ANGLE12_TURN;
       }
@@ -291,7 +291,8 @@ void TickLevelTransitionStream(int full) {
         g_nCdStreamState++;
       }
     } else {
-      d = (g_abSpyroPersistentEuler[2] - g_abSpyroRequestEuler[2]) & 0xFF;
+      d = (g_abSpyroPersistentEuler[2] - g_abSpyroRequestEuler[2]) &
+          ANGLE8_MASK;
       if (d > ANGLE8_HALF) {
         d -= ANGLE8_TURN;
       }

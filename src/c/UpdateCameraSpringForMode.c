@@ -122,11 +122,11 @@ void UpdateCameraSpringForMode(void) {
       if (left == 0) {
         break;
       }
-      d = (g_nCameraYaw - 0x800 + g_nSpyroBodyYaw) & 0xFFF;
+      d = (g_nCameraYaw - 0x800 + g_nSpyroBodyYaw) & ANGLE12_MASK;
       if (d > ANGLE12_HALF) {
         d -= ANGLE12_TURN;
       }
-      p = (g_nCameraPitch - g_anCameraParamDefault[1]) & 0xFFF;
+      p = (g_nCameraPitch - g_anCameraParamDefault[1]) & ANGLE12_MASK;
       if (p > ANGLE12_HALF) {
         p -= ANGLE12_TURN;
       }
@@ -210,7 +210,7 @@ void UpdateCameraSpringForMode(void) {
     if (g_nCameraCollisionRetries == 0) {
       if (g_nSpyroFlightMode != 0) {
         if (g_nSpyroSubstate == SPYRO_SUB_GLIDE_L1) {
-          yaw = (yaw - g_nCameraEulerYaw) & 0xFFF;
+          yaw = (yaw - g_nCameraEulerYaw) & ANGLE12_MASK;
           if (yaw > ANGLE12_HALF) {
             yaw -= ANGLE12_TURN;
           }
@@ -224,7 +224,7 @@ void UpdateCameraSpringForMode(void) {
           g_nCameraSpringYaw = g_nCameraYaw;
           LoadCameraTargetAnglesFromMode();
         } else if (g_nSpyroSubstate == SPYRO_SUB_GLIDE_R1) {
-          yaw = (yaw - g_nCameraEulerYaw) & 0xFFF;
+          yaw = (yaw - g_nCameraEulerYaw) & ANGLE12_MASK;
           if (yaw > ANGLE12_HALF) {
             yaw -= ANGLE12_TURN;
           }

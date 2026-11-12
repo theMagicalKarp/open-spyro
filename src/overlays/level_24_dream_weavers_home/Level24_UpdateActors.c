@@ -717,7 +717,7 @@ void Level24_UpdateActors(void) {
           ang = (ArcTan2(q->posX - actor->posX, q->posY - actor->posY,
                                ATAN_ANGLE8) -
                  actor->rotZ) &
-                0xFF;
+                ANGLE8_MASK;
           if (ang > ANGLE8_HALF) {
             ang -= ANGLE8_TURN;
           }

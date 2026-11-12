@@ -172,7 +172,7 @@ void Level26_UpdateActors(void) {
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
-              int yaw = g_nCameraEulerPitch & 0xFFF;
+              int yaw = g_nCameraEulerPitch & ANGLE12_MASK;
 
               if (yaw > ANGLE12_HALF) {
                 yaw -= ANGLE12_TURN;
@@ -778,7 +778,7 @@ void Level26_UpdateActors(void) {
 
           TrackEntityYawTowardSpyro(actor, 3, 0, YAW_HOLD_IN_BAND);
           r = actor->rotY;
-          e = -r & 0xFF;
+          e = -r & ANGLE8_MASK;
           if (e > ANGLE8_HALF) {
             e -= ANGLE8_TURN;
           }
@@ -817,7 +817,7 @@ void Level26_UpdateActors(void) {
           ang = ArcTan2(st->path->nodes[st->path->cur].x - actor->posX,
                               st->path->nodes[st->path->cur].y - actor->posY,
                               ATAN_ANGLE8);
-          a = (ang - actor->rotZ) & 0xFF;
+          a = (ang - actor->rotZ) & ANGLE8_MASK;
           if (a > ANGLE8_HALF) {
             a -= ANGLE8_TURN;
           }
@@ -847,7 +847,7 @@ void Level26_UpdateActors(void) {
           }
           ang = ArcTan2(st->home[0] - actor->posX,
                               st->home[1] - actor->posY, ATAN_ANGLE8);
-          a = (ang - actor->rotZ) & 0xFF;
+          a = (ang - actor->rotZ) & ANGLE8_MASK;
           if (a > ANGLE8_HALF) {
             a -= ANGLE8_TURN;
           }

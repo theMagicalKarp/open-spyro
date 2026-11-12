@@ -1371,7 +1371,7 @@ void Level5_UpdateActors(void) {
         } else {
           TweenActorAlongPath(actor, st->path, st->legVec, &st->legStep, BANKER_TWEEN_SPEED, 0);
         }
-        d = (actor->rotZ - d) & 0xFF;
+        d = (actor->rotZ - d) & ANGLE8_MASK;
         if (d > ANGLE8_HALF) {
           d -= ANGLE8_TURN;
         }

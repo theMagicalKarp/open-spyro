@@ -66,11 +66,11 @@ void UpdateSpyroFlightAttitudeNearGround(void) {
         ((ang[1] << 2) >> 4) - ((g_nSpyroRollSpringVel << 4) >> 6);
     ang[0] = g_nSpyroPitchSpringVel >> 2;
     ang[1] = g_nSpyroRollSpringVel >> 2;
-    g_nSpyroBodyPitch = (g_nSpyroBodyPitch + ang[0]) & 0xfff;
+    g_nSpyroBodyPitch = (g_nSpyroBodyPitch + ang[0]) & ANGLE12_MASK;
     if (g_nSpyroBodyPitch > ANGLE12_HALF) {
       g_nSpyroBodyPitch -= ANGLE12_TURN;
     }
-    g_nSpyroBodyRoll = (g_nSpyroBodyRoll + ang[1]) & 0xfff;
+    g_nSpyroBodyRoll = (g_nSpyroBodyRoll + ang[1]) & ANGLE12_MASK;
     if (g_nSpyroBodyRoll > ANGLE12_HALF) {
       g_nSpyroBodyRoll -= ANGLE12_TURN;
     }

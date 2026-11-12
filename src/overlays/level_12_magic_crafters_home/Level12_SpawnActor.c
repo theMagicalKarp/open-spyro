@@ -116,7 +116,7 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
       turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ,
                             ATAN_ANGLE8) -
               parent->rotY) &
-             0xFF;
+             ANGLE8_MASK;
       if (turn > ANGLE8_HALF) {
         turn -= ANGLE8_TURN;
       }

@@ -182,7 +182,7 @@ void Level16_UpdateActors(void) {
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
-              int yaw = g_nCameraEulerPitch & 0xFFF;
+              int yaw = g_nCameraEulerPitch & ANGLE12_MASK;
 
               if (yaw > ANGLE12_HALF) {
                 yaw -= ANGLE12_TURN;

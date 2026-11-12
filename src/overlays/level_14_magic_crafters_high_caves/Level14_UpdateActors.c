@@ -234,7 +234,7 @@ typedef struct CarrierState {
   if (TurnActorYawTowardAngle(a, h, k1, k2, YAW_STEP_IN_BAND) != 0) {                                   \
     MoveActorAlongHeading(a, d, 0, 0x200, MOVE_SLIDE);                                       \
   } else {                                                                     \
-    h = ((h) - (a)->rotZ) & 0xFF;                                             \
+    h = ((h) - (a)->rotZ) & ANGLE8_MASK;                                             \
     if (h > ANGLE8_HALF) {                                                            \
       h -= ANGLE8_TURN;                                                              \
     }                                                                          \
@@ -364,7 +364,7 @@ void Level14_UpdateActors(void) {
             CopyVector(SPY_HELD_FIELD(base, int, firstContactPoint), &actor->posX);
 
             if (depth < drop) {
-              int yaw = g_nCameraEulerPitch & 0xFFF;
+              int yaw = g_nCameraEulerPitch & ANGLE12_MASK;
 
               if (yaw > ANGLE12_HALF) {
                 yaw -= ANGLE12_TURN;
@@ -832,7 +832,7 @@ void Level14_UpdateActors(void) {
                                   ATAN_ANGLE8) -
                     0x80;
 
-            d = (d - b) & 0xFF;
+            d = (d - b) & ANGLE8_MASK;
 
             if (d > ANGLE8_HALF) {
               d -= ANGLE8_TURN;
@@ -1262,7 +1262,7 @@ void Level14_UpdateActors(void) {
           a = (a - ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                                  actor->posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8)) &
-              0xFF;
+              ANGLE8_MASK;
           if (a > ANGLE8_HALF) {
             a -= ANGLE8_TURN;
           }
@@ -2008,7 +2008,7 @@ void Level14_UpdateActors(void) {
             ScaleVector3ByRatio(svF, d, CARRIER_MAX_PULL);
           }
           AddVector(cf + 1, svF, &SPY.posX);
-          h = (actor->rotZ - SPY.bodyRotZ) & 0xFF;
+          h = (actor->rotZ - SPY.bodyRotZ) & ANGLE8_MASK;
           if (h > ANGLE8_HALF) {
             h -= ANGLE8_TURN;
           }
@@ -2034,7 +2034,7 @@ void Level14_UpdateActors(void) {
 
           *cf = (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FORCE_STATE | SPYRO_RQ_YAW | SPYRO_RQ_VEL_Z | SPYRO_RQ_VEL_Y | SPYRO_RQ_VEL_X);
           CopyVector(cf + 1, &SPY.posX);
-          h = (actor->rotZ - SPY.bodyRotZ) & 0xFF;
+          h = (actor->rotZ - SPY.bodyRotZ) & ANGLE8_MASK;
           if (h > ANGLE8_HALF) {
             h -= ANGLE8_TURN;
           }
@@ -2093,7 +2093,7 @@ void Level14_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, YAW_STEP_IN_BAND) != 0) {
             MoveActorAlongHeading(actor, CARRIER_SPEED, 0, CARRIER_MOVE_RADIUS, MOVE_SLIDE);
           } else {
-            h = (h - actor->rotZ) & 0xFF;
+            h = (h - actor->rotZ) & ANGLE8_MASK;
             if (h > ANGLE8_HALF) {
               h -= ANGLE8_TURN;
             }
@@ -2148,7 +2148,7 @@ void Level14_UpdateActors(void) {
               if (TurnActorYawTowardAngle(actor, h, 0x10, 0x30, YAW_STEP_IN_BAND) != 0) {
                 MoveActorAlongHeading(actor, d, 0, 0, 0);
               } else {
-                h = (h - actor->rotZ) & 0xFF;
+                h = (h - actor->rotZ) & ANGLE8_MASK;
                 if (h > ANGLE8_HALF) {
                   h -= ANGLE8_TURN;
                 }
@@ -2235,7 +2235,7 @@ void Level14_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, YAW_STEP_IN_BAND) != 0) {
             MoveActorAlongHeading(actor, CARRIER_SPEED, 0, CARRIER_MOVE_RADIUS, MOVE_SLIDE);
           } else {
-            h = (h - actor->rotZ) & 0xFF;
+            h = (h - actor->rotZ) & ANGLE8_MASK;
             if (h > ANGLE8_HALF) {
               h -= ANGLE8_TURN;
             }
@@ -2289,7 +2289,7 @@ void Level14_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, h, 8, 0x30, YAW_STEP_IN_BAND) != 0) {
             MoveActorAlongHeading(actor, CARRIER_SPEED, 0, CARRIER_MOVE_RADIUS, MOVE_SLIDE);
           } else {
-            h = (h - actor->rotZ) & 0xFF;
+            h = (h - actor->rotZ) & ANGLE8_MASK;
             if (h > ANGLE8_HALF) {
               h -= ANGLE8_TURN;
             }
@@ -3657,7 +3657,7 @@ void Level14_UpdateActors(void) {
       {
         int d = (ArcTan2(svK[0] - actor->posX, svK[1] - actor->posY, ATAN_ANGLE8) -
                  actor->rotZ) &
-                0xFF;
+                ANGLE8_MASK;
 
         if (d > ANGLE8_HALF) {
           d -= ANGLE8_TURN;

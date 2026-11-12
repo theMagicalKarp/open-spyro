@@ -15,7 +15,7 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
 /* Wrapped 12-bit angle difference in -0x7FF..0x800. */
 #define ANGLE_DELTA(target, spring)                                            \
   {                                                                            \
-    delta = ((target) - (spring)) & 0xFFF;                                     \
+    delta = ((target) - (spring)) & ANGLE12_MASK;                              \
     if (delta > ANGLE12_HALF) {                                                \
       delta -= ANGLE12_TURN;                                                   \
     }                                                                          \

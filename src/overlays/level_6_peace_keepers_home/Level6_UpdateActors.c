@@ -629,7 +629,7 @@ void Level6_UpdateActors(void) {
                                   ATAN_ANGLE8) -
                     0x80;
 
-            d = (d - b) & 0xFF;
+            d = (d - b) & ANGLE8_MASK;
 
             if (d > ANGLE8_HALF) {
               d -= ANGLE8_TURN;
@@ -1056,7 +1056,7 @@ void Level6_UpdateActors(void) {
           a = (a - ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                                  actor->posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8)) &
-              0xFF;
+              ANGLE8_MASK;
           if (a > ANGLE8_HALF) {
             a -= ANGLE8_TURN;
           }
@@ -3359,7 +3359,7 @@ void Level6_UpdateActors(void) {
           ang = (ArcTan2(q->posX - actor->posX, q->posY - actor->posY,
                                ATAN_ANGLE8) -
                  actor->rotZ) &
-                0xFF;
+                ANGLE8_MASK;
           if (ang > ANGLE8_HALF) {
             ang -= ANGLE8_TURN;
           }

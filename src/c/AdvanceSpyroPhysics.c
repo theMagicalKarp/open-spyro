@@ -212,7 +212,8 @@ int AdvanceSpyroPhysics(void) {
         int a;
         unsigned int lock;
 
-        a = (g_pScriptedCameraActor->rotZ - (g_nCameraEulerYaw >> 4)) & 0xFF;
+        a = (g_pScriptedCameraActor->rotZ - (g_nCameraEulerYaw >> 4)) &
+            ANGLE8_MASK;
         if (a > ANGLE8_HALF) {
           a -= ANGLE8_TURN;
         }
@@ -228,7 +229,7 @@ int AdvanceSpyroPhysics(void) {
               a = ((ArcTan2(e[0], e[1], ATAN_ANGLE8) -
                     g_pScriptedCameraActor->rotZ) +
                    0x80) &
-                  0xFF;
+                  ANGLE8_MASK;
               if (a > ANGLE8_HALF) {
                 a -= ANGLE8_TURN;
               }
@@ -262,7 +263,7 @@ int AdvanceSpyroPhysics(void) {
                 }
                 a = t << 4;
                 SCHED_FENCE();
-                a = (a - g_nSpyroMoveTargetYaw) & 0xFFF;
+                a = (a - g_nSpyroMoveTargetYaw) & ANGLE12_MASK;
                 if (a > ANGLE12_HALF) {
                   a -= ANGLE12_TURN;
                 }

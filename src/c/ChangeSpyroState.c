@@ -112,7 +112,7 @@ void ChangeSpyroState(int state) {
 
       a = (g_nSpyroBodyYaw - ArcTan2(g_anSpyroGroundNormal[0],
                                      g_anSpyroGroundNormal[1], ATAN_ANGLE12)) &
-          0xFFF;
+          ANGLE12_MASK;
       if (a > ANGLE12_HALF) {
         a -= ANGLE12_TURN;
       }
@@ -222,7 +222,7 @@ void ChangeSpyroState(int state) {
                     (unsigned char *)SPY + SPYB_VOICE_MARKER + 1);
     g_pSpyroHomingTargetActor = 0;
     {
-      int t = (g_nSpyroBodyYaw - g_nCameraEulerYaw) & 0xFFF;
+      int t = (g_nSpyroBodyYaw - g_nCameraEulerYaw) & ANGLE12_MASK;
 
       if (t > ANGLE12_HALF) {
         t -= ANGLE12_TURN;
@@ -242,7 +242,8 @@ void ChangeSpyroState(int state) {
           int da;
 
           SubtractVector(d, &actor->posX, from);
-          a = (ArcTan2(d[0], d[1], ATAN_ANGLE12) - g_nSpyroBodyYaw) & 0xFFF;
+          a = (ArcTan2(d[0], d[1], ATAN_ANGLE12) - g_nSpyroBodyYaw) &
+              ANGLE12_MASK;
           if (a > ANGLE12_HALF) {
             a -= ANGLE12_TURN;
           }
@@ -423,7 +424,7 @@ void ChangeSpyroState(int state) {
           ((g_nSpyroScriptedLiftRise << 10) >> 10) + 0x400;
       g_nSpyroScriptedLiftTurn = ((g_pScriptedCameraActor->rotZ << 4) -
                                   g_nSpyroBodyYaw - g_nSpyroScriptedLiftTurn) &
-                                 0xFFF;
+                                 ANGLE12_MASK;
       if (g_nSpyroScriptedLiftTurn > ANGLE12_HALF) {
         g_nSpyroScriptedLiftTurn -= ANGLE12_TURN;
       }
