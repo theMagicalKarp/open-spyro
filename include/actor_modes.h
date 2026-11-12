@@ -4530,13 +4530,18 @@ enum FenceCaptainMode {
 #define FCAPTAIN_KNOCK_GRAVITY 0x10 /* DriveActorTrackedMove gravity */
 
 /* ->mode of a fence guard (ACTOR_TYPE_FENCE_GUARD, FenceGuardState; level
- * 27); the mode is also the animation index. subMode 1 wakes it, 2 (the
- * captain's reset) puts it back to sleep. */
+ * 27); the mode is also the animation index. ->subMode is a FenceGuardSignal. */
 enum FenceGuardMode {
   FGUARD_ASLEEP = 0, /* until woken */
   FGUARD_WAKE = 1,   /* waking animation, then WATCH */
   FGUARD_WATCH = 2,  /* faces Spyro along its fence; close and in sight: ATTACK */
   FGUARD_ATTACK = 3, /* swings, pinning Spyro on frames HIT_FRAME .. HIT_FRAME_END - 1 */
+};
+/* A fence guard's ->subMode: a one-shot signal it clears on reading. */
+enum FenceGuardSignal {
+  FGUARD_SIG_NONE = 0,
+  FGUARD_SIG_WAKE = 1,  /* a captain's path wisp reached it (AdvanceEmitList): ASLEEP -> WAKE */
+  FGUARD_SIG_SLEEP = 2, /* the captain's reset box: back to ASLEEP */
 };
 /* Fence-guard tuning. Supercharged, it shatters into PIECES rubble shards
  * fanned PIECE_FAN / PIECE_FAN_WIDE either side of Spyro's heading (lifting

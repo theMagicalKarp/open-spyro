@@ -2451,8 +2451,8 @@ void Level27_UpdateActors(void) {
         continue;
       }
       actor->flags = 0;
-      if (actor->subMode == 2) {
-        actor->subMode = 0;
+      if (actor->subMode == FGUARD_SIG_SLEEP) {
+        actor->subMode = FGUARD_SIG_NONE;
         actor->mode = FGUARD_ASLEEP;
         ANIM_RESET(actor, FGUARD_ASLEEP);
         continue;
@@ -2519,8 +2519,8 @@ void Level27_UpdateActors(void) {
 
       switch (actor->mode) {
       case FGUARD_ASLEEP:
-        if (actor->subMode == 1 || st->wake != 0) {
-          actor->subMode = 0;
+        if (actor->subMode == FGUARD_SIG_WAKE || st->wake != 0) {
+          actor->subMode = FGUARD_SIG_NONE;
           actor->mode = FGUARD_WAKE;
           ANIM_RESET(actor, FGUARD_WAKE);
           continue;
@@ -2650,7 +2650,7 @@ void Level27_UpdateActors(void) {
             FenceGuardState *g = g_pActorListBase[st->link[i]].state;
 
             st->hit[i] = 0;
-            g_pActorListBase[st->link[i]].subMode = 2;
+            g_pActorListBase[st->link[i]].subMode = FGUARD_SIG_SLEEP;
             g->timer = g->timer0;
           }
         }

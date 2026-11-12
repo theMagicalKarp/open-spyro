@@ -23,9 +23,12 @@
 #include "level_globals.h"
 #include "level_advance_emit_list.h"
 #include "actor_type.h"
+#include "actor_modes.h"
 #include "match_asm.h"
 #include "spyro_state.h"
 #include "emit_record.h"
+#include "level_update_actors.h"
+#include "level_actor_states.h"
 
 /* Level27_AdvanceEmitList (0x80086754, level_27_dream_weavers_haunted_towers
  * overlay, 0x1a84 bytes).
@@ -322,7 +325,7 @@ void Level27_AdvanceEmitList(int step) {
       int ry;
       int jx;
       int jy;
-      int *node;
+      FenceCaptainState *cap;
       char *wp;
       Actor *actor;
       int idx;
@@ -330,9 +333,9 @@ void Level27_AdvanceEmitList(int step) {
       /* The haunted-towers ghost.  Three sub-states, selected by the flag
        * halfword at +0x1E: bit 3 = the free-flying trail, bit 0 = the spiral
        * orbit around its own drift point, and neither = the patrol run, which
-       * walks a waypoint list hung off the actor named by +0x18 and, on
-       * reaching the last waypoint, wakes the actor named by the node's +0x20
-       * and re-arms itself as a trail.
+       * walks the waypoint list its fence captain (WISP_CAPTAIN) keeps for
+       * guard WISP_GUARD and, on reaching the last waypoint, wakes that guard
+       * (FGUARD_SIG_WAKE) and re-arms itself as an orbit.
        */
       SVectorToVectorShl2(pt, POS);
       EBB_BREAK();
@@ -386,11 +389,11 @@ void Level27_AdvanceEmitList(int step) {
           goto shove;
         }
       } else {
-        idx = SWIRL_RADIUS;
-        actor = &g_pActorListBase[SWIRL_ANGLE];
-        node = (int *)(idx * 4 + (int)actor->state);
-        wp = (char *)node[1];
-        actor = &g_pActorListBase[node[8]];
+        idx = WISP_GUARD;
+        actor = &g_pActorListBase[WISP_CAPTAIN];
+        cap = actor->state;
+        wp = cap->wispPath[idx];
+        actor = &g_pActorListBase[cap->link[idx]];
         SVectorToVectorShl2(hold, POS);
         CopyVector(aim, (int *)(wp + (WISP_WAYPOINT * 0x10 + 8)));
         dv[0] += LookupCosine(AGE << 7) >> 2;
@@ -401,7 +404,7 @@ void Level27_AdvanceEmitList(int step) {
         if (len < 0x401) {
           WISP_WAYPOINT++;
           if (WISP_WAYPOINT >= *(unsigned char *)wp) {
-            actor->subMode = 1;
+            actor->subMode = FGUARD_SIG_WAKE;
             ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
             VectorToSVectorShr2(VEL, &actor->posX);
             rise = GetRandomU32() & 0x7F;

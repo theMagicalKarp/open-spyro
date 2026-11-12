@@ -121,7 +121,11 @@ extern int g_nSparxHealth;
 #define ODOT_RADIUS rec[0x1F]
 /* The actor-tracking sparks / orbs: pool index of the actor they chase. */
 #define TRACK_ACTOR rec[0x1E]
-/* EMIT_PATH_WISP: the waypoint it is flying to. */
+/* EMIT_PATH_WISP: the fence captain that sent it (pool index), the guard
+ * slot of the captain's it flies to (FenceCaptainState.cur when sent) and
+ * the waypoint of that guard's wisp path it is flying to. */
+#define WISP_CAPTAIN rec[0x18]
+#define WISP_GUARD rec[0x19]
 #define WISP_WAYPOINT rec[0x1A]
 /* EMIT_HOMING_ORB / EMIT_PATH_WISP: the mode halfword (ORB_TRAIL: falling
  * spark trail; ORB_ORBIT: circling its drift point VEL, the X / Y sweeps

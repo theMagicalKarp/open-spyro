@@ -544,7 +544,7 @@ typedef struct FenceGuardPieceState {
  * boxes Spyro has entered and sends them in one at a time. */
 typedef struct FenceCaptainState {
   PathData *path; /* 0x000 */
-  int pad04[7];          /* 0x004 */
+  char *wispPath[7];   /* 0x004 per guard: the waypoint list its path wisps fly (count byte, 0x10-byte points from +8) */
   int link[7];         /* 0x020 the guards, index into g_pActorListBase, -1 none; level data:
                         * ACTOR_TYPE_FENCE_GUARD */
   int cur;             /* 0x03C */
