@@ -129,43 +129,43 @@ void Level13_AdvanceEmitList(int step) {
        */
       KEEP_IN_REG(burst);
       SVectorToVectorShl2(pt, POS);
-      if (HU(0x1E) & 8) {
+      if (ORB_MODE_U & ORB_TRAIL) {
         if (AGE >= 0x30) {
           FreeEmitListRecord(rec);
           break;
         }
         rx = GetRandomU32();
-        jx = HU(0x18) - 3;
+        jx = VEL_U[0] - 3;
         jx += rx & 6;
-        HU(0x18) = jx;
+        VEL_U[0] = jx;
         ry = GetRandomU32();
-        jy = HU(0x1A) - 3;
+        jy = VEL_U[1] - 3;
         jy += ry & 6;
-        HU(0x1A) = jy;
-        HU(0x1C)++;
-        if (HS(0x1C) >= 0x11) {
-          HU(0x1C) = 0x10;
+        VEL_U[1] = jy;
+        VEL_U[2]++;
+        if (VEL[2] >= 0x11) {
+          VEL_U[2] = 0x10;
         }
-        pt[0] += HS(0x18);
-        pt[1] += HS(0x1A);
-        pt[2] -= HS(0x1C);
+        pt[0] += VEL[0];
+        pt[1] += VEL[1];
+        pt[2] -= VEL[2];
         goto commit;
-      } else if (HU(0x1E) & 1) {
+      } else if (ORB_MODE_U & ORB_ORBIT) {
         if (AGE >= 0x30) {
           AGE = 0;
-          HS(0x18) = (GetRandomU32() & 6) - 3;
-          HS(0x1A) = (GetRandomU32() & 6) - 3;
-          HU(0x1C) = 0;
-          HS(0x1E) = 8;
+          VEL[0] = (GetRandomU32() & 6) - 3;
+          VEL[1] = (GetRandomU32() & 6) - 3;
+          VEL_U[2] = 0;
+          ORB_MODE = ORB_TRAIL;
           goto measure;
         } else {
           SVectorToVectorShl2(dv, VEL);
-          if (HU(0x1E) & 2) {
+          if (ORB_MODE_U & ORB_X_UP) {
             dv[0] += (AGE * LookupCosine(AGE << 7)) >> 7;
           } else {
             dv[0] -= (AGE * LookupCosine(AGE << 7)) >> 7;
           }
-          if (HU(0x1E) & 4) {
+          if (ORB_MODE_U & ORB_Y_UP) {
             dv[1] += (AGE * LookupSine(AGE << 7)) >> 7;
           } else {
             dv[1] -= (AGE * LookupSine(AGE << 7)) >> 7;
@@ -180,24 +180,24 @@ void Level13_AdvanceEmitList(int step) {
           goto commit;
         }
       } else {
-        CopyVector(dir, (int *)(W(0x18) + 0xC));
+        CopyVector(dir, (int *)(ORB_TARGET + 0xC));
         dv[0] += LookupCosine(AGE << 7) >> 2;
         dv[1] += LookupSine(AGE << 7) >> 2;
         dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(dir, dir, pt);
         len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
-          int *owner = *(int **)W(0x18);
+          int *owner = *(int **)ORB_TARGET;
 
           if (owner[5] == 1) {
             owner[5] = 2;
             owner[0] = 0x20;
           }
-          HS(0x1E) = (GetRandomU32() & 6) + 1;
-          VectorToSVectorShr2(VEL, (int *)(W(0x18) + 0xC));
+          ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
+          VectorToSVectorShr2(VEL, (int *)(ORB_TARGET + 0xC));
           spin = GetRandomU32() & 0x7F;
           AGE = 0;
-          HU(0x1C) += spin;
+          VEL_U[2] += spin;
           goto measure;
         }
         ScaleVector3ByRatio(dir, len, 0x100);
@@ -217,8 +217,8 @@ void Level13_AdvanceEmitList(int step) {
           COL_G = 0xFF;
           COL_B = 0xFF;
           SIZE = 4;
-          CLASS = 0;
-          rec[0xF] = 0x40;
+          CLASS = EMIT_CLASS_DOT;
+          FX = EMIT_FX_LINE;
         }
       } else if (len < 0x2800) {
         CLASS = burst;
@@ -226,7 +226,7 @@ void Level13_AdvanceEmitList(int step) {
         COL_G = 0x80;
         COL_B = 0x80;
         DEPTH_BIAS = 4;
-        rec[0xF] = 0x2C;
+        FX = EMIT_FX_QUAD;
         TEX_INDEX = 0;
         SIZE = (GetRandomU32() & 0xF) + 0x18;
         SPIN = (GetRandomU32() & 0x7) + 0xF;
@@ -283,7 +283,7 @@ void Level13_AdvanceEmitList(int step) {
         goto expire;
       } else {
         bolt = v;
-        CopyVector(bolt, &g_pActorListBase[rec[0x1E]].posX);
+        CopyVector(bolt, &g_pActorListBase[TRACK_ACTOR].posX);
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;
@@ -306,8 +306,8 @@ void Level13_AdvanceEmitList(int step) {
           if (CLASS == burst) {
             if (len >= 0x3001) {
               SIZE = 4;
-              rec[0xF] = 0x40;
-              CLASS = 0;
+              FX = EMIT_FX_LINE;
+              CLASS = EMIT_CLASS_DOT;
               c = COL_R * 2;
               COL_R = c;
               COL_G *= 2;
@@ -316,7 +316,7 @@ void Level13_AdvanceEmitList(int step) {
           } else if (len < 0x2800) {
             CLASS = burst;
             DEPTH_BIAS = 4;
-            rec[0xF] = 0x2C;
+            FX = EMIT_FX_QUAD;
             TEX_INDEX = 0;
             c = COL_R >> 1;
             COL_R = c;

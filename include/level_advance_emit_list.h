@@ -75,6 +75,8 @@ extern int g_nSparxHealth;
 #define COL_B rec[0xE]
 /* All three at once (the fx byte masked off): 0 once faded to black. */
 #define COL_RGB (W(0xC) & 0xFFFFFF)
+/* The colour word's top byte: the GPU command (EMIT_FX_*) the prim gets. */
+#define FX rec[0xF]
 /* The line classes' two colours (LINE_G2): COL0 goes with the point at 0x04,
  * COL1 with the one at 0x0A; COL1's top byte (0x17) is the OT-bin bias. */
 #define COL0_R rec[0x10]
@@ -112,6 +114,28 @@ extern int g_nSparxHealth;
 #define PLUME_TOP HS(0x1E)
 /* EMIT_SMOKE_PUFF: its climb per tick, slowing by 2 to 0. */
 #define SMOKE_RISE W(0x18)
+/* EMIT_ORBIT_DOT: the orbit's phase offset (added to AGE, << 6) and radius. */
+#define ODOT_PHASE rec[0x1E]
+#define ODOT_RADIUS rec[0x1F]
+/* The actor-tracking sparks / orbs: pool index of the actor they chase. */
+#define TRACK_ACTOR rec[0x1E]
+/* EMIT_PATH_WISP: the waypoint it is flying to. */
+#define WISP_WAYPOINT rec[0x1A]
+/* EMIT_HOMING_ORB / EMIT_PATH_WISP: the mode halfword (ORB_TRAIL: falling
+ * spark trail; ORB_ORBIT: circling its drift point VEL, the X / Y sweeps
+ * signed by ORB_X_UP / ORB_Y_UP; neither: homing on the record whose
+ * address is the word at 0x18, ORB_TARGET, its point at +0xC). */
+#define ORB_MODE HS(0x1E)
+#define ORB_MODE_U HU(0x1E)
+#define ORB_TARGET W(0x18)
+#define ORB_ORBIT 1
+#define ORB_X_UP 2
+#define ORB_Y_UP 4
+#define ORB_TRAIL 8
+/* EMIT_PATH_DOT: its waypoint list (count byte, 0x10-byte points from +8)
+ * and the waypoint it is heading for. */
+#define PDOT_PATH W(0x18)
+#define PDOT_WAYPOINT W(0x1C)
 #define SWIRL_ANGLE rec[0x18]
 #define SWIRL_RADIUS rec[0x19]
 /* EMIT_RESCUE_SWIRL (the dragon-rescue ring, a stack of bands): its spin

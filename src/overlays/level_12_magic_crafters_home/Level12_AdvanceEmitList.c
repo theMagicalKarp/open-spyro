@@ -139,7 +139,7 @@ void Level12_AdvanceEmitList(int step) {
       if (VISIBLE == 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(dir, &g_pActorListBase[rec[0x1E]].posX);
+        CopyVector(dir, &g_pActorListBase[TRACK_ACTOR].posX);
         v[0] += LookupCosine(AGE << 7) >> 1;
         v[1] += LookupSine(AGE << 7) >> 1;
         v[2] += LookupCosine((AGE << 7) - 0x100) >> 2;
@@ -158,8 +158,8 @@ void Level12_AdvanceEmitList(int step) {
           if (CLASS == EMIT_CLASS_ALT_LIT_QUAD) {
             if (len >= 0x3001) {
               SIZE = 4;
-              rec[0xF] = 0x40;
-              CLASS = 0;
+              FX = EMIT_FX_LINE;
+              CLASS = EMIT_CLASS_DOT;
               c = COL_R * 2;
               COL_R = c;
               COL_G *= 2;
@@ -168,7 +168,7 @@ void Level12_AdvanceEmitList(int step) {
           } else if (len < 0x2800) {
             CLASS = 3;
             DEPTH_BIAS = 4;
-            rec[0xF] = 0x2C;
+            FX = EMIT_FX_QUAD;
             TEX_INDEX = 0;
             c = COL_R >> 1;
             COL_R = c;

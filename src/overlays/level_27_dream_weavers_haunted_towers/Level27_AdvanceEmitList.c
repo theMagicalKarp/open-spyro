@@ -342,43 +342,43 @@ void Level27_AdvanceEmitList(int step) {
        */
       SVectorToVectorShl2(pt, POS);
       EBB_BREAK();
-      if (HU(0x1E) & 8) {
+      if (ORB_MODE_U & ORB_TRAIL) {
         if (AGE >= 0x18) {
           FreeEmitListRecord(rec);
           break;
         }
         rx = GetRandomU32();
-        jx = HU(0x18) - 3;
+        jx = VEL_U[0] - 3;
         jx += rx & 6;
-        HU(0x18) = jx;
+        VEL_U[0] = jx;
         ry = GetRandomU32();
-        jy = HU(0x1A) - 3;
+        jy = VEL_U[1] - 3;
         jy += ry & 6;
-        HU(0x1A) = jy;
-        HU(0x1C)++;
-        if (HS(0x1C) >= 0x11) {
-          HU(0x1C) = 0x10;
+        VEL_U[1] = jy;
+        VEL_U[2]++;
+        if (VEL[2] >= 0x11) {
+          VEL_U[2] = 0x10;
         }
-        pt[0] += HS(0x18);
-        pt[1] += HS(0x1A);
-        pt[2] -= HS(0x1C);
+        pt[0] += VEL[0];
+        pt[1] += VEL[1];
+        pt[2] -= VEL[2];
         VectorToSVectorShr2(POS, pt);
         AGE++;
-      } else if (HU(0x1E) & 1) {
+      } else if (ORB_MODE_U & ORB_ORBIT) {
         if (AGE >= 0x18) {
           AGE = 0;
-          HS(0x18) = (GetRandomU32() & 6) - 3;
-          HS(0x1A) = (GetRandomU32() & 6) - 3;
-          HU(0x1C) = 0;
-          HS(0x1E) = 8;
+          VEL[0] = (GetRandomU32() & 6) - 3;
+          VEL[1] = (GetRandomU32() & 6) - 3;
+          VEL_U[2] = 0;
+          ORB_MODE = ORB_TRAIL;
         } else {
           SVectorToVectorShl2(dv, VEL);
-          if (HU(0x1E) & 2) {
+          if (ORB_MODE_U & ORB_X_UP) {
             dv[0] += (AGE * LookupCosine(AGE << 7)) >> 7;
           } else {
             dv[0] -= (AGE * LookupCosine(AGE << 7)) >> 7;
           }
-          if (HU(0x1E) & 4) {
+          if (ORB_MODE_U & ORB_Y_UP) {
             dv[1] += (AGE * LookupSine(AGE << 7)) >> 7;
           } else {
             dv[1] -= (AGE * LookupSine(AGE << 7)) >> 7;
@@ -398,21 +398,21 @@ void Level27_AdvanceEmitList(int step) {
         wp = (char *)node[1];
         actor = &g_pActorListBase[node[8]];
         SVectorToVectorShl2(hold, POS);
-        CopyVector(aim, (int *)(wp + (rec[0x1A] * 0x10 + 8)));
+        CopyVector(aim, (int *)(wp + (WISP_WAYPOINT * 0x10 + 8)));
         dv[0] += LookupCosine(AGE << 7) >> 2;
         dv[1] += LookupSine(AGE << 7) >> 2;
         dv[2] += LookupCosine((AGE << 7) + 0x200) >> 2;
         SubtractVector(aim, aim, hold);
         len = VectorLength(aim, VEC_LEN_XYZ);
         if (len < 0x401) {
-          rec[0x1A]++;
-          if (rec[0x1A] >= *(unsigned char *)wp) {
+          WISP_WAYPOINT++;
+          if (WISP_WAYPOINT >= *(unsigned char *)wp) {
             actor->subMode = 1;
-            HS(0x1E) = (GetRandomU32() & 6) + 1;
+            ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
             VectorToSVectorShr2(VEL, &actor->posX);
             spin = GetRandomU32() & 0x7F;
             AGE = 0;
-            HU(0x1C) += spin;
+            VEL_U[2] += spin;
             break;
           }
         }

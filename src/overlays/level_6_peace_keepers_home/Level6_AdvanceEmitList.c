@@ -175,7 +175,7 @@ void Level6_AdvanceEmitList(int step) {
       /* The peace-keepers home banner mote: its blue channel is driven by
        * the record's own phase toggle rather than by the step count. */
       AddSVector(POS, POS, VEL);
-      SPIN += rec[0x1E];
+      SPIN += SPIN_RATE;
       SIZE += step * 2;
       FADE_COL(step * 2);
       AGE += step;
