@@ -168,7 +168,7 @@ void Level30_UpdateActors(void) {
         }
 
         if (st->active != 0 &&
-            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & 0x80))) {
+            (parent->mode >= ACTOR_MODE_DORMANT || (parent->dropKind & DROP_ROLL_BIT))) {
           Actor *scan;
           int self;
 

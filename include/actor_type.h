@@ -185,6 +185,11 @@ typedef struct NameLetterState {
 #define GATE_CHUNK_ALWAYS 0xFF     /* ->gateChunk: no chunk gate, always drawn */
 #define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
                                   * checkpoint kill set, IsActorInCheckpointKillSet) */
+#define DROP_ROLL_BIT 0x80       /* ->dropKind bit 7: no fixed drop. Only DROP_GEM_ROLL
+                                  * carries it: level data holds 0, 0x0E, 0x10, 0x22,
+                                  * 0x53..0x57 or 0xFF, and BuildLoadedLevelRuntime
+                                  * rewrites a respawned kill to 0xFF. A follower
+                                  * takes over a parent that is dormant or has it. */
 
 /* Bosses and big actors take Spyro's 2D distance from ApproxDist2D, then
  * measure it exactly (VectorLength VEC_LEN_XY) once the estimate is under
