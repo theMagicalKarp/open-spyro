@@ -239,7 +239,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.ribbon.pos, pos);
-      VectorToSVectorShr2(rec->u.ribbon.pos2, pos);
+      VectorToSVectorShr2(rec->u.ribbon.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         v = effectArg * 2;
       } else {
@@ -465,7 +465,7 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.smear.pos, pos);
-      VectorToSVectorShr2(rec->u.smear.pos2, pos);
+      VectorToSVectorShr2(rec->u.smear.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         w = effectArg * 2;
       } else {

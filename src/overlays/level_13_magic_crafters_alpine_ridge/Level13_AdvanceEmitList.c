@@ -482,16 +482,16 @@ void Level13_AdvanceEmitList(int step) {
       if (COL_B < 0xF0) {
         COL_B += 4;
       }
-      JET_ANGLE += g_nFrameStep * 8;
+      RSWIRL_ANGLE += g_nFrameStep * 8;
       heat = 0x3F;
       if (g_nDragonRescueTimer < 0x40) {
         heat = g_nDragonRescueTimer;
       }
-      HS(0x18) = (JET_SEGMENT * (0x48 - heat)) >> 3;
-      HS(0x1A) = (((0x20 - JET_SEGMENT) * heat) >> 4) + 8;
-      POS_U[0] = HU(0x12) + ((g_anCosineLut[JET_ANGLE] * HS(0x1A)) >> 12);
-      POS_U[1] = HU(0x14) + ((g_anSineLut[JET_ANGLE] * HS(0x1A)) >> 12);
-      POS_U[2] = HU(0x16) + 0x20 + HU(0x18);
+      RSWIRL_LIFT = (RSWIRL_BAND * (0x48 - heat)) >> 3;
+      RSWIRL_RADIUS = (((0x20 - RSWIRL_BAND) * heat) >> 4) + 8;
+      POS_U[0] = RSWIRL_CENTRE_U[0] + ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[1] = RSWIRL_CENTRE_U[1] + ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[2] = RSWIRL_CENTRE_U[2] + 0x20 + RSWIRL_LIFT_U;
       break;
     }
 

@@ -177,21 +177,21 @@ void Level29_AdvanceEmitList(int step) {
     }
 
     case EMIT_SMOKE_PUFF: {
-      int spin;
-      int lum;
+      int rise;
+      int size;
       int c;
 
-      POS_U[2] += W(0x18);
-      spin = W(0x18) - 2;
-      W(0x18) = spin;
-      if (spin < 0) {
-        W(0x18) = 0;
+      POS_U[2] += SMOKE_RISE;
+      rise = SMOKE_RISE - 2;
+      SMOKE_RISE = rise;
+      if (rise < 0) {
+        SMOKE_RISE = 0;
       }
-      lum = SIZE + step * 3;
-      if (lum >= 0x100) {
-        lum = 0xFF;
+      size = SIZE + step * 3;
+      if (size >= 0x100) {
+        size = 0xFF;
       }
-      SIZE = lum;
+      SIZE = size;
       c = COL_R - step * 2;
       if (c <= 0) {
         FreeEmitListRecord(rec);

@@ -367,7 +367,7 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.ribbon.pos, pos);
-      VectorToSVectorShr2(rec->u.ribbon.pos2, pos);
+      VectorToSVectorShr2(rec->u.ribbon.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         v = effectArg * 2;
       } else {
@@ -390,7 +390,7 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.band.pos, pos);
-      VectorToSVectorShr2(rec->u.band.pos2, pos);
+      VectorToSVectorShr2(rec->u.band.centre, pos);
       v = 0x30;
       z = i * 16;
       rec->u.band.size = v;
@@ -404,7 +404,7 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.band.texIndex = 0;
       rec->u.band.radius = 0x10;
       rec->u.band.angle = z;
-      rec->u.band.segment = i;
+      rec->u.band.index = i;
       break;
     }
     case EMIT_DUST_PUFF: {
@@ -591,7 +591,7 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->type = type;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.smear.pos, pos);
-      VectorToSVectorShr2(rec->u.smear.pos2, pos);
+      VectorToSVectorShr2(rec->u.smear.centre, pos);
       if ((effectArg & 0x1F) < 0x10) {
         w = effectArg * 2;
       } else {

@@ -99,11 +99,25 @@ extern int g_nSparxHealth;
 #define ORBIT_ANGLE HS(0x18)
 #define ORBIT_ANGLE_U HU(0x18)
 #define RISE_SPEED_U HU(0x1E)
+/* EMIT_RESCUE_SWIRL: the ring's centre, the band's lift above it and its
+ * radius (both re-shaped from RSWIRL_BAND and g_nDragonRescueTimer). */
+#define RSWIRL_CENTRE_U ((unsigned short *)(rec + 0x12))
+#define RSWIRL_LIFT HS(0x18)
+#define RSWIRL_LIFT_U HU(0x18)
+#define RSWIRL_RADIUS HS(0x1A)
+/* EMIT_ACTOR_PLUME: the world point it rises from, the widest its spiral
+ * grows and the height (x 0x40 above the anchor) that frees it. */
+#define PLUME_ANCHOR ((int *)W(0x18))
+#define PLUME_MAX_RADIUS HS(0x1C)
+#define PLUME_TOP HS(0x1E)
+/* EMIT_SMOKE_PUFF: its climb per tick, slowing by 2 to 0. */
+#define SMOKE_RISE W(0x18)
 #define SWIRL_ANGLE rec[0x18]
 #define SWIRL_RADIUS rec[0x19]
-/* Fire-jet bands: spin angle and segment index along the jet. */
-#define JET_ANGLE rec[0x1C]
-#define JET_SEGMENT rec[0x1D]
+/* EMIT_RESCUE_SWIRL (the dragon-rescue ring, a stack of bands): its spin
+ * angle and the record's band index up the stack. */
+#define RSWIRL_ANGLE rec[0x1C]
+#define RSWIRL_BAND rec[0x1D]
 /* Fade all three colour bytes by `n`. */
 #define FADE_COL(n)                                                            \
   COL_R -= (n);                                                                \
