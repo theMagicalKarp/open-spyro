@@ -1587,7 +1587,7 @@ void Level31_UpdateActors(void) {
         st->child->rotY = 0x40;
         actor->mode = HATCH_OPEN;
         actor->flags = 0;
-        actor->subMode = 0;
+        actor->subMode = HATCH_CUE_NONE;
         ANIM_RESET(actor, HATCH_OPEN);
         continue;
       }
@@ -1601,7 +1601,7 @@ void Level31_UpdateActors(void) {
           continue;
         }
         if (g_nActorAnimDone != 0) {
-          actor->subMode = 0;
+          actor->subMode = HATCH_CUE_NONE;
           actor->mode = HATCH_WAIT;
           ANIM_RESET(actor, HATCH_WAIT);
           continue;
@@ -1609,7 +1609,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case HATCH_WAIT:
-        if (actor->subMode == 1) {
+        if (actor->subMode == HATCH_CUE) {
           actor->mode = HATCH_IDLE;
           ANIM_RESET(actor, HATCH_IDLE);
           continue;
@@ -1617,7 +1617,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case HATCH_OPEN:
-        if (actor->subMode == 1 &&
+        if (actor->subMode == HATCH_CUE &&
             ApproxDist2D(&actor->posX, &SPY.posX) > 0x400 &&
             ApproxDist2D(&actor->posX, &CAM.posX) > 0xA00) {
           st->child = 0;
@@ -1636,7 +1636,7 @@ void Level31_UpdateActors(void) {
         actor->renderList = 0xA0;
         *(int *)&actor->tint0 = ACTOR_TINT_NEUTRAL;
         if (g_nActorAnimDone != 0) {
-          actor->subMode = 0;
+          actor->subMode = HATCH_CUE_NONE;
           actor->mode = HATCH_SEALED_WAIT;
           ANIM_RESET(actor, HATCH_SEALED_WAIT);
           continue;
@@ -1644,7 +1644,7 @@ void Level31_UpdateActors(void) {
         break;
 
       case HATCH_SEALED_WAIT:
-        if (actor->subMode == 1) {
+        if (actor->subMode == HATCH_CUE) {
           actor->mode = HATCH_SEALED_IDLE;
           ANIM_RESET(actor, HATCH_SEALED_IDLE);
           continue;
@@ -2159,7 +2159,7 @@ void Level31_UpdateActors(void) {
             }
             st->held = g_pfnLevelSpawnActor(t, actor);
           }
-          g_pActorListBase[st->hatch].subMode = 1;
+          g_pActorListBase[st->hatch].subMode = HATCH_CUE;
         }
         if (g_nActorAnimDone != 0) {
           ANIM_QUEUE(actor, HCARRIER_THROW);
@@ -2172,7 +2172,7 @@ void Level31_UpdateActors(void) {
         if (h != 0 && actor->nextFrame >= HCARRIER_THROW_FRAME) {
           short *hs;
 
-          h->subMode = 1;
+          h->subMode = FLOATBARREL_TUMBLING;
           hs = h->state;
           st->held->rotZ = actor->rotZ + 0x40;
           *hs = HCARRIER_THROW_SPEED;
@@ -2534,13 +2534,13 @@ void Level31_UpdateActors(void) {
         }
         w = st->rider;
         if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == HATCH_OPEN) {
-          w->subMode = 1;
+          w->subMode = HATCH_CUE;
         }
         st->timer = 0;
         actor->cullRadius = ACTOR_CULL_HIDDEN;
         actor->drawn = 0;
         actor->mode = FLOATBARREL_BLAST;
-        actor->subMode = 0;
+        actor->subMode = FLOATBARREL_AFLOAT;
         break;
       }
 
@@ -2575,7 +2575,7 @@ void Level31_UpdateActors(void) {
         }
         break;
       }
-      if (actor->subMode != 0) {
+      if (actor->subMode != FLOATBARREL_AFLOAT) {
         int f;
 
         PlayActorMeshVoice(actor, FLOATBARREL_VOICE_TUMBLE, &actor->voiceRow);
@@ -2632,7 +2632,7 @@ void Level31_UpdateActors(void) {
                                       SPY.bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
           st->sink = FLOATBARREL_RUN_SINK;
           st->timer = 0;
-          actor->subMode = 0;
+          actor->subMode = FLOATBARREL_AFLOAT;
           actor->mode = FLOATBARREL_RUN;
           actor->posZ += FLOATBARREL_RUN_HOP;
           PlayActorMeshVoice(actor, FLOATBARREL_VOICE_RUN, 0);
@@ -2786,13 +2786,13 @@ void Level31_UpdateActors(void) {
         }
         w = st->rider;
         if (w != 0 && w->type == ACTOR_TYPE_HATCH && w->mode == HATCH_OPEN) {
-          w->subMode = 1;
+          w->subMode = HATCH_CUE;
         }
         st->timer = 0;
         actor->cullRadius = ACTOR_CULL_HIDDEN;
         actor->drawn = 0;
         actor->mode = FLOATBARREL_BLAST;
-        actor->subMode = 0;
+        actor->subMode = FLOATBARREL_AFLOAT;
         break;
       }
 
@@ -2860,7 +2860,7 @@ void Level31_UpdateActors(void) {
         break;
       }
       }
-      if (actor->subMode != 0) {
+      if (actor->subMode != FLOATBARREL_AFLOAT) {
         int f;
 
         PlayActorMeshVoice(actor, FLOATBARREL_VOICE_TUMBLE, &actor->voiceRow);
@@ -4086,7 +4086,7 @@ void Level31_UpdateActors(void) {
         if (ApproxDist2D(&st->sign->posX, &SPY.posX) < LEVELEXIT_ENTER_RANGE) {
           unsigned char was = actor->subMode;
           int prev = g_anCosineLut[was];
-          unsigned char now = was + 8;
+          unsigned char now = was + LETTER_SWAY_STEP;
 
           actor->subMode = now;
           actor->rotZ =
@@ -4097,7 +4097,7 @@ void Level31_UpdateActors(void) {
           int idx;
           short *swing;
 
-          actor->subMode += 8;
+          actor->subMode += LETTER_SWAY_STEP;
           bearing = ArcTan2(SPY.posX - st->sign->posX,
                                   SPY.posY - st->sign->posY, ATAN_ANGLE8);
           v480[0] = (g_anCosineLut[bearing] * 3) >> 4;

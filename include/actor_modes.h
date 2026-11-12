@@ -512,6 +512,11 @@ enum PortalNameMode {
  * both 0). */
 #define ORBIT_OWNER_FAR 0
 
+/* A floating-name letter's ->subMode is its sway phase (an 8-bit angle,
+ * cosine-LUT index) advancing LETTER_SWAY_STEP a frame; the letter's yaw
+ * swings 3/512 of its cosine either side. */
+#define LETTER_SWAY_STEP 8
+
 /* ->subMode of a portal name sign: the side the camera reads it from;
  * SpawnNameLetterActors mirrors the letter arc for NAMESIDE_BACK. */
 enum NameSignSide {
@@ -2747,6 +2752,13 @@ enum HatchMode {
   HATCH_SEALED_WAIT = 4,
 };
 
+/* A hatch's ->subMode cue: its carrier lifting a barrel out sends a waiting
+ * hatch back to IDLE; its barrel or mine blowing up lets an open one close. */
+enum HatchCue {
+  HATCH_CUE_NONE = 0,
+  HATCH_CUE = 1,
+};
+
 /* HatchState.kind (spawn record). */
 enum HatchKind {
   HATCH_KIND_BARREL = 0, /* any hit opens it; holds an ACTOR_TYPE_FLOATING_BARREL */
@@ -3613,6 +3625,13 @@ enum FloatingBarrelMode {
   FLOATBARREL_BURST = 2, /* bursts into staves and splinters, then BLAST */
   FLOATBARREL_BLAST = 3, /* the push-back blast grows for 8 frames, then despawn */
   FLOATBARREL_RUN = 4,   /* the mine was charged: runs at the nearest target, then BURST */
+};
+/* ->subMode of a floating barrel / mine: TUMBLING once a hatch carrier has
+ * thrown it (rolls and sinks to the water, bursting on dry ground); a charge
+ * that sets it running clears it. */
+enum FloatBarrelSub {
+  FLOATBARREL_AFLOAT = 0,
+  FLOATBARREL_TUMBLING = 1,
 };
 
 /* Barrel / mine tuning. A charged mine hops RUN_HOP up and runs at RUN_SPEED

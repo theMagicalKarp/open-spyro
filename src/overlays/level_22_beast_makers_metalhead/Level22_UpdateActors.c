@@ -4307,7 +4307,7 @@ void Level22_UpdateActors(void) {
         if (ApproxDist2D(&st->sign->posX, &SPY.posX) < LEVELEXIT_ENTER_RANGE) {
           unsigned char was = actor->subMode;
           int prev = g_anCosineLut[was];
-          unsigned char now = was + 8;
+          unsigned char now = was + LETTER_SWAY_STEP;
 
           actor->subMode = now;
           actor->rotZ =
@@ -4318,7 +4318,7 @@ void Level22_UpdateActors(void) {
           int idx;
           short *swing;
 
-          actor->subMode += 8;
+          actor->subMode += LETTER_SWAY_STEP;
           bearing = ArcTan2(SPY.posX - st->sign->posX,
                                   SPY.posY - st->sign->posY, ATAN_ANGLE8);
           g608[0] = (g_anCosineLut[bearing] * 3) >> 4;

@@ -1987,7 +1987,7 @@ void Level17_UpdateActors(void) {
         if (ApproxDist2D(&st->sign->posX, &spy->posX) < LEVELEXIT_ENTER_RANGE) {
           int oldval;
           oldval = g_anCosineLut[actor->subMode];
-          actor->subMode += 8;
+          actor->subMode += LETTER_SWAY_STEP;
           actor->rotZ = actor->rotZ - (oldval * 3 >> 9) +
                          (g_anCosineLut[actor->subMode] * 3 >> 9);
         } else {
@@ -1997,7 +1997,7 @@ void Level17_UpdateActors(void) {
           int vecC[3];
           int vecD[3];
 
-          actor->subMode += 8;
+          actor->subMode += LETTER_SWAY_STEP;
           anglespyro = ArcTan2(spy->posX - st->sign->posX,
                                      SPY.posY - st->sign->posY, ATAN_ANGLE8);
           vecA[0] = g_anCosineLut[anglespyro] * 3 >> 4;
@@ -2030,7 +2030,7 @@ void Level17_UpdateActors(void) {
           actor->posZ = actor->posZ + (g_anCosineLut[anglespyro] * 3 >> 3) + 0x600;
         }
       } else {
-        actor->subMode += 8;
+        actor->subMode += LETTER_SWAY_STEP;
         actor->rotZ = actor->floorOffset + (g_anCosineLut[actor->subMode] * 3 >> 9);
       }
     }

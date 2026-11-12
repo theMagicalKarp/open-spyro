@@ -3621,7 +3621,7 @@ void Level3_UpdateActors(void) {
         if (ApproxDist2D(&st->sign->posX, &spy->posX) < LEVELEXIT_ENTER_RANGE) {
           unsigned char was = actor->subMode;
           int prev = g_anCosineLut[was];
-          unsigned char now = was + 8;
+          unsigned char now = was + LETTER_SWAY_STEP;
 
           actor->subMode = now;
           actor->rotZ =
@@ -3632,7 +3632,7 @@ void Level3_UpdateActors(void) {
           int idx;
           short *swing;
 
-          actor->subMode += 8;
+          actor->subMode += LETTER_SWAY_STEP;
           bearing = ArcTan2(spy->posX - st->sign->posX,
                                   SPY.posY - st->sign->posY, ATAN_ANGLE8);
           z304[0] = (g_anCosineLut[bearing] * 3) >> 4;
