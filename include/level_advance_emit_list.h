@@ -56,6 +56,12 @@ extern int g_nSparxHealth;
 #define HEAD ((short *)(rec + 0xA))
 #define HEAD_U ((unsigned short *)(rec + 0xA))
 #define VEL ((short *)(rec + 0x18))            /* velocity / spin, svector */
+#define VEL_U ((unsigned short *)(rec + 0x18))
+/* The drifting quads' spin step (added to SPIN each tick) and the 0/1
+ * toggle that paces the sparks' z climb (SPARK_Z_CLIMB). */
+#define SPIN_RATE rec[0x1E]
+#define CLIMB_TOGGLE HS(0x1E)
+#define CLIMB_TOGGLE_U HU(0x1E)
 /* A billboard's half-size and 8-bit spin angle (RasterizeEmitList scales and
  * turns the quad's corners by them); every arm that touches them is a quad
  * class. */
@@ -82,6 +88,17 @@ extern int g_nSparxHealth;
 #define DEPTH_BIAS rec[0x11]
 /* Swirl records (ribbon / smear): the point circles its centre at
  * SWIRL_ANGLE (sine-LUT index), SWIRL_RADIUS growing until it is freed. */
+#define SPIRAL_CENTRE_U ((unsigned short *)(rec + 0x12)) /* EMIT_RISING_SPIRAL x, y */
+#define SMEAR_CENTRE_U ((unsigned short *)(rec + 0x10))  /* EMIT_RISING_SPIRAL_SMEAR x, y */
+/* Per-class fields past the colour word: the jittering motes' (twinkle /
+ * ember / yellow dust) drift step, a burst spark's velocity, the Spyro
+ * orbit sparkle's 12-bit orbit angle and a rising puff's climb rate. */
+#define DRIFT ((short *)(rec + 0x10))
+#define DRIFT_U ((unsigned short *)(rec + 0x10))
+#define BURST_VEL ((short *)(rec + 0x12))
+#define ORBIT_ANGLE HS(0x18)
+#define ORBIT_ANGLE_U HU(0x18)
+#define RISE_SPEED_U HU(0x1E)
 #define SWIRL_ANGLE rec[0x18]
 #define SWIRL_RADIUS rec[0x19]
 /* Fire-jet bands: spin angle and segment index along the jet. */
@@ -94,11 +111,11 @@ extern int g_nSparxHealth;
   COL_B -= (n)
 
 /* Spark drift: every other tick the z velocity (VEL[2], updated through its
- * unsigned view) climbs by one; the short at 0x1E is the 0/1 toggle. */
+ * unsigned view) climbs by one; CLIMB_TOGGLE is the 0/1 toggle. */
 #define SPARK_Z_CLIMB()                                                        \
-  if (HS(0x1E) != 0) {                                                         \
-    HU(0x1C)++;                                                                \
+  if (CLIMB_TOGGLE != 0) {                                                     \
+    VEL_U[2]++;                                                                \
   }                                                                            \
-  HS(0x1E) = 1 - HU(0x1E)
+  CLIMB_TOGGLE = 1 - CLIMB_TOGGLE_U
 
 #endif /* OPEN_SPYRO_LEVEL_ADVANCE_EMIT_LIST_H */

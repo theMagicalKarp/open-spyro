@@ -233,15 +233,15 @@ void Level14_AdvanceEmitList(int step) {
       } else {
         SVectorToVectorShl2(qa, POS);
         rq = GetRandomU32();
-        jq = HU(0x18) - 3;
+        jq = VEL_U[0] - 3;
         jq += rq & 6;
-        HU(0x18) = jq;
+        VEL_U[0] = jq;
         rr = GetRandomU32();
-        jr = HU(0x1A) - 3;
-        dec = HU(0x1C) - 1;
+        jr = VEL_U[1] - 3;
+        dec = VEL_U[2] - 1;
         jr += rr & 6;
-        HU(0x1A) = jr;
-        HU(0x1C) = dec;
+        VEL_U[1] = jr;
+        VEL_U[2] = dec;
         SVectorToVectorShl2(qb, VEL);
         RShiftVector3(qb, 2);
         AddVector(qa, qa, qb);
@@ -332,17 +332,17 @@ void Level14_AdvanceEmitList(int step) {
         goto expire;
       } else {
         CopyVector(w, SPYRO_POS_VIA_LOCKOUT);
-        w[0] += LookupCosine(HS(0x18)) >> 4;
-        w[1] += LookupSine(HS(0x18)) >> 4;
+        w[0] += LookupCosine(ORBIT_ANGLE) >> 4;
+        w[1] += LookupSine(ORBIT_ANGLE) >> 4;
         w[2] += 0x100;
         VectorToSVectorShr2(POS, w);
-        HS(0x18) = HU(0x18) + 0x40;
-        SIZE = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
     case EMIT_BURST_SPARK:
-      AddSVector(POS, POS, &HS(0x12));
+      AddSVector(POS, POS, BURST_VEL);
       FADE_COL(8);
       if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
@@ -400,11 +400,11 @@ void Level14_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = HU(0x12) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SPIRAL_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += *(const int *)&g_nFrameStep * 6;
       SPIN += 4;
-      POS_U[1] = HU(0x14) + (s >> 12);
+      POS_U[1] = SPIRAL_CENTRE_U[1] + (s >> 12);
       if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
@@ -438,7 +438,7 @@ void Level14_AdvanceEmitList(int step) {
     }
 
     case EMIT_RISING_PUFF:
-      POS_U[2] += HU(0x1E);
+      POS_U[2] += RISE_SPEED_U;
       SIZE++;
       FADE_COL(step2);
       AGE += step;
@@ -461,11 +461,11 @@ void Level14_AdvanceEmitList(int step) {
       int c;
 
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
+      if (CLIMB_TOGGLE != 0) {
+        VEL_U[2]++;
       }
       c = COL_R - step;
-      HS(0x1E) = 1 - HU(0x1E);
+      CLIMB_TOGGLE = 1 - CLIMB_TOGGLE_U;
       SIZE += step2;
       if (c < 0) {
         c = 0;
@@ -496,25 +496,25 @@ void Level14_AdvanceEmitList(int step) {
 
       for (i = 0; i < step; i++) {
         if (AGE & 1) {
-          POS_U[0] += HU(0x10);
-          POS_U[1] += HU(0x12);
-          POS_U[2] += HU(0x14);
+          POS_U[0] += DRIFT_U[0];
+          POS_U[1] += DRIFT_U[1];
+          POS_U[2] += DRIFT_U[2];
           if (AGE & 2) {
             /* the `- 1` has to stay int-wide: folded into the unsigned short
              * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
              * hoisted out of the loop as a constant in a callee-saved reg. */
             r = GetRandomU32();
-            j = HU(0x10) - 1;
+            j = DRIFT_U[0] - 1;
             j += r & 2;
-            HU(0x10) = j;
+            DRIFT_U[0] = j;
             r = GetRandomU32();
-            j = HU(0x12) - 1;
+            j = DRIFT_U[1] - 1;
             j += r & 2;
-            HU(0x12) = j;
+            DRIFT_U[1] = j;
             r = GetRandomU32();
-            j = HU(0x14) - 1;
+            j = DRIFT_U[2] - 1;
             j += r & 2;
-            HU(0x14) = j;
+            DRIFT_U[2] = j;
           }
         }
         AGE++;
@@ -694,13 +694,13 @@ void Level14_AdvanceEmitList(int step) {
         FreeEmitListRecord(rec);
         break;
       }
-      POS[0] = (rec[0x1F] * LookupCosine((rec[0x1E] + AGE) << 6)) >> 10;
-      POS[1] = (rec[0x1F] * LookupSine((rec[0x1E] + AGE) << 6)) >> 10;
+      POS[0] = (rec[0x1F] * LookupCosine((SPIN_RATE + AGE) << 6)) >> 10;
+      POS[1] = (rec[0x1F] * LookupSine((SPIN_RATE + AGE) << 6)) >> 10;
       POS[2] = AGE * 2;
       AGE++;
-      POS_U[0] += HU(0x18);
-      POS_U[1] += HU(0x1A);
-      POS_U[2] += HU(0x1C);
+      POS_U[0] += VEL_U[0];
+      POS_U[1] += VEL_U[1];
+      POS_U[2] += VEL_U[2];
       break;
 
     case EMIT_RISING_SPIRAL_SMEAR:
@@ -709,10 +709,10 @@ void Level14_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = HU(0x10) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SMEAR_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += g_nFrameStep * 6;
-      POS_U[1] = HU(0x12) + (s >> 12);
+      POS_U[1] = SMEAR_CENTRE_U[1] + (s >> 12);
       if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
@@ -750,26 +750,26 @@ void Level14_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x28)) {
         goto expire;
       } else {
-        POS_U[0] += HU(0x10);
-        POS_U[1] += HU(0x12);
-        POS_U[2] += HU(0x14);
+        POS_U[0] += DRIFT_U[0];
+        POS_U[1] += DRIFT_U[1];
+        POS_U[2] += DRIFT_U[2];
         r = GetRandomU32();
-        j = HU(0x10) - 1;
+        j = DRIFT_U[0] - 1;
         j += r & 2;
-        HU(0x10) = j;
+        DRIFT_U[0] = j;
         r = GetRandomU32();
-        j = HU(0x12) - 1;
+        j = DRIFT_U[1] - 1;
         j += r & 2;
-        HU(0x12) = j;
+        DRIFT_U[1] = j;
         r = GetRandomU32();
-        k = HU(0x14) - 1;
+        k = DRIFT_U[2] - 1;
         k += r & 2;
-        HU(0x14) = k;
-        if (HS(0x14) >= 3) {
-          HU(0x14) = 2;
+        DRIFT_U[2] = k;
+        if (DRIFT[2] >= 3) {
+          DRIFT_U[2] = 2;
         }
-        if (HS(0x14) < -4) {
-          HS(0x14) = -4;
+        if (DRIFT[2] < -4) {
+          DRIFT[2] = -4;
         }
         COL_R -= 2;
         COL_G -= 2;

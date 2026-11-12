@@ -140,17 +140,17 @@ void Level26_AdvanceEmitList(int step) {
         FreeEmitListRecord(rec);
       } else {
         CopyVector(v, SPYRO_POS_VIA_LOCKOUT);
-        v[0] += LookupCosine(HS(0x18)) >> 4;
-        v[1] += LookupSine(HS(0x18)) >> 4;
+        v[0] += LookupCosine(ORBIT_ANGLE) >> 4;
+        v[1] += LookupSine(ORBIT_ANGLE) >> 4;
         v[2] += 0x100;
         VectorToSVectorShr2(POS, v);
-        HS(0x18) = HU(0x18) + 0x40;
-        SIZE = abs(LookupCosine((HS(0x18) - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & 0xFFF)) / 170;
       }
       break;
 
     case EMIT_BURST_SPARK:
-      AddSVector(POS, POS, &HS(0x12));
+      AddSVector(POS, POS, BURST_VEL);
       FADE_COL(8);
       if (COL_R == 0 || VISIBLE == 0) {
         FreeEmitListRecord(rec);
@@ -207,11 +207,11 @@ void Level26_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = HU(0x12) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SPIRAL_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += *(const int *)&g_nFrameStep * 6;
       SPIN += 4;
-      POS_U[1] = HU(0x14) + (s >> 12);
+      POS_U[1] = SPIRAL_CENTRE_U[1] + (s >> 12);
       if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
@@ -248,10 +248,10 @@ void Level26_AdvanceEmitList(int step) {
        * written out rather than going through AddSVector().  The age
        * increment is the LAST statement -- writing it first costs 22 insns
        * of scheduling in this arm. */
-      POS_U[0] += HU(0x18);
-      POS_U[1] += HU(0x1A);
-      POS_U[2] += HU(0x1C);
-      SPIN += rec[0x1E];
+      POS_U[0] += VEL_U[0];
+      POS_U[1] += VEL_U[1];
+      POS_U[2] += VEL_U[2];
+      SPIN += SPIN_RATE;
       AGE++;
       if (AGED_OR_CULLED(0x20)) {
         FreeEmitListRecord(rec);
@@ -262,11 +262,11 @@ void Level26_AdvanceEmitList(int step) {
       int c;
 
       AddSVector(POS, POS, VEL);
-      if (HS(0x1E) != 0) {
-        HU(0x1C)++;
+      if (CLIMB_TOGGLE != 0) {
+        VEL_U[2]++;
       }
       c = COL_R - step;
-      HS(0x1E) = 1 - HU(0x1E);
+      CLIMB_TOGGLE = 1 - CLIMB_TOGGLE_U;
       SIZE += step * 2;
       if (c < 0) {
         c = 0;
@@ -296,25 +296,25 @@ void Level26_AdvanceEmitList(int step) {
 
       for (i = 0; i < step; i++) {
         if (AGE & 1) {
-          POS_U[0] += HU(0x10);
-          POS_U[1] += HU(0x12);
-          POS_U[2] += HU(0x14);
+          POS_U[0] += DRIFT_U[0];
+          POS_U[1] += DRIFT_U[1];
+          POS_U[2] += DRIFT_U[2];
           if (AGE & 2) {
             /* the `- 1` has to stay int-wide: folded into the unsigned short
              * it becomes `+ 0xFFFF`, which no longer fits an addiu and gets
              * hoisted out of the loop as a constant in a callee-saved reg. */
             r = GetRandomU32();
-            j = HU(0x10) - 1;
+            j = DRIFT_U[0] - 1;
             j += r & 2;
-            HU(0x10) = j;
+            DRIFT_U[0] = j;
             r = GetRandomU32();
-            j = HU(0x12) - 1;
+            j = DRIFT_U[1] - 1;
             j += r & 2;
-            HU(0x12) = j;
+            DRIFT_U[1] = j;
             r = GetRandomU32();
-            j = HU(0x14) - 1;
+            j = DRIFT_U[2] - 1;
             j += r & 2;
-            HU(0x14) = j;
+            DRIFT_U[2] = j;
           }
         }
         AGE++;
@@ -458,10 +458,10 @@ void Level26_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = HU(0x10) + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SMEAR_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += g_nFrameStep * 6;
-      POS_U[1] = HU(0x12) + (s >> 12);
+      POS_U[1] = SMEAR_CENTRE_U[1] + (s >> 12);
       if (SWIRL_RADIUS >= 0xC1) {
         FreeEmitListRecord(rec);
       }
@@ -497,26 +497,26 @@ void Level26_AdvanceEmitList(int step) {
       if (AGED_OR_CULLED(0x28)) {
         FreeEmitListRecord(rec);
       } else {
-        POS_U[0] += HU(0x10);
-        POS_U[1] += HU(0x12);
-        POS_U[2] += HU(0x14);
+        POS_U[0] += DRIFT_U[0];
+        POS_U[1] += DRIFT_U[1];
+        POS_U[2] += DRIFT_U[2];
         r = GetRandomU32();
-        j = HU(0x10) - 1;
+        j = DRIFT_U[0] - 1;
         j += r & 2;
-        HU(0x10) = j;
+        DRIFT_U[0] = j;
         r = GetRandomU32();
-        j = HU(0x12) - 1;
+        j = DRIFT_U[1] - 1;
         j += r & 2;
-        HU(0x12) = j;
+        DRIFT_U[1] = j;
         r = GetRandomU32();
-        k = HU(0x14) - 1;
+        k = DRIFT_U[2] - 1;
         k += r & 2;
-        HU(0x14) = k;
-        if (HS(0x14) >= 3) {
-          HU(0x14) = 2;
+        DRIFT_U[2] = k;
+        if (DRIFT[2] >= 3) {
+          DRIFT_U[2] = 2;
         }
-        if (HS(0x14) < -4) {
-          HS(0x14) = -4;
+        if (DRIFT[2] < -4) {
+          DRIFT[2] = -4;
         }
         COL_R -= 2;
         COL_G -= 2;
