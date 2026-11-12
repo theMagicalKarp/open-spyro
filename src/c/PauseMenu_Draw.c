@@ -82,6 +82,8 @@ void PauseMenu_Draw(void) {
     BuildRenderEntityLists();
     h = DRAW_H;
     ComposeFrameScene();
+    /* The two do / while (0) groups are cse block boundaries (A200) that
+       keep the original's load / call order; they never loop. */
     do {
       strip = MENU_BACKDROP_X;
       RasterizeEmitList();
