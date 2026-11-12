@@ -280,7 +280,7 @@ void Level27_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5;
+      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -457,7 +457,7 @@ void Level27_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      rec->u.spark.toggle = (int)GetRandomU32() % 2 + 1;
+      rec->u.spark.toggle = (int)GetRandomU32() % 2 + 1; /* RISE_SPEED_U: climbs 1 or 2 */
       rec->u.spark.size = 8;
       rec->u.spark.spin = GetRandomU32();
       rec->u.spark.r = 0x40;
