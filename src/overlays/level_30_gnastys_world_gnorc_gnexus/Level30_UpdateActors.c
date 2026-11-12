@@ -2157,7 +2157,7 @@ void Level30_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
       TumbleState *st = actor->state;
-      register int i asm("$16");
+      register int i asm("$16"); /* s0, as in the original (A374) */
 
       if (st->life > 0) {
         if (actor->drawn == 0) {
@@ -2304,7 +2304,7 @@ void Level30_UpdateActors(void) {
 
       switch (actor->mode) {
       case PORTALGUIDE_ENTER: {
-        register int *m asm("$16") = svM;
+        register int *m asm("$16") = svM; /* s0, as in the original (A374) */
         int *cf = &SPY.requestMask;
         PortalCamPath *portal;
         int *aim;
