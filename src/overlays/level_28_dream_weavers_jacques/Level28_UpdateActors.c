@@ -290,7 +290,7 @@ void Level28_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
+        } else if (actor->subMode != FOLLOWER_HELD || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = FOLLOWER_RELEASE_STAGGER;
           st->count = 1;
 
@@ -1871,7 +1871,7 @@ void Level28_UpdateActors(void) {
           ENTER_POSE(actor, SINGER_REST);
         }
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) &&
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) &&
           (actor->mode < SINGER_STRUCK || actor->mode == SINGER_RETURN)) {
         actor->flags = 0;
         if (st->mode == SINGER_ROLE_CARRIED) {
@@ -2230,7 +2230,7 @@ void Level28_UpdateActors(void) {
     case ACTOR_TYPE_WANDERING_CRITTER: {
       CritterKnockState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         EBB_BREAK();
         actor->flags = 0;
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
@@ -2365,7 +2365,7 @@ void Level28_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & ACTOR_HITS_SPYRO) {
+        } else if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2541,7 +2541,7 @@ void Level28_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         continue;
       }
 
@@ -3037,7 +3037,7 @@ void Level28_UpdateActors(void) {
           actor->subMode = SEEDPOD_SUB_TINTED;
           actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
         }
-        if (actor->flags & ACTOR_HITS_SPYRO) {
+        if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3286,7 +3286,7 @@ void Level28_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         break;
       }
 

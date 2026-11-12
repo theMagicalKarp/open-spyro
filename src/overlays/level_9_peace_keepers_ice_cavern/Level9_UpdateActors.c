@@ -285,7 +285,7 @@ void Level9_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
+        } else if (actor->subMode != FOLLOWER_HELD || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = FOLLOWER_RELEASE_STAGGER;
           st->count = 1;
 
@@ -1619,7 +1619,7 @@ void Level9_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & ACTOR_HITS_SPYRO) {
+        } else if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -1795,7 +1795,7 @@ void Level9_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         continue;
       }
 
@@ -2090,7 +2090,7 @@ void Level9_UpdateActors(void) {
       SnowballThrowerState *st = actor->state;
       int r;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != SNOWTHROW_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != SNOWTHROW_KNOCKED) {
         st->knockHeading = StepAndLerpAngle8(ArcTan2(actor->posX - spy->posX,
                                                 actor->posY - spy->posY, ATAN_ANGLE8),
                                   spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);
@@ -2265,7 +2265,7 @@ void Level9_UpdateActors(void) {
     case ACTOR_TYPE_CIRCLING_BIRD: {
       CirclingBirdState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CBIRD_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != CBIRD_KNOCKED) {
         if (actor->mode != CBIRD_CIRCLE || st->timer == 0) {
           SubtractVector(svK, &SPY.posX, &actor->posX);
           RShiftVector3(svK, 2);
@@ -2959,7 +2959,7 @@ void Level9_UpdateActors(void) {
           actor->subMode = SEEDPOD_SUB_TINTED;
           actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
         }
-        if (actor->flags & ACTOR_HITS_SPYRO) {
+        if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3217,7 +3217,7 @@ void Level9_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         break;
       }
 

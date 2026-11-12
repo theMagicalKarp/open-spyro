@@ -292,7 +292,7 @@ void Level21_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
+        } else if (actor->subMode != FOLLOWER_HELD || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = FOLLOWER_RELEASE_STAGGER;
           st->count = 1;
 
@@ -2508,7 +2508,7 @@ void Level21_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & ACTOR_HITS_SPYRO) {
+        } else if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2684,7 +2684,7 @@ void Level21_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         continue;
       }
 
@@ -3004,7 +3004,7 @@ void Level21_UpdateActors(void) {
     case ACTOR_TYPE_PATH_RUNNER + 1: {
       PathRunnerState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode >= RUNNER_WAIT &&
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode >= RUNNER_WAIT &&
           actor->mode != RUNNER_FLEE) {
         st->knockSpeed = PRUN_KNOCK_SPEED;
         if (actor->flags & ACTOR_HIT_CHARGE) {
@@ -3620,7 +3620,7 @@ void Level21_UpdateActors(void) {
           actor->subMode = SEEDPOD_SUB_TINTED;
           actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
         }
-        if (actor->flags & ACTOR_HITS_SPYRO) {
+        if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -4114,7 +4114,7 @@ void Level21_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         break;
       }
 

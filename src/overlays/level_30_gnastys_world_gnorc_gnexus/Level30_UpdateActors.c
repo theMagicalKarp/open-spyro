@@ -241,7 +241,7 @@ void Level30_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
+        } else if (actor->subMode != FOLLOWER_HELD || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = FOLLOWER_RELEASE_STAGGER;
           st->count = 1;
 
@@ -1573,7 +1573,7 @@ void Level30_UpdateActors(void) {
         SnapActorToGround(actor);
       }
 
-      if (actor->flags & ACTOR_HITS_SPYRO) {
+      if (actor->flags & ACTOR_HIT_BY_SPYRO) {
         int i;
 
         actor->soundRange = SOUND_RANGE(0x8000);
@@ -1741,7 +1741,7 @@ void Level30_UpdateActors(void) {
 
       EBB_BREAK();
       st = actor->state;
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != CRITTER_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != CRITTER_KNOCKED) {
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, KNOCK_BEND_STEP, KNOCK_BEND_FRAC);

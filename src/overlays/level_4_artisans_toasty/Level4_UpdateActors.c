@@ -298,7 +298,7 @@ void Level4_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
+        } else if (actor->subMode != FOLLOWER_HELD || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = FOLLOWER_RELEASE_STAGGER;
           st->count = 1;
 
@@ -1599,7 +1599,7 @@ void Level4_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         continue;
       }
 
@@ -2622,7 +2622,7 @@ void Level4_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != REAR_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != REAR_KNOCKED) {
         SetActorGroupSubstate(actor, 1);
         st->knockHeading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),

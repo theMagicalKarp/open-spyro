@@ -196,7 +196,7 @@ void Level1_UpdateActors(void) {
       EBB_BREAK();
       st = (PathState *)actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != PATROLLER_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 && actor->mode != PATROLLER_KNOCKED) {
         actor->flags = 0; /* cleared first: the FLAME test below never passes */
         st->heading = ArcTan2(actor->posX - spy->posX,
                                     actor->posY - spy->posY, ATAN_ANGLE8);
@@ -473,7 +473,7 @@ void Level1_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
+        } else if (actor->subMode != FOLLOWER_HELD || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = FOLLOWER_RELEASE_STAGGER;
           st->count = 1;
 
@@ -649,7 +649,7 @@ void Level1_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
         st->knockSpeed = THIEF_KNOCK_SPEED;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->knockSpeed = THIEF_CHARGE_KNOCK_SPEED;
@@ -1434,7 +1434,7 @@ void Level1_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != SENTRY_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 && actor->mode != SENTRY_KNOCKED) {
         st->heading = StepAngle8Toward(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20);
@@ -2255,7 +2255,7 @@ void Level1_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != REAR_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != REAR_KNOCKED) {
         st->knockHeading = StepAngle8Toward(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
             spy->bodyRotZ, 0x20);
@@ -2792,7 +2792,7 @@ void Level1_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & ACTOR_HITS_SPYRO) {
+        } else if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2968,7 +2968,7 @@ void Level1_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         continue;
       }
 
@@ -3758,7 +3758,7 @@ void Level1_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         break;
       }
 

@@ -1368,7 +1368,7 @@ void Level29_UpdateActors(void) {
       FlightChestState *st = actor->state;
       int i;
 
-      if (actor->flags & ACTOR_HITS_SPYRO) {
+      if (actor->flags & ACTOR_HIT_BY_SPYRO) {
         Actor *reward;
 
         PlayActorMeshVoice(actor, FCHEST_VOICE_BURST, 0);

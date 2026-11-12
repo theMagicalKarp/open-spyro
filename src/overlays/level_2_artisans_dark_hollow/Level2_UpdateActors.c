@@ -286,7 +286,7 @@ void Level2_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
+        } else if (actor->subMode != FOLLOWER_HELD || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = FOLLOWER_RELEASE_STAGGER;
           st->count = 1;
 
@@ -1693,7 +1693,7 @@ void Level2_UpdateActors(void) {
 
       TickActorFlameGlow(actor);
       EBB_BREAK();
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != POSTGUARD_KNOCKED &&
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != POSTGUARD_KNOCKED &&
           (actor->flags != ACTOR_HIT_FLAME || st->flameProof == 0)) {
         st->knockZSpeed = POSTGUARD_KNOCK_VZ;
         st->knockSpeed = POSTGUARD_KNOCK_SPEED;
@@ -2175,7 +2175,7 @@ void Level2_UpdateActors(void) {
             actor->rotY = st->rotY;
             actor->posZ = st->restZ;
           }
-        } else if (actor->flags & ACTOR_HITS_SPYRO) {
+        } else if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->shake = 1;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2351,7 +2351,7 @@ void Level2_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         continue;
       }
 
@@ -2876,7 +2876,7 @@ void Level2_UpdateActors(void) {
     case ACTOR_TYPE_HOPPING_CRITTER: {
       HopState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != GRAZER_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != GRAZER_KNOCKED) {
         EBB_BREAK();
         actor->flags = 0;
         st->knockHeading = StepAndLerpAngle8(
@@ -3006,7 +3006,7 @@ void Level2_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         break;
       }
 

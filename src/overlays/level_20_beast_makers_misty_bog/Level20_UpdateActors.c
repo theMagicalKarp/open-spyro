@@ -1996,7 +1996,7 @@ void Level20_UpdateActors(void) {
         SnapActorToGround(actor);
       }
 
-      if (actor->flags & ACTOR_HITS_SPYRO) {
+      if (actor->flags & ACTOR_HIT_BY_SPYRO) {
         int i;
 
         actor->soundRange = SOUND_RANGE(0x8000);
@@ -2420,7 +2420,7 @@ void Level20_UpdateActors(void) {
           actor->subMode = SEEDPOD_SUB_TINTED;
           actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
         }
-        if (actor->flags & ACTOR_HITS_SPYRO) {
+        if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -2787,7 +2787,7 @@ void Level20_UpdateActors(void) {
         dist = VectorLength(A304, VEC_LEN_XY);
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != LURKER_KNOCKED &&
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != LURKER_KNOCKED &&
           actor->mode != LURKER_SINK) {
         EBB_BREAK();
         actor->flags = 0;
@@ -3093,7 +3093,7 @@ void Level20_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         break;
       }
 

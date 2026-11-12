@@ -334,7 +334,7 @@ void Level3_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != WARD_KNOCKED && actor->mode != WARD_DAZED &&
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != WARD_KNOCKED && actor->mode != WARD_DAZED &&
           actor->mode != WARD_BURN) {
         st->heading = StepAngle8Toward(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
@@ -608,7 +608,7 @@ void Level3_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
         st->knockSpeed = THIEF_KNOCK_SPEED;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->knockSpeed = THIEF_CHARGE_KNOCK_SPEED;
@@ -2385,7 +2385,7 @@ void Level3_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         continue;
       }
 
@@ -2948,7 +2948,7 @@ void Level3_UpdateActors(void) {
           actor->subMode = SEEDPOD_SUB_TINTED;
           actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
         }
-        if (actor->flags & ACTOR_HITS_SPYRO) {
+        if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -3306,7 +3306,7 @@ void Level3_UpdateActors(void) {
     case ACTOR_TYPE_LINKED_FOLLOWER: {
       Follower *st = actor->state;
 
-      if (actor->mode != LFOLLOW_KNOCKED && (actor->flags & ACTOR_HITS_SPYRO)) {
+      if (actor->mode != LFOLLOW_KNOCKED && (actor->flags & ACTOR_HIT_BY_SPYRO)) {
         st->vz = 0xC8;
         st->spinX = RandomIntInRange(-10, 10);
         st->spinY = RandomIntInRange(-10, 10);
@@ -3396,7 +3396,7 @@ void Level3_UpdateActors(void) {
 
       SnapActorToGround(actor);
       EncodeHitNormalToActorGroundCode(actor);
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != GRAZER_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != GRAZER_KNOCKED) {
         for (i = 0; i < 6; i++) {
           if (ACTOR_POOL_LOW()) {
             break;
@@ -3533,7 +3533,7 @@ void Level3_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         break;
       }
 

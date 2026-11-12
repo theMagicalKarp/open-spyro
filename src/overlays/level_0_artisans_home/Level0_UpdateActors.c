@@ -114,7 +114,7 @@ void Level0_UpdateActors(void) {
     case ACTOR_TYPE_PATH_PATROLLER: {
       PathState *st = (PathState *)actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != PATROLLER_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 && actor->mode != PATROLLER_KNOCKED) {
         actor->flags = 0; /* cleared first: the FLAME test below never passes */
         st->heading = ArcTan2(actor->posX - SPY.posX,
                                     actor->posY - SPY.posY, ATAN_ANGLE8);
@@ -1313,7 +1313,7 @@ void Level0_UpdateActors(void) {
       WalkerState *st = (WalkerState *)actor->state;
       int distance;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 &&
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 &&
           (unsigned int)(actor->mode - PENEMY_FLAMED) >= 3) { /* not FLAMED, CHARGED or FALL */
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
@@ -2019,7 +2019,7 @@ void Level0_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         continue;
       }
 
@@ -2516,7 +2516,7 @@ void Level0_UpdateActors(void) {
     case ACTOR_TYPE_FLOCK_LEADER: {
       FlockState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode < FLOCK_BOLT) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 && actor->mode < FLOCK_BOLT) {
         while (st->chainA >= 0 && g_pActorListBase[st->chainA].mode >= ACTOR_MODE_DORMANT) {
           st->chainA = *(int *)g_pActorListBase[st->chainA].state;
         }
@@ -3019,7 +3019,7 @@ void Level0_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         break;
       }
 

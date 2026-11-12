@@ -301,7 +301,7 @@ void Level13_UpdateActors(void) {
             DespawnActorRecord(actor);
             continue;
           }
-        } else if (actor->subMode != 0 || parent->mode >= ACTOR_MODE_DORMANT) {
+        } else if (actor->subMode != FOLLOWER_HELD || parent->mode >= ACTOR_MODE_DORMANT) {
           st->release = FOLLOWER_RELEASE_STAGGER;
           st->count = 1;
 
@@ -471,7 +471,7 @@ void Level13_UpdateActors(void) {
       EBB_BREAK();
       st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 && actor->mode != THIEF_CAUGHT) {
         st->knockSpeed = THIEF_KNOCK_SPEED;
         if ((actor->flags & ACTOR_HIT_CHARGE) != 0) {
           st->knockSpeed = THIEF_CHARGE_KNOCK_SPEED;
@@ -1256,7 +1256,7 @@ void Level13_UpdateActors(void) {
     case ACTOR_TYPE_PATH_WALKER: {
       PathState *st = actor->state;
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) && actor->mode != PATHWALK_DYING) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) && actor->mode != PATHWALK_DYING) {
         SpawnActorDeathDrop(actor, DROP_TUMBLE_IF_NEAR, 0, 0);
         MarkActorLiveKill(actor);
         actor->mode = PATHWALK_DYING;
@@ -2377,7 +2377,7 @@ void Level13_UpdateActors(void) {
       if (st->snapToGround != 0) {
         SnapActorToGround(actor);
       }
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         continue;
       }
 
@@ -3134,7 +3134,7 @@ void Level13_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) != 0 && actor->mode != VILLAGER_KNOCKED) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 && actor->mode != VILLAGER_KNOCKED) {
         st->speed = VILLAGER_KNOCK_SPEED;
         st->heading = StepAndLerpAngle8(
             ArcTan2(actor->posX - spy->posX, actor->posY - spy->posY, ATAN_ANGLE8),
@@ -4749,7 +4749,7 @@ void Level13_UpdateActors(void) {
           actor->subMode = SEEDPOD_SUB_TINTED;
           actor->updateDist = SEEDPOD_IDLE_UPDATE_DIST;
         }
-        if (actor->flags & ACTOR_HITS_SPYRO) {
+        if (actor->flags & ACTOR_HIT_BY_SPYRO) {
           st->timer = 0;
           st->rotX = actor->rotX;
           st->rotY = actor->rotY;
@@ -5301,7 +5301,7 @@ void Level13_UpdateActors(void) {
         }
       }
 
-      if ((actor->flags & ACTOR_HITS_SPYRO) == 0) {
+      if ((actor->flags & ACTOR_HIT_BY_SPYRO) == 0) {
         break;
       }
 
