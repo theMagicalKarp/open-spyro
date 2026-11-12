@@ -88,6 +88,7 @@
 #include "level_sfx.h"
 #include "cd_stream.h"
 #include "level_id.h"
+#include "angle.h"
 
 void Level7_BalloonistCutscene_Update(void)
 {
@@ -121,7 +122,7 @@ void Level7_BalloonistCutscene_Update(void)
         t = g_nActorCutsceneTimer[0];
         if (t < 0x60)
       {
-        cn = LookupSine(((t << 11) / 96) - 0x400) + 0x1000;
+        cn = SINE_EASE((t << 11) / 96);
         if (g_nActorCutsceneTimer[0] == g_nFrameStep)
         {
           if (g_pSparxActor != 0)
@@ -153,8 +154,8 @@ void Level7_BalloonistCutscene_Update(void)
         if (t < 0x18)
         {
           int m;
-          sn = LookupSine(((t << 11) / 24) - 0x400) + 0x1000;
-          if (((g_nActorCutsceneSpyroYawGoal - g_nActorCutsceneSpyroYawStart) & 0xFFF) < 0x801)
+          sn = SINE_EASE((t << 11) / 24);
+          if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneSpyroYawGoal, g_nActorCutsceneSpyroYawStart))
           {
             m = (AbsAngleDelta12(g_nActorCutsceneSpyroYawGoal, g_nActorCutsceneSpyroYawStart) * sn) >> 13; k = g_nActorCutsceneSpyroYawStart + m;
           }
@@ -169,7 +170,7 @@ void Level7_BalloonistCutscene_Update(void)
           if (t < 0x48)
         {
           int sn;
-          sn = LookupSine((((t - 0x18) << 11) / 48) - 0x400) + 0x1000;
+          sn = SINE_EASE(((t - 0x18) << 11) / 48);
           SubtractVector(vecA, &g_nActorCutsceneTimer[8], &g_nActorCutsceneTimer[5]);
           ScaleVector3Sat(vecA, vecA, sn);
           RShiftVector3(vecA, 0xD);
@@ -186,7 +187,7 @@ void Level7_BalloonistCutscene_Update(void)
         }
         else
         {
-          sn = LookupSine((((t - 0x48) << 11) / 24) - 0x400) + 0x1000;
+          sn = SINE_EASE(((t - 0x48) << 11) / 24);
           if ((g_nActorCutsceneTimer[0] - g_nFrameStep) < 0x48)
           {
             int m;
@@ -201,7 +202,7 @@ void Level7_BalloonistCutscene_Update(void)
             g_nSpyroAnimPlayRate = 8;
             g_nActorCutsceneSpyroYawGoal = ((n * 0x10) - 0x800) & 0xFFF;
           }
-          if (((g_nActorCutsceneSpyroYawGoal - g_nActorCutsceneSpyroYawStart) & 0xFFF) < 0x801)
+          if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneSpyroYawGoal, g_nActorCutsceneSpyroYawStart))
           {
             int k; k = g_nActorCutsceneSpyroYawStart + ((AbsAngleDelta12(g_nActorCutsceneSpyroYawGoal, g_nActorCutsceneSpyroYawStart) * sn) >> 13);
             EBB_BREAK();
@@ -222,7 +223,7 @@ void Level7_BalloonistCutscene_Update(void)
         ApplyEulerRotation((int *) (&g_abSpyroPersistentEuler[0]), (int *) (&g_abSpyroPersistentEuler[0x28]), 0);
         SampleSpyroShadowRingHeights(1);
         TickSpyroAttackEffects(g_nFrameStep);
-        if (((g_nActorCutsceneCamYawGoal[0] - g_nActorCutsceneCamYawGoal[-6]) & 0xFFF) < 0x801)
+        if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneCamYawGoal[0], g_nActorCutsceneCamYawGoal[-6]))
         {
           yaw = g_nActorCutsceneCamYawGoal[-6] + ((AbsAngleDelta12(g_nActorCutsceneCamYawGoal[0], g_nActorCutsceneCamYawGoal[-6]) * cn) >> 13);
         }
@@ -503,7 +504,7 @@ void Level7_BalloonistCutscene_Update(void)
         t = g_nActorCutsceneTimer[0];
         if (t < 0x66)
       {
-        cn = LookupSine(((t << 11) / 102) - 0x400) + 0x1000;
+        cn = SINE_EASE((t << 11) / 102);
         if (g_nActorCutsceneTimer[0] == g_nFrameStep)
         {
           g_pActorCutsceneRecord->gateChunk = GATE_CHUNK_ALWAYS;
@@ -569,7 +570,7 @@ void Level7_BalloonistCutscene_Update(void)
             g_nSpyroWorldPosZ = g_nActorCutsceneSpyroFromZ + (LookupSine(t << 5) >> 2);
           }
         }
-        if (((g_nActorCutsceneCamYawGoal[0] - g_nActorCutsceneCamYawGoal[-6]) & 0xFFF) < 0x801)
+        if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneCamYawGoal[0], g_nActorCutsceneCamYawGoal[-6]))
         {
           yaw = g_nActorCutsceneCamYawGoal[-6] + ((AbsAngleDelta12(g_nActorCutsceneCamYawGoal[0], g_nActorCutsceneCamYawGoal[-6]) * cn) >> 13);
         }
@@ -704,8 +705,8 @@ void Level7_BalloonistCutscene_Update(void)
         t = g_nActorCutsceneTimer[0];
         if (t < 0x100)
       {
-        cn = LookupSine(((t << 11) >> 8) - 0x400) + 0x1000;
-        if (((g_nActorCutsceneCamYawStart - g_nActorCutsceneCamYawGoal_s) & 0xFFF) < 0x801)
+        cn = SINE_EASE((t << 11) >> 8);
+        if (ANGLE12_SHORT_WAY_UP(g_nActorCutsceneCamYawStart, g_nActorCutsceneCamYawGoal_s))
         {
           yaw = g_nActorCutsceneCamYawGoal_s + ((AbsAngleDelta12(g_nActorCutsceneCamYawStart, g_nActorCutsceneCamYawGoal_s) * cn) >> 13);
         }

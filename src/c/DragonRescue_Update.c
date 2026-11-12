@@ -244,7 +244,7 @@ void DragonRescue_Update(void) {
                          g_nDragonRescueSweepDurationFrames -
                      0x400) +
           0x1000;
-      if (((OTY - g_nDragonRescueOrbitStartYaw) & 0xFFF) < 0x801) {
+      if (ANGLE12_SHORT_WAY_UP(OTY, g_nDragonRescueOrbitStartYaw)) {
         a = g_nDragonRescueOrbitStartYaw +
             ((AbsAngleDelta12(OTY, g_nDragonRescueOrbitStartYaw) * t) >> 13);
       } else {
@@ -267,7 +267,7 @@ void DragonRescue_Update(void) {
         int dir = ArcTan2(vec[0], vec[1], ATAN_ANGLE8);
 
         if (AbsAngleDelta8(dir, g_abSpyroPersistentEuler[2]) >= 4) {
-          if (((dir - g_abSpyroPersistentEuler[2]) & 0xFF) < 0x81) {
+          if (ANGLE8_SHORT_WAY_UP(dir, g_abSpyroPersistentEuler[2])) {
             g_abSpyroPersistentEuler[2] =
                 g_abSpyroPersistentEuler[2] +
                 (AbsAngleDelta8(dir, g_abSpyroPersistentEuler[2]) >> 2);
@@ -285,7 +285,7 @@ void DragonRescue_Update(void) {
       if (g_nSpyroAnimPlayRate_blk[0] > 0x10) {
         g_nSpyroAnimPlayRate_blk[0] = 0x10;
       }
-      if (((GB[GB_CAM_TARGET_YAW] - GB[GB_CAM_START_YAW]) & 0xFFF) < 0x801) {
+      if (ANGLE12_SHORT_WAY_UP(GB[GB_CAM_TARGET_YAW], GB[GB_CAM_START_YAW])) {
         a = GB[GB_CAM_START_YAW] +
             ((AbsAngleDelta12(GB[GB_CAM_TARGET_YAW], GB[GB_CAM_START_YAW]) *
               t) >>
@@ -340,7 +340,7 @@ void DragonRescue_Update(void) {
           CopyVector(g_anCameraPos, REC(src));
         }
       }
-      if (((OTY - g_nDragonRescueOrbitStartYaw) & 0xFFF) < 0x801) {
+      if (ANGLE12_SHORT_WAY_UP(OTY, g_nDragonRescueOrbitStartYaw)) {
         a = g_nDragonRescueOrbitStartYaw +
             (AbsAngleDelta12(OTY, g_nDragonRescueOrbitStartYaw) *
              (g_nDragonRescueTimer - g_nDragonRescueSweepDurationFrames)) /
