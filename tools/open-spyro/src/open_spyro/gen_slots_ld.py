@@ -5,12 +5,13 @@ Emits config/spyro.main.slots.ld: one anchored slot per function, in VMA order,
     . = 0x80012204 ;
     build/main/asm/text.o(.text.main)
 
-and, for any function that now has a C match in src/c/<name>.c, the compiled
-object fills the same slot instead of (well, alongside the HAVE_C-emptied) asm:
+and, for any function some src/main/**/*.c defines, that file's object fills the
+same slot from the function's own section (config/compile.sh gives every function a
+``.text.<fn>``) instead of (well, alongside the HAVE_C-emptied) asm:
 
     . = 0x8005956c ;
     build/main/asm/text.o(.text.ComputeSaveGameChecksum)   # emptied by --defsym
-    build/main/c/ComputeSaveGameChecksum.o(.text)
+    build/main/c/save_game.o(.text.ComputeSaveGameChecksum)
 
 The ``. = 0xVMA`` anchors pin every function at its original address, so a C
 override that fits its slot reproduces the original bytes and everything after it
@@ -20,13 +21,15 @@ fragment is INCLUDEd by config/spyro.main.ld in place of the old monolithic
 ``text.o(.text)``.
 
 Inputs: config/text_layout.json (full ordered inventory from sectionize) and the
-set of src/c/*.c overrides present.
+functions the src/main/**/*.c files define (open_spyro.c_layout).
 """
 
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
+from open_spyro.c_layout import ABSORBED_BY, check_objects, function_files, object_name
 from open_spyro.paths import repo_root
 
 # The slots are INCLUDEd inside the `.main 0x80010000 :` output section, where the
@@ -34,23 +37,19 @@ from open_spyro.paths import repo_root
 # base + offset). So anchors are written as VMA - base. main always loads here.
 MAIN_BASE = 0x80010000
 
-# Slots that splat split off as their own symbol but that the original emitted as
-# the tail of the PRECEDING function (fragment -> owner). Once the owner is C, its
-# object fills the fragment's bytes too, so the fragment's anchor is dropped (the
-# owner's object runs straight through it). The fragment keeps a comment-only
-# src/c/<fragment>.c so HAVE_C empties its asm and progress counts it.
-ABSORBED_BY = {
-    "func_8001228C": "main",  # main()'s dead epilogue after the infinite frame loop
-}
+# Fragments splat split off the tail of the PRECEDING function (fragment -> owner)
+# live in c_layout.ABSORBED_BY: the owner's object runs straight through the
+# fragment's bytes, so its anchor is dropped once the owner is C.
 
 
-def _rodata_slot_lines(pieces: list[dict], have_c: set[str], ro_obj: str, c_dir: str) -> list[str]:
+def _rodata_slot_lines(pieces: list[dict], have_c: dict[str, str], ro_obj: str) -> list[str]:
     """Anchored rodata piece placements (jtbls / const data owned by functions).
 
-    The asm piece is HAVE_C-emptied with its function, and the C object's .rodata
-    fills the FIRST piece slot owned by that function (gcc 2.7.2 emits one .rodata
-    per object; a function owning several contiguous pieces gets them all from that
-    one placement — contiguity is the layout the original compiler produced too).
+    ``have_c`` maps each C function to its object. The asm piece is HAVE_C-emptied
+    with its function, and the function's ``.rodata.<fn>`` section fills the FIRST
+    piece slot it owns (a function owning several contiguous pieces gets them all
+    from that one placement — contiguity is the layout the original compiler
+    produced too).
     """
     lines: list[str] = []
     placed: set[str] = set()
@@ -66,18 +65,27 @@ def _rodata_slot_lines(pieces: list[dict], have_c: set[str], ro_obj: str, c_dir:
         lines.append(f"    . = 0x{p['offset']:08x} ;")
         lines.append(f"    {ro_obj}(.rodata.{p['sym']})")
         if owner in have_c:
-            lines.append(f"    {c_dir}/{owner}.o(.rodata)")
+            lines.append(f"    {have_c[owner]}(.rodata.{owner})")
             placed.add(owner)
     return lines
 
 
-def run() -> None:
+def _c_objects(repo: Path, segment: str, c_dir: str, check: bool) -> dict[str, str]:
+    """C function -> the object (path as the ld script names it) that defines it."""
+    if check:
+        check_objects(repo, segment, c_dir)
+    return {
+        name: f"{c_dir}/{object_name(repo, segment, src)}.o"
+        for name, src in function_files(repo, segment).items()
+    }
+
+
+def run(check: bool = False) -> None:
     repo = repo_root()
     layout = repo / "config/text_layout.json"
-    src_c = repo / "src/c"
     out = repo / "config/spyro.main.slots.ld"
 
-    have_c = {p.stem for p in src_c.glob("*.c")} if src_c.is_dir() else set()
+    have_c = _c_objects(repo, "main", "build/main/c", check)
 
     funcs = [f for f in json.loads(layout.read_text())["functions"] if f["vram"] is not None]
     funcs.sort(key=lambda f: f["vram"])
@@ -89,19 +97,13 @@ def run() -> None:
     used: list[str] = []
     for f in funcs:
         name, vram = f["name"], f["vram"]
-        owner = ABSORBED_BY.get(name)
-        if owner is not None and (name in have_c) != (owner in have_c):
-            raise SystemExit(
-                f"gen_slots_ld: {name} is absorbed by {owner}: add or remove "
-                f"src/c/{name}.c and src/c/{owner}.c together"
-            )
-        if owner is not None and name in have_c:
+        if name in ABSORBED_BY["main"] and name in have_c:
             used.append(name)
             continue
         lines.append(f"    . = 0x{vram - MAIN_BASE:08x} ;")
         lines.append(f"    build/main/asm/text.o(.text.{name})")
         if name in have_c:
-            lines.append(f"    build/main/c/{name}.o(.text)")
+            lines.append(f"    {have_c[name]}(.text.{name})")
             used.append(name)
     out.write_text("\n".join(lines) + "\n")
 
@@ -112,9 +114,7 @@ def run() -> None:
     ro_lines = [
         "/* Auto-generated by `open-spyro gen-slots-ld` — do not edit. */",
         "/* Fixed-VMA rodata piece slots; INCLUDEd by config/spyro.main.ld. */",
-        *_rodata_slot_lines(
-            pieces, have_c, "build/main/asm/data/rodata_pre.rodata.o", "build/main/c"
-        ),
+        *_rodata_slot_lines(pieces, have_c, "build/main/asm/data/rodata_pre.rodata.o"),
     ]
     ro_out.write_text("\n".join(ro_lines) + "\n")
     print(
@@ -125,7 +125,7 @@ def run() -> None:
         print("  overrides: " + ", ".join(sorted(used)))
 
 
-def run_overlay(name: str) -> None:
+def run_overlay(name: str, check: bool = False) -> None:
     """Fixed-VMA text slots for one function/data-split overlay.
 
     Same model as the main EXE, with the overlay's shared load base
@@ -137,10 +137,9 @@ def run_overlay(name: str) -> None:
     layout = repo / "config/overlays" / f"{name}.text_layout.json"
     overlays = json.loads((repo / "config/overlays.json").read_text())["overlays"]
     base = next(r["vram"] for r in overlays if r["name"] == name)
-    src_c = repo / "src/overlays" / name
     out = repo / "config/overlays" / f"{name}.slots.ld"
 
-    have_c = {p.stem for p in src_c.glob("*.c")} if src_c.is_dir() else set()
+    have_c = _c_objects(repo, name, f"build/overlays/{name}/c", check)
 
     funcs = [f for f in json.loads(layout.read_text())["functions"] if f["vram"] is not None]
     funcs.sort(key=lambda f: f["vram"])
@@ -156,7 +155,7 @@ def run_overlay(name: str) -> None:
         lines.append(f"    . = 0x{vram - base:08x} ;")
         lines.append(f"    {obj_base}/text.o(.text.{fn})")
         if fn in have_c:
-            lines.append(f"    build/overlays/{name}/c/{fn}.o(.text)")
+            lines.append(f"    {have_c[fn]}(.text.{fn})")
             used.append(fn)
     out.write_text("\n".join(lines) + "\n")
 
@@ -164,9 +163,7 @@ def run_overlay(name: str) -> None:
     ro_lines = [
         f"/* Auto-generated by `open-spyro gen-slots-ld --overlay {name}` — do not edit. */",
         f"/* Fixed-VMA rodata piece slots; INCLUDEd by config/overlays/{name}.ld. */",
-        *_rodata_slot_lines(
-            pieces, have_c, f"{obj_base}/data/rodata.rodata.o", f"build/overlays/{name}/c"
-        ),
+        *_rodata_slot_lines(pieces, have_c, f"{obj_base}/data/rodata.rodata.o"),
     ]
     ro_out = repo / "config/overlays" / f"{name}.rodata_slots.ld"
     ro_out.write_text("\n".join(ro_lines) + "\n")

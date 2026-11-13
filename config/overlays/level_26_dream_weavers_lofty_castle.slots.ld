@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_26_dream_weavers_lofty_castle.ld. */
     . = 0x00000aa4 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.Level26_UpdateActors)
-    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_UpdateActors.o(.text)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/update_actors.o(.text.Level26_UpdateActors)
     . = 0x00009be8 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.Level26_SpawnActor)
-    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_SpawnActor.o(.text)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/spawn_actor.o(.text.Level26_SpawnActor)
     . = 0x0000a668 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.Level26_AdvanceEmitList)
-    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_AdvanceEmitList.o(.text)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/advance_emit_list.o(.text.Level26_AdvanceEmitList)
     . = 0x0000ba00 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.Level26_EmitParticles)
-    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_EmitParticles.o(.text)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/emit_particles.o(.text.Level26_EmitParticles)
     . = 0x0000cce4 ;
     build/overlays/level_26_dream_weavers_lofty_castle/asm/overlays/level_26_dream_weavers_lofty_castle/text.o(.text.Level26_OverlayEnd)
-    build/overlays/level_26_dream_weavers_lofty_castle/c/Level26_OverlayEnd.o(.text)
+    build/overlays/level_26_dream_weavers_lofty_castle/c/overlay_end.o(.text.Level26_OverlayEnd)

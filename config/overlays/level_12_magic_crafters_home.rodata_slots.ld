@@ -4,16 +4,16 @@
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_12_magic_crafters_home/c/Level12_BalloonistCutscene_Update.o(.rodata)
+    build/overlays/level_12_magic_crafters_home/c/balloonist_cutscene.o(.rodata.Level12_BalloonistCutscene_Update)
     . = 0x00000024 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_12_magic_crafters_home/c/Level12_BalloonistCutscene_Draw.o(.rodata)
+    build/overlays/level_12_magic_crafters_home/c/balloonist_cutscene.o(.rodata.Level12_BalloonistCutscene_Draw)
     . = 0x000000b4 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_12_magic_crafters_home/c/Level12_UpdateActors.o(.rodata)
+    build/overlays/level_12_magic_crafters_home/c/update_actors.o(.rodata.Level12_UpdateActors)
     . = 0x00000b8c ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B5C4)
-    build/overlays/level_12_magic_crafters_home/c/Level12_AdvanceEmitList.o(.rodata)
+    build/overlays/level_12_magic_crafters_home/c/advance_emit_list.o(.rodata.Level12_AdvanceEmitList)
     . = 0x00000cd0 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/data/rodata.rodata.o(.rodata.jtbl_8007B708)
-    build/overlays/level_12_magic_crafters_home/c/Level12_EmitParticles.o(.rodata)
+    build/overlays/level_12_magic_crafters_home/c/emit_particles.o(.rodata.Level12_EmitParticles)

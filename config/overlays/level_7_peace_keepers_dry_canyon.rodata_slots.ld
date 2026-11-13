@@ -4,16 +4,16 @@
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_BalloonistCutscene_Update.o(.rodata)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/balloonist_cutscene.o(.rodata.Level7_BalloonistCutscene_Update)
     . = 0x00000024 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_BalloonistCutscene_Draw.o(.rodata)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/balloonist_cutscene.o(.rodata.Level7_BalloonistCutscene_Draw)
     . = 0x000000b4 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_UpdateActors.o(.rodata)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/update_actors.o(.rodata.Level7_UpdateActors)
     . = 0x00000a34 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B46C)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_AdvanceEmitList.o(.rodata)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/advance_emit_list.o(.rodata.Level7_AdvanceEmitList)
     . = 0x00000b78 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/data/rodata.rodata.o(.rodata.jtbl_8007B5B0)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_EmitParticles.o(.rodata)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/emit_particles.o(.rodata.Level7_EmitParticles)

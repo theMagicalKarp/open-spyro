@@ -2,10 +2,10 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/credits.ld. */
     . = 0x00000018 ;
     build/overlays/credits/asm/overlays/credits/text.o(.text.Credits_Update)
-    build/overlays/credits/c/Credits_Update.o(.text)
+    build/overlays/credits/c/update.o(.text.Credits_Update)
     . = 0x00001598 ;
     build/overlays/credits/asm/overlays/credits/text.o(.text.Credits_Draw)
-    build/overlays/credits/c/Credits_Draw.o(.text)
+    build/overlays/credits/c/draw.o(.text.Credits_Draw)
     . = 0x00001900 ;
     build/overlays/credits/asm/overlays/credits/text.o(.text.Credits_OverlayEnd)
-    build/overlays/credits/c/Credits_OverlayEnd.o(.text)
+    build/overlays/credits/c/overlay_end.o(.text.Credits_OverlayEnd)

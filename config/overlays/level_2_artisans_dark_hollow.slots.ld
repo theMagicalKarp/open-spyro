@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_2_artisans_dark_hollow.ld. */
     . = 0x00000408 ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.Level2_UpdateActors)
-    build/overlays/level_2_artisans_dark_hollow/c/Level2_UpdateActors.o(.text)
+    build/overlays/level_2_artisans_dark_hollow/c/update_actors.o(.text.Level2_UpdateActors)
     . = 0x00007f28 ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.Level2_SpawnActor)
-    build/overlays/level_2_artisans_dark_hollow/c/Level2_SpawnActor.o(.text)
+    build/overlays/level_2_artisans_dark_hollow/c/spawn_actor.o(.text.Level2_SpawnActor)
     . = 0x0000883c ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.Level2_AdvanceEmitList)
-    build/overlays/level_2_artisans_dark_hollow/c/Level2_AdvanceEmitList.o(.text)
+    build/overlays/level_2_artisans_dark_hollow/c/advance_emit_list.o(.text.Level2_AdvanceEmitList)
     . = 0x00009a68 ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.Level2_EmitParticles)
-    build/overlays/level_2_artisans_dark_hollow/c/Level2_EmitParticles.o(.text)
+    build/overlays/level_2_artisans_dark_hollow/c/emit_particles.o(.text.Level2_EmitParticles)
     . = 0x0000ab5c ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/text.o(.text.Level2_OverlayEnd)
-    build/overlays/level_2_artisans_dark_hollow/c/Level2_OverlayEnd.o(.text)
+    build/overlays/level_2_artisans_dark_hollow/c/overlay_end.o(.text.Level2_OverlayEnd)

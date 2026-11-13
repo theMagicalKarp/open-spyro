@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_25_dream_weavers_dark_passage.ld. */
     . = 0x00000ac0 ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.Level25_UpdateActors)
-    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_UpdateActors.o(.text)
+    build/overlays/level_25_dream_weavers_dark_passage/c/update_actors.o(.text.Level25_UpdateActors)
     . = 0x0000a15c ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.Level25_SpawnActor)
-    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_SpawnActor.o(.text)
+    build/overlays/level_25_dream_weavers_dark_passage/c/spawn_actor.o(.text.Level25_SpawnActor)
     . = 0x0000adc4 ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.Level25_AdvanceEmitList)
-    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_AdvanceEmitList.o(.text)
+    build/overlays/level_25_dream_weavers_dark_passage/c/advance_emit_list.o(.text.Level25_AdvanceEmitList)
     . = 0x0000c300 ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.Level25_EmitParticles)
-    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_EmitParticles.o(.text)
+    build/overlays/level_25_dream_weavers_dark_passage/c/emit_particles.o(.text.Level25_EmitParticles)
     . = 0x0000d69c ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/text.o(.text.Level25_OverlayEnd)
-    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_OverlayEnd.o(.text)
+    build/overlays/level_25_dream_weavers_dark_passage/c/overlay_end.o(.text.Level25_OverlayEnd)

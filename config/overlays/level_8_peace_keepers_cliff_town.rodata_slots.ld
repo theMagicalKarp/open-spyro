@@ -4,16 +4,16 @@
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_BalloonistCutscene_Update.o(.rodata)
+    build/overlays/level_8_peace_keepers_cliff_town/c/balloonist_cutscene.o(.rodata.Level8_BalloonistCutscene_Update)
     . = 0x00000024 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_BalloonistCutscene_Draw.o(.rodata)
+    build/overlays/level_8_peace_keepers_cliff_town/c/balloonist_cutscene.o(.rodata.Level8_BalloonistCutscene_Draw)
     . = 0x000000b4 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_UpdateActors.o(.rodata)
+    build/overlays/level_8_peace_keepers_cliff_town/c/update_actors.o(.rodata.Level8_UpdateActors)
     . = 0x00000a14 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata.jtbl_8007B44C)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_AdvanceEmitList.o(.rodata)
+    build/overlays/level_8_peace_keepers_cliff_town/c/advance_emit_list.o(.rodata.Level8_AdvanceEmitList)
     . = 0x00000b58 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/data/rodata.rodata.o(.rodata.jtbl_8007B590)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_EmitParticles.o(.rodata)
+    build/overlays/level_8_peace_keepers_cliff_town/c/emit_particles.o(.rodata.Level8_EmitParticles)

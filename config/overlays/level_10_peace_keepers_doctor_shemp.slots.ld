@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_10_peace_keepers_doctor_shemp.ld. */
     . = 0x00000480 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.Level10_UpdateActors)
-    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_UpdateActors.o(.text)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/update_actors.o(.text.Level10_UpdateActors)
     . = 0x00009bb8 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.Level10_SpawnActor)
-    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_SpawnActor.o(.text)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/spawn_actor.o(.text.Level10_SpawnActor)
     . = 0x0000a4b8 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.Level10_AdvanceEmitList)
-    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_AdvanceEmitList.o(.text)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/advance_emit_list.o(.text.Level10_AdvanceEmitList)
     . = 0x0000b6e4 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.Level10_EmitParticles)
-    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_EmitParticles.o(.text)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/emit_particles.o(.text.Level10_EmitParticles)
     . = 0x0000c7d8 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/text.o(.text.Level10_OverlayEnd)
-    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_OverlayEnd.o(.text)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/overlay_end.o(.text.Level10_OverlayEnd)

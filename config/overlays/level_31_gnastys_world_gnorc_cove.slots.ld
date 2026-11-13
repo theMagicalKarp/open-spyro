@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_31_gnastys_world_gnorc_cove.ld. */
     . = 0x00000af0 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.Level31_UpdateActors)
-    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_UpdateActors.o(.text)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/update_actors.o(.text.Level31_UpdateActors)
     . = 0x0000ac2c ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.Level31_SpawnActor)
-    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_SpawnActor.o(.text)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/spawn_actor.o(.text.Level31_SpawnActor)
     . = 0x0000b70c ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.Level31_AdvanceEmitList)
-    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_AdvanceEmitList.o(.text)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/advance_emit_list.o(.text.Level31_AdvanceEmitList)
     . = 0x0000ca44 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.Level31_EmitParticles)
-    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_EmitParticles.o(.text)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/emit_particles.o(.text.Level31_EmitParticles)
     . = 0x0000dc30 ;
     build/overlays/level_31_gnastys_world_gnorc_cove/asm/overlays/level_31_gnastys_world_gnorc_cove/text.o(.text.Level31_OverlayEnd)
-    build/overlays/level_31_gnastys_world_gnorc_cove/c/Level31_OverlayEnd.o(.text)
+    build/overlays/level_31_gnastys_world_gnorc_cove/c/overlay_end.o(.text.Level31_OverlayEnd)

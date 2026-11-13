@@ -4,16 +4,16 @@
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.D_8007AA3C)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_DrawFlightRaceTime.o(.rodata)
+    build/overlays/level_5_artisans_sunny_flight/c/flight_results_draw.o(.rodata.Level5_DrawFlightRaceTime)
     . = 0x00000028 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.D_8007AA60)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_FlightResults_Draw.o(.rodata)
+    build/overlays/level_5_artisans_sunny_flight/c/flight_results_draw.o(.rodata.Level5_FlightResults_Draw)
     . = 0x000000e0 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB18)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_UpdateActors.o(.rodata)
+    build/overlays/level_5_artisans_sunny_flight/c/update_actors.o(.rodata.Level5_UpdateActors)
     . = 0x00000130 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.jtbl_8007AB68)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_AdvanceEmitList.o(.rodata)
+    build/overlays/level_5_artisans_sunny_flight/c/advance_emit_list.o(.rodata.Level5_AdvanceEmitList)
     . = 0x00000270 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_EmitParticles.o(.rodata)
+    build/overlays/level_5_artisans_sunny_flight/c/emit_particles.o(.rodata.Level5_EmitParticles)

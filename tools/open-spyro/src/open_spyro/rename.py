@@ -199,7 +199,7 @@ def plan(
     for rel in files:
         if not _in_scope(rel, scope, merge):
             continue
-        # Per-function sources are named after their function (src/c/<Name>.c[.wip]),
+        # Per-function sources are named after their function (src/main/**/<Name>.c[.wip]),
         # including comment-only fragment stubs that never spell the name inside.
         stem, dot, ext = rel.name.partition(".")
         if rel.parts[0] == "src" and stem == old and dot and not merge:

@@ -4,10 +4,10 @@
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_4_artisans_toasty/c/Level4_UpdateActors.o(.rodata)
+    build/overlays/level_4_artisans_toasty/c/update_actors.o(.rodata.Level4_UpdateActors)
     . = 0x00000290 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007ACC8)
-    build/overlays/level_4_artisans_toasty/c/Level4_AdvanceEmitList.o(.rodata)
+    build/overlays/level_4_artisans_toasty/c/advance_emit_list.o(.rodata.Level4_AdvanceEmitList)
     . = 0x000003d4 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/data/rodata.rodata.o(.rodata.jtbl_8007AE0C)
-    build/overlays/level_4_artisans_toasty/c/Level4_EmitParticles.o(.rodata)
+    build/overlays/level_4_artisans_toasty/c/emit_particles.o(.rodata.Level4_EmitParticles)

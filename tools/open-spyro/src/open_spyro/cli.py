@@ -15,11 +15,13 @@ from typing import Annotated
 import typer
 
 from open_spyro import (
+    c_layout,
     fixup_hasm,
     funcdiff,
     gen_overlay_yaml,
     gen_slots_ld,
     gen_syms_ld,
+    merge_c,
     normalize_binary,
     overlays,
     partial,
@@ -34,6 +36,7 @@ from open_spyro import (
     wad,
     xref,
 )
+from open_spyro.paths import repo_root
 
 app = typer.Typer(
     help="Build tooling for the open-spyro byte-matching decompilation.",
@@ -141,12 +144,34 @@ def _gen_slots_ld(
         str,
         typer.Option("--overlay", help="emit slots for this overlay instead of the main EXE"),
     ] = "",
+    check_objects: Annotated[
+        bool,
+        typer.Option(
+            "--check-objects",
+            help="first verify each compiled C object defines exactly its scanned functions",
+        ),
+    ] = False,
 ) -> None:
     """Emit a fixed-VMA text-slot fragment (main EXE, or one overlay with --overlay)."""
     if overlay:
-        gen_slots_ld.run_overlay(overlay)
+        gen_slots_ld.run_overlay(overlay, check_objects)
     else:
-        gen_slots_ld.run()
+        gen_slots_ld.run(check_objects)
+
+
+def _merge_c(
+    out: Annotated[Path, typer.Argument(help="the merged .c to write")],
+    srcs: Annotated[list[Path], typer.Argument(help="the .c files to merge (deleted after)")],
+) -> None:
+    """Merge C files into one translation unit, functions in address order."""
+    merge_c.merge(out, srcs)
+
+
+def _c_functions(
+    segment: Annotated[str, typer.Argument(help="'main' or an overlay name")] = "main",
+) -> None:
+    """Print the HAVE_C assembler flags for the functions a segment's C defines."""
+    print(c_layout.havec_defsyms(repo_root(), segment))
 
 
 def _diff(
@@ -254,6 +279,8 @@ app.command("sectionize")(_sectionize)
 app.command("sectionize-overlays")(_sectionize_overlays)
 app.command("gen-overlay-yaml")(_gen_overlay_yaml)
 app.command("gen-slots-ld")(_gen_slots_ld)
+app.command("c-functions")(_c_functions)
+app.command("merge-c")(_merge_c)
 app.command("gen-syms-ld")(_gen_syms_ld)
 app.command("diff")(_diff)
 app.command("fixup-hasm")(_fixup_hasm)

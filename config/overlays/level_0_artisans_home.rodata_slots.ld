@@ -4,16 +4,16 @@
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_0_artisans_home/c/Level0_BalloonistCutscene_Update.o(.rodata)
+    build/overlays/level_0_artisans_home/c/balloonist_cutscene.o(.rodata.Level0_BalloonistCutscene_Update)
     . = 0x00000024 ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_0_artisans_home/c/Level0_BalloonistCutscene_Draw.o(.rodata)
+    build/overlays/level_0_artisans_home/c/balloonist_cutscene.o(.rodata.Level0_BalloonistCutscene_Draw)
     . = 0x000000b4 ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_0_artisans_home/c/Level0_UpdateActors.o(.rodata)
+    build/overlays/level_0_artisans_home/c/update_actors.o(.rodata.Level0_UpdateActors)
     . = 0x0000019c ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007ABD4)
-    build/overlays/level_0_artisans_home/c/Level0_AdvanceEmitList.o(.rodata)
+    build/overlays/level_0_artisans_home/c/advance_emit_list.o(.rodata.Level0_AdvanceEmitList)
     . = 0x000002e0 ;
     build/overlays/level_0_artisans_home/asm/overlays/level_0_artisans_home/data/rodata.rodata.o(.rodata.jtbl_8007AD18)
-    build/overlays/level_0_artisans_home/c/Level0_EmitParticles.o(.rodata)
+    build/overlays/level_0_artisans_home/c/emit_particles.o(.rodata.Level0_EmitParticles)

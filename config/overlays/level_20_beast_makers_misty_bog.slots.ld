@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_20_beast_makers_misty_bog.ld. */
     . = 0x00000584 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.Level20_UpdateActors)
-    build/overlays/level_20_beast_makers_misty_bog/c/Level20_UpdateActors.o(.text)
+    build/overlays/level_20_beast_makers_misty_bog/c/update_actors.o(.text.Level20_UpdateActors)
     . = 0x00009ce0 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.Level20_SpawnActor)
-    build/overlays/level_20_beast_makers_misty_bog/c/Level20_SpawnActor.o(.text)
+    build/overlays/level_20_beast_makers_misty_bog/c/spawn_actor.o(.text.Level20_SpawnActor)
     . = 0x0000a64c ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.Level20_AdvanceEmitList)
-    build/overlays/level_20_beast_makers_misty_bog/c/Level20_AdvanceEmitList.o(.text)
+    build/overlays/level_20_beast_makers_misty_bog/c/advance_emit_list.o(.text.Level20_AdvanceEmitList)
     . = 0x0000b794 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.Level20_EmitParticles)
-    build/overlays/level_20_beast_makers_misty_bog/c/Level20_EmitParticles.o(.text)
+    build/overlays/level_20_beast_makers_misty_bog/c/emit_particles.o(.text.Level20_EmitParticles)
     . = 0x0000c6f8 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/text.o(.text.Level20_OverlayEnd)
-    build/overlays/level_20_beast_makers_misty_bog/c/Level20_OverlayEnd.o(.text)
+    build/overlays/level_20_beast_makers_misty_bog/c/overlay_end.o(.text.Level20_OverlayEnd)

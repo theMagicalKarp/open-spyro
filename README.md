@@ -129,7 +129,7 @@ codes: `0` = byte-identical _(`MATCH`)_, `1` = differs, `2` = cannot run. Useful
 flags: `--no-build` reuses the current build output as-is; `--full` prints every
 instruction rather than just the diff hunks.
 
-To supply a candidate match, add `src/c/<Name>.c` _(main EXE)_ or
+To supply a candidate match, add `src/main/<subsystem>/<Name>.c` _(main EXE)_ or
 `src/overlays/<segment>/<Name>.c` _(overlay)_, then re-run `diff`. The heavier
 asm→C loop behind this, m2c first pass → asm-differ / decomp-permuter /
 decomp.me, is described under [Matching toolchain](#matching-toolchain).
@@ -166,7 +166,7 @@ file names. When the old name is a splat autolabel, it adds a seed line so
 | Path       | Contents                                                                                                                  |
 | ---------- | ------------------------------------------------------------------------------------------------------------------------- |
 | `config/`  | splat yaml, `symbol_addrs.txt`, `*.ld` fragments                                                                          |
-| `src/`     | hand-written / matched C                                                                                                  |
+| `src/`     | matched C: `main/<subsystem>/*.c` _(main EXE)_, `overlays/<segment>/*.c`                                                  |
 | `asm/`     | nonmatching `.s` _(`INCLUDE_ASM` targets)_ + extracted data `.s`                                                          |
 | `include/` | `types.h`, `funcs.h`, `globals.h` _(seeded by the one-time Ghidra import)_                                                |
 | `assets/`  | passthrough binaries _(WAD, STR, Crash demo, license)_                                                                    |
@@ -174,6 +174,48 @@ file names. When the old name is a splat autolabel, it adds a seed line so
 | `iso/`     | your source disc image goes here _(`.cue`/`.bin`, gitignored)_                                                            |
 | `disc/`    | `orig/` - files extracted from your disc _(gitignored)_                                                                   |
 | `build/`   | build output, incl. rebuilt `SCUS_942.28` + `SpyrotheDragon.{bin,cue}` _(gitignored)_                                     |
+
+The main EXE's C is grouped by subsystem under `src/main/`, one file per role:
+
+| `src/main/`  | Files                                                                                                   |
+| ------------ | ------------------------------------------------------------------------------------------------------- |
+| `boot/`      | `main.c` _(frame loop)_, `init.c` _(hardware/system init, new-game state)_                              |
+| `load/`      | `level.c` _(level load + relocation, per-level tables)_, `cd_stream.c`, `anim_stream.c`                 |
+| `math/`      | `math.c` _(vector / fixed-point helpers; the rest is hand-written asm)_                                 |
+| `render/`    | `sprites.c` _(text, 2D overlays)_, `frame.c`, `portal_sky.c`, `ot.c`, `static_regs.c`                   |
+| `gamestate/` | `draw.c` / `update.c` _(per-state handlers + dispatchers)_, `transitions.c`, `cheats.c`                 |
+| `camera/`    | `camera.c`                                                                                              |
+| `actor/`     | `helpers.c` _(random, angles)_, `queries.c`, `movement.c`, `move_by_delta.c`, `effects.c`, `groups.c`   |
+| `spyro/`     | `anim.c`, `movement.c`, `collision.c`, `state.c`, `attack.c`, `triggers.c`                              |
+| `pad/`       | `pad.c`                                                                                                 |
+| `hud/`       | `hud.c`                                                                                                 |
+| `sound/`     | `sound.c`, `play_sfx.c`, `voice_pan.c`                                                                  |
+| `particles/` | `particles.c`                                                                                           |
+| `save/`      | `save.c`                                                                                                |
+
+Overlays are still one function per file, under `src/overlays/<segment>/`.
+
+Directories and files are grouping only. A file may define any number of
+functions: `config/compile.sh` gives each one its own `.text.<fn>` /
+`.rodata.<fn>` section, and every function still links into its own
+fixed-address slot, so moving functions between files never changes the bytes as
+long as each function still sees the same declarations. Function names must be
+unique per segment (the build enforces it); objects mirror the source tree under
+`build/<segment>/c/`.
+
+`open-spyro merge-c <out.c> <files...>` merges files into one: functions in
+address order, includes hoisted, each block's own macros `#undef`ed after it,
+repeated `static inline` helpers dropped. Then `make build && make verify`. A
+function needs its own file (or an alias symbol, see `config/symbol_addrs.txt`
+`_blk` entries) when it:
+
+- declares a global or prototype with a different type than another function in
+  the file sees (an array vs scalar view changes the addressing);
+- declares a file-scope `register` variable (`ot.c`, `static_regs.c`);
+- is `SDATA()`-declared small data that another function addresses absolutely
+  (`merge-c` refuses these).
+
+Parked `.c.wip` attempts stay one function per file.
 
 ## Contributing
 
@@ -190,7 +232,7 @@ time into C that compiles back to the **identical bytes**. A typical loop:
 
    # main EXE (asm/text.s):
    uv run --project tools/open-spyro -- \
-     m2c --context build/ctx.c asm/text.s -f <FunctionName> > src/c/<FunctionName>.c
+     m2c --context build/ctx.c asm/text.s -f <FunctionName> > src/main/<subsystem>/<FunctionName>.c
 
    # OR overlay (asm/overlays/<segment>/text.s):
    uv run --project tools/open-spyro -- \
@@ -207,7 +249,7 @@ time into C that compiles back to the **identical bytes**. A typical loop:
    the codegen _(and therefore the match)_ often turns on getting those
    declarations right.
 
-3. **Drop it in and check.** Add `src/c/<Name>.c` _(main EXE)_ or
+3. **Drop it in and check.** Add `src/main/<subsystem>/<Name>.c` _(main EXE)_ or
    `src/overlays/<segment>/<Name>.c` _(overlay)_, then run
    `open-spyro diff <Name>` until it prints `MATCH` _(see
    [Comparing a C file against the original](#comparing-a-c-file-against-the-original-the-match-loop))_.

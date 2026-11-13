@@ -2,28 +2,28 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_12_magic_crafters_home.ld. */
     . = 0x00000e38 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_BeginActorCutscene)
-    build/overlays/level_12_magic_crafters_home/c/Level12_BeginActorCutscene.o(.text)
+    build/overlays/level_12_magic_crafters_home/c/begin_actor_cutscene.o(.text.Level12_BeginActorCutscene)
     . = 0x00000f74 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_OnSaveMenuExit)
-    build/overlays/level_12_magic_crafters_home/c/Level12_OnSaveMenuExit.o(.text)
+    build/overlays/level_12_magic_crafters_home/c/on_save_menu_exit.o(.text.Level12_OnSaveMenuExit)
     . = 0x00000fb8 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_BalloonistCutscene_Update)
-    build/overlays/level_12_magic_crafters_home/c/Level12_BalloonistCutscene_Update.o(.text)
+    build/overlays/level_12_magic_crafters_home/c/balloonist_cutscene.o(.text.Level12_BalloonistCutscene_Update)
     . = 0x00002f58 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_BalloonistCutscene_Draw)
-    build/overlays/level_12_magic_crafters_home/c/Level12_BalloonistCutscene_Draw.o(.text)
+    build/overlays/level_12_magic_crafters_home/c/balloonist_cutscene.o(.text.Level12_BalloonistCutscene_Draw)
     . = 0x00003960 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_UpdateActors)
-    build/overlays/level_12_magic_crafters_home/c/Level12_UpdateActors.o(.text)
+    build/overlays/level_12_magic_crafters_home/c/update_actors.o(.text.Level12_UpdateActors)
     . = 0x00010888 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_SpawnActor)
-    build/overlays/level_12_magic_crafters_home/c/Level12_SpawnActor.o(.text)
+    build/overlays/level_12_magic_crafters_home/c/spawn_actor.o(.text.Level12_SpawnActor)
     . = 0x00011460 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_AdvanceEmitList)
-    build/overlays/level_12_magic_crafters_home/c/Level12_AdvanceEmitList.o(.text)
+    build/overlays/level_12_magic_crafters_home/c/advance_emit_list.o(.text.Level12_AdvanceEmitList)
     . = 0x00012898 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_EmitParticles)
-    build/overlays/level_12_magic_crafters_home/c/Level12_EmitParticles.o(.text)
+    build/overlays/level_12_magic_crafters_home/c/emit_particles.o(.text.Level12_EmitParticles)
     . = 0x00013bd0 ;
     build/overlays/level_12_magic_crafters_home/asm/overlays/level_12_magic_crafters_home/text.o(.text.Level12_OverlayEnd)
-    build/overlays/level_12_magic_crafters_home/c/Level12_OverlayEnd.o(.text)
+    build/overlays/level_12_magic_crafters_home/c/overlay_end.o(.text.Level12_OverlayEnd)

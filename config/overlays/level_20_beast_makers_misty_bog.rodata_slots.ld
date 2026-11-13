@@ -4,10 +4,10 @@
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_20_beast_makers_misty_bog/c/Level20_UpdateActors.o(.rodata)
+    build/overlays/level_20_beast_makers_misty_bog/c/update_actors.o(.rodata.Level20_UpdateActors)
     . = 0x000002d8 ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/data/rodata.rodata.o(.rodata.jtbl_8007AD10)
-    build/overlays/level_20_beast_makers_misty_bog/c/Level20_AdvanceEmitList.o(.rodata)
+    build/overlays/level_20_beast_makers_misty_bog/c/advance_emit_list.o(.rodata.Level20_AdvanceEmitList)
     . = 0x0000041c ;
     build/overlays/level_20_beast_makers_misty_bog/asm/overlays/level_20_beast_makers_misty_bog/data/rodata.rodata.o(.rodata.jtbl_8007AE54)
-    build/overlays/level_20_beast_makers_misty_bog/c/Level20_EmitParticles.o(.rodata)
+    build/overlays/level_20_beast_makers_misty_bog/c/emit_particles.o(.rodata.Level20_EmitParticles)

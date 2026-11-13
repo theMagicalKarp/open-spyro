@@ -4,10 +4,10 @@
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_2_artisans_dark_hollow/c/Level2_UpdateActors.o(.rodata)
+    build/overlays/level_2_artisans_dark_hollow/c/update_actors.o(.rodata.Level2_UpdateActors)
     . = 0x0000013c ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007AB74)
-    build/overlays/level_2_artisans_dark_hollow/c/Level2_AdvanceEmitList.o(.rodata)
+    build/overlays/level_2_artisans_dark_hollow/c/advance_emit_list.o(.rodata.Level2_AdvanceEmitList)
     . = 0x00000280 ;
     build/overlays/level_2_artisans_dark_hollow/asm/overlays/level_2_artisans_dark_hollow/data/rodata.rodata.o(.rodata.jtbl_8007ACB8)
-    build/overlays/level_2_artisans_dark_hollow/c/Level2_EmitParticles.o(.rodata)
+    build/overlays/level_2_artisans_dark_hollow/c/emit_particles.o(.rodata.Level2_EmitParticles)

@@ -2,28 +2,28 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_18_beast_makers_home.ld. */
     . = 0x00000c2c ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_BeginActorCutscene)
-    build/overlays/level_18_beast_makers_home/c/Level18_BeginActorCutscene.o(.text)
+    build/overlays/level_18_beast_makers_home/c/begin_actor_cutscene.o(.text.Level18_BeginActorCutscene)
     . = 0x00000d68 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_OnSaveMenuExit)
-    build/overlays/level_18_beast_makers_home/c/Level18_OnSaveMenuExit.o(.text)
+    build/overlays/level_18_beast_makers_home/c/on_save_menu_exit.o(.text.Level18_OnSaveMenuExit)
     . = 0x00000dac ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_BalloonistCutscene_Update)
-    build/overlays/level_18_beast_makers_home/c/Level18_BalloonistCutscene_Update.o(.text)
+    build/overlays/level_18_beast_makers_home/c/balloonist_cutscene.o(.text.Level18_BalloonistCutscene_Update)
     . = 0x00002d4c ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_BalloonistCutscene_Draw)
-    build/overlays/level_18_beast_makers_home/c/Level18_BalloonistCutscene_Draw.o(.text)
+    build/overlays/level_18_beast_makers_home/c/balloonist_cutscene.o(.text.Level18_BalloonistCutscene_Draw)
     . = 0x00003754 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_UpdateActors)
-    build/overlays/level_18_beast_makers_home/c/Level18_UpdateActors.o(.text)
+    build/overlays/level_18_beast_makers_home/c/update_actors.o(.text.Level18_UpdateActors)
     . = 0x0000d4b8 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_SpawnActor)
-    build/overlays/level_18_beast_makers_home/c/Level18_SpawnActor.o(.text)
+    build/overlays/level_18_beast_makers_home/c/spawn_actor.o(.text.Level18_SpawnActor)
     . = 0x0000dec0 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_AdvanceEmitList)
-    build/overlays/level_18_beast_makers_home/c/Level18_AdvanceEmitList.o(.text)
+    build/overlays/level_18_beast_makers_home/c/advance_emit_list.o(.text.Level18_AdvanceEmitList)
     . = 0x0000f080 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_EmitParticles)
-    build/overlays/level_18_beast_makers_home/c/Level18_EmitParticles.o(.text)
+    build/overlays/level_18_beast_makers_home/c/emit_particles.o(.text.Level18_EmitParticles)
     . = 0x00010138 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/text.o(.text.Level18_OverlayEnd)
-    build/overlays/level_18_beast_makers_home/c/Level18_OverlayEnd.o(.text)
+    build/overlays/level_18_beast_makers_home/c/overlay_end.o(.text.Level18_OverlayEnd)

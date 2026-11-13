@@ -2,28 +2,28 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_7_peace_keepers_dry_canyon.ld. */
     . = 0x00000ce0 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_BeginActorCutscene)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_BeginActorCutscene.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/begin_actor_cutscene.o(.text.Level7_BeginActorCutscene)
     . = 0x00000e1c ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_OnSaveMenuExit)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_OnSaveMenuExit.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/on_save_menu_exit.o(.text.Level7_OnSaveMenuExit)
     . = 0x00000e60 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_BalloonistCutscene_Update)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_BalloonistCutscene_Update.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/balloonist_cutscene.o(.text.Level7_BalloonistCutscene_Update)
     . = 0x00002e00 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_BalloonistCutscene_Draw)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_BalloonistCutscene_Draw.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/balloonist_cutscene.o(.text.Level7_BalloonistCutscene_Draw)
     . = 0x00003808 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_UpdateActors)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_UpdateActors.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/update_actors.o(.text.Level7_UpdateActors)
     . = 0x0000fa98 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_SpawnActor)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_SpawnActor.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/spawn_actor.o(.text.Level7_SpawnActor)
     . = 0x00010788 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_AdvanceEmitList)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_AdvanceEmitList.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/advance_emit_list.o(.text.Level7_AdvanceEmitList)
     . = 0x00011b08 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_EmitParticles)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_EmitParticles.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/emit_particles.o(.text.Level7_EmitParticles)
     . = 0x00012bc8 ;
     build/overlays/level_7_peace_keepers_dry_canyon/asm/overlays/level_7_peace_keepers_dry_canyon/text.o(.text.Level7_OverlayEnd)
-    build/overlays/level_7_peace_keepers_dry_canyon/c/Level7_OverlayEnd.o(.text)
+    build/overlays/level_7_peace_keepers_dry_canyon/c/overlay_end.o(.text.Level7_OverlayEnd)

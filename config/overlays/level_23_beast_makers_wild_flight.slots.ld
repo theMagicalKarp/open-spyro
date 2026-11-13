@@ -2,31 +2,31 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_23_beast_makers_wild_flight.ld. */
     . = 0x000003d0 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_FlightEndHook)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_FlightEndHook.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/flight_results.o(.text.Level23_FlightEndHook)
     . = 0x000004a4 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_HandleFlightResults)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_HandleFlightResults.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/flight_results.o(.text.Level23_HandleFlightResults)
     . = 0x000007c4 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_FlightResultsMenu_Update)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_FlightResultsMenu_Update.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/flight_results_menu_update.o(.text.Level23_FlightResultsMenu_Update)
     . = 0x00000a78 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_DrawFlightRaceTime)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_DrawFlightRaceTime.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/flight_results_draw.o(.text.Level23_DrawFlightRaceTime)
     . = 0x00000c54 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_FlightResults_Draw)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_FlightResults_Draw.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/flight_results_draw.o(.text.Level23_FlightResults_Draw)
     . = 0x0000257c ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_UpdateActors)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_UpdateActors.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/update_actors.o(.text.Level23_UpdateActors)
     . = 0x00007804 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_SpawnActor)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_SpawnActor.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/spawn_actor.o(.text.Level23_SpawnActor)
     . = 0x0000851c ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_AdvanceEmitList)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_AdvanceEmitList.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/advance_emit_list.o(.text.Level23_AdvanceEmitList)
     . = 0x00009174 ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_EmitParticles)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_EmitParticles.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/emit_particles.o(.text.Level23_EmitParticles)
     . = 0x00009e0c ;
     build/overlays/level_23_beast_makers_wild_flight/asm/overlays/level_23_beast_makers_wild_flight/text.o(.text.Level23_OverlayEnd)
-    build/overlays/level_23_beast_makers_wild_flight/c/Level23_OverlayEnd.o(.text)
+    build/overlays/level_23_beast_makers_wild_flight/c/overlay_end.o(.text.Level23_OverlayEnd)

@@ -24,3 +24,19 @@ def repo_root() -> Path:
         "open-spyro: could not locate the repo root "
         "(no Makefile + config/ at or above the current directory)"
     )
+
+
+# C sources live under one root per segment: ``src/main/<subsystem>/`` for the main
+# EXE and ``src/overlays/<ovl>/`` for each overlay. Subdirectories and file names
+# are grouping only; which file defines which function is ``open_spyro.c_layout``.
+MAIN_SRC = "src/main"
+
+
+def segment_src_root(repo: Path, segment: str) -> Path:
+    """The C source root for a segment (``src/main`` or ``src/overlays/<seg>``)."""
+    return repo / MAIN_SRC if segment == "main" else repo / "src/overlays" / segment
+
+
+def c_sources(root: Path, suffix: str = ".c") -> list[Path]:
+    """Every ``*<suffix>`` under ``root`` (recursive, sorted); [] if it's absent."""
+    return sorted(root.rglob(f"*{suffix}")) if root.is_dir() else []

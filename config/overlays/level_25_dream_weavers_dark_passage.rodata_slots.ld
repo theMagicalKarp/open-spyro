@@ -4,10 +4,10 @@
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_UpdateActors.o(.rodata)
+    build/overlays/level_25_dream_weavers_dark_passage/c/update_actors.o(.rodata.Level25_UpdateActors)
     . = 0x000007f4 ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/data/rodata.rodata.o(.rodata.jtbl_8007B22C)
-    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_AdvanceEmitList.o(.rodata)
+    build/overlays/level_25_dream_weavers_dark_passage/c/advance_emit_list.o(.rodata.Level25_AdvanceEmitList)
     . = 0x00000938 ;
     build/overlays/level_25_dream_weavers_dark_passage/asm/overlays/level_25_dream_weavers_dark_passage/data/rodata.rodata.o(.rodata.jtbl_8007B370)
-    build/overlays/level_25_dream_weavers_dark_passage/c/Level25_EmitParticles.o(.rodata)
+    build/overlays/level_25_dream_weavers_dark_passage/c/emit_particles.o(.rodata.Level25_EmitParticles)

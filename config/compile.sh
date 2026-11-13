@@ -69,5 +69,12 @@ trap 'rm -f "$tmp_i" "$tmp_s"' EXIT
 "$CPP" $CPP_FLAGS "$in_c" -o "$tmp_i"
 # 2) cc1: preprocessed C -> gcc 2.7.2 asm
 "$CC1" $cflags "$tmp_i" -o "$tmp_s"
-# 3) maspsx: gcc asm -> aspsx-compatible asm, piped straight into the assembler
-"$PYTHON" "$MASPSX" $mflags < "$tmp_s" | "$AS" $AS_FLAGS -o "$out_o" -
+# 3) maspsx: gcc asm -> aspsx-compatible asm, then
+# 4) asm_sections: every function into its own .text.<fn> / .rodata.<fn> section
+#    (gcc 2.7.2 has no -ffunction-sections), so a file may define several functions
+#    and each still links into its own fixed-VMA slot. Renames sections only.
+#    Piped straight into the assembler.
+SECTIONS_PY="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/tools/open-spyro/src"
+"$PYTHON" "$MASPSX" $mflags < "$tmp_s" \
+  | PYTHONPATH="$SECTIONS_PY" "$PYTHON" -m open_spyro.asm_sections \
+  | "$AS" $AS_FLAGS -o "$out_o" -

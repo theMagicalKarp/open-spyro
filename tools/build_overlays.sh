@@ -47,16 +47,16 @@ for name in "${names[@]}"; do
   o_base="$OVL_DIR/$name/asm/overlays/$name"
   mkdir -p "$o_base/data"
 
-  # C overrides (function/data-split overlays only): each src/overlays/<name>/<Fn>.c
-  # replaces function <Fn>'s asm — same HAVE_C flip as the main EXE (build_main.sh).
-  shopt -s nullglob
-  c_srcs=("src/overlays/$name"/*.c)
-  shopt -u nullglob
+  # C overrides (function/data-split overlays only): every function a
+  # src/overlays/<name>/**/*.c defines replaces that function's asm — same HAVE_C
+  # flip and per-function sections as the main EXE (build_main.sh).
+  shopt -s nullglob globstar
+  c_srcs=("src/overlays/$name"/**/*.c)
+  shopt -u nullglob globstar
   have_c_flags=""
-  for c in "${c_srcs[@]}"; do
-    fn="$(basename "$c" .c)"
-    have_c_flags+=" --defsym HAVE_C_${fn}=1"
-  done
+  if [ "${#c_srcs[@]}" -gt 0 ]; then
+    have_c_flags="$($OPEN_SPYRO c-functions "$name")"
+  fi
 
   # have_c_flags affects text.s AND the rodata dump (a flipped function's jtbl /
   # const-data asm pieces are .ifndef-guarded alongside its code).
@@ -70,8 +70,8 @@ for name in "${names[@]}"; do
   # overlay ld — silently dropping live data, so reject them loudly (same
   # inherited lesson as build_main.sh).
   for c in "${c_srcs[@]}"; do
-    fn="$(basename "$c" .c)"
-    o="$OVL_DIR/$name/c/${fn}.o"
+    rel="${c#src/overlays/$name/}"   # objects mirror the source tree
+    o="$OVL_DIR/$name/c/${rel%.c}.o"
     mkdir -p "$(dirname "$o")"
     echo "build_overlays: [$name] compiling C override $c -> $o"
     bash config/compile.sh ovl "$c" "$o"
@@ -85,7 +85,7 @@ for name in "${names[@]}"; do
   # Per-function fixed-VMA slots (only split overlays have a layout inventory);
   # regenerated each build so it tracks the C overrides present.
   if [ -f "config/overlays/$name.text_layout.json" ]; then
-    $OPEN_SPYRO gen-slots-ld --overlay "$name"
+    $OPEN_SPYRO gen-slots-ld --overlay "$name" --check-objects
   fi
 
   # PROVIDE() externals (main-EXE symbols this overlay calls) at fixed addresses.

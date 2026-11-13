@@ -3,7 +3,7 @@
 ``open-spyro permuter <Func>`` automates the register-allocation brute-force loop for
 a not-yet-matching function. It:
 
-  1. locates the function (``funcdiff._locate``) and its parked ``src/c/<Func>.c.wip``
+  1. locates the function (``funcdiff._locate``) and its parked ``src/main/**/<Func>.c.wip``
      (or ``src/overlays/<seg>/<Func>.c.wip``) source,
   2. slices the function's original asm out of ``asm/text.s`` (``partial._extract_block``)
      and trims it to the bare ``glabel <Func> … endlabel <Func>`` block import.py wants,
@@ -12,8 +12,8 @@ a not-yet-matching function. It:
      r3000/gcc-2.7.2 toolchain) to stage a ``nonmatchings/<Func>/`` scratch dir under the
      gitignored ``build/permuter/``, then
   4. launches ``tools/decomp-permuter/permuter.py`` on it, then
-  5. if the permuter finds a byte-perfect (score-0) result, writes it to ``src/c/<Func>.c``
-     (or the overlay path), verifies with ``open-spyro diff``, and on MATCH drops the
+  5. if the permuter finds a byte-perfect (score-0) result, writes it to ``<Func>.c``
+     next to the ``.c.wip``, verifies with ``open-spyro diff``, and on MATCH drops the
      ``.c.wip`` — turning a parked attempt into a real match (see ``_apply_match``).
 
 Note the written C is decomp-permuter's *pruned* form (stub externs, no ``globals.h``, no
@@ -44,9 +44,10 @@ import sys
 from pathlib import Path
 
 from open_spyro import funcdiff
+from open_spyro.c_layout import find_c_source
 from open_spyro.funcdiff import _locate
 from open_spyro.partial import _asm_path, _extract_block, _in_container
-from open_spyro.paths import repo_root
+from open_spyro.paths import repo_root, segment_src_root
 
 # decomp-permuter clone (gitignored; provisioned by tools/setup.sh) and its two entry points.
 _IMPORT_PY = "tools/decomp-permuter/import.py"
@@ -54,15 +55,9 @@ _PERMUTER_PY = "tools/decomp-permuter/permuter.py"
 _SETTINGS = "config/permuter_settings.toml"
 
 
-def _src_dir(repo: Path, segment: str) -> Path:
-    """The C source directory for a segment (``src/c`` or ``src/overlays/<seg>``)."""
-    return repo / "src/c" if segment == "main" else repo / "src/overlays" / segment
-
-
 def _wip_source(repo: Path, name: str, segment: str) -> Path | None:
     """The parked ``.c.wip`` for a function, or None if it isn't parked."""
-    p = _src_dir(repo, segment) / f"{name}.c.wip"
-    return p if p.is_file() else None
+    return find_c_source(repo, segment, name, ".c.wip")
 
 
 def _winning_source(repo: Path, name: str) -> Path | None:
@@ -201,9 +196,9 @@ def run(
 
     wip = _wip_source(repo, name, t.segment)
     if wip is None:
-        seg = "src/c" if t.segment == "main" else f"src/overlays/{t.segment}"
+        seg = segment_src_root(repo, t.segment).relative_to(repo)
         print(
-            f"permuter: no parked attempt at {seg}/{name}.c.wip — this command targets "
+            f"permuter: no parked attempt {name}.c.wip under {seg}/ — this command targets "
             "parked `.c.wip` files (start one with `open-spyro diff`/m2c first).",
             file=sys.stderr,
         )
@@ -269,7 +264,7 @@ def _apply_match(repo: Path, name: str, segment: str, wip: Path) -> None:
         print("permuter: no byte-perfect match produced; src/ left unchanged.")
         return
 
-    dest = _src_dir(repo, segment) / f"{name}.c"
+    dest = wip.with_name(f"{name}.c")
     print(f"permuter: match found -> writing {dest.relative_to(repo)} and verifying...")
     dest.write_text(win.read_text())
 

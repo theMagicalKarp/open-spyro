@@ -4,10 +4,10 @@
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_UpdateActors.o(.rodata)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/update_actors.o(.rodata.Level10_UpdateActors)
     . = 0x000001b4 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/data/rodata.rodata.o(.rodata.jtbl_8007ABEC)
-    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_AdvanceEmitList.o(.rodata)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/advance_emit_list.o(.rodata.Level10_AdvanceEmitList)
     . = 0x000002f8 ;
     build/overlays/level_10_peace_keepers_doctor_shemp/asm/overlays/level_10_peace_keepers_doctor_shemp/data/rodata.rodata.o(.rodata.jtbl_8007AD30)
-    build/overlays/level_10_peace_keepers_doctor_shemp/c/Level10_EmitParticles.o(.rodata)
+    build/overlays/level_10_peace_keepers_doctor_shemp/c/emit_particles.o(.rodata.Level10_EmitParticles)

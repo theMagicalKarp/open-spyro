@@ -4,10 +4,10 @@
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_19_beast_makers_terrace_village/c/Level19_UpdateActors.o(.rodata)
+    build/overlays/level_19_beast_makers_terrace_village/c/update_actors.o(.rodata.Level19_UpdateActors)
     . = 0x000008d8 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B310)
-    build/overlays/level_19_beast_makers_terrace_village/c/Level19_AdvanceEmitList.o(.rodata)
+    build/overlays/level_19_beast_makers_terrace_village/c/advance_emit_list.o(.rodata.Level19_AdvanceEmitList)
     . = 0x00000a1c ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/data/rodata.rodata.o(.rodata.jtbl_8007B454)
-    build/overlays/level_19_beast_makers_terrace_village/c/Level19_EmitParticles.o(.rodata)
+    build/overlays/level_19_beast_makers_terrace_village/c/emit_particles.o(.rodata.Level19_EmitParticles)

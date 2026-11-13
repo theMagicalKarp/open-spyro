@@ -4,16 +4,16 @@
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_18_beast_makers_home/c/Level18_BalloonistCutscene_Update.o(.rodata)
+    build/overlays/level_18_beast_makers_home/c/balloonist_cutscene.o(.rodata.Level18_BalloonistCutscene_Update)
     . = 0x00000024 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_18_beast_makers_home/c/Level18_BalloonistCutscene_Draw.o(.rodata)
+    build/overlays/level_18_beast_makers_home/c/balloonist_cutscene.o(.rodata.Level18_BalloonistCutscene_Draw)
     . = 0x000000b4 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_18_beast_makers_home/c/Level18_UpdateActors.o(.rodata)
+    build/overlays/level_18_beast_makers_home/c/update_actors.o(.rodata.Level18_UpdateActors)
     . = 0x00000960 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B398)
-    build/overlays/level_18_beast_makers_home/c/Level18_AdvanceEmitList.o(.rodata)
+    build/overlays/level_18_beast_makers_home/c/advance_emit_list.o(.rodata.Level18_AdvanceEmitList)
     . = 0x00000aa4 ;
     build/overlays/level_18_beast_makers_home/asm/overlays/level_18_beast_makers_home/data/rodata.rodata.o(.rodata.jtbl_8007B4DC)
-    build/overlays/level_18_beast_makers_home/c/Level18_EmitParticles.o(.rodata)
+    build/overlays/level_18_beast_makers_home/c/emit_particles.o(.rodata.Level18_EmitParticles)

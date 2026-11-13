@@ -4,16 +4,16 @@
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_6_peace_keepers_home/c/Level6_BalloonistCutscene_Update.o(.rodata)
+    build/overlays/level_6_peace_keepers_home/c/balloonist_cutscene.o(.rodata.Level6_BalloonistCutscene_Update)
     . = 0x00000024 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_6_peace_keepers_home/c/Level6_BalloonistCutscene_Draw.o(.rodata)
+    build/overlays/level_6_peace_keepers_home/c/balloonist_cutscene.o(.rodata.Level6_BalloonistCutscene_Draw)
     . = 0x000000b4 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_6_peace_keepers_home/c/Level6_UpdateActors.o(.rodata)
+    build/overlays/level_6_peace_keepers_home/c/update_actors.o(.rodata.Level6_UpdateActors)
     . = 0x00000b94 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B5CC)
-    build/overlays/level_6_peace_keepers_home/c/Level6_AdvanceEmitList.o(.rodata)
+    build/overlays/level_6_peace_keepers_home/c/advance_emit_list.o(.rodata.Level6_AdvanceEmitList)
     . = 0x00000cd8 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/data/rodata.rodata.o(.rodata.jtbl_8007B710)
-    build/overlays/level_6_peace_keepers_home/c/Level6_EmitParticles.o(.rodata)
+    build/overlays/level_6_peace_keepers_home/c/emit_particles.o(.rodata.Level6_EmitParticles)
