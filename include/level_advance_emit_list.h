@@ -94,7 +94,7 @@ extern int g_nSparxHealth;
 #define SMEAR_CENTRE_U ((unsigned short *)(rec + 0x10))  /* EMIT_RISING_SPIRAL_SMEAR x, y */
 /* Per-class fields past the colour word: the jittering motes' (twinkle /
  * ember / yellow dust) drift step, a burst spark's velocity, the Spyro
- * orbit sparkle's 12-bit orbit angle and a rising puff's climb rate. */
+ * hurt sparkle's 12-bit orbit angle and a rising puff's climb rate. */
 #define DRIFT ((short *)(rec + 0x10))
 #define DRIFT_U ((unsigned short *)(rec + 0x10))
 #define BURST_VEL ((short *)(rec + 0x12))

@@ -39,7 +39,7 @@ int ComputeCameraToTargetAngle(int *target) {
   if (yawDelta >= 0x801) {
     yawDelta -= 0x1000;
   }
-  flipYaw = oldYaw - 0x800;
+  flipYaw = oldYaw - ANGLE12_HALF;
   flipDelta = (yaw - flipYaw) & ANGLE12_MASK;
   if (flipDelta >= 0x801) {
     flipDelta -= 0x1000;

@@ -112,7 +112,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     GetActorAttachPoint(parent, 0, &rec->posX);
     InsertActorIntoSpatialGrid(rec);
     rec->rotY = g_nCameraEulerPitch;
-    rec->rotZ = (g_nCameraEulerYaw + 0x400) >> 4;
+    rec->rotZ = (g_nCameraEulerYaw + ANGLE12_QUARTER) >> 4;
     break;
   }
 
