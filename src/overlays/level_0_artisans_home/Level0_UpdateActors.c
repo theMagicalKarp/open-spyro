@@ -1738,7 +1738,7 @@ void Level0_UpdateActors(void) {
             if (TICK_DOWN(st->timer) != 0 ||
                 (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                  AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
-                               ((CAM.rotZ >> 4) + ANGLE8_HALF) & ANGLE8_MASK) < SPARX_CATCH_ALIGN)) {
+                               (ANGLE12_TO_8(CAM.rotZ) + ANGLE8_HALF) & ANGLE8_MASK) < SPARX_CATCH_ALIGN)) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->nextAnim + 1);
