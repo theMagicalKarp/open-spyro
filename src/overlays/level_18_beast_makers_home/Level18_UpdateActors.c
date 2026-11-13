@@ -1285,7 +1285,7 @@ void Level18_UpdateActors(void) {
             }
 
             if (high != 0) {
-              if (actor->nextFrame >= 7) {
+              if (actor->nextFrame >= SPARX_CATCH_FRAME) {
                 actor->subMode += 1;
               }
 
@@ -1293,7 +1293,7 @@ void Level18_UpdateActors(void) {
                 int tilt = actor->rotY;
                 int back = -tilt;
 
-                if ((unsigned int)((tilt - 3) & 0xFF) < 0xFB) {
+                if ((unsigned int)((tilt - 3) & ANGLE8_MASK) < 0xFB) {
                   if (back >= 3) {
                     back = 2;
                   }

@@ -1503,7 +1503,7 @@ void Level16_UpdateActors(void) {
             }
 
             if (high != 0) {
-              if (actor->nextFrame >= 7) {
+              if (actor->nextFrame >= SPARX_CATCH_FRAME) {
                 actor->subMode += 1;
               }
 
@@ -1511,7 +1511,7 @@ void Level16_UpdateActors(void) {
                 int tilt = actor->rotY;
                 int back = -tilt;
 
-                if ((unsigned int)((tilt - 3) & 0xFF) < 0xFB) {
+                if ((unsigned int)((tilt - 3) & ANGLE8_MASK) < 0xFB) {
                   if (back >= 3) {
                     back = 2;
                   }
@@ -2235,12 +2235,12 @@ void Level16_UpdateActors(void) {
           continue;
         }
         if (st->timer <= 0) {
-          st->timer = 1;
+          st->timer = PATHGUARD_SHOTS_1;
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
-        } else if (st->timer < 2 && actor->nextFrame >= 2) {
-          st->timer = 2;
+        } else if (st->timer < PATHGUARD_SHOTS_2 && actor->nextFrame >= PATHGUARD_SHOT2_FRAME) {
+          st->timer = PATHGUARD_SHOTS_2;
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
-        } else if (st->timer < PATHGUARD_THROW_COOLDOWN && actor->nextFrame >= 6) {
+        } else if (st->timer < PATHGUARD_THROW_COOLDOWN && actor->nextFrame >= PATHGUARD_SHOT3_FRAME) {
           st->timer = PATHGUARD_THROW_COOLDOWN;
           g_pfnLevelSpawnActor(ACTOR_TYPE_SPLIT_SHOT, actor);
         }

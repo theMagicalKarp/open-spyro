@@ -94,6 +94,9 @@ enum SparxSubMode {
 #define SPARX_HOVER_TURN 4
 #define SPARX_CATCH_LEAD 0x6E
 #define SPARX_CATCH_ALIGN 8
+/* In the catch animation (an odd nextAnim) Sparx bites on CATCH_FRAME:
+ * subMode steps CHASE -> EAT. */
+#define SPARX_CATCH_FRAME 7
 #define SPARX_CHASE_STEP 0x82
 #define SPARX_CHASE_STEP_HIGH 0x96
 #define SPARX_CHASE_STEP_SLACK 5
@@ -1424,6 +1427,13 @@ enum PathGuardMode {
 #define PATHGUARD_KNOCK_SPEED 0xDC
 #define PATHGUARD_CHARGE_KNOCK_BONUS 0x8C
 #define PATHGUARD_THROW_COOLDOWN 0x3C
+/* PATHGUARD_THROW fires three ACTOR_TYPE_SPLIT_SHOTs: at once, on frame
+ * SHOT2_FRAME and on SHOT3_FRAME, counting them in PathGuardState.timer
+ * (SHOTS_1, SHOTS_2, then THROW_COOLDOWN). */
+#define PATHGUARD_SHOTS_1 1
+#define PATHGUARD_SHOTS_2 2
+#define PATHGUARD_SHOT2_FRAME 2
+#define PATHGUARD_SHOT3_FRAME 6
 /* It walks (and rings) with MOVE_RADIUS, the ring's wall probe WALL_RADIUS;
  * hit, it slides along Spyro's heading bent KNOCK_BEND_STEP_WIDE /
  * KNOCK_BEND_FRAC_WIDE toward his yaw, losing KNOCK_DRAG a frame, and
