@@ -943,8 +943,8 @@ void Level23_UpdateActors(void) {
           if (isPickupAnimPhase == 0) {
             if (TICK_DOWN(st->timer) != 0 ||
                 (st->timer < SPARX_CATCH_EARLY_FRAMES &&
-                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
-                               ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
+                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
+                               ((CAM.rotZ >> 4) + 0x80) & ANGLE8_MASK) < 8)) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->nextAnim + 1);
@@ -2105,8 +2105,8 @@ void Level23_UpdateActors(void) {
           vecA[0] = g_anCosineLut[anglespyro] * 3 >> 4;
           vecA[1] = g_anSineLut[anglespyro] * 3 >> 4;
           vecA[2] = 0;
-          vecB[0] = g_anCosineLut[anglespyro + 64 & 0xFF] >> 5;
-          vecB[1] = g_anSineLut[(anglespyro + 64) & 0xFF] >> 5;
+          vecB[0] = g_anCosineLut[anglespyro + 64 & ANGLE8_MASK] >> 5;
+          vecB[1] = g_anSineLut[(anglespyro + 64) & ANGLE8_MASK] >> 5;
           vecB[2] = 0;
           anglespyro = (anglespyro + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);
@@ -2118,7 +2118,7 @@ void Level23_UpdateActors(void) {
           vecD[0] = vecA[0] * g_anCosineLut[anglespyro];
           vecD[1] = vecA[1] * g_anCosineLut[anglespyro];
           vecD[2] = 0;
-          anglespyro = ((anglespyro - st->index * 4)) & 0xFF;
+          anglespyro = ((anglespyro - st->index * 4)) & ANGLE8_MASK;
           ScaleVector3Sat(vecB, vecB, st->index);
           SubtractVector(vecC, vecC, vecB);
           actor->posX = vecA[0] * g_anCosineLut[anglespyro];

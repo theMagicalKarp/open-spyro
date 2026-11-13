@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -29,7 +30,7 @@ int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
     int yaw;
     d = ArcTan2(vec[0], vec[1], ATAN_ANGLE8);
     yaw = *yawp;
-    d = (d - yaw) & 0xFF;
+    d = (d - yaw) & ANGLE8_MASK;
     if (d >= 0x81) {
       d -= 0x100;
     }

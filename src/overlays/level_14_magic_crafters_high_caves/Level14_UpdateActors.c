@@ -2420,7 +2420,7 @@ void Level14_UpdateActors(void) {
             ENTER_POSE(actor, 0);
             continue;
           }
-          h = ((side + g_pActorListBase[st->rider].rotZ) & 0xFF) << 4;
+          h = ((side + g_pActorListBase[st->rider].rotZ) & ANGLE8_MASK) << 4;
           svF[2] -= CARRIER_TRAIL_DROP;
           svF[0] += LookupCosine(h) >> 2;
           svF[1] += LookupSine(h) >> 2;
@@ -2742,8 +2742,8 @@ void Level14_UpdateActors(void) {
           if (isPickupAnimPhase == 0) {
             if (TICK_DOWN(st->timer) != 0 ||
                 (st->timer < SPARX_CATCH_EARLY_FRAMES &&
-                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
-                               ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
+                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
+                               ((CAM.rotZ >> 4) + 0x80) & ANGLE8_MASK) < 8)) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->nextAnim + 1);
@@ -4213,10 +4213,10 @@ void Level14_UpdateActors(void) {
             st->timer = FWALK_DETOUR_TICKS;
             st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                         g_anCollisionContactPoint[1] - actor->posY, ATAN_ANGLE8);
-            if (((st->heading - actor->rotZ) & 0xFF) < 0x80) {
-              st->heading = (st->heading - FWALK_DETOUR_ANGLE) & 0xFF;
+            if (((st->heading - actor->rotZ) & ANGLE8_MASK) < 0x80) {
+              st->heading = (st->heading - FWALK_DETOUR_ANGLE) & ANGLE8_MASK;
             } else {
-              st->heading = (st->heading + FWALK_DETOUR_ANGLE) & 0xFF;
+              st->heading = (st->heading + FWALK_DETOUR_ANGLE) & ANGLE8_MASK;
             }
           }
         } else {
@@ -4243,10 +4243,10 @@ void Level14_UpdateActors(void) {
               st->timer = FWALK_DETOUR_TICKS;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, ATAN_ANGLE8);
-              if (((st->heading - actor->rotZ) & 0xFF) < 0x80) {
-                st->heading = (st->heading - FWALK_DETOUR_ANGLE) & 0xFF;
+              if (((st->heading - actor->rotZ) & ANGLE8_MASK) < 0x80) {
+                st->heading = (st->heading - FWALK_DETOUR_ANGLE) & ANGLE8_MASK;
               } else {
-                st->heading = (st->heading + FWALK_DETOUR_ANGLE) & 0xFF;
+                st->heading = (st->heading + FWALK_DETOUR_ANGLE) & ANGLE8_MASK;
               }
             }
           } else {
@@ -4300,10 +4300,10 @@ void Level14_UpdateActors(void) {
               st->timer = FWALK_DETOUR_TICKS;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, ATAN_ANGLE8);
-              if (((st->heading - actor->rotZ) & 0xFF) < 0x80) {
-                st->heading = (st->heading - FWALK_DETOUR_ANGLE) & 0xFF;
+              if (((st->heading - actor->rotZ) & ANGLE8_MASK) < 0x80) {
+                st->heading = (st->heading - FWALK_DETOUR_ANGLE) & ANGLE8_MASK;
               } else {
-                st->heading = (st->heading + FWALK_DETOUR_ANGLE) & 0xFF;
+                st->heading = (st->heading + FWALK_DETOUR_ANGLE) & ANGLE8_MASK;
               }
             }
           } else {
@@ -4329,10 +4329,10 @@ void Level14_UpdateActors(void) {
               st->timer = FWALK_DETOUR_TICKS;
               st->heading = ArcTan2(g_anCollisionContactPoint[0] - actor->posX,
                                           g_anCollisionContactPoint[1] - actor->posY, ATAN_ANGLE8);
-              if (((st->heading - actor->rotZ) & 0xFF) < 0x80) {
-                st->heading = (st->heading - FWALK_DETOUR_ANGLE) & 0xFF;
+              if (((st->heading - actor->rotZ) & ANGLE8_MASK) < 0x80) {
+                st->heading = (st->heading - FWALK_DETOUR_ANGLE) & ANGLE8_MASK;
               } else {
-                st->heading = (st->heading + FWALK_DETOUR_ANGLE) & 0xFF;
+                st->heading = (st->heading + FWALK_DETOUR_ANGLE) & ANGLE8_MASK;
               }
             }
           } else {
@@ -5129,8 +5129,8 @@ void Level14_UpdateActors(void) {
           s512[0] = g_anCosineLut[anglespyro] * 3 >> 4;
           s512[1] = g_anSineLut[anglespyro] * 3 >> 4;
           s512[2] = 0;
-          vecB[0] = g_anCosineLut[anglespyro + 64 & 0xFF] >> 5;
-          vecB[1] = g_anSineLut[(anglespyro + 64) & 0xFF] >> 5;
+          vecB[0] = g_anCosineLut[anglespyro + 64 & ANGLE8_MASK] >> 5;
+          vecB[1] = g_anSineLut[(anglespyro + 64) & ANGLE8_MASK] >> 5;
           vecB[2] = 0;
           anglespyro = (anglespyro + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);
@@ -5142,7 +5142,7 @@ void Level14_UpdateActors(void) {
           vecD[0] = s512[0] * g_anCosineLut[anglespyro];
           vecD[1] = s512[1] * g_anCosineLut[anglespyro];
           vecD[2] = 0;
-          anglespyro = ((anglespyro - st->index * 4)) & 0xFF;
+          anglespyro = ((anglespyro - st->index * 4)) & ANGLE8_MASK;
           ScaleVector3Sat(vecB, vecB, st->index);
           SubtractVector(vecC, vecC, vecB);
           actor->posX = s512[0] * g_anCosineLut[anglespyro];

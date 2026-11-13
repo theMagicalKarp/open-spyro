@@ -323,7 +323,7 @@ void TickLevelTransitionStream(int full) {
                    &g_anSpawnAnchorBlock[0x14] /* g_anLevelSpawnPos */);
         *(CameraAngles *)&g_nCameraSpringYaw = *(CameraAngles *)&g_nCameraYaw;
         g_abSpyroPersistentEuler[2] = g_nLevelSpawnYaw;
-        g_nSpyroBodyYaw = (g_nLevelSpawnYaw & 0xFF) << 4;
+        g_nSpyroBodyYaw = (g_nLevelSpawnYaw & ANGLE8_MASK) << 4;
         g_nCameraSpringYaw -= SPYB[SPYB_EULER_Z] << 4;
         ComputeCameraOrbitOffset(g_anCameraPos);
         AddVector(g_anCameraPos, g_anCameraPos,

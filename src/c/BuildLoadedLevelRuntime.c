@@ -392,7 +392,7 @@ sprites:
       poseWord = g_anDemoStartPose[(demo * 4) + 3];
       g_nDemoActive = 1;
       g_abSpyroPersistentEuler[2] = poseWord;
-      g_nSpyroBodyYaw = (poseWord & 0xFF) * 0x10;
+      g_nSpyroBodyYaw = (poseWord & ANGLE8_MASK) * 0x10;
     }
     if (g_nDemoMode == DEMO_PLAYBACK) {
       g_pDemoPadCursor = p;

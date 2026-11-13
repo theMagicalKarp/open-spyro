@@ -247,7 +247,7 @@ Actor *Level27_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = CULL_RADIUS(0x2000);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    dir = (parent->rotY + RandomIntInRange(-0xF, 0xF)) & 0xFF;
+    dir = (parent->rotY + RandomIntInRange(-0xF, 0xF)) & ANGLE8_MASK;
     st->vel[0] = speed * g_anCosineLut[dir] >> 12;
     st->vel[1] = speed * g_anSineLut[dir] >> 12;
     st->vel[2] = RandomIntInRange(0x64, 0x8C);

@@ -1,5 +1,6 @@
 #include "actor.h"
 #include "actor_cutscene.h"
+#include "angle.h"
 #include "frame_db.h"
 #include "funcs.h"
 #include "globals.h"
@@ -81,7 +82,7 @@ void ActorCutscene_Draw(void) {
         int *fade = g_anActorCutsceneTimerBlock;
         unsigned short *cos = (unsigned short *)g_anCosineLut;
         do {
-          rec->rotZ = cos[(*fade * 2 + phase) & 0xFF] >> 7;
+          rec->rotZ = cos[(*fade * 2 + phase) & ANGLE8_MASK] >> 7;
           rec--;
           phase += 0xC;
         } while ((int)rec >= (int)g_pSpriteRecordWriteCursor);

@@ -956,7 +956,7 @@ void Level22_UpdateActors(void) {
           }
           q = o->state;
           if (actor->subMode == BOULDER_DROPPED) {
-            int a = (st->heading + RandomIntInRange(-0x28, 0x28)) & 0xFF;
+            int a = (st->heading + RandomIntInRange(-0x28, 0x28)) & ANGLE8_MASK;
             int s = RandomIntInRange(0x96, 0xFA);
 
             q->vx = (s * g_anCosineLut[a]) >> 12;
@@ -2744,7 +2744,7 @@ void Level22_UpdateActors(void) {
                 (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
-                      (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
+                      (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
                       (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                           0xFF) < 8))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
@@ -2763,7 +2763,7 @@ void Level22_UpdateActors(void) {
             AddVector(&actor->posX, &actor->posX, g344);
             TurnActorYawTowardAngle(actor, ArcTan2(g344[0], g344[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
             actor->rotY = ArcTan2(VectorLength(g344, VEC_LEN_XY), g344[2], ATAN_ANGLE8);
-            actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
+            actor->rotY = StepAngle8Toward(actor->rotY & ANGLE8_MASK, 0, 0x30);
             break;
           }
 
@@ -2828,7 +2828,7 @@ void Level22_UpdateActors(void) {
               AddVector(&actor->posX, &actor->posX, sparxToTarget);
               TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
               actor->rotY = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
-              actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
+              actor->rotY = StepAngle8Toward(actor->rotY & ANGLE8_MASK, 0, 0x30);
             }
             break;
           }
@@ -4337,7 +4337,7 @@ void Level22_UpdateActors(void) {
           letterSwingRest[1] = g608[1] * g_anCosineLut[arm * 2];
           letterSwingRest[2] = 0;
           bearing = arm << 1;
-          bearing = (bearing - (st->index * 4)) & 0xFF;
+          bearing = (bearing - (st->index * 4)) & ANGLE8_MASK;
           ScaleVector3Sat(g624, g624, st->index);
           SubtractVector(letterSlot, letterSlot, g624);
           swing = &g_anCosineLut[bearing];

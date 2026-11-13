@@ -1397,7 +1397,7 @@ void Level27_UpdateActors(void) {
                 (TICK_DOWN(st->timer) != 0 ||
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
-                      (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
+                      (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
                       (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
                           0xFF) < 8))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
@@ -1416,7 +1416,7 @@ void Level27_UpdateActors(void) {
             AddVector(&actor->posX, &actor->posX, g056);
             TurnActorYawTowardAngle(actor, ArcTan2(g056[0], g056[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
             actor->rotY = ArcTan2(VectorLength(g056, VEC_LEN_XY), g056[2], ATAN_ANGLE8);
-            actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
+            actor->rotY = StepAngle8Toward(actor->rotY & ANGLE8_MASK, 0, 0x30);
             break;
           }
 
@@ -1481,7 +1481,7 @@ void Level27_UpdateActors(void) {
               AddVector(&actor->posX, &actor->posX, sparxToTarget);
               TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
               actor->rotY = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
-              actor->rotY = StepAngle8Toward(actor->rotY & 0xFF, 0, 0x30);
+              actor->rotY = StepAngle8Toward(actor->rotY & ANGLE8_MASK, 0, 0x30);
             }
             break;
           }
@@ -1600,8 +1600,8 @@ void Level27_UpdateActors(void) {
         c = o->state;
         c->noFloor = 1;
         c->age = 0;
-        c->vx = (g_anCosineLut[(st->knockHeading - ROCKTHROW_DROP_SKEW) & 0xFF] * ROCKTHROW_ROCK_SPEED) >> 10;
-        c->vy = (g_anSineLut[(st->knockHeading - ROCKTHROW_DROP_SKEW) & 0xFF] * ROCKTHROW_ROCK_SPEED) >> 10;
+        c->vx = (g_anCosineLut[(st->knockHeading - ROCKTHROW_DROP_SKEW) & ANGLE8_MASK] * ROCKTHROW_ROCK_SPEED) >> 10;
+        c->vy = (g_anSineLut[(st->knockHeading - ROCKTHROW_DROP_SKEW) & ANGLE8_MASK] * ROCKTHROW_ROCK_SPEED) >> 10;
         c->vz = ROCKTHROW_DROP_VZ;
         c->spin[0] = RandomSignedInRange(7, 0xF);
         c->spin[1] = RandomSignedInRange(7, 0xF);
@@ -3969,7 +3969,7 @@ void Level27_UpdateActors(void) {
           letterSwingRest[1] = g512[1] * g_anCosineLut[arm * 2];
           letterSwingRest[2] = 0;
           bearing = arm << 1;
-          bearing = (bearing - (st->index * 4)) & 0xFF;
+          bearing = (bearing - (st->index * 4)) & ANGLE8_MASK;
           ScaleVector3Sat(letterSide, letterSide, st->index);
           SubtractVector(letterSlot, letterSlot, letterSide);
           swing = &g_anCosineLut[bearing];

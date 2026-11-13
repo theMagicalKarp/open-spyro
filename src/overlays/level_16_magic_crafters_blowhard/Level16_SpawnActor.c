@@ -200,7 +200,7 @@ Actor *Level16_SpawnActor(int type, Actor *parent)
         rec->posY += LookupSine(parent->rotZ << 4) >> 2;
         rec->posZ += 0x12C;
         rec->rotZ = parent->rotZ;
-        turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8) - parent->rotY) & 0xFF;
+        turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8) - parent->rotY) & ANGLE8_MASK;
         if (turn > 0x80)
         {
           turn -= 0x100;
