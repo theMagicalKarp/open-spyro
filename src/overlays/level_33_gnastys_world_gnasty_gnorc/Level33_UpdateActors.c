@@ -1194,7 +1194,7 @@ void Level33_UpdateActors(void) {
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
                       (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
-                      (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + ANGLE8_HALF) &
+                      (CAMERA_YAW8 + ANGLE8_HALF) &
                           ANGLE8_MASK) < SPARX_CATCH_ALIGN))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
@@ -1727,7 +1727,7 @@ void Level33_UpdateActors(void) {
         SnapActorToGround(actor);
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->timer) != 0 && st->seen != 0 &&
-            AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
+            AbsAngleDelta8(CAMERA_YAW8,
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
                 GNASTY_WAIT_VIEW_ANGLE &&
@@ -1757,7 +1757,7 @@ void Level33_UpdateActors(void) {
           actor->mode = GNASTY_STAND;
           continue;
         } else if (st->throws >= GNASTY_THROW_VOLLEY ||
-                   AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
+                   AbsAngleDelta8(CAMERA_YAW8,
                                  ArcTan2(actor->posX - g_anCameraPos[0],
                                                actor->posY - g_anCameraPos[1],
                                                ATAN_ANGLE8)) > GNASTY_THROW_VIEW_ANGLE ||

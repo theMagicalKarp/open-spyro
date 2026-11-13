@@ -1418,7 +1418,7 @@ void Level20_UpdateActors(void) {
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
                       (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
-                      (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + ANGLE8_HALF) &
+                      (CAMERA_YAW8 + ANGLE8_HALF) &
                           ANGLE8_MASK) < SPARX_CATCH_ALIGN))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
@@ -2818,7 +2818,7 @@ void Level20_UpdateActors(void) {
         if (dist < LURKER_NOTICE_RANGE && TICK_DOWN(st->coolDown) != 0 &&
             (SPY_DZ(actor) > 0 ? SPY_DZ(actor) < LURKER_LASH_DZ
                                : -SPY_DZ(actor) < LURKER_LASH_DZ) &&
-            AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
+            AbsAngleDelta8(CAMERA_YAW8,
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
                 LURKER_CAM_CONE &&
@@ -3454,7 +3454,7 @@ void Level20_UpdateActors(void) {
           k = st->grabChance - (d0 >> 6);
           r = GetRandomU32() & 0xFF;
           if (TICK_DOWN(st->grabCoolDown) != 0 && *st->held == 0 && r < k &&
-              AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
+              AbsAngleDelta8(CAMERA_YAW8,
                             ArcTan2(actor->posX - g_anCameraPos[0],
                                           actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
                   GRABBER_CAM_CONE &&

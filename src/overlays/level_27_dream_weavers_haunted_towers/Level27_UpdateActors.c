@@ -1398,7 +1398,7 @@ void Level27_UpdateActors(void) {
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
                       (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
-                      (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + ANGLE8_HALF) &
+                      (CAMERA_YAW8 + ANGLE8_HALF) &
                           ANGLE8_MASK) < SPARX_CATCH_ALIGN))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;

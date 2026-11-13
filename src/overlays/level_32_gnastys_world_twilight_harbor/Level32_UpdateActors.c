@@ -1339,7 +1339,7 @@ void Level32_UpdateActors(void) {
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
                       (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
-                      (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + ANGLE8_HALF) &
+                      (CAMERA_YAW8 + ANGLE8_HALF) &
                           ANGLE8_MASK) < SPARX_CATCH_ALIGN))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
@@ -1564,7 +1564,7 @@ void Level32_UpdateActors(void) {
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (TICK_DOWN(st->shotTimer) != 0 && dist < BURSTGUN_FIRE_RANGE &&
-            AbsAngleDelta8(((unsigned short)g_nCameraEulerYaw << 16 >> 20),
+            AbsAngleDelta8(CAMERA_YAW8,
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
                 BURSTGUN_FIRE_FACING &&
