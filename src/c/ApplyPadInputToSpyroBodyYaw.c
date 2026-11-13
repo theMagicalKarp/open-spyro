@@ -40,7 +40,8 @@ int ApplyPadInputToSpyroBodyYaw(void) {
       if (abs(delta) > SPYRO_PIVOT_TURN) {
         g_nSpyroSubstate = SPYRO_SUB_WALK_PIVOT;
       }
-      g_anSpyroMoveTargetYawBlock[0] = (yaw + ((mag * delta) >> 9)) & 0xFFF;
+      g_anSpyroMoveTargetYawBlock[0] =
+          (yaw + ((mag * delta) >> 9)) & ANGLE12_MASK;
     }
   }
   return TurnSpyroTowardMoveTargetWithLean(0);

@@ -215,12 +215,12 @@ void ActorCutscene_Update(void) {
              ((SignedAngleDelta12(aim.vy, g_nCameraEulerPitch) *
                g_nActorCutsceneTimer) >>
               6)) &
-            0xFFF;
+            ANGLE12_MASK;
         g_nCameraEulerYaw = (*(unsigned short *)&g_nCameraEulerYaw +
                              ((SignedAngleDelta12(aim.vz, g_nCameraEulerYaw) *
                                g_nActorCutsceneTimer) >>
                               6)) &
-                            0xFFF;
+                            ANGLE12_MASK;
       } else {
         g_nCameraEulerPitch =
             ArcTan2(VectorLength(delta, VEC_LEN_XY), -delta[2], ATAN_ANGLE12);
@@ -259,12 +259,12 @@ void ActorCutscene_Update(void) {
                  &((Actor *)g_anActorCutsceneTimerBlock[ACSW_RECORD])->posX);
       g_nSpyroWorldPosZ += 0x2D4;
 
-      g_abSpyroPersistentEuler[2] = g_pActorCutsceneRecord->rotZ + 0x80;
+      g_abSpyroPersistentEuler[2] = g_pActorCutsceneRecord->rotZ + ANGLE8_HALF;
 
       /* Written back to the block before the cosine call so the angle is read
          once and reused as the sine argument. */
       g_anActorCutsceneTimerBlock[ACSW_CAM_YAW_GOAL] =
-          ((g_pActorCutsceneRecord->rotZ << 4) + 0x390) & 0xFFF;
+          ((ANGLE8_TO_12(g_pActorCutsceneRecord->rotZ)) + 0x390) & ANGLE12_MASK;
 
       cam = g_anCameraPosBlock;
       cam[0] = g_pActorCutsceneRecord->posX +
@@ -297,7 +297,7 @@ void ActorCutscene_Update(void) {
       g_anActorCutsceneTimerBlock[ACSW_CAM_HEIGHT_START] =
           g_anCameraPos[2] - 0xFCE;
       g_anActorCutsceneTimerBlock[ACSW_CAM_YAW_START] =
-          ((face << 4) + 0xBA0) & 0xFFF;
+          ((face << 4) + 0xBA0) & ANGLE12_MASK;
     }
   } else {
     g_pfnActorCutsceneSubstateUpdate();

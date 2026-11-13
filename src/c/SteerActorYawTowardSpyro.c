@@ -32,9 +32,9 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
   bearing = ArcTan2(g_anSpyroWorldPos[0] - actor->posX,
                     g_anSpyroWorldPos[1] - actor->posY, ATAN_ANGLE12);
   yaw = *yawp;
-  delta = (bearing - yaw) & 0xFFF;
+  delta = (bearing - yaw) & ANGLE12_MASK;
   bearing -= 0x800;
-  oppDelta = (bearing - yaw) & 0xFFF;
+  oppDelta = (bearing - yaw) & ANGLE12_MASK;
   if (delta >= 0x801) {
     delta -= 0x1000;
   }

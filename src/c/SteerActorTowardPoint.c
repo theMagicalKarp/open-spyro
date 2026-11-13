@@ -1,4 +1,5 @@
 #include "actor_type.h"
+#include "angle.h"
 #include "funcs.h"
 #include "globals.h"
 
@@ -27,7 +28,7 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim,
   pitch = ArcTan2(VectorLength(dv, VEC_LEN_XY), dv[2], ATAN_ANGLE8);
 
   heading = actor->rotZ;
-  yaw = (yaw - heading) & 0xFF;
+  yaw = (yaw - heading) & ANGLE8_MASK;
   if (yaw >= 0x80) {
     yaw -= 0x100;
   }
@@ -38,7 +39,7 @@ int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim,
     yaw = yawLim;
   }
 
-  pitch = (pitch - actor->rotY) & 0xFF;
+  pitch = (pitch - actor->rotY) & ANGLE8_MASK;
   if (pitch >= 0x80) {
     pitch -= 0x100;
   }

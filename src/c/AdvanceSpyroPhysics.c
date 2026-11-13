@@ -212,7 +212,7 @@ int AdvanceSpyroPhysics(void) {
         int a;
         unsigned int lock;
 
-        a = (g_pScriptedCameraActor->rotZ - (g_nCameraEulerYaw >> 4)) &
+        a = (g_pScriptedCameraActor->rotZ - (ANGLE12_TO_8(g_nCameraEulerYaw))) &
             ANGLE8_MASK;
         if (a > ANGLE8_HALF) {
           a -= ANGLE8_TURN;
@@ -253,7 +253,7 @@ int AdvanceSpyroPhysics(void) {
                 SubtractVector(e, ACTOR_POS(SPY[SPY_SCRIPTED_ACTOR]), SPY);
                 a = ArcTan2(e[0], e[1], ATAN_ANGLE12);
                 h = g_pScriptedCameraActor->rotZ;
-                a = (a - (h << 4)) & 0xFFF;
+                a = (a - (h << 4)) & ANGLE12_MASK;
                 if (a < 0x800) {
                   side = 1;
                   t = h + LOCK_ON_ORBIT_TURN;
@@ -303,7 +303,8 @@ int AdvanceSpyroPhysics(void) {
         CopyVector(g_anCameraLatchedAnchorPos,
                    ACTOR_POS(g_pScriptedCameraActor));
         g_anCameraLatchedAnchorPos[2] += LOCK_ON_ANCHOR_LIFT;
-        g_nCameraParamsReferenceYaw = g_pScriptedCameraActor->rotZ << 4;
+        g_nCameraParamsReferenceYaw =
+            ANGLE8_TO_12(g_pScriptedCameraActor->rotZ);
         g_pCameraTargetParams = g_anCameraParamEnemyLock;
         g_nCameraNextMode = (CAM_HELD | CAM_MODE_REQUEST);
         g_nSpyroMoveTargetYaw = keepYaw;

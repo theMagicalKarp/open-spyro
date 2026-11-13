@@ -21,6 +21,7 @@
  * matching the original's map.
  */
 
+#include "angle.h"
 #include "level_globals.h"
 #include "level_funcs.h"
 #include "main_shared.h"
@@ -563,7 +564,7 @@ void Level17_FlightResults_Draw(void)
             do
             {
               i += 1;
-              rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
+              rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & ANGLE8_MASK] * 3) >> 9;
               ph += 0xC;
               rec++;
             }
@@ -635,7 +636,7 @@ void Level17_FlightResults_Draw(void)
           do
           {
             i += 1;
-            rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
+            rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & ANGLE8_MASK] * 3) >> 9;
             ph += 0xC;
             rec++;
           }
@@ -670,7 +671,7 @@ void Level17_FlightResults_Draw(void)
           do
           {
             i += 1;
-            rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
+            rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & ANGLE8_MASK] * 3) >> 9;
             ph += 0xC;
             rec++;
           }
@@ -694,7 +695,7 @@ void Level17_FlightResults_Draw(void)
         do
         {
           i += 1;
-          rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
+          rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & ANGLE8_MASK] * 3) >> 9;
           ph += 0xC;
           rec++;
         }
@@ -747,7 +748,7 @@ void Level17_FlightResults_Draw(void)
         do
         {
           i += 1;
-          rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & 0xFF] * 3) >> 9;
+          rec->rotZ = (lut[((g_nMenuDrawFrames * 8) + ph) & ANGLE8_MASK] * 3) >> 9;
           ph += 0xC;
           rec++;
         }

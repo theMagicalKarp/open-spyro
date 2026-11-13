@@ -85,7 +85,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   if (g_anSpawnAnchorBlock[0] != 0) {
     CopyVector(g_anSpyroWorldPos,
                g_anSpawnAnchorBlock + 20); /* g_anLevelSpawnPos */
-    yaw = g_nLevelSpawnYaw >> 4;
+    yaw = ANGLE12_TO_8(g_nLevelSpawnYaw);
     g_abSpyroPersistentEuler[2] = yaw;
   } else if (g_nReturnPortalLevelId == 0) {
     g_anLevelSpawnPos[0] = p[0];
@@ -392,7 +392,7 @@ sprites:
       poseWord = g_anDemoStartPose[(demo * 4) + 3];
       g_nDemoActive = 1;
       g_abSpyroPersistentEuler[2] = poseWord;
-      g_nSpyroBodyYaw = (poseWord & 0xFF) * 0x10;
+      g_nSpyroBodyYaw = (poseWord & ANGLE8_MASK) * 0x10;
     }
     if (g_nDemoMode == DEMO_PLAYBACK) {
       g_pDemoPadCursor = p;

@@ -30,10 +30,10 @@ extern short g_anCosineLut[];        /* cosine table */
 
 extern int g_anCameraPos[];
 
-extern int g_nSpyroInputLockoutCountdown[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
+extern int g_nSpyroInvulnFrames[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
 
-/* g_anSpyroWorldPos reached through the lockout counter's held base. */
-#define SPYRO_POS_VIA_LOCKOUT (g_nSpyroInputLockoutCountdown - 0x58)
+/* g_anSpyroWorldPos reached through the invulnerability counter's held base. */
+#define SPYRO_POS_VIA_INVULN (g_nSpyroInvulnFrames - 0x58)
 
 extern int g_nSparxHealth;
 
@@ -94,7 +94,7 @@ extern int g_nSparxHealth;
 #define SMEAR_CENTRE_U ((unsigned short *)(rec + 0x10))  /* EMIT_RISING_SPIRAL_SMEAR x, y */
 /* Per-class fields past the colour word: the jittering motes' (twinkle /
  * ember / yellow dust) drift step, a burst spark's velocity, the Spyro
- * orbit sparkle's 12-bit orbit angle and a rising puff's climb rate. */
+ * hurt sparkle's 12-bit orbit angle and a rising puff's climb rate. */
 #define DRIFT ((short *)(rec + 0x10))
 #define DRIFT_U ((unsigned short *)(rec + 0x10))
 #define BURST_VEL ((short *)(rec + 0x12))
@@ -121,13 +121,17 @@ extern int g_nSparxHealth;
 #define ODOT_RADIUS rec[0x1F]
 /* The actor-tracking sparks / orbs: pool index of the actor they chase. */
 #define TRACK_ACTOR rec[0x1E]
-/* EMIT_PATH_WISP: the waypoint it is flying to. */
+/* EMIT_PATH_WISP: the fence captain that sent it (pool index), the guard
+ * slot of the captain's it flies to (FenceCaptainState.cur when sent) and
+ * the waypoint of that guard's wisp path it is flying to. */
+#define WISP_CAPTAIN rec[0x18]
+#define WISP_GUARD rec[0x19]
 #define WISP_WAYPOINT rec[0x1A]
 /* EMIT_HOMING_ORB / EMIT_PATH_WISP: the mode halfword (ORB_TRAIL: falling
  * spark trail; ORB_ORBIT: circling its drift point VEL, the X / Y sweeps
  * signed by ORB_X_UP / ORB_Y_UP; neither: homing on ORB_TARGET, the actor
- * the word at 0x18 names (level 15's sentinel aims it at its linked actor
- * and the orb bumps that actor's state on arrival). */
+ * the word at 0x18 names (level 15's sentinel aims it at its linked guard,
+ * and on arrival the orb frees it if bound: TetherState TCMD_FREED). */
 #define ORB_MODE HS(0x1E)
 #define ORB_MODE_U HU(0x1E)
 #define ORB_TARGET ((struct Actor *)W(0x18))

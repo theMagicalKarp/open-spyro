@@ -57,7 +57,7 @@ SDATA(g_nCameraSpringReengageCountdown, 4);
     RShiftVector3(ahead, shift);                                               \
     AddVector(ahead, rel, ahead);                                              \
     a = ArcTan2(rel[0], rel[1], ATAN_ANGLE12);                                 \
-    out = (a - ArcTan2(ahead[0], ahead[1], ATAN_ANGLE12)) & 0xFFF;             \
+    out = (a - ArcTan2(ahead[0], ahead[1], ATAN_ANGLE12)) & ANGLE12_MASK;      \
   }
 
 /* Per-frame camera spring driver (0x80035fb4, 5208 bytes). Picks the target
@@ -122,7 +122,7 @@ void UpdateCameraSpringForMode(void) {
       if (left == 0) {
         break;
       }
-      d = (g_nCameraYaw - 0x800 + g_nSpyroBodyYaw) & ANGLE12_MASK;
+      d = (g_nCameraYaw - ANGLE12_HALF + g_nSpyroBodyYaw) & ANGLE12_MASK;
       if (d > ANGLE12_HALF) {
         d -= ANGLE12_TURN;
       }
@@ -199,7 +199,7 @@ void UpdateCameraSpringForMode(void) {
       break;
     }
     LoadCameraTargetAnglesFromMode();
-    g_nCameraTargetYawBias = (-g_nSpyroBodyYawStep << 3) & 0xFFF;
+    g_nCameraTargetYawBias = (-g_nSpyroBodyYawStep << 3) & ANGLE12_MASK;
     break;
   }
   case CAM_MODE_GLIDE: {
@@ -426,7 +426,7 @@ void UpdateCameraSpringForMode(void) {
     y = actor->posY;
     g_anCameraScriptedTargetPos[2] = z;
     g_anCameraScriptedTargetPos[1] = y;
-    g_nCameraParamsReferenceYaw = actor->rotZ << 4;
+    g_nCameraParamsReferenceYaw = ANGLE8_TO_12(actor->rotZ);
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     g_nCameraSpringPitch = g_nCameraPitch;

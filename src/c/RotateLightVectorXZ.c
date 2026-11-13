@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "globals.h"
 
 /* g_anLightSweepAngleBlock (globals.h) is an array alias of
@@ -15,7 +16,8 @@ extern volatile int g_nLightSweepAngle;
 void RotateLightVectorXZ(int steps) {
   int angle;
 
-  g_anLightSweepAngleBlock[0] = (g_anLightSweepAngleBlock[0] + steps) & 0xFF;
+  g_anLightSweepAngleBlock[0] =
+      (g_anLightSweepAngleBlock[0] + steps) & ANGLE8_MASK;
   angle = g_nLightSweepAngle;
   g_anWorldLightDirVec[0] = (g_anCosineLut[angle] * 1983) >> 11;
   g_anWorldLightDirVec[1] = (g_anSineLut[angle] * 6345) >> 12;

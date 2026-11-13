@@ -3,12 +3,15 @@
 #include "spyro_block.h"
 #include "spyro_state.h"
 
-/* Probe for a grabbable ledge ahead of Spyro (0x8003e218, 0x100). Cast a ray
-   from just above Spyro (body anchor -0x34, +0x164 up) to a point 0x1C4
-   ahead / 0x1A4 up rotated into body space; on a hit whose surface normal is
-   steep enough (arctan of z vs horizontal length >= 0x17) latch the
-   ledge-grab flag (+0x80 past the body matrix) and stash the contact normal
-   (+0x84). */
+/* Airborne probe for a surface ahead of Spyro (0x8003e218, 0x100; JUMP /
+   LIFT / FALL / GLIDE_DROP when no wall was touched this step). Cast a ray
+   from Spyro's body anchor (SPYRO_RADIUS down in body space) to a point
+   0x1C4 ahead / 0x1A4 down; on a hit whose surface normal rises at least
+   0x17 (8-bit angle) above horizontal, i.e. a surface no steeper than a
+   wall, latch the same wall-contact pair AdvanceSpyroPhysics sets on a wall
+   slide: g_nSpyroWallSlideContributedFlag = 1 and the contact normal as the
+   nudge (g_anSpyroWallSlideNudgeAccum). Spyro 1 has no ledge grab; the
+   integrator just slides his velocity along that normal. */
 
 void ProbeSpyroLedgeForward(void) {
   int from[4];

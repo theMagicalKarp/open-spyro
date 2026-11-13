@@ -1,4 +1,5 @@
 #include "actor_states.h"
+#include "angle.h"
 #include "camera.h"
 #include "cd_music.h"
 #include "funcs.h"
@@ -48,7 +49,7 @@ void EndDragonRescueToWorld(void) {
   g_nCameraParamsReferenceYaw = g_nSpyroBodyYaw;
   ComputeCameraToTargetAngle((int *)((char *)cam - 0xA8)); /* g_anCameraPos */
   CopyWords(dyn, ((char *)cam) - 0x40, 0x18);              /* g_nCameraYaw */
-  dyn[0] = (dyn[0] + g_nCameraParamsReferenceYaw) & 0xFFF;
+  dyn[0] = (dyn[0] + g_nCameraParamsReferenceYaw) & ANGLE12_MASK;
   ResetCameraStateToTarget();
   InitHudCounters(0);
   g_abHudCounterDisplayState[HUD_CTR_GEMS] = HUD_CTR_HIDDEN;

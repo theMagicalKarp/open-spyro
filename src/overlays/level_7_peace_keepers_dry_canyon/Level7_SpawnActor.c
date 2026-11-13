@@ -190,7 +190,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = CULL_RADIUS(0x2000);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    yaw = GetRandomU32() & 0xFFF;
+    yaw = GetRandomU32() & ANGLE12_MASK;
     pitch = GetRandomU32() & 0x7FF;
     st->vel[0] = (LookupCosine(pitch) >> 5) * LookupCosine(yaw) >> 12;
     st->vel[1] = (LookupCosine(pitch) >> 5) * LookupSine(yaw) >> 12;
@@ -282,7 +282,7 @@ Actor *Level7_SpawnActor(int type, Actor *parent) {
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    yaw = GetRandomU32() & 0xFFF;
+    yaw = GetRandomU32() & ANGLE12_MASK;
     pitch = GetRandomU32() & 0x7FF;
     if (pitch < 0x80) {
       pitch = 0x80;

@@ -18,7 +18,7 @@ void BuildSpyroVelocityFromBodyEuler(void) {
 
   euler[0] = (signed char)(g_anSpyroBodyPitchBlock[0] >> 4);
   euler[1] = (signed char)(g_nSpyroBodyRoll >> 4);
-  euler[2] = (signed char)(g_nSpyroBodyYaw >> 4);
+  euler[2] = (signed char)(ANGLE12_TO_8(g_nSpyroBodyYaw));
   ApplyEulerRotation(euler, mtx, 0);
 
   g_anSpyroVelocity[1] = 0;

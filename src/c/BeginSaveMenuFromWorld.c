@@ -111,11 +111,11 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   g_nSaveMenuCameraFromDist = VectorLength(vec, VEC_LEN_XY);
   g_nSaveMenuXOffset = 0xB0;
   g_nSaveMenuCameraFromZ = g_anCameraPos[2];
-  camYaw = (g_nSaveMenuSpyroToYaw + 0x30B) & 0xFFF;
+  camYaw = (g_nSaveMenuSpyroToYaw + 0x30B) & ANGLE12_MASK;
   g_nSaveMenuCameraToAngle = camYaw;
   if (AbsAngleDelta12(g_nSaveMenuCameraFromAngle, camYaw) > 0x400) {
     g_nSaveMenuXOffset = 0;
-    g_nSaveMenuCameraToAngle = (g_nSaveMenuSpyroToYaw - 0x30B) & 0xFFF;
+    g_nSaveMenuCameraToAngle = (g_nSaveMenuSpyroToYaw - 0x30B) & ANGLE12_MASK;
   }
   g_nSaveMenuCameraToDist = 0x4C9;
   g_nSaveMenuCameraToZ = SPY_PREV[-4] + 0x56B;

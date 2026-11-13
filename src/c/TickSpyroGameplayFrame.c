@@ -8,14 +8,14 @@
 
 /* `mesh` is Spyro's model plus anim * 4, so ANIM_SLOT reads that anim's
    header pointer (Model.m_Animations[anim]); a frame record is the header plus
-   frame * 4, whose AnimationHeader.m_FrameWords word is the footstep sfx key
-   and its top byte the sfx id.  The header pointer is re-read per use
-   (volatile) — the original never keeps it live across the sfx-id test. */
-/* ...and from the held footstep-key base (g_adwSpyroFootstepSfxBlock,
+   frame * 4, whose AnimationHeader.m_FrameWords word is the frame's sound key
+   and its top byte the sfx id (0xFF none).  The header pointer is re-read per
+   use (volatile) — the original never keeps it live across the sfx-id test. */
+/* ...and from the held previous-key base (g_adwSpyroAnimSfxPrevKeyBlock,
    0x80078cbc) back to g_anSpyroWorldPos (the sound owner) and on to
    g_bSpyroSfxVoiceMarker. */
-#define FOOTSTEP_TO_SPYRO_POS 0x264
-#define FOOTSTEP_TO_VOICE_MARKER 0x3C
+#define SFX_KEY_TO_SPYRO_POS 0x264
+#define SFX_KEY_TO_VOICE_MARKER 0x3C
 
 #define ANIM_SLOT(mesh) (*(volatile int *)((mesh) + MODEL_OFFSET(m_Animations)))
 #define FRAMEREC(mesh, frame) ((frame) + ANIM_SLOT(mesh))
@@ -28,8 +28,10 @@
    integrate a frame of motion, run the state behaviour + the per-substep
    anim machine, compose the body and composed-body matrices, then police the
    death plane (respawn / hard-fall state change / scripted death camera).  Ends
-   by firing the two footstep sound-effect slots (primary anim + layer-1
-   overlay) when their anim record's sfx byte changes. */
+   by firing the two anim-frame sounds (primary anim + layer-1 overlay):
+   each layer's frame sound plays when its frame word differs from last
+   frame's (g_dwSpyroAnimSfxPrevKey / g_dwSpyroLayer1SfxPrevKey), so a sound
+   fires once on entering its keyframe. */
 void TickSpyroGameplayFrame(void) {
   unsigned int key;
   unsigned int key2;
@@ -41,7 +43,7 @@ void TickSpyroGameplayFrame(void) {
   int *fallFrames;
   int *camRecord;
   unsigned char *animBlock;
-  unsigned int *footstep;
+  unsigned int *prevKey;
   int mesh;
   int rec;
   int ptr;
@@ -86,9 +88,9 @@ void TickSpyroGameplayFrame(void) {
   }
   euler = g_abSpyroPersistentEulerBlock;
   bodyMtx = (int *)(euler + EULER_TO_BODY_MTX);
-  euler[0] = g_nSpyroBodyPitch >> 4;
+  euler[0] = ANGLE12_TO_8(g_nSpyroBodyPitch);
   g_abSpyroPersistentEuler[1] = g_nSpyroBodyRoll >> 4;
-  g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
+  g_abSpyroPersistentEuler[2] = ANGLE12_TO_8(g_nSpyroBodyYaw);
   ApplyEulerRotation(euler, bodyMtx, 0);
   composedMtx = (int *)(euler + EULER_TO_COMPOSED_MTX);
   ApplyEulerRotation(euler + 4, composedMtx, 0);
@@ -157,7 +159,7 @@ done:
   if (sfx[0] != 0xFF) {
     ptr = ANIM_SLOT(mesh);
     rec = frame + ptr;
-    if (g_dwSpyroFootstepPrimarySfxKey != FRAME_KEY(rec)) {
+    if (g_dwSpyroAnimSfxPrevKey != FRAME_KEY(rec)) {
       PlaySoundEffect(sfx[0], (Actor *)SPY_FROM_ANIM_PREV(animBlock, 0),
                       SFX_MODE_FLAT,
                       SPY_FROM_ANIM_PREV(animBlock, SPYB_VOICE_MARKER));
@@ -165,25 +167,25 @@ done:
   }
   key = FRAME_KEY(FRAMEREC(g_bSpyroAnimPrev * 4 + (int)g_apActorMeshTable,
                            g_bSpyroFramePrev * 4));
-  footstep = g_adwSpyroFootstepSfxBlock;
-  footstep[0] = key;
+  prevKey = g_adwSpyroAnimSfxPrevKeyBlock;
+  prevKey[0] = key;
   sfx[1] =
       FRAME_SFX(FRAMEREC(g_bSpyroAnimLayer1Prev * 4 + (int)g_apActorMeshTable,
                          g_bSpyroAnimLayer1FramePrev * 4));
   if ((sfx[1] != 0xFF) && (sfx[0] != sfx[1])) {
     ptr = ANIM_SLOT(g_bSpyroAnimLayer1Prev * 4 + (int)g_apActorMeshTable);
     rec = g_bSpyroAnimLayer1FramePrev * 4 + ptr;
-    if (g_dwSpyroFootstepSecondarySfxKey != FRAME_KEY(rec)) {
+    if (g_dwSpyroLayer1SfxPrevKey != FRAME_KEY(rec)) {
       PlaySoundEffect(
-          sfx[1], (Actor *)((unsigned char *)footstep - FOOTSTEP_TO_SPYRO_POS),
-          SFX_MODE_FLAT, (unsigned char *)footstep + FOOTSTEP_TO_VOICE_MARKER);
+          sfx[1], (Actor *)((unsigned char *)prevKey - SFX_KEY_TO_SPYRO_POS),
+          SFX_MODE_FLAT, (unsigned char *)prevKey + SFX_KEY_TO_VOICE_MARKER);
     }
   }
   key2 =
       FRAME_KEY(FRAMEREC(g_bSpyroAnimLayer1Prev * 4 + (int)g_apActorMeshTable,
                          g_bSpyroAnimLayer1FramePrev * 4));
   g_dwSpyroRequestMask &= ~SPYRO_RQ_PENDING;
-  g_dwSpyroFootstepSecondarySfxKey = key2;
+  g_dwSpyroLayer1SfxPrevKey = key2;
   if (g_bPadInputStashed != 0) {
     MovePadInputState(&g_dwPadStash, &g_dwPadPressed);
   }

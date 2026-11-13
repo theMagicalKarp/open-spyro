@@ -92,19 +92,20 @@ void Level5_AdvanceEmitList(int step) {
       }
       break;
 
-    case EMIT_SPYRO_ORBIT_SPARKLE:
-      /* The homing sparkle: it only lives while Spyro is on screen. */
+    case EMIT_SPYRO_HURT_SPARKLE:
+      /* A hurt sparkle: circles Spyro (0x40 a tick) while his post-hit
+       * invulnerability runs; freed early if he is hidden or a hazard kills him. */
       if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
-          g_nSpyroInputLockoutCountdown[0] <= 0) {
+          g_nSpyroInvulnFrames[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
-        CopyVector(v, SPYRO_POS_VIA_LOCKOUT);
+        CopyVector(v, SPYRO_POS_VIA_INVULN);
         v[0] += LookupCosine(ORBIT_ANGLE) >> 4;
         v[1] += LookupSine(ORBIT_ANGLE) >> 4;
         v[2] += 0x100;
         VectorToSVectorShr2(POS, v);
         ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
-        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & ANGLE12_MASK)) / 170;
       }
       break;
 

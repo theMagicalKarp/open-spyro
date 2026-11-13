@@ -112,7 +112,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     GetActorAttachPoint(parent, 0, &rec->posX);
     InsertActorIntoSpatialGrid(rec);
     rec->rotY = g_nCameraEulerPitch;
-    rec->rotZ = (g_nCameraEulerYaw + 0x400) >> 4;
+    rec->rotZ = (g_nCameraEulerYaw + ANGLE12_QUARTER) >> 4;
     break;
   }
 
@@ -198,7 +198,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     if (parent->type == ACTOR_TYPE_BOLT_GUARD) {
       BoltGuardState *pst = parent->state;
 
-      yaw = ((pst->knockHeading + RandomIntInRange(-0x32, 0x32)) & 0xFF) << 4;
+      yaw = ((pst->knockHeading + RandomIntInRange(-0x32, 0x32)) & ANGLE8_MASK) << 4;
       pitch = GetRandomU32() & 0x7FF;
       if (LookupCosine(pitch) >> 4 > 0) {
         speed = LookupCosine(pitch) >> 4;
@@ -214,7 +214,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
       st->vel[1] += g_anSpyroVelocity[1] >> 6;
       st->vel[2] += g_anSpyroVelocity[2] >> 6;
     } else {
-      yaw = GetRandomU32() & 0xFFF;
+      yaw = GetRandomU32() & ANGLE12_MASK;
       pitch = GetRandomU32() & 0x7FF;
       st->vel[0] = (LookupCosine(pitch) >> 5) * LookupCosine(yaw) >> 12;
       st->vel[1] = (LookupCosine(pitch) >> 5) * LookupSine(yaw) >> 12;
@@ -262,7 +262,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_REBOUND_FX:
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, g_anSpyroFirstContactPoint);
-    rec->rotZ = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], ATAN_ANGLE8) + 0x40;
+    rec->rotZ = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], ATAN_ANGLE8) + ANGLE8_QUARTER;
     InsertActorIntoSpatialGrid(rec);
     break;
 
@@ -278,7 +278,7 @@ Actor *Level19_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = CULL_RADIUS(0x2000);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    yaw = GetRandomU32() & 0xFFF;
+    yaw = GetRandomU32() & ANGLE12_MASK;
     pitch = GetRandomU32() & 0x7FF;
     st->vel[0] = (LookupCosine(pitch) >> 5) * LookupCosine(yaw) >> 12;
     st->vel[1] = (LookupCosine(pitch) >> 5) * LookupSine(yaw) >> 12;

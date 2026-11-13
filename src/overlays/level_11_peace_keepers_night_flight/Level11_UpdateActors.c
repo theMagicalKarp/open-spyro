@@ -293,15 +293,15 @@ void Level11_UpdateActors(void) {
         } else {
           CopyVector(svA, &spy->posX);
           {
-            int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
-            int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
+            int c = LookupCosine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ));
+            int s = LookupSine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ));
             int cr = c * EGG_APEX_DIAG;
             int sr = s * EGG_APEX_DIAG;
             svA[0] = svA[0] + ((sr + cr) >> 12);
           }
           {
-            int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
-            int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
+            int s = LookupSine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ));
+            int c = LookupCosine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ));
             int sr = s * EGG_APEX_DIAG;
             int cr = c * EGG_APEX_DIAG;
             svA[1] = svA[1] + ((sr - cr) >> 12);
@@ -329,11 +329,11 @@ void Level11_UpdateActors(void) {
           actor->rotZ = actor->rotZ + (g_nFrameStep << 2);
         } else {
           CopyVector(svD, &spy->posX);
-          svD[0] = svD[0] + (LookupCosine(g_bSpyroPersistentEulerZ << 4) >> 3);
-          svD[1] = svD[1] + (LookupSine(g_bSpyroPersistentEulerZ << 4) >> 3);
+          svD[0] = svD[0] + (LookupCosine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ)) >> 3);
+          svD[1] = svD[1] + (LookupSine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ)) >> 3);
           svD[2] = svD[2] + EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
-          st->angle = g_bSpyroPersistentEulerZ - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;
           st->radius = EGG_SPIRAL_RADIUS;
           st->phase = 0;
           actor->mode = actor->mode + 1;
@@ -934,8 +934,8 @@ void Level11_UpdateActors(void) {
           if (isPickupAnimPhase == 0) {
             if (TICK_DOWN(st->timer) != 0 ||
                 (st->timer < SPARX_CATCH_EARLY_FRAMES &&
-                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & 0xFF,
-                               ((CAM.rotZ >> 4) + 0x80) & 0xFF) < 8)) {
+                 AbsAngleDelta8((actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
+                               (ANGLE12_TO_8(CAM.rotZ) + ANGLE8_HALF) & ANGLE8_MASK) < SPARX_CATCH_ALIGN)) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->nextAnim + 1);
@@ -949,7 +949,7 @@ void Level11_UpdateActors(void) {
             ScaleVector3ByRatio(svA, dist, targetSpeed - SPARX_CHASE_STEP_SLACK);
           }
           AddVector(&actor->posX, &actor->posX, svA);
-          TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+          TurnActorYawTowardAngle(actor, ArcTan2(svA[0], svA[1], ATAN_ANGLE8), SPARX_SEEK_TURN, 0, YAW_HOLD_IN_BAND);
           pitchAngle = ArcTan2(VectorLength(svA, VEC_LEN_XY), svA[2], ATAN_ANGLE8);
           actor->rotY = pitchAngle;
           actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
@@ -1012,7 +1012,7 @@ void Level11_UpdateActors(void) {
               ScaleVector3ByRatio(sparxToTarget, dist, SPARX_FETCH_STEP_NEAR);
 
             AddVector(&actor->posX, &actor->posX, sparxToTarget);
-            TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+            TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), SPARX_SEEK_TURN, 0, YAW_HOLD_IN_BAND);
             pitchAngle = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
             actor->rotY = pitchAngle;
             actor->rotY = StepAngle8Toward(pitchAngle, 0, 0x30);
@@ -1069,7 +1069,7 @@ void Level11_UpdateActors(void) {
             svF[2] = -SPARX_MAX_PITCH;
           actor->rotX = 0;
           actor->rotY = svF[2];
-          TurnActorYawTowardAngle(actor, SPY.bodyRotZ, 4, 0, YAW_HOLD_IN_BAND);
+          TurnActorYawTowardAngle(actor, SPY.bodyRotZ, SPARX_HOVER_TURN, 0, YAW_HOLD_IN_BAND);
         }
 
         switch (SPY.sparxHealth) {
@@ -1230,7 +1230,7 @@ void Level11_UpdateActors(void) {
       FlightChestState *st = actor->state;
       int i;
 
-      if (actor->flags & ACTOR_HITS_SPYRO) {
+      if (actor->flags & ACTOR_HIT_BY_SPYRO) {
         Actor *reward;
 
         PlayActorMeshVoice(actor, FCHEST_VOICE_BURST, 0);
@@ -1323,7 +1323,7 @@ void Level11_UpdateActors(void) {
         TurnActorYawTowardAngle(actor,
                       WrapAddAngle8(ArcTan2(spy->posX - actor->posX,
                                                   spy->posY - actor->posY, ATAN_ANGLE8),
-                                    0x40),
+                                    ANGLE8_QUARTER),
                       4, 0, YAW_HOLD_IN_BAND);
         break;
       case TIMEBONUS_COLLECT:
@@ -1905,7 +1905,7 @@ void Level11_UpdateActors(void) {
         if (ApproxDist2D(&st->sign->posX, &spy->posX) < LEVELEXIT_ENTER_RANGE) {
           int oldval;
           oldval = g_anCosineLut[actor->subMode];
-          actor->subMode += 8;
+          actor->subMode += LETTER_SWAY_STEP;
           actor->rotZ = actor->rotZ - (oldval * 3 >> 9) +
                          (g_anCosineLut[actor->subMode] * 3 >> 9);
         } else {
@@ -1915,14 +1915,14 @@ void Level11_UpdateActors(void) {
           int vecC[3];
           int vecD[3];
 
-          actor->subMode += 8;
+          actor->subMode += LETTER_SWAY_STEP;
           anglespyro = ArcTan2(spy->posX - st->sign->posX,
                                      SPY.posY - st->sign->posY, ATAN_ANGLE8);
           vecA[0] = g_anCosineLut[anglespyro] * 3 >> 4;
           vecA[1] = g_anSineLut[anglespyro] * 3 >> 4;
           vecA[2] = 0;
-          vecB[0] = g_anCosineLut[anglespyro + 64 & 0xFF] >> 5;
-          vecB[1] = g_anSineLut[(anglespyro + 64) & 0xFF] >> 5;
+          vecB[0] = g_anCosineLut[anglespyro + ANGLE8_QUARTER & ANGLE8_MASK] >> 5;
+          vecB[1] = g_anSineLut[(anglespyro + ANGLE8_QUARTER) & ANGLE8_MASK] >> 5;
           vecB[2] = 0;
           anglespyro = (anglespyro + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);
@@ -1934,7 +1934,7 @@ void Level11_UpdateActors(void) {
           vecD[0] = vecA[0] * g_anCosineLut[anglespyro];
           vecD[1] = vecA[1] * g_anCosineLut[anglespyro];
           vecD[2] = 0;
-          anglespyro = ((anglespyro - st->index * 4)) & 0xFF;
+          anglespyro = ((anglespyro - st->index * 4)) & ANGLE8_MASK;
           ScaleVector3Sat(vecB, vecB, st->index);
           SubtractVector(vecC, vecC, vecB);
           actor->posX = vecA[0] * g_anCosineLut[anglespyro];
@@ -1948,7 +1948,7 @@ void Level11_UpdateActors(void) {
           actor->posZ = actor->posZ + (g_anCosineLut[anglespyro] * 3 >> 3) + 0x600;
         }
       } else {
-        actor->subMode += 8;
+        actor->subMode += LETTER_SWAY_STEP;
         actor->rotZ = actor->floorOffset + (g_anCosineLut[actor->subMode] * 3 >> 9);
       }
     }

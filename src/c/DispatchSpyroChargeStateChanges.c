@@ -11,14 +11,15 @@ SDATA(g_pSpyroContactActor, 4);
 
 /* Charge-state trigger dispatcher (0x80041270, 744 bytes), called from the
    charge states (SPYRO_ST_CHARGE, SPYRO_ST_CHARGE_AIR). Masks the
-   trigger-event flags (fewer while the input lockout runs) and routes them: a
-   bump (bits 0x6 == 4, or
+   trigger-event flags (fewer while the post-hit invulnerability runs) and
+   routes them: a bump (bits 0x6 == 4, or
    == 2 with the contact actor within +-0x200 of Spyro's heading) kicks
-   SPYRO_ST_CHARGE_BONK; a hit (== 6) outside the lockout costs one
-   g_nSparxHealth, re-arms the lockout and picks the hurt (or, past 0, death)
-   state from the flag bits; 0x8000 rebounds off the first contact normal; 0x800
-   forces SPYRO_ST_LIFT; 0x400 spends Sparx health for SPYRO_ST_HAZARD. Bit
-   0x2000 latches the charge hold. Returns nonzero once any state changed. */
+   SPYRO_ST_CHARGE_BONK; a hit (== 6) outside the invulnerability costs one
+   g_nSparxHealth, re-arms the invulnerability and picks the hurt (or, past 0,
+   death) state from the flag bits; 0x8000 rebounds off the first contact
+   normal; 0x800 forces SPYRO_ST_LIFT; 0x400 spends Sparx health for
+   SPYRO_ST_HAZARD. Bit 0x2000 latches the charge hold. Returns nonzero once any
+   state changed. */
 int DispatchSpyroChargeStateChanges(void) {
   int flags = 0xFFFF;
   int changed = 0;
@@ -32,17 +33,16 @@ int DispatchSpyroChargeStateChanges(void) {
   if (g_nNextLevelId != g_nActiveLevelId) {
     return 0;
   }
-  OPAQUE_COPY(lock, &g_nSpyroInputLockoutCountdown);
+  OPAQUE_COPY(lock, &g_nSpyroInvulnFrames);
   if (lock[0] != 0) {
     flags = 0xFFFF & ~SPYRO_EV_HITS;
   }
   flags &= g_dwSpyroTriggerEventFlags;
   switch (flags & SPYRO_EV_CHARGE_HIT) {
   case SPYRO_EV_CONTACT_FRONT:
-    SubtractVector(
-        d, &g_pSpyroContactActor->posX,
-        lock -
-            0x58); /* g_anSpyroWorldPos, 0x58 words below the lockout counter */
+    SubtractVector(d, &g_pSpyroContactActor->posX,
+                   lock - 0x58); /* g_anSpyroWorldPos, 0x58 words below the
+                                    invulnerability counter */
     angle =
         (ArcTan2(d[0], d[1], ATAN_ANGLE12) - g_nSpyroBodyYaw) & ANGLE12_MASK;
     if (angle > ANGLE12_HALF) {
@@ -61,7 +61,7 @@ int DispatchSpyroChargeStateChanges(void) {
       if (g_bDebugNoDepletion == 0) {
         lock[1]--;
       }
-      lock[0] = 0x5A;
+      lock[0] = SPYRO_HIT_INVULN_FRAMES;
       if (flags & SPYRO_EV_HIT_PINNED) {
         state = SPYRO_ST_HURT_PINNED;
         if (lock[1] < 0) {
@@ -108,8 +108,8 @@ int DispatchSpyroChargeStateChanges(void) {
     if (g_bDebugNoDepletion == 0) {
       (*ready)--;
     }
-    if (g_nSpyroInputLockoutCountdown < 0x5A) {
-      g_nSpyroInputLockoutCountdown = 0x5A;
+    if (g_nSpyroInvulnFrames < SPYRO_HIT_INVULN_FRAMES) {
+      g_nSpyroInvulnFrames = SPYRO_HIT_INVULN_FRAMES;
     }
     ChangeSpyroState(SPYRO_ST_HAZARD);
     changed = 1;

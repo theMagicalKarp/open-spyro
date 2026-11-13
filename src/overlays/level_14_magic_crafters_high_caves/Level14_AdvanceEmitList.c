@@ -32,6 +32,7 @@
 #include "match_asm.h"
 #include "spyro_state.h"
 #include "emit_record.h"
+#include "actor_states.h"
 
 void Level14_AdvanceEmitList(int step) {
   unsigned char *rec = g_pEmitListBase;
@@ -172,11 +173,11 @@ void Level14_AdvanceEmitList(int step) {
         SubtractVector(dir, dir, pt);
         len = VectorLength(dir, VEC_LEN_XYZ);
         if (len < 0x401 || AGE >= 0x41) {
-          int *target = (int *)ORB_TARGET->state; /* a TetherState: [5] mode, [0] timer */
+          TetherState *target = ORB_TARGET->state;
 
-          if (target[5] == TCMD_BOUND) {
-            target[5] = TCMD_FREED; /* the orb frees a bound guard */
-            target[0] = 0x20;
+          if (target->mode == TCMD_BOUND) {
+            target->mode = TCMD_FREED; /* the orb frees a bound guard */
+            target->timer = TGUARD_ORB_FREE_FRAMES;
           }
           ORB_MODE = (GetRandomU32() & (ORB_X_UP | ORB_Y_UP)) + ORB_ORBIT;
           VectorToSVectorShr2(VEL, &ORB_TARGET->posX);
@@ -325,20 +326,21 @@ void Level14_AdvanceEmitList(int step) {
       }
       break;
 
-    case EMIT_SPYRO_ORBIT_SPARKLE:
+    case EMIT_SPYRO_HURT_SPARKLE:
     /* <- Level10_AdvanceEmitList */
-      /* The homing sparkle: it only lives while Spyro is on screen. */
+      /* A hurt sparkle: circles Spyro (0x40 a tick) while his post-hit
+       * invulnerability runs; freed early if he is hidden or a hazard kills him. */
       if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
-          g_nSpyroInputLockoutCountdown[0] <= 0) {
+          g_nSpyroInvulnFrames[0] <= 0) {
         goto expire;
       } else {
-        CopyVector(w, SPYRO_POS_VIA_LOCKOUT);
+        CopyVector(w, SPYRO_POS_VIA_INVULN);
         w[0] += LookupCosine(ORBIT_ANGLE) >> 4;
         w[1] += LookupSine(ORBIT_ANGLE) >> 4;
         w[2] += 0x100;
         VectorToSVectorShr2(POS, w);
         ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
-        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & ANGLE12_MASK)) / 170;
       }
       break;
 

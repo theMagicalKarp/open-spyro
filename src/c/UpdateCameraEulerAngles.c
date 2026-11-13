@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "globals.h"
 
 /* Publish the spring camera's orientation as the 12-bit euler angles the render
@@ -7,8 +8,10 @@
 void UpdateCameraEulerAngles(void) {
   int angle = g_nCameraSpringRoll;
 
-  g_nCameraEulerPitch = (g_nCameraPitch + g_nCameraSpringPitchBias) & 0xFFF;
+  g_nCameraEulerPitch =
+      (g_nCameraPitch + g_nCameraSpringPitchBias) & ANGLE12_MASK;
   g_nCameraEulerRoll = angle;
   angle = g_nCameraYaw;
-  g_nCameraEulerYaw = (0x800 - angle - g_nCameraSpringYawBias) & 0xFFF;
+  g_nCameraEulerYaw =
+      (ANGLE12_HALF - angle - g_nCameraSpringYawBias) & ANGLE12_MASK;
 }

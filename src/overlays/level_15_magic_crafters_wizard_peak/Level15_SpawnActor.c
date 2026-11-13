@@ -111,8 +111,8 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
       rec->nextAnim = SPLITSHOT_FRAGMENT;
       *timer = 3;
     } else if (parent->nextFrame >= 6) {
-      rec->posX += LookupCosine(parent->rotZ << 4) >> 2;
-      rec->posY += LookupSine(parent->rotZ << 4) >> 2;
+      rec->posX += LookupCosine(ANGLE8_TO_12(parent->rotZ)) >> 2;
+      rec->posY += LookupSine(ANGLE8_TO_12(parent->rotZ)) >> 2;
       rec->posZ += 0x12C;
       rec->rotZ = parent->rotZ;
       turn = (ArcTan2(ApproxDist2D(pos, (int *)g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ,
@@ -245,7 +245,7 @@ Actor *Level15_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = CULL_RADIUS(0x2000);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    yaw = GetRandomU32() & 0xFFF;
+    yaw = GetRandomU32() & ANGLE12_MASK;
     pitch = GetRandomU32() & 0x7FF;
     st->vel[0] = (LookupCosine(pitch) >> 5) * LookupCosine(yaw) >> 12;
     st->vel[1] = (LookupCosine(pitch) >> 5) * LookupSine(yaw) >> 12;

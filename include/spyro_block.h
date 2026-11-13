@@ -47,7 +47,7 @@
 #define SPY_IMPULSE        0x4B /* g_anSpyroPendingImpulse */
 #define SPY_BODY_YAW_STEP  0x52 /* g_nSpyroBodyYawStep */
 #define SPY_GLIDE_SPENT    0x54 /* g_nSpyroGlideSpentFlag */
-#define SPY_LOCKOUT        0x58 /* g_nSpyroInputLockoutCountdown */
+#define SPY_INVULN        0x58 /* g_nSpyroInvulnFrames */
 #define SPY_SPARX_HEALTH    0x59 /* g_nSparxHealth */
 #define SPY_HAZARD_SINK    0x5A /* g_nSpyroHazardSinkDepth */
 #define SPY_FIRST_POINT    0x5F /* g_anSpyroFirstContactPoint */

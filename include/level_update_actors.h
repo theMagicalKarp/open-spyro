@@ -275,6 +275,14 @@ typedef struct FollowState {
 #define FOLLOWER_RELEASE_STAGGER 9
 #define FOLLOWER_DROP_PROBE_DEPTH (GROUND_PROBE_LIFT + 0x1000)
 
+/* A held follower's ->subMode is FOLLOWER_HELD; any other value starts the
+ * release, as does the parent going dormant. Gnasty Gnorc sets
+ * FOLLOWER_RELEASE on his key followers as he escapes and when beaten; any
+ * SetActorGroupSubstate on the follower's pickup group (e.g. the level 4
+ * spinner's (leader, 1) when Spyro's attack knocks it) releases it too. */
+#define FOLLOWER_HELD 0
+#define FOLLOWER_RELEASE 1
+
 /* Case 173 — the level key (ACTOR_TYPE_KEY): rocks in place and sparkles;
  * touching it sets g_nLevelKeyState = 1, and the locked chest (174) then
  * flies it into its lock. */
@@ -335,6 +343,8 @@ typedef struct ExitWhirlState {
 
 #ifndef PIVOT_TURN_ANY
 #define PIVOT_TURN_ANY 0xFF /* turnGroup: turn without waiting on a group peer */
+/* The `thresh` most callers pass: a node counts as reached within 0x100 (2D). */
+#define PIVOT_ARRIVE_NEAR 0x100
 /* ->subMode while PivotActorAlongPath drives the actor. */
 #define PIVOT_SUB_ARRIVED 0 /* reached a node (or not started): may need to turn */
 #define PIVOT_SUB_WALKING 1 /* heading within `lim`: walking to the node */
@@ -954,18 +964,6 @@ typedef struct BreakableRockState {
   int restZ;  /* 0x0C */
   int scorchBand; /* 0x10 StepActorScorchTint band */
 } BreakableRockState;
-
-typedef struct TetherState {
-  int timer;   /* 0x00 */
-  int knockSpeed;   /* 0x04 knockback speed */
-  int knockHeading; /* 0x08 knockback heading */
-  int link;    /* 0x0C walker to follow (index into g_pActorListBase), or -1;
-                * a sentinel powering a chain of guards reads it as the next
-                * guard (ending the chain when that isn't a tethered guard) */
-  int owner;   /* 0x10 actor whose loss frees this one; level data: ACTOR_TYPE_SENTINEL */
-  int mode;    /* 0x14 TetherCommand */
-  int stop;    /* 0x18 node of the sentinel's path where it powers this guard */
-} TetherState;
 
 /* The tethered guard's view of its link's state. For an ACTOR_TYPE_PATH_GUARD
  * link (level data) it is PathGuardState's path and flags, so `moving` == 1

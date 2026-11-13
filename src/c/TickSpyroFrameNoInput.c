@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -55,9 +56,9 @@ void TickSpyroFrameNoInput(void) {
   }
   euler = g_abSpyroPersistentEulerBlock;
   bodyMtx = (int *)(euler + EULER_TO_BODY_MTX);
-  euler[0] = g_nSpyroBodyPitch >> 4;
+  euler[0] = ANGLE12_TO_8(g_nSpyroBodyPitch);
   r = g_nSpyroBodyRoll >> 4;
-  y = g_nSpyroBodyYaw >> 4;
+  y = ANGLE12_TO_8(g_nSpyroBodyYaw);
   euler[1] = r;
   euler[2] = y;
   ApplyEulerRotation(euler, bodyMtx, 0);

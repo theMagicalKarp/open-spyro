@@ -51,7 +51,7 @@ void SaveMenu_Update(void) {
       actor = &g_pActorListBase[((SaveHostState *)ACT->state)->anchor];
       if (actor->mode == CHECKPT_FLASH) {
         actor->subMode += g_nFrameStep;
-        if (actor->subMode >= 0x30) {
+        if (actor->subMode >= CHECKPT_FLASH_FRAMES) {
           actor->mode = CHECKPT_REARM;
           actor->anim = CHECKPT_ANIM_REST;
         }
@@ -97,18 +97,18 @@ void SaveMenu_Update(void) {
                               ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) *
                                 g_nSaveMenuAnimPhase) >>
                                5)) &
-                             0xFFF;
+                             ANGLE12_MASK;
         g_nCameraEulerPitch =
             (g_nCameraEulerPitch +
              ((SignedAngleDelta12(ang[1], g_nCameraEulerPitch) *
                g_nSaveMenuAnimPhase) >>
               5)) &
-            0xFFF;
+            ANGLE12_MASK;
         g_nCameraEulerYaw = (g_nCameraEulerYaw +
                              ((SignedAngleDelta12(ang[2], g_nCameraEulerYaw) *
                                g_nSaveMenuAnimPhase) >>
                               5)) &
-                            0xFFF;
+                            ANGLE12_MASK;
       } else {
         g_nCameraEulerRoll = 0;
         g_nCameraEulerPitch =
@@ -175,7 +175,7 @@ void SaveMenu_Update(void) {
         SM[SM_MODE] = SAVE_MODE_MENU;
         SM[SM_PHASE] = 0;
         g_anCameraPos[2] = g_nSaveMenuCameraToZ;
-        SPYB[SPYB_EULER_Z] = g_nSaveMenuSpyroToYaw >> 4;
+        SPYB[SPYB_EULER_Z] = ANGLE12_TO_8(g_nSaveMenuSpyroToYaw);
         g_anCameraPos[1] =
             g_anSpyroWorldPos[1] + ((sn * g_nSaveMenuCameraToDist) >> 12);
       }

@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "funcs.h"
 #include "globals.h"
 #include "level_sfx.h"
@@ -15,7 +16,7 @@
 void SubMenu_Update(void) {
   g_nHudFrameCycleMod9 = (g_nHudFrameCycleMod9 + 1) % 9;
   g_adwHudIconSpinAngleBlock[0] =
-      (g_adwHudIconSpinAngleBlock[0] - g_nFrameStep) & 0xFF;
+      (g_adwHudIconSpinAngleBlock[0] - g_nFrameStep) & ANGLE8_MASK;
   g_nMenuTickFrames += g_nFrameStep;
   RotateLightVectorXZ(3);
   if (g_nMenuDrawFrames < 5) {

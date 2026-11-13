@@ -11,10 +11,10 @@
 #define LIVE_KILLS (&g_anLevelSpawnYawBlock[-11]) /* g_anLiveKillBitmap */
 
 /* 0x80059474 (0xF8) — latch `actor`'s position and facing as the
-   level spawn anchor: store the wrapped yaw (<<4 & 0xFFF) and position, mark
-   the anchor valid, bias spawn Z up 0x164, snapshot the level's rescued/gem
-   tallies into the persistence block, merge the pending block into the
-   committed one (copy 0x20 bytes then OR the 8 words), and carry the spawn
+   level spawn anchor: store the wrapped yaw (<<4 & ANGLE12_MASK) and position,
+   mark the anchor valid, bias spawn Z up 0x164, snapshot the level's
+   rescued/gem tallies into the persistence block, merge the pending block into
+   the committed one (copy 0x20 bytes then OR the 8 words), and carry the spawn
    flag word across. */
 /* Two scheduling levers carry this function:
    - the anchor flag's `1` is carried by `t` (the snapshot temp) on purpose: as
@@ -34,7 +34,7 @@ void SetSpawnAnchorFromActor(Actor *actor, int heading) {
   int *src;
   int i;
   int t;
-  g_anLevelSpawnYawBlock[0] = (heading << 4) & 0xFFF;
+  g_anLevelSpawnYawBlock[0] = (ANGLE8_TO_12(heading)) & ANGLE12_MASK;
   CopyVector(SPAWN_POS, &actor->posX);
   t = 1;
   *((volatile int *)(&g_nSpawnAnchorValid)) = t;

@@ -301,4 +301,27 @@ typedef struct PickupState {
 #define PICKUP_DROP_BOUNCES 3
 #define PICKUP_DROP_FOLLOWER_BOUNCES 2
 
+/* A tethered guard (level 15); the level 13-15 homing orb (AdvanceEmitList)
+ * frees a bound one it reaches. */
+typedef struct TetherState {
+  int timer;   /* 0x00 TCMD_FREED: frames the bound pose still plays (a homing orb sets TGUARD_ORB_FREE_FRAMES) */
+  int knockSpeed;   /* 0x04 knockback speed */
+  int knockHeading; /* 0x08 knockback heading */
+  int link;    /* 0x0C walker to follow (index into g_pActorListBase), or -1;
+                * a sentinel powering a chain of guards reads it as the next
+                * guard (ending the chain when that isn't a tethered guard) */
+  int owner;   /* 0x10 actor whose loss frees this one; level data: ACTOR_TYPE_SENTINEL */
+  int mode;    /* 0x14 TetherCommand */
+  int stop;    /* 0x18 node of the sentinel's path where it powers this guard */
+} TetherState;
+
+/* Frames a guard freed by the homing orb keeps playing its bound pose. */
+#define TGUARD_ORB_FREE_FRAMES 0x20
+
+/* ACTOR_TYPE_GEM_HOLDER (levels 0/4/10/16): a hidden gem drop whose owner
+ * (a flock, Blowhard) releases its chain one holder at a time. */
+typedef struct GemHolderState {
+  int next; /* 0x00 next holder in the chain (pool index), -1 ends; level data */
+} GemHolderState;
+
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

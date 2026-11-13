@@ -579,7 +579,7 @@ extern int g_nFrameStep;                     /* 0x800756cc: VBlanks the last fra
 extern int g_nPortalTransitionActive;           /* 0x800756d0: set by a portal exit or hub return, cleared when TickLevelTransitionStream finishes; Spyro takes the scripted arrival (the hub portal glide-out, or the exit nudge) instead of the plain level spawn, and cannot bonk meanwhile */
 extern int g_nSubMenuScrollDelta;            /* 0x800756d4 */
 extern int g_nPadIsDualshockFlag;            /* 0x800756d8 */
-extern int g_nCameraShakeMagnitude;          /* 0x800756dc */
+extern int g_nCameraShakeMagnitude;          /* 0x800756dc: vertical camera shake scale; vestigial: only ResetCameraStateToTarget writes it (0), and nothing ever arms g_nCameraShakeDuration (xref audit) */
 extern int g_nCdStallTimeoutTicks;                 /* 0x800756e0: vblanks the in-flight CD read may take before RestartStalledCdRead reissues it (CD_STALL_TIMEOUT_TICKS); 0 = disarmed */
 extern void *g_pActorAuxPoolTop;             /* 0x800756e8 */
 extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
@@ -640,7 +640,7 @@ extern void *g_pEmitListBase;                /* 0x80075824: the emit list Raster
 extern struct Actor *g_pActorListBase;       /* 0x80075828: the level actor pool (0x58-byte Actor records, mode 0xFF ends it) */
 extern int g_nExtraLives;                    /* 0x8007582c: spare lives */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key (enum LevelKeyState): none, carried (key 173 picked up), locked chest (174) opened, its reward collected; shown as HUD counter 4 */
-extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
+extern int g_nCameraShakePeakAmplitude;      /* 0x80075848: the shake's starting duration, its fade divisor (UpdateCameraFrame); vestigial like g_nCameraShakeMagnitude */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
 extern int g_nPortalSkyYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndSky) */
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
@@ -677,7 +677,7 @@ extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0: level slot (id % 10) last committed in level-select (warp) mode (HandleLevelSelectInput); write-only, nothing reads it back (xref audit) */
 extern int g_nPortalSkyPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndSky) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
-extern int g_nCameraShakeDuration;           /* 0x8007590c */
+extern int g_nCameraShakeDuration;           /* 0x8007590c: shake frames left; only reset to 0 and ticked down, so UpdateCameraFrame's shake never runs (xref audit) */
 extern unsigned int g_dwActiveCameraOptions;         /* 0x80075914: camera option word, CAM_OPT_ACTIVE or CAM_OPT_PASSIVE (camera.h); saved */
 extern int g_nScreenFadeLevel;              /* 0x80075918: fade-to-black level (drawn as a subtractive fullscreen tint, decays by g_nFrameStep in gameplay) */
 extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals beyond 0x4000 fade into g_dwWorldFogColor (DrawPortalsAndSky); set for Beast Makers home + Misty Bog and the opening-story cutscene */
@@ -1027,7 +1027,7 @@ extern int g_nSpyroGlideSpentFlag;                       /* 0x80078ba8 1 once Sp
 extern int g_nSpyroGlideQueued;                       /* 0x80078bac: Cross pressed again mid-jump (glide not spent): SPYRO_ST_JUMP / SUPERCHARGE_AIR glide (or fly) once Spyro starts falling; cleared entering JUMP / FALL / GLIDE_DROP */
 extern int g_nSpyroFloorReferenceZ;                     /* 0x80078bb0 */
 extern int g_nSpyroLateJumpAllowed;                   /* 0x80078bb4: ChangeSpyroState sets 1 entering a grounded state, 0 entering an airborne one (jump, fall, glide, fly, lift, charge air) or a slide: Spyro left the ground without jumping. SUPERCHARGE_AIR still takes a Cross jump in its first 4 frames; FALL tests it too, but FALL entry clears it, so that test never passes */
-extern int g_nSpyroInputLockoutCountdown;               /* 0x80078bb8 */
+extern int g_nSpyroInvulnFrames;               /* 0x80078bb8: post-hit invulnerability frames left (SPYRO_HIT_INVULN_FRAMES on a hit or hazard; IntegrateSpyroMotionForSubstep ticks it to 0). While nonzero ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges mask the damage events; the hurt sparkles live until it ends. Nothing reads it to gate pad input */
 extern int g_nSparxHealth;                           /* 0x80078bbc: Sparx health: 3 gold, 2 blue, 1 green, 0 Sparx gone, -1 after the fatal hit. Hits decrement it (ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges pick the death state once it goes negative); the Sparx actor eating a butterfly adds 1; a new game sets 3. */
 extern int g_nSpyroHazardSinkDepth;                         /* 0x80078bc0 */
 extern int g_nSpyroFirstContactSurfaceType;                 /* 0x80078bc4 */
@@ -1060,8 +1060,8 @@ extern int g_nPortalCamPathReverseFlag;              /* 0x80078ca0 */
 extern int g_nSpyroFlightMode;                    /* 0x80078ca4: Spyro can fly: set on flight levels (and in Gnasty's Loot, LEVEL_GNASTYS_LOOT, once grounded), cleared on level exit. While set the glide/fly states take R1/L1 as substates 1/2 and the fall physics keeps tracking g_nSpyroFloorReferenceZ */
 extern int g_nSpyroChargeHoldFlag;                      /* 0x80078ca8 */
 extern int g_nSpyroGlideBankingFlag;                    /* 0x80078cac */
-extern unsigned int g_dwSpyroFootstepPrimarySfxKey;             /* 0x80078cbc */
-extern unsigned int g_dwSpyroFootstepSecondarySfxKey;           /* 0x80078cc0 */
+extern unsigned int g_dwSpyroAnimSfxPrevKey;             /* 0x80078cbc: last frame's frame word of Spyro's primary anim; its frame sound plays only when the word changes (TickSpyroGameplayFrame) */
+extern unsigned int g_dwSpyroLayer1SfxPrevKey;           /* 0x80078cc0: the same for anim layer 1 */
 extern int g_nSpyroGroundTriIndex;                       /* 0x80078ccc */
 extern int g_anSpyroGroundTriVerts[9];                /* 0x80078cd0 */
 extern void *g_pSpyroHazardRegionData;                /* 0x80078cf4 */
@@ -1451,7 +1451,7 @@ extern int g_nSpyroCarryMotionY; /* 0x80078b44 */
 extern int g_nSpyroVelocityY; /* 0x80078b50: g_anSpyroVelocity[1] */
 extern int g_nSpyroMotionZ; /* 0x80078b6c: g_anSpyroMotionVec[2] */
 extern int g_nSpyroGravityStep_blk[]; /* 0x80078ba4: held-base view of g_nSpyroGravityStep (clamp/increment sites) */
-extern int g_anSpyroInputLockoutBlock[]; /* 0x80078bb8: g_nSpyroInputLockoutCountdown */
+extern int g_anSpyroInvulnFramesBlock[]; /* 0x80078bb8: g_nSpyroInvulnFrames */
 extern int g_anSpyroFlameStateBlock[]; /* 0x80078bf0: g_nSpyroFlameState */
 extern int g_anSpyroFlameTimerBlock[]; /* 0x80078bf8: g_nSpyroFlameTimer */
 extern int g_anSpyroSwingTargetBlock[]; /* 0x80078bfc */
@@ -1463,7 +1463,7 @@ extern int g_nSpyroSwingEulerSpringAccum1; /* 0x80078c18 */
 extern int g_nSpyroSwingEulerSpringAccum2; /* 0x80078c1c */
 extern int g_anSpyroComposedBodyMtxBlock[]; /* 0x80078c20: g_anSpyroComposedBodyMtx */
 extern int g_nSpyroAnimLayer2GateFrames; /* 0x80078c44 */
-extern unsigned int g_adwSpyroFootstepSfxBlock[]; /* 0x80078cbc */
+extern unsigned int g_adwSpyroAnimSfxPrevKeyBlock[]; /* 0x80078cbc */
 extern int g_anSpyroGroundChunkBlock[]; /* 0x80078ccc */
 extern int g_nSaveSlotIndex; /* 0x80078d1c */
 extern int g_nSaveFileTag; /* 0x80078d20 */

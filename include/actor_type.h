@@ -217,8 +217,9 @@ typedef struct NameLetterState {
  * runner arriving at its target; levels 13-15); level 14's bolt caster,
  * chunk operator and runner spawner flinch on it. */
 #define ACTOR_NUDGED 0x1
-#define ACTOR_HITS_SPYRO (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)
-#define ACTOR_HIT_ANY (ACTOR_HITS_SPYRO | ACTOR_HIT_BLAST)
+/* Any hit from Spyro's own attacks (flame, charge, super). */
+#define ACTOR_HIT_BY_SPYRO (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)
+#define ACTOR_HIT_ANY (ACTOR_HIT_BY_SPYRO | ACTOR_HIT_BLAST)
 
 /* `flags` of the actor movers (MoveActorAlongHeading, MoveActorAlongAngle,
  * MoveActorByDelta, which reads only MOVE_LIFT, TryMoveActorForward), passed

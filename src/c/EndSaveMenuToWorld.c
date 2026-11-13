@@ -40,7 +40,7 @@ void EndSaveMenuToWorld(void) {
 
   ComputeCameraToTargetAngle((int *)CAM_POS_VIA_ANCHOR);
   CopyWords(dyn, CAM_YAW_VIA_ANCHOR, 0x18);
-  dyn[0] = (dyn[0] + g_nCameraParamsReferenceYaw) & 0xFFF;
+  dyn[0] = (dyn[0] + g_nCameraParamsReferenceYaw) & ANGLE12_MASK;
 
   ResetCameraStateToTarget();
   InitHudCounters(0);

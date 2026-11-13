@@ -31,7 +31,7 @@ int TurnSpyroTowardMoveTargetWithLean(int bucket) {
   targetYaw = g_nSpyroMoveTargetYaw;
   bodyYaw = g_nSpyroBodyYaw;
   delta = targetYaw - bodyYaw;
-  delta = delta & 0xFFF;
+  delta = delta & ANGLE12_MASK;
   do {
     if (delta < 0x800) {
       g_nSpyroBodyYawStep = g_nSpyroBodyYawStep + 1;
@@ -62,7 +62,7 @@ int TurnSpyroTowardMoveTargetWithLean(int bucket) {
       } while (0);
     } while (0);
     bodyYaw = g_nSpyroBodyYaw;
-    rate = (targetYaw - bodyYaw) & 0xFFF;
+    rate = (targetYaw - bodyYaw) & ANGLE12_MASK;
     if (rate > 0x800) {
       rate = rate - 0x1000;
     }
