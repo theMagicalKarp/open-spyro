@@ -486,7 +486,7 @@ void Level3_UpdateActors(void) {
         if (g_nActorAnimDone == 0) {
           break;
         }
-        actor->rotZ += 0x80;
+        actor->rotZ += ANGLE8_HALF;
         st->path->cur = (st->path->cur + 1) % st->path->count;
         if (st->path->cur == 0 && st->path->count >= 3) {
           st->path->cur++;

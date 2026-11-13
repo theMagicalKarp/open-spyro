@@ -1581,6 +1581,32 @@ enum SoldierAnim {
 #define SOLDIER_POST_RUN_ACCEL 0x14
 #define SOLDIER_POST_ARRIVE 0x200
 #define SOLDIER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
+/* In its post a soldier pops out (SOLDIER_ANIM_POP_OUT from POP_FRAME)
+ * while Spyro faces at least POP_FACING (8-bit) away from it, or always when
+ * bold; popped up it holds the aim loop POP_LOOP_START .. POP_LOOP_END, and
+ * once Spyro faces it plays on from POP_LOOP_END (ducking). Its ->subMode is
+ * set once it has been placed in the post. ENTER_POST slides at most
+ * POST_SLIDE a frame onto the post and is in by frame ENTER_POST_IN_FRAME. */
+#define SOLDIER_POP_FACING 0x17
+#define SOLDIER_POP_FRAME 0x16
+#define SOLDIER_POP_LOOP_START 0x24
+#define SOLDIER_POP_LOOP_END 0x32
+#define SOLDIER_POST_SLIDE 0x64
+#define SOLDIER_ENTER_POST_IN_FRAME 0xB
+#define SOLDIER_POST_UNPLACED 0
+#define SOLDIER_POST_PLACED 1
+
+/* Fireball launch points, from the cannon: a gunner's shot leaves
+ * MUZZLE_AHEAD along the cannon's heading and MUZZLE_UP above it, aimed
+ * AIM_DROP below Spyro; a duel shot leaves DUEL_MUZZLE ahead and up, aimed at
+ * DUEL_AIM_UP above the rival cannon and DUEL_AIM_AHEAD along its heading.
+ * Spyro coming near a duel makes both crews gunners, firing after FIRE_GAP. */
+#define SOLDIER_MUZZLE_AHEAD 0x5DC
+#define SOLDIER_MUZZLE_UP 0x4E2
+#define SOLDIER_AIM_DROP 0x12C
+#define SOLDIER_DUEL_MUZZLE 0x546
+#define SOLDIER_DUEL_AIM_UP 0x52D
+#define SOLDIER_DUEL_AIM_AHEAD 0x433
 
 /* ->mode of a level 6 fireball cannon (ACTOR_TYPE_FIREBALL_CANNON,
  * FireballCannonState). While its crew (FireballCannonState.link) stands, the

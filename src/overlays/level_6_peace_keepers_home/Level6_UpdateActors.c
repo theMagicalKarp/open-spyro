@@ -2971,12 +2971,12 @@ void Level6_UpdateActors(void) {
 
             CopyVector(&o->posX, &a->posX);
             o->rotZ = a->rotZ;
-            MoveActorAlongHeading(o, 0x5DC, 0, 0, 0);
-            o->posZ += 0x4E2;
+            MoveActorAlongHeading(o, SOLDIER_MUZZLE_AHEAD, 0, 0, 0);
+            o->posZ += SOLDIER_MUZZLE_UP;
             o->rotZ = ArcTan2(spy->posX - o->posX,
                                      spy->posY - o->posY, ATAN_ANGLE8);
             CopyVector(g304, &spy->posX);
-            g304[2] -= 0x12C;
+            g304[2] -= SOLDIER_AIM_DROP;
             fs->speed = SOLDIER_FIREBALL_SPEED;
             fs->grav = -5;
             fs->vz = ComputeLobVelocityZ(&o->posX, g304, fs->speed, fs->grav, 0);
@@ -3008,13 +3008,13 @@ void Level6_UpdateActors(void) {
                       4, 0, YAW_HOLD_IN_BAND);
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < SOLDIER_NOTICE_RANGE) {
           if (b->mode < ACTOR_MODE_DORMANT) {
-            ((SoldierState *)b->state)->timer = 0xB4;
+            ((SoldierState *)b->state)->timer = SOLDIER_FIRE_GAP;
             if (b->nextAnim != SOLDIER_GUNNER) {
               ANIM_ADVANCE(b, SOLDIER_GUNNER);
             }
             b->mode = SOLDIER_GUNNER;
           }
-          st->timer = 0xB4;
+          st->timer = SOLDIER_FIRE_GAP;
           ENTER_POSE(actor, SOLDIER_GUNNER);
         }
         if (st->volley != 0) {
@@ -3029,12 +3029,12 @@ void Level6_UpdateActors(void) {
 
             CopyVector(&o->posX, &a->posX);
             o->rotZ = h;
-            MoveActorAlongHeading(o, 0x546, 0, 0, 0);
-            o->posZ += 0x546;
+            MoveActorAlongHeading(o, SOLDIER_DUEL_MUZZLE, 0, 0, 0);
+            o->posZ += SOLDIER_DUEL_MUZZLE;
             CopyVector(g304, &c->posX);
-            g304[2] += 0x52D;
-            g304[0] += (g_anCosineLut[c->rotZ] * 0x433) >> 12;
-            g304[1] += (g_anSineLut[c->rotZ] * 0x433) >> 12;
+            g304[2] += SOLDIER_DUEL_AIM_UP;
+            g304[0] += (g_anCosineLut[c->rotZ] * SOLDIER_DUEL_AIM_AHEAD) >> 12;
+            g304[1] += (g_anSineLut[c->rotZ] * SOLDIER_DUEL_AIM_AHEAD) >> 12;
             fs->speed = SOLDIER_FIREBALL_SPEED;
             fs->grav = -5;
             fs->vz = ComputeLobVelocityZ(&o->posX, g304, fs->speed, fs->grav, lobFrames);
@@ -3076,7 +3076,7 @@ void Level6_UpdateActors(void) {
           break;
         }
         if (actor->type == ACTOR_TYPE_SOLDIER_B && a->mode >= ACTOR_MODE_DORMANT) {
-          actor->subMode = 1;
+          actor->subMode = SOLDIER_POST_PLACED;
           actor->mode = SOLDIER_IN_POST;
           ANIM_RESET(actor, SOLDIER_IN_POST);
           continue;
@@ -3094,7 +3094,7 @@ void Level6_UpdateActors(void) {
                             ArcTan2(a->posX - actor->posX,
                                           a->posY - actor->posY, ATAN_ANGLE8),
                             6, 6, YAW_STEP_IN_BAND) != 0) {
-            actor->subMode = 0;
+            actor->subMode = SOLDIER_POST_UNPLACED;
             actor->mode = SOLDIER_ENTER_POST;
             ANIM_RESET(actor, SOLDIER_ENTER_POST);
             continue;
@@ -3119,10 +3119,10 @@ void Level6_UpdateActors(void) {
           break;
         }
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
-        if (actor->subMode == 0) {
+        if (actor->subMode == SOLDIER_POST_UNPLACED) {
           CopyVector(&actor->posX, &a->posX);
           actor->cullRadius = CULL_RADIUS(0x2000);
-          actor->subMode = 1;
+          actor->subMode = SOLDIER_POST_PLACED;
           actor->rotZ = ArcTan2(g_anSpyroWorldPos - actor->posX,
                                        g_nSpyroWorldPosY - actor->posY, ATAN_ANGLE8);
           ANIM_SET(actor, SOLDIER_ANIM_HIDE);
@@ -3131,17 +3131,17 @@ void Level6_UpdateActors(void) {
           if (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                             ArcTan2(actor->posX - g_anSpyroWorldPos,
                                           actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) >=
-                  0x17 ||
+                  SOLDIER_POP_FACING ||
               st->bold != 0) {
-            if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 0x32) {
-              actor->frame = 0x24;
-              actor->nextFrame = 0x25;
+            if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= SOLDIER_POP_LOOP_END) {
+              actor->frame = SOLDIER_POP_LOOP_START;
+              actor->nextFrame = SOLDIER_POP_LOOP_START + 1;
               actor->frameProgress = 0;
             }
           } else {
-            if (actor->nextFrame >= 0x25 && actor->nextFrame < 0x32) {
-              actor->frame = 0x32;
-              actor->nextFrame = 0x33;
+            if (actor->nextFrame >= SOLDIER_POP_LOOP_START + 1 && actor->nextFrame < SOLDIER_POP_LOOP_END) {
+              actor->frame = SOLDIER_POP_LOOP_END;
+              actor->nextFrame = SOLDIER_POP_LOOP_END + 1;
               actor->frameProgress = 0;
             }
             if (g_nActorAnimDone != 0) {
@@ -3152,11 +3152,11 @@ void Level6_UpdateActors(void) {
                    (AbsAngleDelta8(g_bSpyroPersistentEulerZ,
                                   ArcTan2(actor->posX - g_anSpyroWorldPos,
                                                 actor->posY - g_nSpyroWorldPosY, ATAN_ANGLE8)) >=
-                        0x17 ||
+                        SOLDIER_POP_FACING ||
                     st->bold != 0)) {
           ANIM_SET(actor, SOLDIER_ANIM_POP_OUT);
-          actor->frame = 0x16;
-          actor->nextFrame = 0x17;
+          actor->frame = SOLDIER_POP_FRAME;
+          actor->nextFrame = SOLDIER_POP_FRAME + 1;
           actor->frameProgress = 0;
         }
         break;
@@ -3165,17 +3165,17 @@ void Level6_UpdateActors(void) {
       case SOLDIER_ENTER_POST: {
         Actor *a = &g_pActorListBase[st->link];
 
-        if (actor->nextFrame == 0xB) {
+        if (actor->nextFrame == SOLDIER_ENTER_POST_IN_FRAME) {
           actor->cullRadius = ACTOR_CULL_HIDDEN;
           actor->mode = SOLDIER_IN_POST;
           ANIM_RESET(actor, SOLDIER_IN_POST);
           continue;
         }
-        if (ApproxDist2D(&actor->posX, &a->posX) > 0x64) {
+        if (ApproxDist2D(&actor->posX, &a->posX) > SOLDIER_POST_SLIDE) {
           MoveActorAlongAngle(actor,
                         ArcTan2(a->posX - actor->posX,
                                       a->posY - actor->posY, ATAN_ANGLE8),
-                        0x64, 0, 0, 0);
+                        SOLDIER_POST_SLIDE, 0, 0, 0);
         } else {
           CopyVector(&actor->posX, &a->posX);
         }

@@ -2977,7 +2977,7 @@ void Level10_UpdateActors(void) {
             (actor->mode == SHEMP_P2_SLAM && actor->nextFrame >= SHEMP_SLAM_OPEN_FRAME && actor->nextFrame < SHEMP_SLAM_CLOSE_FRAME)) {
           if (st->phase == SHEMP_PHASE_3) {
             ANIM_SET(actor, SHEMP_ANIM_DYING);
-            actor->rotZ += 0x80;
+            actor->rotZ += ANGLE8_HALF;
             ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(SHEMP_PHASE_3), CHUNK_ANIM_RESUME, 0);
             actor->mode = SHEMP_DYING;
             continue;
@@ -3276,7 +3276,7 @@ void Level10_UpdateActors(void) {
         if (st->phase == SHEMP_PHASE_1) {
           ANIM_GO(actor, SHEMP_ANIM_STUNNED);
         } else {
-          actor->rotZ += 0x80;
+          actor->rotZ += ANGLE8_HALF;
           ANIM_SET(actor, SHEMP_ANIM_STUNNED);
         }
         ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(st->phase), CHUNK_ANIM_RESUME, 0);
