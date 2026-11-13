@@ -539,7 +539,7 @@ void Level27_UpdateActors(void) {
           g104[1] = g104[1] + (LookupSine(SPY.bodyRotZ << 4) >> 3);
           g104[2] = g104[2] + EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, g104);
-          st->angle = SPY.bodyRotZ - 0x40;
+          st->angle = SPY.bodyRotZ - ANGLE8_QUARTER;
           st->radius = EGG_SPIRAL_RADIUS;
           st->phase = 0;
           actor->mode = actor->mode + 1;
@@ -1989,7 +1989,7 @@ void Level27_UpdateActors(void) {
         g_anCameraActiveTargetParams.w[CAMP_PITCH_BIAS] = 0;
         g_anCameraActiveTargetParams.w[CAMP_YAW_BIAS] = 0;
         SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-        g_anCameraActiveTargetParams.w[CAMP_YAW] = -(SPY.bodyRotZ + 0x40) << 4;
+        g_anCameraActiveTargetParams.w[CAMP_YAW] = -(SPY.bodyRotZ + ANGLE8_QUARTER) << 4;
         switch (actor->subMode) {
         case SFGIVER_SUB_APPROACH:
           if (ApproxDist2D(&actor->posX, g272) > SFGIVER_ARRIVE_RANGE) {

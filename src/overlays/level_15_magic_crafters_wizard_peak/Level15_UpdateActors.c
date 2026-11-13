@@ -1068,7 +1068,7 @@ void Level15_UpdateActors(void) {
           svD[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
           st->radius = EGG_SPIRAL_RADIUS;
-          st->angle = g_bSpyroPersistentEulerZ - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;
           st->phase = 0;
           actor->mode += 1;
         }

@@ -1380,7 +1380,7 @@ void Level14_UpdateActors(void) {
           svD[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
           st->radius = EGG_SPIRAL_RADIUS;
-          st->angle = g_bSpyroPersistentEulerZ - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;
           st->phase = 0;
           actor->mode += 1;
         }
@@ -2976,7 +2976,7 @@ void Level14_UpdateActors(void) {
         g_anCameraActiveTargetParams.w[CAMP_PITCH_BIAS] = 0;
         g_anCameraActiveTargetParams.w[CAMP_YAW_BIAS] = 0;
         SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA);
-        g_anCameraActiveTargetParams.w[CAMP_YAW] = -(SPY.bodyRotZ + 0x40) << 4;
+        g_anCameraActiveTargetParams.w[CAMP_YAW] = -(SPY.bodyRotZ + ANGLE8_QUARTER) << 4;
         switch (actor->subMode) {
         case SFGIVER_SUB_APPROACH:
           if (ApproxDist2D(&actor->posX, aheadOfSpyro) > SFGIVER_ARRIVE_RANGE) {
@@ -5129,8 +5129,8 @@ void Level14_UpdateActors(void) {
           s512[0] = g_anCosineLut[anglespyro] * 3 >> 4;
           s512[1] = g_anSineLut[anglespyro] * 3 >> 4;
           s512[2] = 0;
-          vecB[0] = g_anCosineLut[anglespyro + 64 & ANGLE8_MASK] >> 5;
-          vecB[1] = g_anSineLut[(anglespyro + 64) & ANGLE8_MASK] >> 5;
+          vecB[0] = g_anCosineLut[anglespyro + ANGLE8_QUARTER & ANGLE8_MASK] >> 5;
+          vecB[1] = g_anSineLut[(anglespyro + ANGLE8_QUARTER) & ANGLE8_MASK] >> 5;
           vecB[2] = 0;
           anglespyro = (anglespyro + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);

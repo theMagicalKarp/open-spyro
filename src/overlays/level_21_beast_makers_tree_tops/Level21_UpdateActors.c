@@ -548,7 +548,7 @@ void Level21_UpdateActors(void) {
           svB[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svB);
           st->radius = EGG_SPIRAL_RADIUS;
-          st->angle = g_bSpyroPersistentEulerZ - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;
           st->phase = 0;
           actor->mode += 1;
         }
@@ -2562,7 +2562,7 @@ void Level21_UpdateActors(void) {
             }
             key->rotX = 0;
             key->rotY = 0;
-            key->rotZ = spy->bodyRotZ + 0x80;
+            key->rotZ = spy->bodyRotZ + ANGLE8_HALF;
           }
         }
         break;
@@ -2598,20 +2598,20 @@ void Level21_UpdateActors(void) {
             int rot;
 
             key->rotY = -st->shake;
-            rot = g_bSpyroPersistentEulerZ + 0x80;
+            rot = g_bSpyroPersistentEulerZ + ANGLE8_HALF;
             key->rotZ = rot + st->shake * 4;
           } else if (st->shake < LOCKCHEST_KEY_TURN_TICK) {
             int rot;
 
             key->rotY = 0xC0;
-            rot = g_bSpyroPersistentEulerZ + 0x80;
+            rot = g_bSpyroPersistentEulerZ + ANGLE8_HALF;
 
             key->rotZ = rot + (st->shake - LOCKCHEST_KEY_SPIN_TICK) * 3;
           } else {
             int turn = AbsAngleDelta8(actor->rotZ,
-                                     (unsigned char)(g_bSpyroPersistentEulerZ + 0x40)) *
+                                     (unsigned char)(g_bSpyroPersistentEulerZ + ANGLE8_QUARTER)) *
                        (st->shake - LOCKCHEST_KEY_TURN_TICK);
-            int rot = g_bSpyroPersistentEulerZ + 0x40;
+            int rot = g_bSpyroPersistentEulerZ + ANGLE8_QUARTER;
 
             key->rotZ = rot + turn / 64;
           }

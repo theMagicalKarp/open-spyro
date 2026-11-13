@@ -615,7 +615,7 @@ void Level20_UpdateActors(void) {
           svD[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
           st->radius = EGG_SPIRAL_RADIUS;
-          st->angle = g_bSpyroPersistentEulerZ - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;
           st->phase = 0;
           actor->mode += 1;
         }
@@ -1892,7 +1892,7 @@ void Level20_UpdateActors(void) {
 
       case CHARGER_TURN_BACK:
         if (g_nActorAnimDone != 0) {
-          actor->rotZ = WrapAddAngle8(actor->rotZ, 0x80);
+          actor->rotZ = WrapAddAngle8(actor->rotZ, ANGLE8_HALF);
           if (st->cam == 0) {
             ENTER_POSE(actor, CHARGER_CHARGE);
           }

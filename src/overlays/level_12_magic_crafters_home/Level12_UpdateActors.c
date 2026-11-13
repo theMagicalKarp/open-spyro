@@ -1151,7 +1151,7 @@ void Level12_UpdateActors(void) {
           svD[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
           st->radius = EGG_SPIRAL_RADIUS;
-          st->angle = g_bSpyroPersistentEulerZ - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;
           st->phase = 0;
           actor->mode += 1;
         }
@@ -2428,7 +2428,7 @@ void Level12_UpdateActors(void) {
             }
             key->rotX = 0;
             key->rotY = 0;
-            key->rotZ = spy->bodyRotZ + 0x80;
+            key->rotZ = spy->bodyRotZ + ANGLE8_HALF;
           }
         }
         break;
@@ -2464,20 +2464,20 @@ void Level12_UpdateActors(void) {
             int rot;
 
             key->rotY = -st->shake;
-            rot = g_bSpyroPersistentEulerZ + 0x80;
+            rot = g_bSpyroPersistentEulerZ + ANGLE8_HALF;
             key->rotZ = rot + st->shake * 4;
           } else if (st->shake < LOCKCHEST_KEY_TURN_TICK) {
             int rot;
 
             key->rotY = 0xC0;
-            rot = g_bSpyroPersistentEulerZ + 0x80;
+            rot = g_bSpyroPersistentEulerZ + ANGLE8_HALF;
 
             key->rotZ = rot + (st->shake - LOCKCHEST_KEY_SPIN_TICK) * 3;
           } else {
             int turn = AbsAngleDelta8(actor->rotZ,
-                                     (unsigned char)(g_bSpyroPersistentEulerZ + 0x40)) *
+                                     (unsigned char)(g_bSpyroPersistentEulerZ + ANGLE8_QUARTER)) *
                        (st->shake - LOCKCHEST_KEY_TURN_TICK);
-            int rot = g_bSpyroPersistentEulerZ + 0x40;
+            int rot = g_bSpyroPersistentEulerZ + ANGLE8_QUARTER;
 
             key->rotZ = rot + turn / 64;
           }
@@ -3523,11 +3523,11 @@ void Level12_UpdateActors(void) {
           }
           CopyVector(tgt271, &spy->posX);
           if (side == one) {
-            tgt271[0] += (unsigned short)g_anCosineLut[WrapAddAngle8(g_bSpyroPersistentEulerZ, -0x40)] << 16 >> 19;
-            tgt271[1] += (unsigned short)g_anSineLut[WrapAddAngle8(SPY.bodyRotZ, -0x40)] << 16 >> 19;
+            tgt271[0] += (unsigned short)g_anCosineLut[WrapAddAngle8(g_bSpyroPersistentEulerZ, -ANGLE8_QUARTER)] << 16 >> 19;
+            tgt271[1] += (unsigned short)g_anSineLut[WrapAddAngle8(SPY.bodyRotZ, -ANGLE8_QUARTER)] << 16 >> 19;
           } else if (side == 2) {
-            tgt271[0] += (unsigned short)g_anCosineLut[WrapAddAngle8(g_bSpyroPersistentEulerZ, 0x40)] << 16 >> 19;
-            tgt271[1] += (unsigned short)g_anSineLut[WrapAddAngle8(SPY.bodyRotZ, 0x40)] << 16 >> 19;
+            tgt271[0] += (unsigned short)g_anCosineLut[WrapAddAngle8(g_bSpyroPersistentEulerZ, ANGLE8_QUARTER)] << 16 >> 19;
+            tgt271[1] += (unsigned short)g_anSineLut[WrapAddAngle8(SPY.bodyRotZ, ANGLE8_QUARTER)] << 16 >> 19;
           }
           ang = ArcTan2(tgt271[0] - actor->posX, tgt271[1] - actor->posY,
                               ATAN_ANGLE8);

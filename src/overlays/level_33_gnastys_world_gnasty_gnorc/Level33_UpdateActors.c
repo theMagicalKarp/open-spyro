@@ -558,7 +558,7 @@ void Level33_UpdateActors(void) {
           svD[1] = svD[1] + (LookupSine(SPY.bodyRotZ << 4) >> 3);
           svD[2] = svD[2] + EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
-          st->angle = SPY.bodyRotZ - 0x40;
+          st->angle = SPY.bodyRotZ - ANGLE8_QUARTER;
           st->radius = EGG_SPIRAL_RADIUS;
           st->phase = 0;
           actor->mode = actor->mode + 1;
@@ -2379,7 +2379,7 @@ void Level33_UpdateActors(void) {
           actor->subMode = LVORTEX_SUB_RIDING;
           actor->rotX = 0;
           actor->rotY = 0;
-          actor->rotZ = g_bSpyroPersistentEulerZ + 0x80;
+          actor->rotZ = g_bSpyroPersistentEulerZ + ANGLE8_HALF;
           actor->drawn = 1;
           actor->cullRadius = CULL_RADIUS(0x1800);
           st->mode = LVORTEX_ACTIVE;
@@ -2391,9 +2391,9 @@ void Level33_UpdateActors(void) {
 
               st->timer = LOCKCHEST_KEY_TURN_TICK;
               d = AbsAngleDelta8(g_pActorListBase[st->target].rotZ,
-                                (unsigned char)(SPY.bodyRotZ + 0x40));
+                                (unsigned char)(SPY.bodyRotZ + ANGLE8_QUARTER));
               actor->rotY = 0xC0;
-              r = g_bSpyroPersistentEulerZ + 0x40;
+              r = g_bSpyroPersistentEulerZ + ANGLE8_QUARTER;
               actor->rotZ = r + d * (st->timer - LOCKCHEST_KEY_TURN_TICK) / 64;
             } else {
               g_nCutsceneId[st->seen] = 1;
@@ -2434,18 +2434,18 @@ void Level33_UpdateActors(void) {
             int r;
 
             actor->rotY = -st->timer;
-            r = g_bSpyroPersistentEulerZ + 0x80;
+            r = g_bSpyroPersistentEulerZ + ANGLE8_HALF;
             actor->rotZ = r + st->timer * 4;
           } else if (st->timer < LOCKCHEST_KEY_TURN_TICK) {
             int r;
 
             actor->rotY = 0xC0;
-            r = g_bSpyroPersistentEulerZ + 0x80;
+            r = g_bSpyroPersistentEulerZ + ANGLE8_HALF;
             actor->rotZ = r + (st->timer - LOCKCHEST_KEY_SPIN_TICK) * 3;
           } else {
             int d = AbsAngleDelta8(g_pActorListBase[st->target].rotZ,
-                                  (unsigned char)(g_bSpyroPersistentEulerZ + 0x40));
-            int r = g_bSpyroPersistentEulerZ + 0x40;
+                                  (unsigned char)(g_bSpyroPersistentEulerZ + ANGLE8_QUARTER));
+            int r = g_bSpyroPersistentEulerZ + ANGLE8_QUARTER;
 
             actor->rotZ = r + d * (st->timer - LOCKCHEST_KEY_TURN_TICK) / 64;
           }

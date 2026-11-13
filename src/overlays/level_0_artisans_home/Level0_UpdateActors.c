@@ -599,7 +599,7 @@ void Level0_UpdateActors(void) {
           svD[1] = svD[1] + (LookupSine(SPY.bodyRotZ << 4) >> 3);
           svD[2] = svD[2] + EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
-          st->angle = SPY.bodyRotZ - 0x40;
+          st->angle = SPY.bodyRotZ - ANGLE8_QUARTER;
           st->radius = EGG_SPIRAL_RADIUS;
           st->phase = 0;
           actor->mode = actor->mode + 1;
@@ -3120,8 +3120,8 @@ void Level0_UpdateActors(void) {
           vecA[0] = g_anCosineLut[anglespyro] * 3 >> 4;
           vecA[1] = g_anSineLut[anglespyro] * 3 >> 4;
           vecA[2] = 0;
-          vecB[0] = g_anCosineLut[anglespyro + 64 & ANGLE8_MASK] >> 5;
-          vecB[1] = g_anSineLut[(anglespyro + 64) & ANGLE8_MASK] >> 5;
+          vecB[0] = g_anCosineLut[anglespyro + ANGLE8_QUARTER & ANGLE8_MASK] >> 5;
+          vecB[1] = g_anSineLut[(anglespyro + ANGLE8_QUARTER) & ANGLE8_MASK] >> 5;
           vecB[2] = 0;
           anglespyro = (anglespyro + ANGLE8_HALF) & ANGLE8_MASK;
           actor->rotZ = anglespyro + (g_anCosineLut[actor->subMode] * 3 >> 9);

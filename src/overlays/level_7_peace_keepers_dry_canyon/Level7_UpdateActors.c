@@ -1182,7 +1182,7 @@ void Level7_UpdateActors(void) {
           svD[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
           st->radius = EGG_SPIRAL_RADIUS;
-          st->angle = g_bSpyroPersistentEulerZ - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;
           st->phase = 0;
           actor->mode += 1;
         }
@@ -2348,7 +2348,7 @@ void Level7_UpdateActors(void) {
             }
             key->rotX = 0;
             key->rotY = 0;
-            key->rotZ = spy->bodyRotZ + 0x80;
+            key->rotZ = spy->bodyRotZ + ANGLE8_HALF;
           }
         }
         break;
@@ -2384,20 +2384,20 @@ void Level7_UpdateActors(void) {
             int rot;
 
             key->rotY = -st->shake;
-            rot = g_bSpyroPersistentEulerZ + 0x80;
+            rot = g_bSpyroPersistentEulerZ + ANGLE8_HALF;
             key->rotZ = rot + st->shake * 4;
           } else if (st->shake < LOCKCHEST_KEY_TURN_TICK) {
             int rot;
 
             key->rotY = 0xC0;
-            rot = g_bSpyroPersistentEulerZ + 0x80;
+            rot = g_bSpyroPersistentEulerZ + ANGLE8_HALF;
 
             key->rotZ = rot + (st->shake - LOCKCHEST_KEY_SPIN_TICK) * 3;
           } else {
             int turn = AbsAngleDelta8(actor->rotZ,
-                                     (unsigned char)(g_bSpyroPersistentEulerZ + 0x40)) *
+                                     (unsigned char)(g_bSpyroPersistentEulerZ + ANGLE8_QUARTER)) *
                        (st->shake - LOCKCHEST_KEY_TURN_TICK);
-            int rot = g_bSpyroPersistentEulerZ + 0x40;
+            int rot = g_bSpyroPersistentEulerZ + ANGLE8_QUARTER;
 
             key->rotZ = rot + turn / 64;
           }
@@ -2557,7 +2557,7 @@ void Level7_UpdateActors(void) {
 
       case BRAWLER_KNOCKED:
         if (actor->subMode == 0) {
-          int h = WrapAddAngle8(actor->rotZ, -0x40);
+          int h = WrapAddAngle8(actor->rotZ, -ANGLE8_QUARTER);
           Actor *c = g_pfnLevelSpawnActor(ACTOR_TYPE_SWOOPER, actor);
           SwoopState *cs = c->state;
           int i;
@@ -3327,8 +3327,8 @@ void Level7_UpdateActors(void) {
         s344[2] += GROUND_PROBE_LIFT;
         g1 = FindGroundHeightBelow(s344, SWOOP_PITCH_PROBE_DEPTH);
         CopyVector(s344, &actor->posX);
-        s344[0] += (g_anCosineLut[WrapAddAngle8(actor->rotZ, 0x80)] * SWOOP_PITCH_PROBE_BACK) >> 10;
-        s344[1] += (g_anSineLut[WrapAddAngle8(actor->rotZ, 0x80)] * SWOOP_PITCH_PROBE_BACK) >> 10;
+        s344[0] += (g_anCosineLut[WrapAddAngle8(actor->rotZ, ANGLE8_HALF)] * SWOOP_PITCH_PROBE_BACK) >> 10;
+        s344[1] += (g_anSineLut[WrapAddAngle8(actor->rotZ, ANGLE8_HALF)] * SWOOP_PITCH_PROBE_BACK) >> 10;
         s344[2] += GROUND_PROBE_LIFT;
         g2 = FindGroundHeightBelow(s344, SWOOP_PITCH_PROBE_DEPTH);
         if (ABS2(g1 - g2) < SWOOP_PITCH_MAX_STEP) {

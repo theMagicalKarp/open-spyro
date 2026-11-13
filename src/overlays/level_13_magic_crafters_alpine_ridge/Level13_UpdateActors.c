@@ -1199,7 +1199,7 @@ void Level13_UpdateActors(void) {
           svD[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
           st->radius = EGG_SPIRAL_RADIUS;
-          st->angle = g_bSpyroPersistentEulerZ - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;
           st->phase = 0;
           actor->mode += 1;
         }
@@ -3695,11 +3695,11 @@ void Level13_UpdateActors(void) {
           }
           CopyVector(x272, &spy->posX);
           if (side == one) {
-            x272[0] += (unsigned short)g_anCosineLut[WrapAddAngle8(g_bSpyroPersistentEulerZ, -0x40)] << 16 >> 19;
-            x272[1] += (unsigned short)g_anSineLut[WrapAddAngle8(SPY.bodyRotZ, -0x40)] << 16 >> 19;
+            x272[0] += (unsigned short)g_anCosineLut[WrapAddAngle8(g_bSpyroPersistentEulerZ, -ANGLE8_QUARTER)] << 16 >> 19;
+            x272[1] += (unsigned short)g_anSineLut[WrapAddAngle8(SPY.bodyRotZ, -ANGLE8_QUARTER)] << 16 >> 19;
           } else if (side == 2) {
-            x272[0] += (unsigned short)g_anCosineLut[WrapAddAngle8(g_bSpyroPersistentEulerZ, 0x40)] << 16 >> 19;
-            x272[1] += (unsigned short)g_anSineLut[WrapAddAngle8(SPY.bodyRotZ, 0x40)] << 16 >> 19;
+            x272[0] += (unsigned short)g_anCosineLut[WrapAddAngle8(g_bSpyroPersistentEulerZ, ANGLE8_QUARTER)] << 16 >> 19;
+            x272[1] += (unsigned short)g_anSineLut[WrapAddAngle8(SPY.bodyRotZ, ANGLE8_QUARTER)] << 16 >> 19;
           }
           ang = ArcTan2(x272[0] - actor->posX, x272[1] - actor->posY,
                               ATAN_ANGLE8);

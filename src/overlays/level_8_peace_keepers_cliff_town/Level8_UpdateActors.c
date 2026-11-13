@@ -1181,7 +1181,7 @@ void Level8_UpdateActors(void) {
           svD[2] += EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
           st->radius = EGG_SPIRAL_RADIUS;
-          st->angle = g_bSpyroPersistentEulerZ - 0x40;
+          st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;
           st->phase = 0;
           actor->mode += 1;
         }
@@ -2990,8 +2990,8 @@ void Level8_UpdateActors(void) {
         floorProbe[2] += GROUND_PROBE_LIFT;
         g1 = FindGroundHeightBelow(floorProbe, SWOOP_PITCH_PROBE_DEPTH);
         CopyVector(floorProbe, &actor->posX);
-        floorProbe[0] += (g_anCosineLut[WrapAddAngle8(actor->rotZ, 0x80)] * SWOOP_PITCH_PROBE_BACK) >> 10;
-        floorProbe[1] += (g_anSineLut[WrapAddAngle8(actor->rotZ, 0x80)] * SWOOP_PITCH_PROBE_BACK) >> 10;
+        floorProbe[0] += (g_anCosineLut[WrapAddAngle8(actor->rotZ, ANGLE8_HALF)] * SWOOP_PITCH_PROBE_BACK) >> 10;
+        floorProbe[1] += (g_anSineLut[WrapAddAngle8(actor->rotZ, ANGLE8_HALF)] * SWOOP_PITCH_PROBE_BACK) >> 10;
         floorProbe[2] += GROUND_PROBE_LIFT;
         g2 = FindGroundHeightBelow(floorProbe, SWOOP_PITCH_PROBE_DEPTH);
         if (ABS2(g1 - g2) < SWOOP_PITCH_MAX_STEP) {
