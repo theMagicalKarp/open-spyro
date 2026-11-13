@@ -2475,18 +2475,18 @@ void Level4_UpdateActors(void) {
         }
 
         if (floor + actor->floorOffset >= actor->posZ) {
-          if (actor->subMode == 0) {
+          if (actor->subMode == LUNGER_AIRBORNE) {
             PlayActorMeshVoice(actor, LUNGER_VOICE_LAND, 0);
-            actor->subMode = 1;
+            actor->subMode = LUNGER_LANDED;
           }
-          if (actor->nextFrame < 0xD) {
-            actor->frame = 0xD;
-            actor->nextFrame = 0xE;
+          if (actor->nextFrame < LUNGER_LAND_FRAME) {
+            actor->frame = LUNGER_LAND_FRAME;
+            actor->nextFrame = LUNGER_LAND_FRAME + 1;
             actor->frameProgress = 0;
           }
           actor->posZ = floor + actor->floorOffset;
-          if (actor->nextFrame >= 0x18) {
-            if (ApproxDist2D(&actor->posX, &SPY.posX) < 0x384) {
+          if (actor->nextFrame >= LUNGER_DONE_FRAME) {
+            if (ApproxDist2D(&actor->posX, &SPY.posX) < LUNGER_UNPIN_RANGE) {
               actor->collision = 0;
             }
             ANIM_GO(actor, st->anim + 1);
@@ -2495,9 +2495,9 @@ void Level4_UpdateActors(void) {
           }
         } else {
           dist = ApproxDist2D(&actor->posX, &SPY.posX);
-          if (actor->nextFrame == 0xD) {
-            actor->frame = 8;
-            actor->nextFrame = 9;
+          if (actor->nextFrame == LUNGER_LAND_FRAME) {
+            actor->frame = LUNGER_AIR_LOOP_START;
+            actor->nextFrame = LUNGER_AIR_LOOP_START + 1;
             actor->frameProgress = 0;
           }
           if ((unsigned int)(dist - LUNGER_LEAP_HOMING_MIN) < 0x2CF && st->knockZSpeed < 0x64 &&
@@ -2544,17 +2544,17 @@ void Level4_UpdateActors(void) {
         break;
 
       case LUNGER_RECOIL:
-        if (actor->nextFrame < 2) {
+        if (actor->nextFrame < LUNGER_RECOIL_AIM_FRAME) {
           CopyVector(st->target, &SPY.posX);
         }
         TurnActorYawTowardAngle(actor,
                       ArcTan2(st->target[0] - actor->posX,
                                     st->target[1] - actor->posY, ATAN_ANGLE8),
                       7, 0, YAW_HOLD_IN_BAND);
-        if (actor->nextFrame >= 9) {
+        if (actor->nextFrame >= LUNGER_RECOIL_DONE_FRAME) {
           ANIM_SET(actor, st->anim + 1);
           st->wait = 0;
-          actor->subMode = 0;
+          actor->subMode = LUNGER_AIRBORNE;
           actor->mode = LUNGER_AIM;
           continue;
         }
@@ -2562,7 +2562,7 @@ void Level4_UpdateActors(void) {
 
       case LUNGER_RECOIL_B:
       case LUNGER_RECOIL_C:
-        if (actor->nextFrame >= 9) {
+        if (actor->nextFrame >= LUNGER_RECOIL_DONE_FRAME) {
           ANIM_SET(actor, st->anim + 1);
           actor->mode = LUNGER_AIM;
           continue;

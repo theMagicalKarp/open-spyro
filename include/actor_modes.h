@@ -1753,6 +1753,25 @@ enum CaptainAnim {
 /* CaptainState.step on a ledge post instead: nonzero once armed. */
 #define CAPTAIN_LEDGE_ARMED 1
 #define CAPTAIN_BURST_SPARK_LIFE 0x46 /* BurstActorWithSound spark life */
+/* Captain animation frames. A posted captain's stand anim jumps once
+ * (CaptainState.posed) to its held pose, STAND_POSE_FRAME (PATROL_POSE_FRAME
+ * for a patrol post). The fight anim (CAPTAIN_ANIM_FIGHT_DRAW) spars in the
+ * loop SPAR_LOOP_START .. SPAR_LOOP_END, sheathes once its stance timer is
+ * out from SHEATHE_FRAME on, and strikes from SPAR_LOOP_END, hitting on
+ * frames STRIKE_HIT_FRAME .. STRIKE_HIT_END - 1. ROUSE advances at
+ * ROUSE_DONE_FRAME; BASH hits from BASH_HIT_FRAME. A patrol post's ->subMode
+ * goes PATROL once its shepherd partner is knocked. */
+#define CAPTAIN_STAND_POSE_FRAME 0x15
+#define CAPTAIN_PATROL_POSE_FRAME 0x14
+#define CAPTAIN_SPAR_LOOP_START 9
+#define CAPTAIN_SPAR_LOOP_END 0x1A
+#define CAPTAIN_SHEATHE_FRAME 0x19
+#define CAPTAIN_STRIKE_HIT_FRAME 0x25
+#define CAPTAIN_STRIKE_HIT_END 0x29
+#define CAPTAIN_ROUSE_DONE_FRAME 7
+#define CAPTAIN_BASH_HIT_FRAME 6
+#define CAPTAIN_SUB_HOLD 0
+#define CAPTAIN_SUB_PATROL 1
 
 /* ->mode of Doctor Shemp's guard (ACTOR_TYPE_SHEMP_GUARD, ShempGuardState;
  * level 10). A charge, or a flame from outside its front, knocks it away. */
@@ -2514,6 +2533,19 @@ enum LungerMode {
 #define LUNGER_WAIT_FRAMES 0x78
 #define LUNGER_NUDGE_RANGE 0x3E8
 #define LUNGER_NUDGE_FRAMES 0x10
+/* Leap animation frames: airborne it loops AIR_LOOP_START .. LAND_FRAME,
+ * landing skips ahead to LAND_FRAME, and it heads home at DONE_FRAME
+ * (dropping its collision if Spyro is within UNPIN_RANGE). Its ->subMode
+ * latches the landing voice. A recoil re-reads Spyro's spot before frame
+ * RECOIL_AIM_FRAME and re-aims at RECOIL_DONE_FRAME. */
+#define LUNGER_AIR_LOOP_START 8
+#define LUNGER_LAND_FRAME 0xD
+#define LUNGER_DONE_FRAME 0x18
+#define LUNGER_UNPIN_RANGE 0x384
+#define LUNGER_RECOIL_AIM_FRAME 2
+#define LUNGER_RECOIL_DONE_FRAME 9
+#define LUNGER_AIRBORNE 0
+#define LUNGER_LANDED 1
 #define LUNGER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 #define LUNGER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 #define LUNGER_KNOCK_GRAVITY 0xA /* DriveActorTrackedMove gravity */

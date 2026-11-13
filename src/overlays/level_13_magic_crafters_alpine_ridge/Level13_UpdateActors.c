@@ -2666,8 +2666,8 @@ void Level13_UpdateActors(void) {
           if (TurnActorYawTowardAngle(actor, st->heading, 6, 0xA, YAW_STEP_IN_BAND)) {
             if (st->posed == 0 && actor->anim == CAPTAIN_ANIM_STAND) {
               st->posed = 1;
-              actor->frame = 0x15;
-              actor->nextFrame = 0x16;
+              actor->frame = CAPTAIN_STAND_POSE_FRAME;
+              actor->nextFrame = CAPTAIN_STAND_POSE_FRAME + 1;
               actor->frameProgress = 0;
             }
             if (st->partner != -1) {
@@ -2703,8 +2703,8 @@ void Level13_UpdateActors(void) {
             }
           } else if (st->posed == 0 && actor->anim == CAPTAIN_ANIM_STAND) {
             st->posed = 1;
-            actor->frame = 0x15;
-            actor->nextFrame = 0x16;
+            actor->frame = CAPTAIN_STAND_POSE_FRAME;
+            actor->nextFrame = CAPTAIN_STAND_POSE_FRAME + 1;
             actor->frameProgress = 0;
           }
           break;
@@ -2717,12 +2717,12 @@ void Level13_UpdateActors(void) {
           Actor *partner = &g_pActorListBase[st->partner];
 
           if (partner->nextAnim == SHEPHERD_KNOCKED) {
-            actor->subMode = 1;
+            actor->subMode = CAPTAIN_SUB_PATROL;
           }
           if (actor->anim == CAPTAIN_ANIM_STAND && st->posed == 0) {
             st->posed = 1;
-            actor->frame = 0x14;
-            actor->nextFrame = 0x15;
+            actor->frame = CAPTAIN_PATROL_POSE_FRAME;
+            actor->nextFrame = CAPTAIN_PATROL_POSE_FRAME + 1;
             actor->frameProgress = 0;
           }
           if (ApproxDist2D(&actor->posX, &spy->posX) < CAPTAIN_NOTICE_RANGE &&
@@ -2735,10 +2735,10 @@ void Level13_UpdateActors(void) {
             actor->mode = CAPTAIN_DRAW;
             continue;
           }
-          if (actor->subMode == 0) {
+          if (actor->subMode == CAPTAIN_SUB_HOLD) {
             break;
           }
-          if (actor->subMode == 1) {
+          if (actor->subMode == CAPTAIN_SUB_PATROL) {
             ANIM_GO(actor, CAPTAIN_ANIM_WALK);
             if (ApproxDist2D(&actor->posX, PATH_PT(st->path, st->path->cur)) <
                 CAPTAIN_NODE_ARRIVE) {
@@ -2823,7 +2823,7 @@ void Level13_UpdateActors(void) {
           break;
         }
         ANIM_GO(actor, CAPTAIN_ANIM_ROUSE);
-        if (actor->nextFrame >= 7) {
+        if (actor->nextFrame >= CAPTAIN_ROUSE_DONE_FRAME) {
           actor->mode = CAPTAIN_ADVANCE;
           continue;
         }
@@ -2872,14 +2872,14 @@ void Level13_UpdateActors(void) {
             StopSoundVoiceByIndex(actor->voiceRow, VOICE_RELEASE);
             st->step = CAPTAIN_STEP_STRIKE;
           }
-          if (TICK_DOWN(st->stanceTimer) && actor->frame >= 0x19) {
+          if (TICK_DOWN(st->stanceTimer) && actor->frame >= CAPTAIN_SHEATHE_FRAME) {
             st->step = CAPTAIN_STEP_SHEATHE;
           }
           if (d > CAPTAIN_FIGHT_LEAVE) {
             st->step = CAPTAIN_STEP_SHEATHE_RESET;
           }
-          if (g_nActorAnimNewFrame != 0 && actor->frame >= 0x1A) {
-            ANIM_JUMP(actor, 6, 9);
+          if (g_nActorAnimNewFrame != 0 && actor->frame >= CAPTAIN_SPAR_LOOP_END) {
+            ANIM_JUMP(actor, CAPTAIN_ANIM_FIGHT_DRAW, CAPTAIN_SPAR_LOOP_START);
           }
           ANIM_RETIME(actor);
           break;
@@ -2889,11 +2889,11 @@ void Level13_UpdateActors(void) {
             st->step = CAPTAIN_STEP_SPAR;
             st->timer = CAPTAIN_STRIKE_REST;
           }
-          if (actor->nextFrame < 0x1A) {
-            ANIM_JUMP(actor, 6, 0x1A);
+          if (actor->nextFrame < CAPTAIN_SPAR_LOOP_END) {
+            ANIM_JUMP(actor, CAPTAIN_ANIM_FIGHT_DRAW, CAPTAIN_SPAR_LOOP_END);
           }
           ANIM_RETIME(actor);
-          if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= 0x25 && actor->nextFrame < 0x29 &&
+          if (g_nActorAnimNewFrame != 0 && actor->nextFrame >= CAPTAIN_STRIKE_HIT_FRAME && actor->nextFrame < CAPTAIN_STRIKE_HIT_END &&
               ApproxDist2D(&actor->posX, &spy->posX) < CAPTAIN_STRIKE_HIT_RANGE &&
               ABS2(SPY_DZ(actor)) < CAPTAIN_STRIKE_DZ) {
             SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT_FRONT | SPYRO_EV_HIT_PINNED);
@@ -2932,7 +2932,7 @@ void Level13_UpdateActors(void) {
 
       case CAPTAIN_BASH:
         ANIM_GO(actor, CAPTAIN_ANIM_BASH);
-        if (st->camTimer == 0 && actor->nextFrame >= 6) {
+        if (st->camTimer == 0 && actor->nextFrame >= CAPTAIN_BASH_HIT_FRAME) {
           int *v = w296;
 
           SPY.triggerEvents |= (SPYRO_EV_HIT | SPYRO_EV_CONTACT);
