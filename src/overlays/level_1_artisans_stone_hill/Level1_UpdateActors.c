@@ -1524,7 +1524,7 @@ void Level1_UpdateActors(void) {
       }
 
       case SENTRY_KNOCKED:
-        if (actor->frame < 5) {
+        if (actor->frame < SENTRY_KNOCK_SPIN_FRAMES) {
           actor->rotZ += st->spin;
         }
         if (st->speed > SENTRY_KNOCK_DRAG) {
@@ -1542,8 +1542,8 @@ void Level1_UpdateActors(void) {
       case SENTRY_LUNGE:
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         MoveActorAlongHeading(actor, st->speed, 0, 0x12C, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
-        if (actor->frame >= 5 && st->speed > SENTRY_LUNGE_MIN_SPEED) {
-          st->speed -= 5;
+        if (actor->frame >= SENTRY_LUNGE_DRAG_FRAME && st->speed > SENTRY_LUNGE_MIN_SPEED) {
+          st->speed -= SENTRY_LUNGE_DRAG;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < SENTRY_HIT_RANGE &&
             ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < SENTRY_HIT_DZ) {

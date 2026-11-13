@@ -1387,6 +1387,10 @@ enum ChargerRole {
  * camera holds on it for CAM_HOLD_FRAMES from CAM_HIT_PULLBACK past Spyro. */
 #define CHARGER_RAM_DRAG 0x1E
 #define CHARGER_RAM_MIN_SPEED 0x28
+/* Knocked, a charger spins for its first KNOCK_SPIN_FRAMES anim frames; its
+ * ram starts slowing at RAM_DRAG_FRAME. */
+#define CHARGER_KNOCK_SPIN_FRAMES 5
+#define CHARGER_RAM_DRAG_FRAME 4
 #define CHARGER_HIT_RANGE 0x5DC
 #define CHARGER_HIT_DZ 0x384
 #define CHARGER_HIT_KNOCK_SPEED 0x87
@@ -2338,6 +2342,14 @@ enum WardAnim {
 #define WARD_DAZE_MIN 0x40
 #define WARD_DAZE_LEAVE_RANGE 0x2800
 #define WARD_BURST_SPARK_LIFE 0x20 /* BurstActorWithSound spark life */
+/* Knocked, a ward spins for its first KNOCK_SPIN_FRAMES anim frames. Dazed
+ * with its timer out (Spyro still near), it plays WARD_ANIM_DAZED_STIR from
+ * STIR_FRAME and dazes again once the anim comes round to frames
+ * STIR_SETTLE_FRAME .. STIR_SETTLE_END - 1. */
+#define WARD_KNOCK_SPIN_FRAMES 5
+#define WARD_STIR_FRAME 0x31
+#define WARD_STIR_SETTLE_FRAME 0x2C
+#define WARD_STIR_SETTLE_END 0x32
 
 /* ->mode of a shooter sentry (ACTOR_TYPE_SHOOTER, ShooterState; level 7).
  * Flames bounce off while it hides behind its shield (SHOOTER_SHIELD,
@@ -4278,6 +4290,11 @@ enum SentryMode {
 #define SENTRY_LUNGE_CONE 0x14
 #define SENTRY_LUNGE_SPEED 0x64
 #define SENTRY_LUNGE_MIN_SPEED 0x50
+/* Knocked, a sentry spins for its first KNOCK_SPIN_FRAMES anim frames; its
+ * lunge slows by LUNGE_DRAG a frame from LUNGE_DRAG_FRAME. */
+#define SENTRY_KNOCK_SPIN_FRAMES 5
+#define SENTRY_LUNGE_DRAG_FRAME 5
+#define SENTRY_LUNGE_DRAG 5
 #define SENTRY_HIT_RANGE 0x5DC
 #define SENTRY_HIT_DZ 0x384
 #define SENTRY_CAM_HOLD_FRAMES 0x32

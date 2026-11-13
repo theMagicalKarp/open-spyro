@@ -502,7 +502,7 @@ void Level3_UpdateActors(void) {
           ANIM_RESET(actor, WARD_DAZED);
           continue;
         }
-        if (actor->frame < 5) {
+        if (actor->frame < WARD_KNOCK_SPIN_FRAMES) {
           actor->rotZ += st->spin;
         }
         if (st->speed > WARD_KNOCK_DRAG) {
@@ -535,12 +535,12 @@ void Level3_UpdateActors(void) {
             continue;
           }
           ANIM_SET(actor, WARD_ANIM_DAZED_STIR);
-          actor->frame = 0x31;
-          actor->nextFrame = 0x32;
+          actor->frame = WARD_STIR_FRAME;
+          actor->nextFrame = WARD_STIR_FRAME + 1;
           actor->frameProgress = 0;
           break;
         case WARD_ANIM_DAZED_STIR:
-          if (actor->frame >= 0x2C && actor->frame < 0x32) {
+          if (actor->frame >= WARD_STIR_SETTLE_FRAME && actor->frame < WARD_STIR_SETTLE_END) {
             actor->flags = 0;
             st->timer = (GetRandomU32() & 0x3F) + WARD_DAZE_MIN;
             ANIM_SET(actor, WARD_DAZED);

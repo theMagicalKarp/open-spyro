@@ -1829,7 +1829,7 @@ void Level20_UpdateActors(void) {
       }
 
       case CHARGER_KNOCKED:
-        if (actor->frame < 5) {
+        if (actor->frame < CHARGER_KNOCK_SPIN_FRAMES) {
           actor->rotZ += st->turn;
         }
         if (st->speed > CHARGER_KNOCK_DRAG) {
@@ -1852,7 +1852,7 @@ void Level20_UpdateActors(void) {
           actor->mode = CHARGER_GO_HOME;
           continue;
         }
-        if (actor->frame >= 4 && st->speed > CHARGER_RAM_MIN_SPEED) {
+        if (actor->frame >= CHARGER_RAM_DRAG_FRAME && st->speed > CHARGER_RAM_MIN_SPEED) {
           st->speed -= CHARGER_RAM_DRAG;
         }
         if (ApproxDist2D(&actor->posX, &spy->posX) < CHARGER_HIT_RANGE) {
