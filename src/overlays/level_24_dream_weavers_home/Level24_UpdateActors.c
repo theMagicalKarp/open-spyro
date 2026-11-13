@@ -1060,7 +1060,7 @@ void Level24_UpdateActors(void) {
         SteerActorAroundPoint(actor, &partner->posX, LGUARD_ESCORT_RADIUS,
                       WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - partner->posX,
                                                   g_nSpyroWorldPosY - partner->posY, ATAN_ANGLE8),
-                                    0x80),
+                                    ANGLE8_HALF),
                       4, LGUARD_ESCORT_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         if (partner->mode != CCANNON_LOB) {
           if (TICK_DOWN(st->timer) != 0) {
@@ -1938,9 +1938,9 @@ void Level24_UpdateActors(void) {
               ScaleVector3ByRatio(g152, dist, reach - SPARX_CHASE_STEP_SLACK);
             }
             AddVector(&actor->posX, &actor->posX, g152);
-            TurnActorYawTowardAngle(actor, ArcTan2(g152[0], g152[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+            TurnActorYawTowardAngle(actor, ArcTan2(g152[0], g152[1], ATAN_ANGLE8), SPARX_SEEK_TURN, 0, YAW_HOLD_IN_BAND);
             actor->rotY = ArcTan2(VectorLength(g152, VEC_LEN_XY), g152[2], ATAN_ANGLE8);
-            actor->rotY = StepAngle8Toward(actor->rotY & ANGLE8_MASK, 0, 0x30);
+            actor->rotY = StepAngle8Toward(actor->rotY & ANGLE8_MASK, 0, SPARX_SEEK_MAX_PITCH);
             break;
           }
 
@@ -2003,9 +2003,9 @@ void Level24_UpdateActors(void) {
                 ScaleVector3ByRatio(sparxToTarget, dist, SPARX_FETCH_STEP_NEAR);
               }
               AddVector(&actor->posX, &actor->posX, sparxToTarget);
-              TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), 0xA, 0, YAW_HOLD_IN_BAND);
+              TurnActorYawTowardAngle(actor, ArcTan2(sparxToTarget[0], sparxToTarget[1], ATAN_ANGLE8), SPARX_SEEK_TURN, 0, YAW_HOLD_IN_BAND);
               actor->rotY = ArcTan2(VectorLength(sparxToTarget, VEC_LEN_XY), sparxToTarget[2], ATAN_ANGLE8);
-              actor->rotY = StepAngle8Toward(actor->rotY & ANGLE8_MASK, 0, 0x30);
+              actor->rotY = StepAngle8Toward(actor->rotY & ANGLE8_MASK, 0, SPARX_SEEK_MAX_PITCH);
             }
             break;
           }
@@ -2067,7 +2067,7 @@ void Level24_UpdateActors(void) {
 
             actor->rotX = 0;
             actor->rotY = g136[2];
-            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, 4, 0, YAW_HOLD_IN_BAND);
+            TurnActorYawTowardAngle(actor, g_bSpyroPersistentEulerZ, SPARX_HOVER_TURN, 0, YAW_HOLD_IN_BAND);
           }
 
           switch (SPY.sparxHealth) {
@@ -2582,7 +2582,7 @@ void Level24_UpdateActors(void) {
         SteerActorAroundPoint(actor, &p->posX, LGUARD_ESCORT_RADIUS,
                       WrapAddAngle8(ArcTan2(g_anSpyroWorldPos - p->posX,
                                                   g_nSpyroWorldPosY - p->posY, ATAN_ANGLE8),
-                                    0x80),
+                                    ANGLE8_HALF),
                       4, LGUARD_ESCORT_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_LIFT | MOVE_FOLLOW_FLOOR | MOVE_STRAFE);
         TurnActorYawTowardAngle(p, h, 4, 0, YAW_HOLD_IN_BAND);
         break;

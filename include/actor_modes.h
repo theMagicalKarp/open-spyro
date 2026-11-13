@@ -86,6 +86,12 @@ enum SparxSubMode {
  * within CATCH_ALIGN of the camera's reverse yaw. Chasing, he closes CHASE_STEP a
  * frame (CHASE_STEP_HIGH in the catch animation) on a point just behind the
  * butterfly, CHASE_STEP_SLACK more while further than that, less once within. */
+/* Flying at a target Sparx turns SEEK_TURN a frame and pitches along his
+ * path, at most SEEK_MAX_PITCH (8-bit) off level; hovering behind Spyro (no
+ * target) he turns HOVER_TURN a frame to match Spyro's heading. */
+#define SPARX_SEEK_TURN 0xA
+#define SPARX_SEEK_MAX_PITCH 0x30
+#define SPARX_HOVER_TURN 4
 #define SPARX_CATCH_LEAD 0x6E
 #define SPARX_CATCH_ALIGN 8
 #define SPARX_CHASE_STEP 0x82
