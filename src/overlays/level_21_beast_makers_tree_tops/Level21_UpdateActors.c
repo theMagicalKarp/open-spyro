@@ -1974,7 +1974,7 @@ void Level21_UpdateActors(void) {
                 actor->posZ = st->baseZ + SAVEHOST_POP_RAISE;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, ATAN_ANGLE8) -
-                               0x80;
+                               ANGLE8_HALF;
                 actor->cullRadius = SAVEHOST_CULL_RADIUS;
                 actor->mode = SAVEHOST_POP_IN;
                 actor->scale = SAVEHOST_POP_SCALE;
@@ -3331,7 +3331,7 @@ void Level21_UpdateActors(void) {
             actor, PATH_PT(st->path, st->path->cur), st->dodgeRadius,
             (ArcTan2(spy->posX - PATH_X(st->path, st->path->cur),
                            spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8) +
-             0x80) &
+             ANGLE8_HALF) &
                 0xFF,
             0x1E, PRUN_DODGE_SPEED, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
         SnapActorToGround(actor);

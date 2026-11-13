@@ -1678,7 +1678,7 @@ void Level33_UpdateActors(void) {
                                        st->path2->count - 1) -
                                     PATH_Y(st->path3, 0),
                                 ATAN_ANGLE8) +
-                  0x80) &
+                  ANGLE8_HALF) &
                  0xFF;
 
         if (TICK_DOWN(st->camTimer) == 0) {

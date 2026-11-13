@@ -1562,7 +1562,7 @@ void Level34_UpdateActors(void) {
               d = -LTHIEF_CLIMB_STEP;
             }
             actor->posZ += d;
-            actor->rotY = -ArcTan2(d, speed, ATAN_ANGLE8) + 0x40;
+            actor->rotY = -ArcTan2(d, speed, ATAN_ANGLE8) + ANGLE8_QUARTER;
             break;
 
           case LTHIEF_LEG_RING:
@@ -1592,7 +1592,7 @@ void Level34_UpdateActors(void) {
               n = -LTHIEF_RING_CLIMB_STEP;
             }
             actor->posZ += n;
-            actor->rotY = -ArcTan2(n, speed, ATAN_ANGLE8) + 0x40;
+            actor->rotY = -ArcTan2(n, speed, ATAN_ANGLE8) + ANGLE8_QUARTER;
             if (ApproxDist2D(&actor->posX, &SPY.posX) > LTHIEF_LOSE_RANGE) {
               st->leg = LTHIEF_LEG_RING_OUT;
             }
@@ -1622,7 +1622,7 @@ void Level34_UpdateActors(void) {
               n = -LTHIEF_RING_CLIMB_STEP;
             }
             actor->posZ += n;
-            actor->rotY = -ArcTan2(n, speed, ATAN_ANGLE8) + 0x40;
+            actor->rotY = -ArcTan2(n, speed, ATAN_ANGLE8) + ANGLE8_QUARTER;
             break;
 
           case LTHIEF_LEG_RING_OUT:
@@ -1666,7 +1666,7 @@ void Level34_UpdateActors(void) {
               n = -LTHIEF_RING_CLIMB_STEP;
             }
             actor->posZ += n;
-            actor->rotY = -ArcTan2(n, speed, ATAN_ANGLE8) + 0x40;
+            actor->rotY = -ArcTan2(n, speed, ATAN_ANGLE8) + ANGLE8_QUARTER;
             break;
 
           case LTHIEF_LEG_SPUR_OUT:
@@ -1682,7 +1682,7 @@ void Level34_UpdateActors(void) {
               d = -LTHIEF_CLIMB_STEP;
             }
             actor->posZ += d;
-            actor->rotY = -ArcTan2(d, speed, ATAN_ANGLE8) + 0x40;
+            actor->rotY = -ArcTan2(d, speed, ATAN_ANGLE8) + ANGLE8_QUARTER;
             break;
           }
         } else {
@@ -1706,7 +1706,7 @@ void Level34_UpdateActors(void) {
               d = -LTHIEF_DODGE_CLIMB_STEP;
             }
             actor->posZ += d;
-            actor->rotY = -ArcTan2(d, 0x400, ATAN_ANGLE8) + 0x40;
+            actor->rotY = -ArcTan2(d, 0x400, ATAN_ANGLE8) + ANGLE8_QUARTER;
           } else {
             int r;
 

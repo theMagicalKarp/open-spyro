@@ -635,7 +635,7 @@ void Level8_UpdateActors(void) {
             int b = ArcTan2(actor->posX - st->path->nodes[st->path->cur].x,
                                   actor->posY - st->path->nodes[st->path->cur].y,
                                   ATAN_ANGLE8) -
-                    0x80;
+                    ANGLE8_HALF;
 
             d = (d - b) & ANGLE8_MASK;
 
@@ -1055,7 +1055,7 @@ void Level8_UpdateActors(void) {
           int a = (ArcTan2(spy->posX - st->path->nodes[st->path->cur].x,
                                  SPY.posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8) +
-                   0x80) &
+                   ANGLE8_HALF) &
                   0xFF;
 
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist, a, 8,
@@ -1722,7 +1722,7 @@ void Level8_UpdateActors(void) {
                 actor->posZ = st->baseZ + SAVEHOST_POP_RAISE;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, ATAN_ANGLE8) -
-                               0x80;
+                               ANGLE8_HALF;
                 actor->cullRadius = SAVEHOST_CULL_RADIUS;
                 actor->mode = SAVEHOST_POP_IN;
                 actor->scale = SAVEHOST_POP_SCALE;

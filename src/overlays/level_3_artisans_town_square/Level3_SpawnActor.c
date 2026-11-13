@@ -169,7 +169,7 @@ Actor *Level3_SpawnActor(int type, Actor *parent) {
   case ACTOR_TYPE_REBOUND_FX:
     InitActorRenderDefaults(rec);
     CopyVector(&rec->posX, g_anSpyroFirstContactPoint);
-    rec->rotZ = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], ATAN_ANGLE8) + 0x40;
+    rec->rotZ = ArcTan2(g_anSpyroFirstContactNormal[0], g_anSpyroFirstContactNormal[1], ATAN_ANGLE8) + ANGLE8_QUARTER;
     InsertActorIntoSpatialGrid(rec);
     break;
 

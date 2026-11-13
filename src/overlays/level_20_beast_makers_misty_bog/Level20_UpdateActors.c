@@ -1157,7 +1157,7 @@ void Level20_UpdateActors(void) {
                 actor->posZ = st->baseZ + SAVEHOST_POP_RAISE;
                 actor->rotZ = ArcTan2(spy->posX - actor->posX,
                                              spy->posY - actor->posY, ATAN_ANGLE8) -
-                               0x80;
+                               ANGLE8_HALF;
                 actor->cullRadius = SAVEHOST_CULL_RADIUS;
                 actor->mode = SAVEHOST_POP_IN;
                 actor->scale = SAVEHOST_POP_SCALE;
