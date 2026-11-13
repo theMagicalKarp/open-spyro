@@ -3332,7 +3332,7 @@ void Level21_UpdateActors(void) {
             (ArcTan2(spy->posX - PATH_X(st->path, st->path->cur),
                            spy->posY - PATH_Y(st->path, st->path->cur), ATAN_ANGLE8) +
              ANGLE8_HALF) &
-                0xFF,
+                ANGLE8_MASK,
             0x1E, PRUN_DODGE_SPEED, 0xF, 0x20, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
         SnapActorToGround(actor);
         if (r < PRUN_DODGE_SETTLED && spy->state != SPYRO_ST_CHARGE && spy->state != SPYRO_ST_CHARGE_AIR) {

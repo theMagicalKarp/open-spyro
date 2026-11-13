@@ -3234,8 +3234,8 @@ void Level10_UpdateActors(void) {
         if (TurnActorYawTowardAngle(actor,
                           (ArcTan2(spy->posX - actor->posX,
                                          spy->posY - actor->posY, ATAN_ANGLE8) +
-                           0x1E) &
-                              0xFF,
+                           SHEMP_SWEEP_LEAD) &
+                              ANGLE8_MASK,
                           6, 2, YAW_STEP_IN_BAND) != 0) {
           actor->mode = SHEMP_P3_SWEEP;
           continue;
@@ -3244,16 +3244,16 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_P3_SWEEP:
         if (g_nActorAnimDone != 0) {
-          actor->frame = 0x14;
-          actor->nextFrame = 0x15;
+          actor->frame = SHEMP_SWEEP_FRAME;
+          actor->nextFrame = SHEMP_SWEEP_FRAME + 1;
           actor->frameProgress = 0;
-        } else if (actor->nextFrame >= 0x14) {
+        } else if (actor->nextFrame >= SHEMP_SWEEP_FRAME) {
           d = g_nSpyroWorldPosZ - FindGroundHeightBelow(&spy->posX, 0x1000);
           st->timer += g_nFrameStep * SHEMP_SWEEP_RATE;
           actor->rotZ = actor->subMode - (st->timer >> 4);
           if (AbsAngleDelta8(actor->rotZ,
                             ArcTan2(spy->posX - actor->posX,
-                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < 6 &&
+                                          SPY.posY - actor->posY, ATAN_ANGLE8)) < SHEMP_SWEEP_HIT_CONE &&
               ApproxDist2D(&actor->posX, &spy->posX) < SHEMP_SWEEP_HIT_RANGE && d < SHEMP_SWEEP_HIT_CLEARANCE &&
               actor->posZ - actor->floorOffset - SPY.posZ < -SHEMP_HIT_ABOVE &&
               ABS2(actor->posZ - actor->floorOffset - SPY.posZ) < SHEMP_HIT_DZ) {
@@ -3280,7 +3280,7 @@ void Level10_UpdateActors(void) {
           ANIM_SET(actor, SHEMP_ANIM_STUNNED);
         }
         ModifyWorldChunkAnimFlags(SHEMP_PHASE_CHUNK(st->phase), CHUNK_ANIM_RESUME, 0);
-        st->timer2 = 0x1E;
+        st->timer2 = SHEMP_GRUNT_DELAY;
         st->phase++;
         actor->mode = SHEMP_RETREAT;
         continue;
@@ -3293,7 +3293,7 @@ void Level10_UpdateActors(void) {
                                PATH_Y(st->cam, st->phase - 1),
                            ATAN_ANGLE8) +
              ANGLE8_HALF) &
-            0xFF;
+            ANGLE8_MASK;
         if (TICK_DOWN(st->timer) == 0) {
           g_nCinematicActive = 1;
           SPY.requestMask |= (SPYRO_RQ_PENDING | SPYRO_RQ_CAMERA | SPYRO_RQ_FREEZE_INPUT);
@@ -3309,10 +3309,10 @@ void Level10_UpdateActors(void) {
         } else {
           g_nCinematicActive = 0;
         }
-        if (g_nActorAnimDone != 0 || actor->nextFrame >= 0xE) {
+        if (g_nActorAnimDone != 0 || actor->nextFrame >= SHEMP_RETREAT_RUN_FRAME) {
           if (TICK_DOWN(st->timer2) != 0) {
             PlayActorMeshVoice(actor, RandomIntInRange(0, 2), 0);
-            st->timer2 = 0x28;
+            st->timer2 = SHEMP_GRUNT_GAP;
           }
           RefreshActorDerivedState(actor, ACTOR_REFRESH_MATRIX);
           GetActorAttachPoint(actor, 0, pos371);
@@ -3333,11 +3333,11 @@ void Level10_UpdateActors(void) {
             g_pfnLevelEmitParticles(1, EMIT_SPARK_VEL_DIM, sparkPos, (int)vel371);
           } while (i < 3);
           if (g_nActorAnimDone != 0) {
-            actor->frame = 0xF;
+            actor->frame = SHEMP_RUN_LOOP_FRAME;
             actor->nextFrame = sixteen;
             actor->frameProgress = 0;
           }
-          if (PivotActorAlongPath(actor, st->path, 0x118, SHEMP_RETREAT_SPEED, 0, 4, 0x14, PIVOT_TURN_ANY,
+          if (PivotActorAlongPath(actor, st->path, SHEMP_RETREAT_NODE_RANGE, SHEMP_RETREAT_SPEED, 0, 4, 0x14, PIVOT_TURN_ANY,
                             MOVE_LIFT | MOVE_FOLLOW_FLOOR) == st->node[st->phase] + 0x101) {
             actor->mode = SHEMP_ARRIVE;
             continue;
@@ -3347,7 +3347,7 @@ void Level10_UpdateActors(void) {
 
       case SHEMP_ARRIVE:
         if (g_nActorAnimDone != 0) {
-          actor->frame = 0xF;
+          actor->frame = SHEMP_RUN_LOOP_FRAME;
           actor->nextFrame = sixteen;
           actor->frameProgress = 0;
         }

@@ -1049,7 +1049,7 @@ void Level6_UpdateActors(void) {
                                  SPY.posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8) +
                    ANGLE8_HALF) &
-                  0xFF;
+                  ANGLE8_MASK;
 
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist, a, 8,
                         st->speed, 0xF, 0x40, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);

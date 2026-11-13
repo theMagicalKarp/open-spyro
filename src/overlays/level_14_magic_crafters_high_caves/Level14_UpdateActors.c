@@ -1255,7 +1255,7 @@ void Level14_UpdateActors(void) {
                                  SPY.posY - st->path->nodes[st->path->cur].y,
                                  ATAN_ANGLE8) +
                    ANGLE8_HALF) &
-                  0xFF;
+                  ANGLE8_MASK;
 
           SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist, a, 8,
                         st->speed, 0xF, 0x40, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, 0);
@@ -3113,7 +3113,7 @@ void Level14_UpdateActors(void) {
         int h = (ArcTan2(actor->posX - st->path->nodes[0].x,
                                actor->posY - st->path->nodes[0].y, ATAN_ANGLE8) +
                  8) &
-                0xFF;
+                ANGLE8_MASK;
 
         ANIM_GO(actor, SFGIVER_ANIM_CIRCLE);
         if (actor->subMode != 0 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {

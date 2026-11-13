@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "funcs.h"
 #include "globals.h"
 
@@ -143,7 +144,7 @@ void EnqueueHudSprites(void) {
         shade =
             ((short)((unsigned short *)
                          g_anCosineLut)[(g_nLightSweepAngle - ((i << 8) / 20)) &
-                                        0xFF] >>
+                                        ANGLE8_MASK] >>
              7) +
             0x80;
         scratch[0] = shade;

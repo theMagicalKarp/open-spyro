@@ -1098,6 +1098,20 @@ enum ShempAnim {
  * the next node at RETREAT_SPEED. */
 #define SHEMP_STUN_FRAMES 0xC8
 #define SHEMP_RETREAT_SPEED 0xA0
+/* Phase-3 sweep: Shemp turns to SWEEP_LEAD (8-bit) past Spyro, then from
+ * SWEEP_FRAME of the sweep anim (looping there) swings back, hitting Spyro
+ * within SWEEP_HIT_CONE of the swing. Retreating, he runs and sparks from
+ * RETREAT_RUN_FRAME (his run loops from RUN_LOOP_FRAME), grunting after
+ * GRUNT_DELAY and every GRUNT_GAP, and counts a node reached within
+ * RETREAT_NODE_RANGE. */
+#define SHEMP_SWEEP_LEAD 0x1E
+#define SHEMP_SWEEP_FRAME 0x14
+#define SHEMP_SWEEP_HIT_CONE 6
+#define SHEMP_RETREAT_RUN_FRAME 0xE
+#define SHEMP_RUN_LOOP_FRAME 0xF
+#define SHEMP_GRUNT_DELAY 0x1E
+#define SHEMP_GRUNT_GAP 0x28
+#define SHEMP_RETREAT_NODE_RANGE 0x118
 
 /* ->mode of a shepherd (ACTOR_TYPE_SHEPHERD, ShepherdState; levels 12/13).
  * SHEPHERD_IDLE runs ShepherdState.post's waiting behaviour; shepherds

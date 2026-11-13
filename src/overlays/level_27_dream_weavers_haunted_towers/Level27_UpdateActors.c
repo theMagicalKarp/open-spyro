@@ -2126,7 +2126,7 @@ void Level27_UpdateActors(void) {
         int h = (ArcTan2(actor->posX - st->path->nodes[0].x,
                                actor->posY - st->path->nodes[0].y, ATAN_ANGLE8) +
                  8) &
-                0xFF;
+                ANGLE8_MASK;
 
         ANIM_GO(actor, SFGIVER_ANIM_CIRCLE);
         if (actor->subMode != 0 || g_pActorListBase[st->link].mode >= ACTOR_MODE_DORMANT) {

@@ -1442,7 +1442,7 @@ void Level26_UpdateActors(void) {
             (ArcTan2(actor->posX - g_pActorListBase[st->leader].posX,
                            actor->posY - g_pActorListBase[st->leader].posY, ATAN_ANGLE8) +
              ESCORT_BREAK_SPIRAL) &
-                0xFF,
+                ANGLE8_MASK,
             0, st->speed, 0x10, 0, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0, MOVE_STRAFE);
         actor->posZ += (st->speed - ESCORT_BREAK_SPEED) >> 3;
         st->speed += g_nFrameStep * 2;

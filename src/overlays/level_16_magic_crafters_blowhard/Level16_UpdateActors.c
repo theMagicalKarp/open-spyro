@@ -2206,7 +2206,7 @@ void Level16_UpdateActors(void) {
                        actor->posX - st->path->nodes[st->path->cur].x,
                        actor->posY - st->path->nodes[st->path->cur].y, ATAN_ANGLE8) +
                    st->angle) &
-                  0xFF;
+                  ANGLE8_MASK;
               SteerActorAroundPoint(actor, &st->path->nodes[0].x, st->dist,
                             st->heading, 8, PATHGUARD_RING_SPEED, 0xE, 0x80, STEER_NO_BLOCK, STEER_NO_BLOCK, 0, 0,
                             MOVE_FOLLOW_FLOOR);
