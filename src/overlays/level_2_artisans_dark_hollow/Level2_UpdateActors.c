@@ -1747,7 +1747,7 @@ void Level2_UpdateActors(void) {
           break;
         case POSTGUARD_POST_PATROL:
           ANIM_GO(actor, POSTGUARD_ANIM_RUN);
-          PivotActorAlongPath(actor, st->path, 0x100, POSTGUARD_PATROL_SPEED, 0xC8, 5, 0xA, actor->group,
+          PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, POSTGUARD_PATROL_SPEED, 0xC8, 5, 0xA, actor->group,
                         MOVE_LIFT | MOVE_FOLLOW_FLOOR);
           if (ApproxDist2D(&actor->posX, &SPY.posX) < POSTGUARD_PATROL_ALERT_RANGE) {
             SetActorGroupState(actor, POSTGUARD_ALERTED);
@@ -1791,7 +1791,7 @@ void Level2_UpdateActors(void) {
             break;
           case POSTGUARD_AMBUSH_RUN:
             ANIM_GO(actor, POSTGUARD_ANIM_RUN);
-            if (PivotActorAlongPath(actor, st->path, 0x100, POSTGUARD_AMBUSH_SPEED, 0, 8, 0x32, PIVOT_TURN_ANY,
+            if (PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, POSTGUARD_AMBUSH_SPEED, 0, 8, 0x32, PIVOT_TURN_ANY,
                               MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
               st->phase++;
             }

@@ -2127,6 +2127,8 @@ int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int dead
  * `lim`, then walks; returns 0x100 + node index on arrival. */
 #ifndef PIVOT_TURN_ANY
 #define PIVOT_TURN_ANY 0xFF /* turnGroup: turn without waiting on a group peer */
+/* The `thresh` most callers pass: a node counts as reached within 0x100 (2D). */
+#define PIVOT_ARRIVE_NEAR 0x100
 /* ->subMode while PivotActorAlongPath drives the actor. */
 #define PIVOT_SUB_ARRIVED 0 /* reached a node (or not started): may need to turn */
 #define PIVOT_SUB_WALKING 1 /* heading within `lim`: walking to the node */

@@ -654,6 +654,8 @@ enum ThiefMode {
 #define THIEF_LEAP_HOME_SPEED 0x82
 /* LEDGE: runs to its wait node at LEDGE_RUN_SPEED, on at LEDGE_RUN_ON_SPEED,
  * and jumps across at LEDGE_JUMP_SPEED. */
+/* THIEF_RUN counts a node of its run path reached within RUN_NODE_RANGE. */
+#define THIEF_RUN_NODE_RANGE 0x73A
 #define THIEF_LEDGE_RUN_SPEED 0xF0
 #define THIEF_LEDGE_RUN_ON_SPEED 0xDA
 #define THIEF_LEDGE_JUMP_SPEED 0xFA

@@ -1709,7 +1709,7 @@ void Level32_UpdateActors(void) {
         continue;
 
       case SWEEPGUN_ADVANCE:
-        if (PivotActorAlongPath(actor, st->path, 0x100, SWEEPGUN_ADVANCE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, SWEEPGUN_ADVANCE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           actor->mode = SWEEPGUN_IDLE;
         }

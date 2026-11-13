@@ -850,7 +850,7 @@ void Level22_UpdateActors(void) {
         continue;
 
       case METALHEAD_PHASE_STAGGER:
-        PivotActorAlongPath(actor, st->path, 0x100, METALHEAD_STAGGER_SPEED, 0, 3, 5, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, METALHEAD_STAGGER_SPEED, 0, 3, 5, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (TICK_DOWN(st->staggerTimer) != 0) {
           actor->mode++;
           continue;
@@ -1281,7 +1281,7 @@ void Level22_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, (int *)&g_anSpyroWorldPos) < BTHROW_PATROL_THROW_RANGE) {
           ENTER_POSE(actor, BTHROW_THROW);
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, BTHROW_PATROL_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+        if (PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, BTHROW_PATROL_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
             PATH_ARRIVED(0)) {
           ENTER_POSE(actor, BTHROW_WATCH);
         }
@@ -1421,7 +1421,7 @@ void Level22_UpdateActors(void) {
         break;
 
       case BTHROW_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, BTHROW_RIDE_WALK_SPEED, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        int r = PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, BTHROW_RIDE_WALK_SPEED, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, BTHROW_PATROL);
         if (r == PATH_ARRIVED(0)) {
@@ -1788,7 +1788,7 @@ void Level22_UpdateActors(void) {
         break;
 
       case GATEKEEPER_RIDE_WALK: {
-        int r = PivotActorAlongPath(actor, st->path, 0x100, GATEKEEPER_RIDE_WALK_SPEED, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        int r = PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, GATEKEEPER_RIDE_WALK_SPEED, 0, 8, 0x80, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
 
         ANIM_GO(actor, GATEKEEPER_ANIM_WALK);
         if (r == PATH_ARRIVED(0)) {

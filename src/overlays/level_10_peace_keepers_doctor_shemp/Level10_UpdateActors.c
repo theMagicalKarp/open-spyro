@@ -2922,7 +2922,7 @@ void Level10_UpdateActors(void) {
           PlayActorMeshVoice(actor, SGUARD_VOICE_SHOUT, 0);
         }
         st->rampSpeed = SGUARD_PATH_RUSH_SPEED;
-        if (PivotActorAlongPath(actor, st->target, 0x100, st->rampSpeed, 0, 8, 0x40, PIVOT_TURN_ANY,
+        if (PivotActorAlongPath(actor, st->target, PIVOT_ARRIVE_NEAR, st->rampSpeed, 0, 8, 0x40, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0)) {
           actor->mode = SGUARD_BRAKE_AIM;
           continue;

@@ -857,7 +857,7 @@ void Level1_UpdateActors(void) {
         if (spd > THIEF_RUN_MAX_SPEED) {
           spd = THIEF_RUN_MAX_SPEED;
         }
-        if (PivotActorAlongPath(actor, st->path, 0x73A, spd, 0xC8, 0xA, 0x80,
+        if (PivotActorAlongPath(actor, st->path, THIEF_RUN_NODE_RANGE, spd, 0xC8, 0xA, 0x80,
                           actor->group, 0) == PATH_ARRIVED(4)) {
           st->vz = THIEF_LEAP_VZ;
           actor->mode = THIEF_LEAP;
@@ -986,7 +986,7 @@ void Level1_UpdateActors(void) {
 
       case THIEF_LEDGE_RUN:
         ANIM_GO(actor, THIEF_ANIM_RUN);
-        if (PivotActorAlongPath(actor, st->path, 0x100, THIEF_LEDGE_RUN_SPEED, 0, 8, sixteen, PIVOT_TURN_ANY,
+        if (PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, THIEF_LEDGE_RUN_SPEED, 0, 8, sixteen, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(3)) {
           actor->mode = THIEF_LEDGE_WAIT;
           continue;
@@ -1008,7 +1008,7 @@ void Level1_UpdateActors(void) {
 
       case THIEF_LEDGE_RUN_ON:
         ANIM_GO(actor, THIEF_ANIM_RUN);
-        if (PivotActorAlongPath(actor, st->path, 0x100, THIEF_LEDGE_RUN_ON_SPEED, 0, 0xA, 0x30, PIVOT_TURN_ANY,
+        if (PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, THIEF_LEDGE_RUN_ON_SPEED, 0, 0xA, 0x30, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(1)) {
           actor->mode = THIEF_LEDGE_TAUNT;
           continue;
@@ -1116,7 +1116,7 @@ void Level1_UpdateActors(void) {
             st->path->cur = next;
           }
         }
-        r = PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
+        r = PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, st->speed, 0, 8, 0x1E, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR);
         if (r & PATH_ARRIVED_FLAG) {
           if ((r & ~PATH_ARRIVED_FLAG) ==
               (st->node - st->path->dir) % st->path->count) {
@@ -1138,7 +1138,7 @@ void Level1_UpdateActors(void) {
         if (st->path->nodes[st->path->cur].speed > 0) {
           st->speed = st->path->nodes[st->path->cur].speed;
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, PIVOT_TURN_ANY,
+        if (PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, st->speed, 0, 8, 0x20, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(0xB)) {
           st->vz = THIEF_HOP_VZ;
           actor->mode = THIEF_CLIMB_HOP;
@@ -1234,7 +1234,7 @@ void Level1_UpdateActors(void) {
           CopyVector(&actor->posX, &st->path->nodes[st->path->cur].x);
           SnapActorToGround(actor);
         }
-        if (PivotActorAlongPath(actor, st->path, 0x100, st->speed, 0, 8, 0x20, PIVOT_TURN_ANY,
+        if (PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, st->speed, 0, 8, 0x20, PIVOT_TURN_ANY,
                           MOVE_LIFT | MOVE_FOLLOW_FLOOR) == PATH_ARRIVED(st->path->count - 1)) {
           st->path->dir = -st->path->dir;
           st->path->cur = 1;

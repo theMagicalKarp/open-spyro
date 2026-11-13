@@ -935,7 +935,7 @@ void Level24_UpdateActors(void) {
       case LGUARD_PACE:
         st->flags &= ~LGUARD_F_PACE;
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < LGUARD_PACE_STOP_RANGE ||
-            PivotActorAlongPath(actor, st->path, 0x100, LGUARD_PACE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, one) ==
+            PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, LGUARD_PACE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, one) ==
                 PATH_ARRIVED(0)) {
           ANIM_GO(actor, st->base);
           actor->mode = LGUARD_IDLE;
@@ -2449,7 +2449,7 @@ void Level24_UpdateActors(void) {
       case LGUARD_PACE:
         st->flags &= ~LGUARD_F_PACE;
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < LGUARD_PACE_STOP_RANGE ||
-            PivotActorAlongPath(actor, st->path, 0x100, LGUARD_PACE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
+            PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, LGUARD_PACE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
                 PATH_ARRIVED(0)) {
           ANIM_GO(actor, st->base);
           actor->mode = LGUARD_IDLE;
