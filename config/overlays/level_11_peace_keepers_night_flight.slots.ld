@@ -2,31 +2,31 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_11_peace_keepers_night_flight.ld. */
     . = 0x000003d0 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_FlightEndHook)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_FlightEndHook.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/flight_results.o(.text.Level11_FlightEndHook)
     . = 0x000004a4 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_HandleFlightResults)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_HandleFlightResults.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/flight_results.o(.text.Level11_HandleFlightResults)
     . = 0x000007c4 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_FlightResultsMenu_Update)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_FlightResultsMenu_Update.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/flight_results_menu_update.o(.text.Level11_FlightResultsMenu_Update)
     . = 0x00000a78 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_DrawFlightRaceTime)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_DrawFlightRaceTime.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/flight_results_draw.o(.text.Level11_DrawFlightRaceTime)
     . = 0x00000c54 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_FlightResults_Draw)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_FlightResults_Draw.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/flight_results_draw.o(.text.Level11_FlightResults_Draw)
     . = 0x0000257c ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_UpdateActors)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_UpdateActors.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/update_actors.o(.text.Level11_UpdateActors)
     . = 0x00006f84 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_SpawnActor)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_SpawnActor.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/spawn_actor.o(.text.Level11_SpawnActor)
     . = 0x000078c8 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_AdvanceEmitList)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_AdvanceEmitList.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/advance_emit_list.o(.text.Level11_AdvanceEmitList)
     . = 0x00008520 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_EmitParticles)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_EmitParticles.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/emit_particles.o(.text.Level11_EmitParticles)
     . = 0x000091b8 ;
     build/overlays/level_11_peace_keepers_night_flight/asm/overlays/level_11_peace_keepers_night_flight/text.o(.text.Level11_OverlayEnd)
-    build/overlays/level_11_peace_keepers_night_flight/c/Level11_OverlayEnd.o(.text)
+    build/overlays/level_11_peace_keepers_night_flight/c/overlay_end.o(.text.Level11_OverlayEnd)

@@ -4,16 +4,16 @@
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_BalloonistCutscene_Update.o(.rodata)
+    build/overlays/level_1_artisans_stone_hill/c/balloonist_cutscene.o(.rodata.Level1_BalloonistCutscene_Update)
     . = 0x00000024 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_BalloonistCutscene_Draw.o(.rodata)
+    build/overlays/level_1_artisans_stone_hill/c/balloonist_cutscene.o(.rodata.Level1_BalloonistCutscene_Draw)
     . = 0x000000b4 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_UpdateActors.o(.rodata)
+    build/overlays/level_1_artisans_stone_hill/c/update_actors.o(.rodata.Level1_UpdateActors)
     . = 0x0000024c ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007AC84)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_AdvanceEmitList.o(.rodata)
+    build/overlays/level_1_artisans_stone_hill/c/advance_emit_list.o(.rodata.Level1_AdvanceEmitList)
     . = 0x00000390 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/data/rodata.rodata.o(.rodata.jtbl_8007ADC8)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_EmitParticles.o(.rodata)
+    build/overlays/level_1_artisans_stone_hill/c/emit_particles.o(.rodata.Level1_EmitParticles)

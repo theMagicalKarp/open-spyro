@@ -2,31 +2,31 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_17_magic_crafters_crystal_flight.ld. */
     . = 0x000003d0 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_FlightEndHook)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_FlightEndHook.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/flight_results.o(.text.Level17_FlightEndHook)
     . = 0x000004a4 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_HandleFlightResults)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_HandleFlightResults.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/flight_results.o(.text.Level17_HandleFlightResults)
     . = 0x000007c4 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_FlightResultsMenu_Update)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_FlightResultsMenu_Update.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/flight_results_menu_update.o(.text.Level17_FlightResultsMenu_Update)
     . = 0x00000a78 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_DrawFlightRaceTime)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_DrawFlightRaceTime.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/flight_results_draw.o(.text.Level17_DrawFlightRaceTime)
     . = 0x00000c54 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_FlightResults_Draw)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_FlightResults_Draw.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/flight_results_draw.o(.text.Level17_FlightResults_Draw)
     . = 0x0000257c ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_UpdateActors)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_UpdateActors.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/update_actors.o(.text.Level17_UpdateActors)
     . = 0x000074d4 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_SpawnActor)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_SpawnActor.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/spawn_actor.o(.text.Level17_SpawnActor)
     . = 0x00008068 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_AdvanceEmitList)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_AdvanceEmitList.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/advance_emit_list.o(.text.Level17_AdvanceEmitList)
     . = 0x00008cc0 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_EmitParticles)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_EmitParticles.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/emit_particles.o(.text.Level17_EmitParticles)
     . = 0x00009958 ;
     build/overlays/level_17_magic_crafters_crystal_flight/asm/overlays/level_17_magic_crafters_crystal_flight/text.o(.text.Level17_OverlayEnd)
-    build/overlays/level_17_magic_crafters_crystal_flight/c/Level17_OverlayEnd.o(.text)
+    build/overlays/level_17_magic_crafters_crystal_flight/c/overlay_end.o(.text.Level17_OverlayEnd)

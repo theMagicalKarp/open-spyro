@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_19_beast_makers_terrace_village.ld. */
     . = 0x00000ba4 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.Level19_UpdateActors)
-    build/overlays/level_19_beast_makers_terrace_village/c/Level19_UpdateActors.o(.text)
+    build/overlays/level_19_beast_makers_terrace_village/c/update_actors.o(.text.Level19_UpdateActors)
     . = 0x00009c24 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.Level19_SpawnActor)
-    build/overlays/level_19_beast_makers_terrace_village/c/Level19_SpawnActor.o(.text)
+    build/overlays/level_19_beast_makers_terrace_village/c/spawn_actor.o(.text.Level19_SpawnActor)
     . = 0x0000a974 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.Level19_AdvanceEmitList)
-    build/overlays/level_19_beast_makers_terrace_village/c/Level19_AdvanceEmitList.o(.text)
+    build/overlays/level_19_beast_makers_terrace_village/c/advance_emit_list.o(.text.Level19_AdvanceEmitList)
     . = 0x0000bca0 ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.Level19_EmitParticles)
-    build/overlays/level_19_beast_makers_terrace_village/c/Level19_EmitParticles.o(.text)
+    build/overlays/level_19_beast_makers_terrace_village/c/emit_particles.o(.text.Level19_EmitParticles)
     . = 0x0000cf0c ;
     build/overlays/level_19_beast_makers_terrace_village/asm/overlays/level_19_beast_makers_terrace_village/text.o(.text.Level19_OverlayEnd)
-    build/overlays/level_19_beast_makers_terrace_village/c/Level19_OverlayEnd.o(.text)
+    build/overlays/level_19_beast_makers_terrace_village/c/overlay_end.o(.text.Level19_OverlayEnd)

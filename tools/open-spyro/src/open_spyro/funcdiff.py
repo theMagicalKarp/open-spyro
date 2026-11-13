@@ -11,7 +11,7 @@ Everything binary (build, slice, compare, disassemble) runs inside ONE
 after a docker build can serve stale bytes through the volume mount — a
 documented false-match trap. Only text crosses back to the host.
 
-If the function has no ``src/c/<Name>.c`` but does have a parked
+If the function has no ``src/main/**/<Name>.c`` but does have a parked
 ``<Name>.c.wip``, the whole-EXE build is skipped in favor of ``_run_wip``: it
 compiles the wip candidate and the function's original asm block as
 standalone objects (same trick as ``partial.py``, since a non-fitting wip
@@ -34,6 +34,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from open_spyro.c_layout import find_c_source
 from open_spyro.overlays import load as load_overlays
 from open_spyro.paths import repo_root
 
@@ -381,11 +382,10 @@ def run(name: str, build: bool = True, full: bool = False, color: str = "auto") 
         print(f"diff: missing {t.orig} — run 'make extract' first", file=sys.stderr)
         raise SystemExit(2)
 
-    rel = f"src/c/{t.name}.c" if t.segment == "main" else f"src/overlays/{t.segment}/{t.name}.c"
-    override = repo / rel
-    if not override.is_file():
-        wip = override.with_name(override.name + ".wip")
-        if wip.is_file():
+    override = find_c_source(repo, t.segment, t.name)
+    if override is None:
+        wip = find_c_source(repo, t.segment, t.name, ".c.wip")
+        if wip is not None:
             _run_wip(t, wip, full, use_color)
             return
 
@@ -403,12 +403,12 @@ def run(name: str, build: bool = True, full: bool = False, color: str = "auto") 
         print(f"diff: build failed for {t.name}", file=sys.stderr)
         raise SystemExit(2)
 
-    src_note = rel if override.is_file() else "no C override (asm baseline)"
+    src_note = str(override.relative_to(repo)) if override else "no C override (asm baseline)"
     head = f"{t.name} ({t.segment} @ 0x{t.vma:08x}, {t.size} bytes, {src_note})"
 
     if "@@IDENTICAL@@" in out:
         print(f"{_paint('MATCH', _BOLD_GREEN, use_color)}  {head}")
-        if not override.is_file():
+        if override is None:
             print("       (nothing was overridden — this only proves the baseline)")
         return
 

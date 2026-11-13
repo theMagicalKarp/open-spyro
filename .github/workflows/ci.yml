@@ -31,7 +31,7 @@ jobs:
         run: uv run ty check
 
       - name: clang-format check (C)
-        run: uv run --project tools/open-spyro -- clang-format --dry-run --Werror src/c/*.c
+        run: uv run --project tools/open-spyro -- clang-format --dry-run --Werror $(find src/main -name '*.c')
 
   build-verify:
     runs-on: ubuntu-latest

@@ -4,16 +4,16 @@
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_BalloonistCutscene_Update.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/balloonist_cutscene.o(.rodata.Level30_BalloonistCutscene_Update)
     . = 0x00000024 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.D_8007AA5C)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_BalloonistCutscene_Draw.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/balloonist_cutscene.o(.rodata.Level30_BalloonistCutscene_Draw)
     . = 0x000000b4 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.jtbl_8007AAEC)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_UpdateActors.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/update_actors.o(.rodata.Level30_UpdateActors)
     . = 0x0000012c ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.jtbl_8007AB64)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_AdvanceEmitList.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/advance_emit_list.o(.rodata.Level30_AdvanceEmitList)
     . = 0x00000270 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/data/rodata.rodata.o(.rodata.jtbl_8007ACA8)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_EmitParticles.o(.rodata)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/emit_particles.o(.rodata.Level30_EmitParticles)

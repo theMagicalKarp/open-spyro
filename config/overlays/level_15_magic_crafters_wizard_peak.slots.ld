@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_15_magic_crafters_wizard_peak.ld. */
     . = 0x00000d70 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.Level15_UpdateActors)
-    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_UpdateActors.o(.text)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/update_actors.o(.text.Level15_UpdateActors)
     . = 0x0000c3a0 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.Level15_SpawnActor)
-    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_SpawnActor.o(.text)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/spawn_actor.o(.text.Level15_SpawnActor)
     . = 0x0000d108 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.Level15_AdvanceEmitList)
-    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_AdvanceEmitList.o(.text)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/advance_emit_list.o(.text.Level15_AdvanceEmitList)
     . = 0x0000ea18 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.Level15_EmitParticles)
-    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_EmitParticles.o(.text)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/emit_particles.o(.text.Level15_EmitParticles)
     . = 0x0000fe68 ;
     build/overlays/level_15_magic_crafters_wizard_peak/asm/overlays/level_15_magic_crafters_wizard_peak/text.o(.text.Level15_OverlayEnd)
-    build/overlays/level_15_magic_crafters_wizard_peak/c/Level15_OverlayEnd.o(.text)
+    build/overlays/level_15_magic_crafters_wizard_peak/c/overlay_end.o(.text.Level15_OverlayEnd)

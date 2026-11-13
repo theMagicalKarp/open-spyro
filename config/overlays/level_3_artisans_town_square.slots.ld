@@ -2,28 +2,28 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_3_artisans_town_square.ld. */
     . = 0x000004f4 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_BeginActorCutscene)
-    build/overlays/level_3_artisans_town_square/c/Level3_BeginActorCutscene.o(.text)
+    build/overlays/level_3_artisans_town_square/c/begin_actor_cutscene.o(.text.Level3_BeginActorCutscene)
     . = 0x00000630 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_OnSaveMenuExit)
-    build/overlays/level_3_artisans_town_square/c/Level3_OnSaveMenuExit.o(.text)
+    build/overlays/level_3_artisans_town_square/c/on_save_menu_exit.o(.text.Level3_OnSaveMenuExit)
     . = 0x00000674 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_BalloonistCutscene_Update)
-    build/overlays/level_3_artisans_town_square/c/Level3_BalloonistCutscene_Update.o(.text)
+    build/overlays/level_3_artisans_town_square/c/balloonist_cutscene.o(.text.Level3_BalloonistCutscene_Update)
     . = 0x00002614 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_BalloonistCutscene_Draw)
-    build/overlays/level_3_artisans_town_square/c/Level3_BalloonistCutscene_Draw.o(.text)
+    build/overlays/level_3_artisans_town_square/c/balloonist_cutscene.o(.text.Level3_BalloonistCutscene_Draw)
     . = 0x0000301c ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_UpdateActors)
-    build/overlays/level_3_artisans_town_square/c/Level3_UpdateActors.o(.text)
+    build/overlays/level_3_artisans_town_square/c/update_actors.o(.text.Level3_UpdateActors)
     . = 0x0000c86c ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_SpawnActor)
-    build/overlays/level_3_artisans_town_square/c/Level3_SpawnActor.o(.text)
+    build/overlays/level_3_artisans_town_square/c/spawn_actor.o(.text.Level3_SpawnActor)
     . = 0x0000d3e8 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_AdvanceEmitList)
-    build/overlays/level_3_artisans_town_square/c/Level3_AdvanceEmitList.o(.text)
+    build/overlays/level_3_artisans_town_square/c/advance_emit_list.o(.text.Level3_AdvanceEmitList)
     . = 0x0000e530 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_EmitParticles)
-    build/overlays/level_3_artisans_town_square/c/Level3_EmitParticles.o(.text)
+    build/overlays/level_3_artisans_town_square/c/emit_particles.o(.text.Level3_EmitParticles)
     . = 0x0000f494 ;
     build/overlays/level_3_artisans_town_square/asm/overlays/level_3_artisans_town_square/text.o(.text.Level3_OverlayEnd)
-    build/overlays/level_3_artisans_town_square/c/Level3_OverlayEnd.o(.text)
+    build/overlays/level_3_artisans_town_square/c/overlay_end.o(.text.Level3_OverlayEnd)

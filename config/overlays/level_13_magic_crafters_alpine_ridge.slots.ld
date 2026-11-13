@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_13_magic_crafters_alpine_ridge.ld. */
     . = 0x000010c8 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.Level13_UpdateActors)
-    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_UpdateActors.o(.text)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/update_actors.o(.text.Level13_UpdateActors)
     . = 0x0000f934 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.Level13_SpawnActor)
-    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_SpawnActor.o(.text)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/spawn_actor.o(.text.Level13_SpawnActor)
     . = 0x0001051c ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.Level13_AdvanceEmitList)
-    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_AdvanceEmitList.o(.text)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/advance_emit_list.o(.text.Level13_AdvanceEmitList)
     . = 0x00011fa0 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.Level13_EmitParticles)
-    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_EmitParticles.o(.text)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/emit_particles.o(.text.Level13_EmitParticles)
     . = 0x00013488 ;
     build/overlays/level_13_magic_crafters_alpine_ridge/asm/overlays/level_13_magic_crafters_alpine_ridge/text.o(.text.Level13_OverlayEnd)
-    build/overlays/level_13_magic_crafters_alpine_ridge/c/Level13_OverlayEnd.o(.text)
+    build/overlays/level_13_magic_crafters_alpine_ridge/c/overlay_end.o(.text.Level13_OverlayEnd)

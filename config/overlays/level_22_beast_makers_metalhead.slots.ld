@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_22_beast_makers_metalhead.ld. */
     . = 0x00000d38 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.Level22_UpdateActors)
-    build/overlays/level_22_beast_makers_metalhead/c/Level22_UpdateActors.o(.text)
+    build/overlays/level_22_beast_makers_metalhead/c/update_actors.o(.text.Level22_UpdateActors)
     . = 0x0000cac4 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.Level22_SpawnActor)
-    build/overlays/level_22_beast_makers_metalhead/c/Level22_SpawnActor.o(.text)
+    build/overlays/level_22_beast_makers_metalhead/c/spawn_actor.o(.text.Level22_SpawnActor)
     . = 0x0000d740 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.Level22_AdvanceEmitList)
-    build/overlays/level_22_beast_makers_metalhead/c/Level22_AdvanceEmitList.o(.text)
+    build/overlays/level_22_beast_makers_metalhead/c/advance_emit_list.o(.text.Level22_AdvanceEmitList)
     . = 0x0000ea78 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.Level22_EmitParticles)
-    build/overlays/level_22_beast_makers_metalhead/c/Level22_EmitParticles.o(.text)
+    build/overlays/level_22_beast_makers_metalhead/c/emit_particles.o(.text.Level22_EmitParticles)
     . = 0x0000fc64 ;
     build/overlays/level_22_beast_makers_metalhead/asm/overlays/level_22_beast_makers_metalhead/text.o(.text.Level22_OverlayEnd)
-    build/overlays/level_22_beast_makers_metalhead/c/Level22_OverlayEnd.o(.text)
+    build/overlays/level_22_beast_makers_metalhead/c/overlay_end.o(.text.Level22_OverlayEnd)

@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_33_gnastys_world_gnasty_gnorc.ld. */
     . = 0x0000032c ;
     build/overlays/level_33_gnastys_world_gnasty_gnorc/asm/overlays/level_33_gnastys_world_gnasty_gnorc/text.o(.text.Level33_UpdateActors)
-    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/Level33_UpdateActors.o(.text)
+    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/update_actors.o(.text.Level33_UpdateActors)
     . = 0x000084ec ;
     build/overlays/level_33_gnastys_world_gnasty_gnorc/asm/overlays/level_33_gnastys_world_gnasty_gnorc/text.o(.text.Level33_SpawnActor)
-    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/Level33_SpawnActor.o(.text)
+    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/spawn_actor.o(.text.Level33_SpawnActor)
     . = 0x00008cb8 ;
     build/overlays/level_33_gnastys_world_gnasty_gnorc/asm/overlays/level_33_gnastys_world_gnasty_gnorc/text.o(.text.Level33_AdvanceEmitList)
-    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/Level33_AdvanceEmitList.o(.text)
+    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/advance_emit_list.o(.text.Level33_AdvanceEmitList)
     . = 0x00009bfc ;
     build/overlays/level_33_gnastys_world_gnasty_gnorc/asm/overlays/level_33_gnastys_world_gnasty_gnorc/text.o(.text.Level33_EmitParticles)
-    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/Level33_EmitParticles.o(.text)
+    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/emit_particles.o(.text.Level33_EmitParticles)
     . = 0x0000aa7c ;
     build/overlays/level_33_gnastys_world_gnasty_gnorc/asm/overlays/level_33_gnastys_world_gnasty_gnorc/text.o(.text.Level33_OverlayEnd)
-    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/Level33_OverlayEnd.o(.text)
+    build/overlays/level_33_gnastys_world_gnasty_gnorc/c/overlay_end.o(.text.Level33_OverlayEnd)

@@ -2,28 +2,28 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_1_artisans_stone_hill.ld. */
     . = 0x00000518 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_BeginActorCutscene)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_BeginActorCutscene.o(.text)
+    build/overlays/level_1_artisans_stone_hill/c/begin_actor_cutscene.o(.text.Level1_BeginActorCutscene)
     . = 0x00000654 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_OnSaveMenuExit)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_OnSaveMenuExit.o(.text)
+    build/overlays/level_1_artisans_stone_hill/c/on_save_menu_exit.o(.text.Level1_OnSaveMenuExit)
     . = 0x00000698 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_BalloonistCutscene_Update)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_BalloonistCutscene_Update.o(.text)
+    build/overlays/level_1_artisans_stone_hill/c/balloonist_cutscene.o(.text.Level1_BalloonistCutscene_Update)
     . = 0x00002638 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_BalloonistCutscene_Draw)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_BalloonistCutscene_Draw.o(.text)
+    build/overlays/level_1_artisans_stone_hill/c/balloonist_cutscene.o(.text.Level1_BalloonistCutscene_Draw)
     . = 0x00003040 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_UpdateActors)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_UpdateActors.o(.text)
+    build/overlays/level_1_artisans_stone_hill/c/update_actors.o(.text.Level1_UpdateActors)
     . = 0x0000ccf4 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_SpawnActor)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_SpawnActor.o(.text)
+    build/overlays/level_1_artisans_stone_hill/c/spawn_actor.o(.text.Level1_SpawnActor)
     . = 0x0000d660 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_AdvanceEmitList)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_AdvanceEmitList.o(.text)
+    build/overlays/level_1_artisans_stone_hill/c/advance_emit_list.o(.text.Level1_AdvanceEmitList)
     . = 0x0000e88c ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_EmitParticles)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_EmitParticles.o(.text)
+    build/overlays/level_1_artisans_stone_hill/c/emit_particles.o(.text.Level1_EmitParticles)
     . = 0x0000f980 ;
     build/overlays/level_1_artisans_stone_hill/asm/overlays/level_1_artisans_stone_hill/text.o(.text.Level1_OverlayEnd)
-    build/overlays/level_1_artisans_stone_hill/c/Level1_OverlayEnd.o(.text)
+    build/overlays/level_1_artisans_stone_hill/c/overlay_end.o(.text.Level1_OverlayEnd)

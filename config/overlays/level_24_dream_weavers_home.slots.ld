@@ -2,28 +2,28 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_24_dream_weavers_home.ld. */
     . = 0x00000e60 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_BeginActorCutscene)
-    build/overlays/level_24_dream_weavers_home/c/Level24_BeginActorCutscene.o(.text)
+    build/overlays/level_24_dream_weavers_home/c/begin_actor_cutscene.o(.text.Level24_BeginActorCutscene)
     . = 0x00000f9c ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_OnSaveMenuExit)
-    build/overlays/level_24_dream_weavers_home/c/Level24_OnSaveMenuExit.o(.text)
+    build/overlays/level_24_dream_weavers_home/c/on_save_menu_exit.o(.text.Level24_OnSaveMenuExit)
     . = 0x00000fe0 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_BalloonistCutscene_Update)
-    build/overlays/level_24_dream_weavers_home/c/Level24_BalloonistCutscene_Update.o(.text)
+    build/overlays/level_24_dream_weavers_home/c/balloonist_cutscene.o(.text.Level24_BalloonistCutscene_Update)
     . = 0x00002f80 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_BalloonistCutscene_Draw)
-    build/overlays/level_24_dream_weavers_home/c/Level24_BalloonistCutscene_Draw.o(.text)
+    build/overlays/level_24_dream_weavers_home/c/balloonist_cutscene.o(.text.Level24_BalloonistCutscene_Draw)
     . = 0x00003988 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_UpdateActors)
-    build/overlays/level_24_dream_weavers_home/c/Level24_UpdateActors.o(.text)
+    build/overlays/level_24_dream_weavers_home/c/update_actors.o(.text.Level24_UpdateActors)
     . = 0x0000e3ec ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_SpawnActor)
-    build/overlays/level_24_dream_weavers_home/c/Level24_SpawnActor.o(.text)
+    build/overlays/level_24_dream_weavers_home/c/spawn_actor.o(.text.Level24_SpawnActor)
     . = 0x0000edc4 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_AdvanceEmitList)
-    build/overlays/level_24_dream_weavers_home/c/Level24_AdvanceEmitList.o(.text)
+    build/overlays/level_24_dream_weavers_home/c/advance_emit_list.o(.text.Level24_AdvanceEmitList)
     . = 0x0000ffec ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_EmitParticles)
-    build/overlays/level_24_dream_weavers_home/c/Level24_EmitParticles.o(.text)
+    build/overlays/level_24_dream_weavers_home/c/emit_particles.o(.text.Level24_EmitParticles)
     . = 0x00011100 ;
     build/overlays/level_24_dream_weavers_home/asm/overlays/level_24_dream_weavers_home/text.o(.text.Level24_OverlayEnd)
-    build/overlays/level_24_dream_weavers_home/c/Level24_OverlayEnd.o(.text)
+    build/overlays/level_24_dream_weavers_home/c/overlay_end.o(.text.Level24_OverlayEnd)

@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_28_dream_weavers_jacques.ld. */
     . = 0x00000518 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.Level28_UpdateActors)
-    build/overlays/level_28_dream_weavers_jacques/c/Level28_UpdateActors.o(.text)
+    build/overlays/level_28_dream_weavers_jacques/c/update_actors.o(.text.Level28_UpdateActors)
     . = 0x00008c70 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.Level28_SpawnActor)
-    build/overlays/level_28_dream_weavers_jacques/c/Level28_SpawnActor.o(.text)
+    build/overlays/level_28_dream_weavers_jacques/c/spawn_actor.o(.text.Level28_SpawnActor)
     . = 0x000095f0 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.Level28_AdvanceEmitList)
-    build/overlays/level_28_dream_weavers_jacques/c/Level28_AdvanceEmitList.o(.text)
+    build/overlays/level_28_dream_weavers_jacques/c/advance_emit_list.o(.text.Level28_AdvanceEmitList)
     . = 0x0000a81c ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.Level28_EmitParticles)
-    build/overlays/level_28_dream_weavers_jacques/c/Level28_EmitParticles.o(.text)
+    build/overlays/level_28_dream_weavers_jacques/c/emit_particles.o(.text.Level28_EmitParticles)
     . = 0x0000b910 ;
     build/overlays/level_28_dream_weavers_jacques/asm/overlays/level_28_dream_weavers_jacques/text.o(.text.Level28_OverlayEnd)
-    build/overlays/level_28_dream_weavers_jacques/c/Level28_OverlayEnd.o(.text)
+    build/overlays/level_28_dream_weavers_jacques/c/overlay_end.o(.text.Level28_OverlayEnd)

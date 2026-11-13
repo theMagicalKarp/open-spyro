@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_4_artisans_toasty.ld. */
     . = 0x0000055c ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.Level4_UpdateActors)
-    build/overlays/level_4_artisans_toasty/c/Level4_UpdateActors.o(.text)
+    build/overlays/level_4_artisans_toasty/c/update_actors.o(.text.Level4_UpdateActors)
     . = 0x00007370 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.Level4_SpawnActor)
-    build/overlays/level_4_artisans_toasty/c/Level4_SpawnActor.o(.text)
+    build/overlays/level_4_artisans_toasty/c/spawn_actor.o(.text.Level4_SpawnActor)
     . = 0x00007cb8 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.Level4_AdvanceEmitList)
-    build/overlays/level_4_artisans_toasty/c/Level4_AdvanceEmitList.o(.text)
+    build/overlays/level_4_artisans_toasty/c/advance_emit_list.o(.text.Level4_AdvanceEmitList)
     . = 0x00008ee4 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.Level4_EmitParticles)
-    build/overlays/level_4_artisans_toasty/c/Level4_EmitParticles.o(.text)
+    build/overlays/level_4_artisans_toasty/c/emit_particles.o(.text.Level4_EmitParticles)
     . = 0x00009fd8 ;
     build/overlays/level_4_artisans_toasty/asm/overlays/level_4_artisans_toasty/text.o(.text.Level4_OverlayEnd)
-    build/overlays/level_4_artisans_toasty/c/Level4_OverlayEnd.o(.text)
+    build/overlays/level_4_artisans_toasty/c/overlay_end.o(.text.Level4_OverlayEnd)

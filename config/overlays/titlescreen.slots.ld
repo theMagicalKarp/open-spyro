@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/titlescreen.ld. */
     . = 0x0000009c ;
     build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.Titlescreen_PlayUiSound)
-    build/overlays/titlescreen/c/Titlescreen_PlayUiSound.o(.text)
+    build/overlays/titlescreen/c/titlescreen.o(.text.Titlescreen_PlayUiSound)
     . = 0x00000174 ;
     build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.Titlescreen_Update)
-    build/overlays/titlescreen/c/Titlescreen_Update.o(.text)
+    build/overlays/titlescreen/c/titlescreen.o(.text.Titlescreen_Update)
     . = 0x00002300 ;
     build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.Titlescreen_EmitSpriteQuad)
-    build/overlays/titlescreen/c/Titlescreen_EmitSpriteQuad.o(.text)
+    build/overlays/titlescreen/c/emit_sprite_quad.o(.text.Titlescreen_EmitSpriteQuad)
     . = 0x000024ac ;
     build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.Titlescreen_Draw)
-    build/overlays/titlescreen/c/Titlescreen_Draw.o(.text)
+    build/overlays/titlescreen/c/titlescreen.o(.text.Titlescreen_Draw)
     . = 0x000033b0 ;
     build/overlays/titlescreen/asm/overlays/titlescreen/text.o(.text.Titlescreen_OverlayEnd)
-    build/overlays/titlescreen/c/Titlescreen_OverlayEnd.o(.text)
+    build/overlays/titlescreen/c/overlay_end.o(.text.Titlescreen_OverlayEnd)

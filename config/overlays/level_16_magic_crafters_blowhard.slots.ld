@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_16_magic_crafters_blowhard.ld. */
     . = 0x000004f0 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.Level16_UpdateActors)
-    build/overlays/level_16_magic_crafters_blowhard/c/Level16_UpdateActors.o(.text)
+    build/overlays/level_16_magic_crafters_blowhard/c/update_actors.o(.text.Level16_UpdateActors)
     . = 0x0000907c ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.Level16_SpawnActor)
-    build/overlays/level_16_magic_crafters_blowhard/c/Level16_SpawnActor.o(.text)
+    build/overlays/level_16_magic_crafters_blowhard/c/spawn_actor.o(.text.Level16_SpawnActor)
     . = 0x00009df8 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.Level16_AdvanceEmitList)
-    build/overlays/level_16_magic_crafters_blowhard/c/Level16_AdvanceEmitList.o(.text)
+    build/overlays/level_16_magic_crafters_blowhard/c/advance_emit_list.o(.text.Level16_AdvanceEmitList)
     . = 0x0000b508 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.Level16_EmitParticles)
-    build/overlays/level_16_magic_crafters_blowhard/c/Level16_EmitParticles.o(.text)
+    build/overlays/level_16_magic_crafters_blowhard/c/emit_particles.o(.text.Level16_EmitParticles)
     . = 0x0000ca64 ;
     build/overlays/level_16_magic_crafters_blowhard/asm/overlays/level_16_magic_crafters_blowhard/text.o(.text.Level16_OverlayEnd)
-    build/overlays/level_16_magic_crafters_blowhard/c/Level16_OverlayEnd.o(.text)
+    build/overlays/level_16_magic_crafters_blowhard/c/overlay_end.o(.text.Level16_OverlayEnd)

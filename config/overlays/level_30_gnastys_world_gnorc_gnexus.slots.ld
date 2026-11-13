@@ -2,28 +2,28 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_30_gnastys_world_gnorc_gnexus.ld. */
     . = 0x000003d8 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.Level30_BeginActorCutscene)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_BeginActorCutscene.o(.text)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/begin_actor_cutscene.o(.text.Level30_BeginActorCutscene)
     . = 0x00000514 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.Level30_OnSaveMenuExit)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_OnSaveMenuExit.o(.text)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/on_save_menu_exit.o(.text.Level30_OnSaveMenuExit)
     . = 0x00000558 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.Level30_BalloonistCutscene_Update)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_BalloonistCutscene_Update.o(.text)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/balloonist_cutscene.o(.text.Level30_BalloonistCutscene_Update)
     . = 0x000024f8 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.Level30_BalloonistCutscene_Draw)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_BalloonistCutscene_Draw.o(.text)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/balloonist_cutscene.o(.text.Level30_BalloonistCutscene_Draw)
     . = 0x00002f00 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.Level30_UpdateActors)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_UpdateActors.o(.text)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/update_actors.o(.text.Level30_UpdateActors)
     . = 0x00008b30 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.Level30_SpawnActor)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_SpawnActor.o(.text)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/spawn_actor.o(.text.Level30_SpawnActor)
     . = 0x000094a0 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.Level30_AdvanceEmitList)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_AdvanceEmitList.o(.text)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/advance_emit_list.o(.text.Level30_AdvanceEmitList)
     . = 0x0000a468 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.Level30_EmitParticles)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_EmitParticles.o(.text)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/emit_particles.o(.text.Level30_EmitParticles)
     . = 0x0000b2a8 ;
     build/overlays/level_30_gnastys_world_gnorc_gnexus/asm/overlays/level_30_gnastys_world_gnorc_gnexus/text.o(.text.Level30_OverlayEnd)
-    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/Level30_OverlayEnd.o(.text)
+    build/overlays/level_30_gnastys_world_gnorc_gnexus/c/overlay_end.o(.text.Level30_OverlayEnd)

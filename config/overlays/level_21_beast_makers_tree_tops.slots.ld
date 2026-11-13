@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_21_beast_makers_tree_tops.ld. */
     . = 0x00000c60 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.Level21_UpdateActors)
-    build/overlays/level_21_beast_makers_tree_tops/c/Level21_UpdateActors.o(.text)
+    build/overlays/level_21_beast_makers_tree_tops/c/update_actors.o(.text.Level21_UpdateActors)
     . = 0x0000c100 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.Level21_SpawnActor)
-    build/overlays/level_21_beast_makers_tree_tops/c/Level21_SpawnActor.o(.text)
+    build/overlays/level_21_beast_makers_tree_tops/c/spawn_actor.o(.text.Level21_SpawnActor)
     . = 0x0000c9c8 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.Level21_AdvanceEmitList)
-    build/overlays/level_21_beast_makers_tree_tops/c/Level21_AdvanceEmitList.o(.text)
+    build/overlays/level_21_beast_makers_tree_tops/c/advance_emit_list.o(.text.Level21_AdvanceEmitList)
     . = 0x0000dc64 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.Level21_EmitParticles)
-    build/overlays/level_21_beast_makers_tree_tops/c/Level21_EmitParticles.o(.text)
+    build/overlays/level_21_beast_makers_tree_tops/c/emit_particles.o(.text.Level21_EmitParticles)
     . = 0x0000ee10 ;
     build/overlays/level_21_beast_makers_tree_tops/asm/overlays/level_21_beast_makers_tree_tops/text.o(.text.Level21_OverlayEnd)
-    build/overlays/level_21_beast_makers_tree_tops/c/Level21_OverlayEnd.o(.text)
+    build/overlays/level_21_beast_makers_tree_tops/c/overlay_end.o(.text.Level21_OverlayEnd)

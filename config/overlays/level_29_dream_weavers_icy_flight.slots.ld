@@ -2,31 +2,31 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_29_dream_weavers_icy_flight.ld. */
     . = 0x000003d0 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_FlightEndHook)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_FlightEndHook.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/flight_results.o(.text.Level29_FlightEndHook)
     . = 0x000004a4 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_HandleFlightResults)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_HandleFlightResults.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/flight_results.o(.text.Level29_HandleFlightResults)
     . = 0x000007c4 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_FlightResultsMenu_Update)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_FlightResultsMenu_Update.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/flight_results_menu_update.o(.text.Level29_FlightResultsMenu_Update)
     . = 0x00000a78 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_DrawFlightRaceTime)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_DrawFlightRaceTime.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/flight_results_draw.o(.text.Level29_DrawFlightRaceTime)
     . = 0x00000c54 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_FlightResults_Draw)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_FlightResults_Draw.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/flight_results_draw.o(.text.Level29_FlightResults_Draw)
     . = 0x0000257c ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_UpdateActors)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_UpdateActors.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/update_actors.o(.text.Level29_UpdateActors)
     . = 0x000075f0 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_SpawnActor)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_SpawnActor.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/spawn_actor.o(.text.Level29_SpawnActor)
     . = 0x0000835c ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_AdvanceEmitList)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_AdvanceEmitList.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/advance_emit_list.o(.text.Level29_AdvanceEmitList)
     . = 0x00009154 ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_EmitParticles)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_EmitParticles.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/emit_particles.o(.text.Level29_EmitParticles)
     . = 0x00009efc ;
     build/overlays/level_29_dream_weavers_icy_flight/asm/overlays/level_29_dream_weavers_icy_flight/text.o(.text.Level29_OverlayEnd)
-    build/overlays/level_29_dream_weavers_icy_flight/c/Level29_OverlayEnd.o(.text)
+    build/overlays/level_29_dream_weavers_icy_flight/c/overlay_end.o(.text.Level29_OverlayEnd)

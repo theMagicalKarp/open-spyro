@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_32_gnastys_world_twilight_harbor.ld. */
     . = 0x00000424 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.Level32_UpdateActors)
-    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_UpdateActors.o(.text)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/update_actors.o(.text.Level32_UpdateActors)
     . = 0x000086d0 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.Level32_SpawnActor)
-    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_SpawnActor.o(.text)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/spawn_actor.o(.text.Level32_SpawnActor)
     . = 0x00009114 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.Level32_AdvanceEmitList)
-    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_AdvanceEmitList.o(.text)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/advance_emit_list.o(.text.Level32_AdvanceEmitList)
     . = 0x0000a474 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.Level32_EmitParticles)
-    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_EmitParticles.o(.text)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/emit_particles.o(.text.Level32_EmitParticles)
     . = 0x0000b5cc ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/text.o(.text.Level32_OverlayEnd)
-    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_OverlayEnd.o(.text)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/overlay_end.o(.text.Level32_OverlayEnd)

@@ -2,31 +2,31 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_5_artisans_sunny_flight.ld. */
     . = 0x000003d0 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_FlightEndHook)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_FlightEndHook.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/flight_results.o(.text.Level5_FlightEndHook)
     . = 0x000004a4 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_HandleFlightResults)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_HandleFlightResults.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/flight_results.o(.text.Level5_HandleFlightResults)
     . = 0x000007c4 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_FlightResultsMenu_Update)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_FlightResultsMenu_Update.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/flight_results_menu_update.o(.text.Level5_FlightResultsMenu_Update)
     . = 0x00000a78 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_DrawFlightRaceTime)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_DrawFlightRaceTime.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/flight_results_draw.o(.text.Level5_DrawFlightRaceTime)
     . = 0x00000c54 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_FlightResults_Draw)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_FlightResults_Draw.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/flight_results_draw.o(.text.Level5_FlightResults_Draw)
     . = 0x0000257c ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_UpdateActors)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_UpdateActors.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/update_actors.o(.text.Level5_UpdateActors)
     . = 0x00007a64 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_SpawnActor)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_SpawnActor.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/spawn_actor.o(.text.Level5_SpawnActor)
     . = 0x000088f8 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_AdvanceEmitList)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_AdvanceEmitList.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/advance_emit_list.o(.text.Level5_AdvanceEmitList)
     . = 0x000096f0 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_EmitParticles)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_EmitParticles.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/emit_particles.o(.text.Level5_EmitParticles)
     . = 0x0000a498 ;
     build/overlays/level_5_artisans_sunny_flight/asm/overlays/level_5_artisans_sunny_flight/text.o(.text.Level5_OverlayEnd)
-    build/overlays/level_5_artisans_sunny_flight/c/Level5_OverlayEnd.o(.text)
+    build/overlays/level_5_artisans_sunny_flight/c/overlay_end.o(.text.Level5_OverlayEnd)

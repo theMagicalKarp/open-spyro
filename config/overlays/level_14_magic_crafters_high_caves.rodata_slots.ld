@@ -4,10 +4,10 @@
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_14_magic_crafters_high_caves/c/Level14_UpdateActors.o(.rodata)
+    build/overlays/level_14_magic_crafters_high_caves/c/update_actors.o(.rodata.Level14_UpdateActors)
     . = 0x00000928 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B360)
-    build/overlays/level_14_magic_crafters_high_caves/c/Level14_AdvanceEmitList.o(.rodata)
+    build/overlays/level_14_magic_crafters_high_caves/c/advance_emit_list.o(.rodata.Level14_AdvanceEmitList)
     . = 0x00000a6c ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/data/rodata.rodata.o(.rodata.jtbl_8007B4A4)
-    build/overlays/level_14_magic_crafters_high_caves/c/Level14_EmitParticles.o(.rodata)
+    build/overlays/level_14_magic_crafters_high_caves/c/emit_particles.o(.rodata.Level14_EmitParticles)

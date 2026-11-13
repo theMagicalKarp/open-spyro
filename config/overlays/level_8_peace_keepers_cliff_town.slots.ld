@@ -2,28 +2,28 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_8_peace_keepers_cliff_town.ld. */
     . = 0x00000ce0 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_BeginActorCutscene)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_BeginActorCutscene.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/c/begin_actor_cutscene.o(.text.Level8_BeginActorCutscene)
     . = 0x00000e1c ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_OnSaveMenuExit)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_OnSaveMenuExit.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/c/on_save_menu_exit.o(.text.Level8_OnSaveMenuExit)
     . = 0x00000e60 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_BalloonistCutscene_Update)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_BalloonistCutscene_Update.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/c/balloonist_cutscene.o(.text.Level8_BalloonistCutscene_Update)
     . = 0x00002e00 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_BalloonistCutscene_Draw)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_BalloonistCutscene_Draw.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/c/balloonist_cutscene.o(.text.Level8_BalloonistCutscene_Draw)
     . = 0x00003808 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_UpdateActors)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_UpdateActors.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/c/update_actors.o(.text.Level8_UpdateActors)
     . = 0x0000e150 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_SpawnActor)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_SpawnActor.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/c/spawn_actor.o(.text.Level8_SpawnActor)
     . = 0x0000ecdc ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_AdvanceEmitList)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_AdvanceEmitList.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/c/advance_emit_list.o(.text.Level8_AdvanceEmitList)
     . = 0x0000ff70 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_EmitParticles)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_EmitParticles.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/c/emit_particles.o(.text.Level8_EmitParticles)
     . = 0x000110c0 ;
     build/overlays/level_8_peace_keepers_cliff_town/asm/overlays/level_8_peace_keepers_cliff_town/text.o(.text.Level8_OverlayEnd)
-    build/overlays/level_8_peace_keepers_cliff_town/c/Level8_OverlayEnd.o(.text)
+    build/overlays/level_8_peace_keepers_cliff_town/c/overlay_end.o(.text.Level8_OverlayEnd)

@@ -12,7 +12,7 @@
 struct TriggerBox;
 
 /* Prototypes started as Ghidra-inferred seeds. Each matched function's
- * prototype is now taken from its src/c definition, or — where a widely
+ * prototype is now taken from its src/main definition, or — where a widely
  * included header (main_shared.h, vecmath.h, actor.h, ...) already declares
  * it — spelled the way that header does, so this file can be included next
  * to them. Library functions without C take the spelling their callers agree
@@ -1928,7 +1928,7 @@ undefined SetSioTimeoutDeadline(undefined4 param_1);
 bool IsSioTimeoutExpired(void);
 
 /* ---- Actor/angle/random helpers named in phase-2 readability (evidence: the
- * matched C bodies in src/c/<Name>.c). ---- */
+ * matched C bodies in src/main/<subsystem>/<Name>.c). ---- */
 
 /* 0x8002ccc8: Enters the save-menu gamestate (0xB) from the world: freezes gameplay, resets Spyro, and snapshots yaw/distance from Spyro to the interacted actor, its target, the level-init actor and the camera into the scripted-camera block. Counterpart of EndSaveMenuToWorld. */
 void BeginSaveMenuFromWorld(Actor *actor);
@@ -2105,7 +2105,7 @@ void StubRewardHook(void);
 void PollMemCardSyncRing(void);
 
 /* 0x80037e98: Empty `jr ra` stub; level actor code calls it with the actor. */
-void OnActorAnimQueued(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
+void OnActorAnimQueued(); /* no-op taking (void); callers pass the actor (SteerActorYawTowardSpyro two extra args), so no prototype */
 
 /* 0x8003891c: Vertical launch speed for a lob from pos to target at horizontal
  * `speed` under `gravity`; flight time (frames) via pOutTime. */

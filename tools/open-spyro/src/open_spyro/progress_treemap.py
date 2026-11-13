@@ -5,7 +5,7 @@ renders one SVG where each function is a rectangle sized by its code-byte count
 and colored by match status:
 
     matched      green   — rebuilt bytes verified identical to the original
-    wip          amber   — a parked src/c/<name>.c.wip attempt exists (in flight)
+    wip          amber   — a parked src/main/**/<name>.c.wip attempt exists (in flight)
     asm          red     — still linked in as original assembly (the work left)
     handwritten  slate   — hand-authored asm; not C-matchable by design
     library      purple  — PSY-Q / libc leaf; excluded from the match denominator

@@ -101,7 +101,7 @@ def _raw_offsets(code: str) -> int:
 
 def scan(root: Path) -> list[dict]:
     rels = sorted(
-        p.relative_to(root) for d in ("src/c", "src/overlays") for p in (root / d).rglob("*.c")
+        p.relative_to(root) for d in ("src/main", "src/overlays") for p in (root / d).rglob("*.c")
     )
     aliases = rename.alias_candidates(root, rels)
     rows = []

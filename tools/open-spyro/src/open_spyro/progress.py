@@ -28,7 +28,7 @@ Seeded names win over auto names at the same address.
 --- Status -------------------------------------------------------------------
   asm      no C override exists and the asm body is active in asm/text.s. This is
            the baseline state for every function.
-  matched  a C override (src/c/<name>.c) exists AND the rebuilt EXE bytes at its
+  matched  a C override (a src/main/**/*.c defining <name>) exists AND the rebuilt EXE bytes at its
            VMA equal the original (verified, not asserted). The override's asm is
            still present in text.s but suppressed by its `.ifndef HAVE_C_<name>`
            guard (--defsym at build) — so override PRESENCE, not asm absence, is
@@ -55,6 +55,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from open_spyro.c_layout import function_files
 from open_spyro.paths import repo_root
 
 # README badge is rewritten in place between these markers (self-contained static
@@ -128,7 +129,7 @@ def _segments(repo: Path) -> list[dict[str, Any]]:
             "name": "main",
             "symbol_addrs": repo / "config/symbol_addrs.txt",
             "asm": repo / "asm/text.s",
-            "src_c": repo / "src/c",  # C overrides; file stem == function name
+            "c_segment": "main",  # C overrides: the functions src/main/**/*.c define
             "orig": repo / "disc/orig/SCUS_942.28",
             "rebuilt": repo / "build/main/SCUS_942.28",
             "vram_base": 0x80010000,
@@ -151,7 +152,7 @@ def _segments(repo: Path) -> list[dict[str, Any]]:
                     "name": f"ovl/{name}",
                     "symbol_addrs": repo / "config/overlays" / f"{name}.symbols.txt",
                     "asm": repo / "asm/overlays" / name / "text.s",
-                    "src_c": repo / "src/overlays" / name,
+                    "c_segment": name,
                     "orig": repo / "disc/orig/overlays" / r["ovl_file"],
                     "rebuilt": repo / "build/overlays" / r["ovl_file"],
                     "vram_base": r["vram"],
@@ -248,20 +249,14 @@ def func_bytes(
     return image[off : off + size]
 
 
-def load_overrides(path: Path | None) -> set[str]:
-    """Set of function names with a C override (src/c/<name>.c -> <name>)."""
-    if path is None or not Path(path).is_dir():
-        return set()
-    return {p.stem for p in Path(path).glob("*.c")}
+def load_overrides(repo: Path, segment: str | None) -> set[str]:
+    """Set of function names some C file of ``segment`` defines (``c_layout``)."""
+    return set(function_files(repo, segment)) if segment else set()
 
 
-def load_wip_overrides(path: Path | None) -> set[str]:
-    """Set of function names with a parked C attempt (src/c/<name>.c.wip -> <name>)."""
-    if path is None or not Path(path).is_dir():
-        return set()
-    # Path(...).stem strips only the last suffix ("Foo.c.wip" -> "Foo.c"), so peel
-    # the whole ".c.wip" tail off the name instead.
-    return {p.name.removesuffix(".c.wip") for p in Path(path).glob("*.c.wip")}
+def load_wip_overrides(repo: Path, segment: str | None) -> set[str]:
+    """Set of function names with a parked C attempt (``<name>.c.wip`` -> <name>)."""
+    return set(function_files(repo, segment, ".c.wip")) if segment else set()
 
 
 def load_partial(repo: Path) -> dict[str, int]:
@@ -286,8 +281,8 @@ def build_segment(
 ) -> list[dict[str, Any]]:
     sym = parse_symbol_funcs(seg["symbol_addrs"])
     blocks, defined, hand = parse_asm(seg["asm"])
-    overrides = load_overrides(seg.get("src_c"))
-    wip_overrides = load_wip_overrides(seg.get("src_c"))
+    overrides = load_overrides(repo_root(), seg.get("c_segment"))
+    wip_overrides = load_wip_overrides(repo_root(), seg.get("c_segment"))
 
     # An overlay with no seeded function symbols is not yet function/data-split: its
     # asm/overlays/<name>/text.s is a handful of coarse func_ blobs that are mostly
@@ -338,7 +333,7 @@ def build_segment(
             rb = func_bytes(rebuilt, addr, size, seg["vram_base"], seg["file_base"])
             status = "matched" if (ob is not None and ob == rb) else "wip"
         if status == "asm" and name in wip_overrides:
-            # A parked src/c/<name>.c.wip attempt exists (not yet an active override).
+            # A parked src/main/**/<name>.c.wip attempt exists (not yet an active override).
             # Surface it as work-in-progress rather than untouched asm.
             status = "wip"
         is_lib = any(lo <= addr < hi for lo, hi in lib_ranges)

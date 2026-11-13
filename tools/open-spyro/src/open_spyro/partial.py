@@ -2,14 +2,14 @@
 
 The headline progress metric is all-or-nothing per function: a function counts
 its full size only once its rebuilt bytes are byte-identical to the original
-(``progress.py``). A parked ``src/c/<Name>.c.wip`` that already reproduces most of
+(``progress.py``). A parked ``src/main/**/<Name>.c.wip`` that already reproduces most of
 a function contributes nothing. This module gives that in-flight work partial
 credit, at instruction granularity, so ``make progress`` reflects it.
 
 Why it can't just diff the rebuilt EXE
 --------------------------------------
 ``.c.wip`` files are never compiled into the build (``build_main.sh`` globs only
-``src/c/*.c``); the EXE links the original asm at that VMA. So there are no
+``src/main/**/*.c``); the EXE links the original asm at that VMA. So there are no
 candidate bytes to slice — a ``funcdiff``-style compare would falsely report a
 100% match. Partial scoring therefore compiles the wip C *standalone* and diffs
 the resulting object against a target object assembled from the function's
@@ -51,7 +51,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from open_spyro.funcdiff import _locate
-from open_spyro.paths import repo_root
+from open_spyro.paths import MAIN_SRC, c_sources, repo_root
 
 # Preamble every extracted target .s needs to assemble on its own — the same
 # directives asm/text.s opens with (macros + noat/noreorder), minus the per-
@@ -105,11 +105,8 @@ def _extract_block(asm_text: str, name: str) -> str | None:
 def _wip_sources(repo: Path) -> list[tuple[str, Path]]:
     """(name, src_path) for every parked ``.c.wip`` (main + overlays)."""
     out: list[tuple[str, Path]] = []
-    for p in sorted((repo / "src/c").glob("*.c.wip")):
-        out.append((p.name.removesuffix(".c.wip"), p))
-    ovl_root = repo / "src/overlays"
-    if ovl_root.is_dir():
-        for p in sorted(ovl_root.glob("*/*.c.wip")):
+    for root in (repo / MAIN_SRC, repo / "src/overlays"):
+        for p in c_sources(root, ".c.wip"):
             out.append((p.name.removesuffix(".c.wip"), p))
     return out
 

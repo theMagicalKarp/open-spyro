@@ -4,4 +4,4 @@
     build/overlays/credits/asm/overlays/credits/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/credits/asm/overlays/credits/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/credits/c/Credits_Update.o(.rodata)
+    build/overlays/credits/c/update.o(.rodata.Credits_Update)

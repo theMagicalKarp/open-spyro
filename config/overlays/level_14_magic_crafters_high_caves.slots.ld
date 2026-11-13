@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_14_magic_crafters_high_caves.ld. */
     . = 0x00000c14 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.Level14_UpdateActors)
-    build/overlays/level_14_magic_crafters_high_caves/c/Level14_UpdateActors.o(.text)
+    build/overlays/level_14_magic_crafters_high_caves/c/update_actors.o(.text.Level14_UpdateActors)
     . = 0x0000de04 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.Level14_SpawnActor)
-    build/overlays/level_14_magic_crafters_high_caves/c/Level14_SpawnActor.o(.text)
+    build/overlays/level_14_magic_crafters_high_caves/c/spawn_actor.o(.text.Level14_SpawnActor)
     . = 0x0000ea1c ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.Level14_AdvanceEmitList)
-    build/overlays/level_14_magic_crafters_high_caves/c/Level14_AdvanceEmitList.o(.text)
+    build/overlays/level_14_magic_crafters_high_caves/c/advance_emit_list.o(.text.Level14_AdvanceEmitList)
     . = 0x00010678 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.Level14_EmitParticles)
-    build/overlays/level_14_magic_crafters_high_caves/c/Level14_EmitParticles.o(.text)
+    build/overlays/level_14_magic_crafters_high_caves/c/emit_particles.o(.text.Level14_EmitParticles)
     . = 0x00011d04 ;
     build/overlays/level_14_magic_crafters_high_caves/asm/overlays/level_14_magic_crafters_high_caves/text.o(.text.Level14_OverlayEnd)
-    build/overlays/level_14_magic_crafters_high_caves/c/Level14_OverlayEnd.o(.text)
+    build/overlays/level_14_magic_crafters_high_caves/c/overlay_end.o(.text.Level14_OverlayEnd)

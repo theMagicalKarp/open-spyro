@@ -4,10 +4,10 @@
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.D_8007AA38)
     . = 0x00000004 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007AA3C)
-    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_UpdateActors.o(.rodata)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/update_actors.o(.rodata.Level32_UpdateActors)
     . = 0x00000158 ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007AB90)
-    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_AdvanceEmitList.o(.rodata)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/advance_emit_list.o(.rodata.Level32_AdvanceEmitList)
     . = 0x0000029c ;
     build/overlays/level_32_gnastys_world_twilight_harbor/asm/overlays/level_32_gnastys_world_twilight_harbor/data/rodata.rodata.o(.rodata.jtbl_8007ACD4)
-    build/overlays/level_32_gnastys_world_twilight_harbor/c/Level32_EmitParticles.o(.rodata)
+    build/overlays/level_32_gnastys_world_twilight_harbor/c/emit_particles.o(.rodata.Level32_EmitParticles)

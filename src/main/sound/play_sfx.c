@@ -1,0 +1,218 @@
+#include "actor_type.h"
+#include "funcs.h"
+#include "globals.h"
+#include "sample_bank.h"
+#include "spu.h"
+#include "vecmath.h"
+
+/* SPUVOICEROW with the fields this function re-reads made volatile. */
+typedef struct {
+  /* 0x00 */ unsigned char *pOwner;
+  /* 0x04 */ volatile short nVolL;
+  /* 0x06 */ volatile short nVolR;
+  /* 0x08 */ int nPitch;
+  /* 0x0C */ unsigned char nPriority;
+  /* 0x0D */ unsigned char nSampleId;
+  /* 0x0E */ unsigned short nFlags;
+  /* 0x10 */ volatile short anPanCache[2];
+  /* 0x14 */ int nPitchStep;
+  /* 0x18 */ unsigned char *pPlaying;
+} SPUVOICEROW_V;
+
+extern SPUVOICEROW_V g_aSpuVoiceRows[]; /* the 24 mixer rows */
+extern int g_nSfxOverrideFlags[]; /* one-shot override flags: 1 = vol pair, 2 =
+                                     pitch */
+
+/* The one-shot override pair and the row volume fields it feeds are all
+   volatile: the mixer reads the row back on the next tick, so every read and
+   write in the override arms below has to keep its own load and its program
+   order slot (see nVolL/nVolR/anPanCache above). */
+extern volatile unsigned short
+    g_nSfxOverrideVolL; /* one-shot override left volume */
+extern volatile unsigned short
+    g_nSfxOverrideVolR; /* one-shot override right volume */
+
+#define ENT ((SAMPLEENTRY *)g_pLevelSampleBankEntries + sampleId)
+
+/* Start sample `sampleId` on a free software mixer row, owned by entity
+   `owner`. `mode` is the row's flag group (actor_type.h): SFX_MODE_FLAT (4),
+   SFX_MODE_3D (8, positional) or SFX_MODE_PANNED (0x10, caller-supplied pan).
+   Modes 4 and 8 refuse to double-trigger a sample the owner is already playing,
+   and mode 8 additionally drops the sound when the camera is outside the
+   owner's audible range (owner->soundRange << 10, default 0x4000) — reporting
+   0x7F ("finished") through `pPlaying` so the caller stops waiting on it.
+
+   The chosen row is stamped with owner/sample/flags and a pitch that may be
+   randomized around the bank entry's nominal value (nPitchMode 0 = centred
+   spread, 1 = up only, 2 = down only, each in nPitchStep units). The volume
+   pair comes from the row's flag group — the one-shot overrides at
+   g_nSfxOverrideVolL win once when armed — and is scaled by
+   g_nSoundMasterVolume and pushed to the SPU via ApplySpuVoiceAttr, then the
+   voice is queued for key-on.
+
+   `pPlaying` receives the row index (or 0x7F when the sound was dropped); rows
+   whose bank entry has a loop address are marked 0x100 so the mixer knows they
+   will not end on their own. (0x80055A78, 1928 bytes.) */
+unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
+                             unsigned int mode, unsigned char *pPlaying) {
+  SPUVOICEATTR attr;
+  int delta[3];
+  int voice;
+  int quietest;
+  int i;
+  int dist;
+  int range;
+  short *cam;
+
+  cam = g_anCameraEulerYawBlock;
+  voice = -1;
+  switch (mode) {
+  case SFX_MODE_FLAT:
+    if (GetSoundVoiceStatusByOwner(owner, sampleId) == VOICE_OWNER_LOOPING) {
+      return 0;
+    }
+    break;
+  case SFX_MODE_3D:
+    if (GetSoundVoiceStatusByOwner(owner, sampleId) == VOICE_OWNER_LOOPING) {
+      return 0;
+    }
+    SubtractVector(delta, &owner->posX, (int *)(cam - 0x14));
+    RShiftVector3(delta, 4);
+    dist = VectorLength(delta, VEC_LEN_XYZ) * 16;
+    range = owner->soundRange << SOUND_RANGE_SHIFT;
+    if (range == 0) {
+      range = SOUND_RANGE_DEFAULT;
+    }
+    if (range < dist) {
+      if (pPlaying != 0) {
+        *pPlaying = VOICE_ROW_NONE;
+      }
+      return VOICE_ROW_NONE;
+    }
+    break;
+  case SFX_MODE_PANNED:
+    break;
+  }
+
+  quietest = 0x100;
+  for (i = 0; i < SPU_VOICE_COUNT; i++) {
+    if ((g_aSpuVoiceRows[i].nFlags & VOICE_ROW_BUSY) == 0) {
+      voice = i;
+      break;
+    }
+    if (g_aSpuVoiceRows[i].nPriority < g_aSpuVoiceRows[quietest].nPriority) {
+      quietest = i;
+    }
+  }
+
+  if (voice >= 0) {
+    if (voice != SPU_VOICE_COUNT) {
+      g_aSpuVoiceRows[voice].nFlags = mode | VOICE_ROW_ACTIVE;
+      g_aSpuVoiceRows[voice].pOwner = (unsigned char *)owner;
+      g_aSpuVoiceRows[voice].nSampleId = sampleId;
+      {
+        int *ovr = g_nSfxOverrideFlags;
+        int pending = ovr[0];
+
+        if (pending & SFX_OVERRIDE_PITCH) {
+          ovr[0] = pending & ~SFX_OVERRIDE_PITCH;
+          g_aSpuVoiceRows[voice].nPitch = g_nSfxOverridePitch;
+        } else {
+          g_aSpuVoiceRows[voice].nPitch = ENT->nPitch;
+        }
+      }
+      attr.mask = SPU_ATTR_VOLL | SPU_ATTR_VOLR | SPU_ATTR_PITCH |
+                  SPU_ATTR_ADDR | SPU_ATTR_LOOP_ADDR;
+      attr.voice = 1 << voice;
+      attr.addr = ENT->nSampleAddr;
+      attr.pitch = ENT->nPitch;
+      if (ENT->nPitchSpread != 0) {
+        switch (ENT->nPitchMode) {
+        case SAMPLE_PITCH_AROUND:
+          attr.pitch = attr.pitch - ENT->nPitchStep * (ENT->nPitchSpread >> 1);
+          attr.pitch = attr.pitch + ((int)GetRandomU32() % ENT->nPitchSpread) *
+                                        ENT->nPitchStep;
+          break;
+        case SAMPLE_PITCH_UP:
+          attr.pitch = attr.pitch + ((int)GetRandomU32() % ENT->nPitchSpread) *
+                                        ENT->nPitchStep;
+          break;
+        case SAMPLE_PITCH_DOWN:
+          attr.pitch = attr.pitch - ((int)GetRandomU32() % ENT->nPitchSpread) *
+                                        ENT->nPitchStep;
+          break;
+        }
+      }
+      attr.loop_addr = ENT->nLoopAddr;
+      switch (g_aSpuVoiceRows[i].nFlags & SFX_MODE_MASK) {
+      case SFX_MODE_FLAT:
+      case SFX_MODE_PANNED: {
+        int *ovr = g_nSfxOverrideFlags;
+        int pending = ovr[0];
+
+        if (pending & SFX_OVERRIDE_VOLUME) {
+          ovr[0] = pending & ~SFX_OVERRIDE_VOLUME;
+          g_aSpuVoiceRows[voice].anPanCache[0] = g_nSfxOverrideVolL;
+          g_aSpuVoiceRows[voice].anPanCache[1] = g_nSfxOverrideVolL;
+          attr.volL = g_nSfxOverrideVolL;
+          attr.volR = g_nSfxOverrideVolR;
+          g_aSpuVoiceRows[i].nVolR = attr.volR;
+          g_aSpuVoiceRows[i].nVolL = g_nSfxOverrideVolL;
+        } else {
+          g_aSpuVoiceRows[voice].anPanCache[0] = SFX_FLAT_VOLUME;
+          g_aSpuVoiceRows[voice].anPanCache[1] = SFX_FLAT_VOLUME;
+          attr.volR = SFX_FLAT_VOLUME;
+          attr.volL = SFX_FLAT_VOLUME;
+          g_aSpuVoiceRows[i].nVolR = SFX_FLAT_VOLUME;
+          g_aSpuVoiceRows[i].nVolL = SFX_FLAT_VOLUME;
+        }
+        break;
+      }
+      case SFX_MODE_3D: {
+        int *ovr = g_nSfxOverrideFlags;
+        int pending = ovr[0];
+
+        if (pending & SFX_OVERRIDE_VOLUME) {
+          ovr[0] = pending & ~SFX_OVERRIDE_VOLUME;
+          g_aSpuVoiceRows[voice].anPanCache[0] = g_nSfxOverrideVolL;
+          g_aSpuVoiceRows[voice].anPanCache[1] = g_nSfxOverrideVolR;
+          attr.volR = g_nSfxOverrideVolR;
+          attr.volL = g_nSfxOverrideVolL;
+        } else {
+          g_aSpuVoiceRows[voice].anPanCache[0] = SFX_3D_VOLUME;
+          g_aSpuVoiceRows[voice].anPanCache[1] = SFX_3D_VOLUME;
+          attr.volR = SFX_3D_VOLUME;
+          attr.volL = SFX_3D_VOLUME;
+        }
+        ComputeVoicePanAndFalloff(
+            &attr.volL, dist,
+            AbsAngleDelta8(
+                g_nCameraEulerYaw >> 4,
+                ArcTan2(g_anCameraPos[0] -
+                            *(int *)(g_aSpuVoiceRows[voice].pOwner + 0xC),
+                        g_anCameraPos[1] -
+                            *(int *)(g_aSpuVoiceRows[voice].pOwner + 0x10),
+                        ATAN_ANGLE8) &
+                    ANGLE8_MASK) &
+                ANGLE8_MASK,
+            range, (short *)&g_aSpuVoiceRows[voice].anPanCache[0]);
+        break;
+      }
+      }
+      attr.volL = (attr.volL * g_nSoundMasterVolume) >> 12;
+      attr.volR = (attr.volR * g_nSoundMasterVolume) >> 12;
+      ApplySpuVoiceAttr(&attr.voice);
+      g_dwSpuPendingKeyOn |= 1 << voice;
+    }
+    g_aSpuVoiceRows[voice].pPlaying = pPlaying;
+    if (pPlaying != 0) {
+      *pPlaying = voice;
+      if (ENT->nLoopAddr != 0) {
+        g_aSpuVoiceRows[voice].nFlags |= VOICE_ROW_LOOPING;
+      }
+    }
+  }
+  return 0;
+}
+
+#undef ENT

@@ -12,11 +12,11 @@ SPLAT      := $(UVRUN) -- python -m splat
 OPEN_SPYRO := $(UVRUN) -- open-spyro
 # clang-format ships from the tools/open-spyro `dev` group (pinned in uv.lock), so
 # the host gets the exact same formatter as CI. Scope is the hand-written matched
-# C in src/c/ only — the Ghidra-seeded headers in include/ are generated, not
+# C in src/main/ only — the Ghidra-seeded headers in include/ are generated, not
 # hand-edited, so they are intentionally left out.
 CLANG_FORMAT := $(UVRUN) -- clang-format
-CFMT_SRC     := $(wildcard src/c/*.c)
-CFMT_WIP     := $(wildcard src/c/*.c.wip)
+CFMT_SRC     := $(shell find src/main -name '*.c')
+CFMT_WIP     := $(shell find src/main -name '*.c.wip')
 
 .PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check ctx wad iso play partial progress triage readability lint lint-py lint-c fmt fmt-py fmt-c clean
 

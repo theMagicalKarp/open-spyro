@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_9_peace_keepers_ice_cavern.ld. */
     . = 0x00000a90 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.Level9_UpdateActors)
-    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_UpdateActors.o(.text)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/update_actors.o(.text.Level9_UpdateActors)
     . = 0x00008bd0 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.Level9_SpawnActor)
-    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_SpawnActor.o(.text)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/spawn_actor.o(.text.Level9_SpawnActor)
     . = 0x000094f4 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.Level9_AdvanceEmitList)
-    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_AdvanceEmitList.o(.text)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/advance_emit_list.o(.text.Level9_AdvanceEmitList)
     . = 0x0000a74c ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.Level9_EmitParticles)
-    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_EmitParticles.o(.text)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/emit_particles.o(.text.Level9_EmitParticles)
     . = 0x0000b828 ;
     build/overlays/level_9_peace_keepers_ice_cavern/asm/overlays/level_9_peace_keepers_ice_cavern/text.o(.text.Level9_OverlayEnd)
-    build/overlays/level_9_peace_keepers_ice_cavern/c/Level9_OverlayEnd.o(.text)
+    build/overlays/level_9_peace_keepers_ice_cavern/c/overlay_end.o(.text.Level9_OverlayEnd)

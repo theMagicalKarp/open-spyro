@@ -2,28 +2,28 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_6_peace_keepers_home.ld. */
     . = 0x00000e40 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_BeginActorCutscene)
-    build/overlays/level_6_peace_keepers_home/c/Level6_BeginActorCutscene.o(.text)
+    build/overlays/level_6_peace_keepers_home/c/begin_actor_cutscene.o(.text.Level6_BeginActorCutscene)
     . = 0x00000f7c ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_OnSaveMenuExit)
-    build/overlays/level_6_peace_keepers_home/c/Level6_OnSaveMenuExit.o(.text)
+    build/overlays/level_6_peace_keepers_home/c/on_save_menu_exit.o(.text.Level6_OnSaveMenuExit)
     . = 0x00000fc0 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_BalloonistCutscene_Update)
-    build/overlays/level_6_peace_keepers_home/c/Level6_BalloonistCutscene_Update.o(.text)
+    build/overlays/level_6_peace_keepers_home/c/balloonist_cutscene.o(.text.Level6_BalloonistCutscene_Update)
     . = 0x00002f60 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_BalloonistCutscene_Draw)
-    build/overlays/level_6_peace_keepers_home/c/Level6_BalloonistCutscene_Draw.o(.text)
+    build/overlays/level_6_peace_keepers_home/c/balloonist_cutscene.o(.text.Level6_BalloonistCutscene_Draw)
     . = 0x00003968 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_UpdateActors)
-    build/overlays/level_6_peace_keepers_home/c/Level6_UpdateActors.o(.text)
+    build/overlays/level_6_peace_keepers_home/c/update_actors.o(.text.Level6_UpdateActors)
     . = 0x0000f820 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_SpawnActor)
-    build/overlays/level_6_peace_keepers_home/c/Level6_SpawnActor.o(.text)
+    build/overlays/level_6_peace_keepers_home/c/spawn_actor.o(.text.Level6_SpawnActor)
     . = 0x000103f0 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_AdvanceEmitList)
-    build/overlays/level_6_peace_keepers_home/c/Level6_AdvanceEmitList.o(.text)
+    build/overlays/level_6_peace_keepers_home/c/advance_emit_list.o(.text.Level6_AdvanceEmitList)
     . = 0x000115b8 ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_EmitParticles)
-    build/overlays/level_6_peace_keepers_home/c/Level6_EmitParticles.o(.text)
+    build/overlays/level_6_peace_keepers_home/c/emit_particles.o(.text.Level6_EmitParticles)
     . = 0x0001256c ;
     build/overlays/level_6_peace_keepers_home/asm/overlays/level_6_peace_keepers_home/text.o(.text.Level6_OverlayEnd)
-    build/overlays/level_6_peace_keepers_home/c/Level6_OverlayEnd.o(.text)
+    build/overlays/level_6_peace_keepers_home/c/overlay_end.o(.text.Level6_OverlayEnd)

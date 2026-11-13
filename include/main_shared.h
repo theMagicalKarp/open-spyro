@@ -100,7 +100,8 @@ extern short g_nSfxOverrideVolL;
 
 extern short g_nSfxOverrideVolR;
 
-extern int g_nCdAudioVolume_blk;
+extern int g_nCdAudioVolume;       /* CD-DA music volume */
+extern int g_nCdAudioVolume_blk[]; /* incomplete-array alias of g_nCdAudioVolume */
 
 extern void InitLightVectorConstants(void);
 

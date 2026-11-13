@@ -2,16 +2,16 @@
 /* Fixed-VMA text slots; INCLUDEd by config/overlays/level_27_dream_weavers_haunted_towers.ld. */
     . = 0x00000ad8 ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.Level27_UpdateActors)
-    build/overlays/level_27_dream_weavers_haunted_towers/c/Level27_UpdateActors.o(.text)
+    build/overlays/level_27_dream_weavers_haunted_towers/c/update_actors.o(.text.Level27_UpdateActors)
     . = 0x0000aed4 ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.Level27_SpawnActor)
-    build/overlays/level_27_dream_weavers_haunted_towers/c/Level27_SpawnActor.o(.text)
+    build/overlays/level_27_dream_weavers_haunted_towers/c/spawn_actor.o(.text.Level27_SpawnActor)
     . = 0x0000bd1c ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.Level27_AdvanceEmitList)
-    build/overlays/level_27_dream_weavers_haunted_towers/c/Level27_AdvanceEmitList.o(.text)
+    build/overlays/level_27_dream_weavers_haunted_towers/c/advance_emit_list.o(.text.Level27_AdvanceEmitList)
     . = 0x0000d7a0 ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.Level27_EmitParticles)
-    build/overlays/level_27_dream_weavers_haunted_towers/c/Level27_EmitParticles.o(.text)
+    build/overlays/level_27_dream_weavers_haunted_towers/c/emit_particles.o(.text.Level27_EmitParticles)
     . = 0x0000ede8 ;
     build/overlays/level_27_dream_weavers_haunted_towers/asm/overlays/level_27_dream_weavers_haunted_towers/text.o(.text.Level27_OverlayEnd)
-    build/overlays/level_27_dream_weavers_haunted_towers/c/Level27_OverlayEnd.o(.text)
+    build/overlays/level_27_dream_weavers_haunted_towers/c/overlay_end.o(.text.Level27_OverlayEnd)
