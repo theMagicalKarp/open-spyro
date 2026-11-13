@@ -967,14 +967,14 @@ void Level24_UpdateActors(void) {
           continue;
         }
         if (dist < LGUARD_BIG_STRIKE_RANGE && actor->anim == actor->nextAnim &&
-            actor->nextFrame < 0x12) {
-          actor->frame = 0x15;
-          actor->nextFrame = 0x16;
+            actor->nextFrame < LGUARD_STRIKE_BEFORE) {
+          actor->frame = LGUARD_LUNGE_LOOP_END;
+          actor->nextFrame = LGUARD_LUNGE_LOOP_END + 1;
           actor->frameProgress = 0;
         }
-        if (actor->nextFrame == 0x15) {
-          actor->frame = 7;
-          actor->nextFrame = 8;
+        if (actor->nextFrame == LGUARD_LUNGE_LOOP_END) {
+          actor->frame = LGUARD_LUNGE_LOOP_START;
+          actor->nextFrame = LGUARD_LUNGE_LOOP_START + 1;
           actor->frameProgress = 0;
         }
         break;
@@ -1004,24 +1004,24 @@ void Level24_UpdateActors(void) {
         }
         r = DriveActorTrackedMove(actor, &st->knockSpeed, st->knockHeading, &st->knockZSpeed, LGUARD_KNOCK_DRAG, LGUARD_KNOCK_GRAVITY);
         if (st->kind == LGKIND_SMALL) {
-          if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - 0xB) < 9) {
+          if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - LGUARD_KNOCK_AIR_FIRST) < LGUARD_KNOCK_AIR_FRAMES) {
             g_nActorAnimDone = 0;
             actor->frameProgress = ANIM_RATE_TICKS(2);
             actor->frameRate = ANIM_RATE_TICKS(2);
             actor->anim = actor->nextAnim;
             actor->nextAnim = actor->nextAnim;
             actor->frame = actor->nextFrame;
-            actor->nextFrame = 0x14;
+            actor->nextFrame = LGUARD_SMALL_LAND_FRAME;
             OnActorAnimQueued(actor);
           }
-        } else if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - 0xB) < 9) {
+        } else if (r == MOVED_LANDED && (unsigned)(actor->nextFrame - LGUARD_KNOCK_AIR_FIRST) < LGUARD_KNOCK_AIR_FRAMES) {
           g_nActorAnimDone = 0;
           actor->frameProgress = ANIM_RATE_TICKS(2);
           actor->frameRate = ANIM_RATE_TICKS(2);
           actor->anim = actor->nextAnim;
           actor->nextAnim = actor->nextAnim;
           actor->frame = actor->nextFrame;
-          actor->nextFrame = 0x16;
+          actor->nextFrame = LGUARD_BIG_LAND_FRAME;
           OnActorAnimQueued(actor);
         }
         ANIM_RETIME(actor);
@@ -2483,17 +2483,17 @@ void Level24_UpdateActors(void) {
             continue;
           }
           if (dist < LGUARD_BLG_STRIKE_RANGE && actor->anim == actor->nextAnim &&
-              actor->nextFrame < 0xE) {
-            actor->frame = 0x10;
-            actor->nextFrame = 0x11;
+              actor->nextFrame < LGUARD_BLG_STRIKE_BEFORE) {
+            actor->frame = LGUARD_BLG_STRIKE_FRAME;
+            actor->nextFrame = LGUARD_BLG_STRIKE_FRAME + 1;
             actor->frameProgress = 0;
           }
-          if (actor->nextFrame == 0xF) {
-            actor->frame = 5;
-            actor->nextFrame = 6;
+          if (actor->nextFrame == LGUARD_BLG_LUNGE_LOOP_END) {
+            actor->frame = LGUARD_BLG_LUNGE_LOOP_START;
+            actor->nextFrame = LGUARD_BLG_LUNGE_LOOP_START + 1;
             actor->frameProgress = 0;
           }
-          if (actor->nextFrame == 6 &&
+          if (actor->nextFrame == LGUARD_BLG_GROWL_FRAME &&
               GetSoundVoiceStatusByOwner(actor, g_apActorMeshTable[actor->type]->m_Sounds[LGUARD_VOICE_GROWL]) == VOICE_OWNER_NONE) {
             PlayActorMeshVoice(actor, LGUARD_VOICE_GROWL, &st->sound);
           }
@@ -2524,24 +2524,24 @@ void Level24_UpdateActors(void) {
           }
         }
         r = DriveActorTrackedMove(actor, &st->knockSpeed, st->heading, &st->knockZSpeed, LGUARD_KNOCK_DRAG, LGUARD_KNOCK_GRAVITY);
-        if (r == MOVED_LANDED && actor->nextFrame < 0xA) {
+        if (r == MOVED_LANDED && actor->nextFrame < LGUARD_BLG_LAND_FRAME) {
           g_nActorAnimDone = 0;
           actor->frameProgress = sixteen;
           actor->frameRate = sixteen;
           actor->anim = actor->nextAnim;
           actor->nextAnim = actor->nextAnim;
           actor->frame = actor->nextFrame;
-          actor->nextFrame = 0xA;
+          actor->nextFrame = LGUARD_BLG_LAND_FRAME;
           OnActorAnimQueued(actor);
         }
-        if (r == 0 && actor->nextFrame == 9) {
+        if (r == 0 && actor->nextFrame == LGUARD_BLG_KNOCK_LOOP_END) {
           g_nActorAnimDone = 0;
           actor->frameProgress = sixteen;
           actor->frameRate = sixteen;
           actor->anim = actor->nextAnim;
           actor->nextAnim = actor->nextAnim;
           actor->frame = actor->nextFrame;
-          actor->nextFrame = 5;
+          actor->nextFrame = LGUARD_BLG_KNOCK_LOOP_START;
           OnActorAnimQueued(actor);
         }
         ANIM_RETIME(actor);

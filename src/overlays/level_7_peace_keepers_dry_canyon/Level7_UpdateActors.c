@@ -2614,7 +2614,7 @@ void Level7_UpdateActors(void) {
       if (actor->flags & ACTOR_HIT_BY_SPYRO && actor->mode != SHOOTER_KNOCKED) {
         if (actor->flags == ACTOR_HIT_CHARGE) {
           st->speed = SHOOTER_CHARGE_KNOCK_SPEED;
-        } else if (actor->mode == SHOOTER_SHIELD && actor->frame - 4U < 0x1B) {
+        } else if (actor->mode == SHOOTER_SHIELD && actor->frame - (unsigned)SHOOTER_SHIELD_BLOCK_FIRST < SHOOTER_SHIELD_BLOCK_FRAMES) {
           goto idle;
         } else {
           st->speed = SHOOTER_KNOCK_SPEED;
@@ -2710,7 +2710,7 @@ void Level7_UpdateActors(void) {
       case SHOOTER_LOWER:
         if (g_nActorAnimDone != 0) {
           if (st->mode == SHOOTER_ROLE_DOZER && ApproxDist2D(&actor->posX, &SPY.posX) > 0x2800) {
-            st->timer = 0x3C;
+            st->timer = SHOOTER_PHASE_TICKS;
           }
           actor->mode = SHOOTER_AIM;
           ANIM_RESET(actor, SHOOTER_ANIM_AIM);
@@ -2753,12 +2753,12 @@ void Level7_UpdateActors(void) {
             ENTER_POSE(actor, SHOOTER_FIRE);
           }
           g_nActorAnimDone = 0;
-          actor->frameProgress = 10;
-          actor->frameRate = 10;
+          actor->frameProgress = SHOOTER_AIM_BLEND_RATE;
+          actor->frameRate = SHOOTER_AIM_BLEND_RATE;
           actor->anim = actor->nextAnim;
           actor->nextAnim = SHOOTER_ANIM_SHIELD;
           actor->frame = actor->nextFrame;
-          actor->nextFrame = 5;
+          actor->nextFrame = SHOOTER_SHIELD_LOOP_START;
           OnActorAnimQueued(actor);
           actor->mode = SHOOTER_SHIELD;
           continue;
@@ -2774,12 +2774,12 @@ void Level7_UpdateActors(void) {
               ENTER_POSE(actor, SHOOTER_FIRE);
             }
             g_nActorAnimDone = 0;
-            actor->frameProgress = 10;
-            actor->frameRate = 10;
+            actor->frameProgress = SHOOTER_AIM_BLEND_RATE;
+            actor->frameRate = SHOOTER_AIM_BLEND_RATE;
             actor->anim = actor->nextAnim;
             actor->nextAnim = SHOOTER_ANIM_SHIELD;
             actor->frame = actor->nextFrame;
-            actor->nextFrame = 5;
+            actor->nextFrame = SHOOTER_SHIELD_LOOP_START;
             OnActorAnimQueued(actor);
             actor->mode = SHOOTER_SHIELD;
             continue;
@@ -2795,20 +2795,20 @@ void Level7_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (st->mode == one /* SHOOTER_ROLE_GUARD */ &&
             ApproxDist2D(&actor->posX, &SPY.posX) - (SHOOTER_GUARD_FIRE_RANGE + 1U) < SHOOTER_GUARD_DUCK_SPAN - 1) {
-          actor->frame = 0x12;
-          actor->nextFrame = 0x13;
+          actor->frame = SHOOTER_SHIELD_END_FRAME;
+          actor->nextFrame = SHOOTER_SHIELD_END_FRAME + 1;
           actor->frameProgress = 0;
         }
         if (TICK_DOWN(st->timer) == 0) {
-          if (actor->frame >= 0x10) {
-            actor->frame = 5;
-            actor->nextFrame = 6;
+          if (actor->frame >= SHOOTER_SHIELD_LOOP_END) {
+            actor->frame = SHOOTER_SHIELD_LOOP_START;
+            actor->nextFrame = SHOOTER_SHIELD_LOOP_START + 1;
             actor->frameProgress = ANIM_STEP / 2;
           }
           break;
         }
-        if (actor->frame >= 0x12) {
-          st->timer = 0x3C;
+        if (actor->frame >= SHOOTER_SHIELD_END_FRAME) {
+          st->timer = SHOOTER_PHASE_TICKS;
           actor->mode = SHOOTER_LOWER;
           ANIM_RESET(actor, SHOOTER_ANIM_LOWER);
           continue;
@@ -2823,18 +2823,18 @@ void Level7_UpdateActors(void) {
 
       case SHOOTER_WAKE:
         TrackEntityYawTowardSpyro(actor, 6, 0, YAW_HOLD_IN_BAND);
-        if (g_nActorAnimNewFrame == 0 || actor->frame < 9) {
+        if (g_nActorAnimNewFrame == 0 || actor->frame < SHOOTER_WAKE_DONE_FRAME) {
           break;
         }
         if (st->range != 0) {
           actor->mode = SHOOTER_ADVANCE;
           continue;
         }
-        st->timer = 0x3C;
+        st->timer = SHOOTER_PHASE_TICKS;
         actor->anim = SHOOTER_ANIM_SHIELD;
         actor->nextAnim = SHOOTER_ANIM_SHIELD;
-        actor->frame = 3;
-        actor->nextFrame = 4;
+        actor->frame = SHOOTER_SHIELD_ENTER_FRAME;
+        actor->nextFrame = SHOOTER_SHIELD_ENTER_FRAME + 1;
         actor->frameProgress = ANIM_STEP / 2;
         actor->mode = SHOOTER_SHIELD;
         break;
@@ -2844,11 +2844,11 @@ void Level7_UpdateActors(void) {
         if (ApproxDist2D(&actor->posX, &SPY.posX) < SHOOTER_ADVANCE_STOP_RANGE ||
             PivotActorAlongPath(actor, st->path, PIVOT_ARRIVE_NEAR, SHOOTER_ADVANCE_SPEED, 0, 8, 0x28, PIVOT_TURN_ANY, MOVE_LIFT | MOVE_FOLLOW_FLOOR) ==
                 PATH_ARRIVED(0)) {
-          st->timer = 0x3C;
+          st->timer = SHOOTER_PHASE_TICKS;
           actor->anim = SHOOTER_ANIM_SHIELD;
           actor->nextAnim = SHOOTER_ANIM_SHIELD;
-          actor->frame = 3;
-          actor->nextFrame = 4;
+          actor->frame = SHOOTER_SHIELD_ENTER_FRAME;
+          actor->nextFrame = SHOOTER_SHIELD_ENTER_FRAME + 1;
           actor->frameProgress = ANIM_STEP / 2;
           actor->mode = SHOOTER_SHIELD;
         }

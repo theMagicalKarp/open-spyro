@@ -2358,6 +2358,24 @@ enum ShooterRole {
 #define SHOOTER_HOME_ARRIVE 0x100
 #define SHOOTER_ADVANCE_SPEED 0x5A
 #define SHOOTER_ADVANCE_STOP_RANGE 0x800
+/* Shield animation frames (SHOOTER_ANIM_SHIELD): blows other than a charge
+ * bounce off on frames BLOCK_FIRST .. BLOCK_FIRST + BLOCK_FRAMES - 1. WAKE and
+ * ADVANCE enter the shield at ENTER_FRAME with PHASE_TICKS on the timer
+ * (WAKE once its own anim reaches WAKE_DONE_FRAME); AIM blends into it at
+ * frame 5 over AIM_BLEND_RATE. While the timer runs the anim plays to
+ * END_FRAME and then LOWERs (a guard with Spyro in its duck band jumps
+ * straight there); once it has run out the anim loops LOOP_START ..
+ * LOOP_END. Lowering also restarts PHASE_TICKS (and a dozer far from Spyro
+ * gets them again once lowered). */
+#define SHOOTER_SHIELD_BLOCK_FIRST 4
+#define SHOOTER_SHIELD_BLOCK_FRAMES 0x1B
+#define SHOOTER_SHIELD_ENTER_FRAME 3
+#define SHOOTER_PHASE_TICKS 0x3C
+#define SHOOTER_WAKE_DONE_FRAME 9
+#define SHOOTER_AIM_BLEND_RATE 10
+#define SHOOTER_SHIELD_LOOP_START 5
+#define SHOOTER_SHIELD_LOOP_END 0x10
+#define SHOOTER_SHIELD_END_FRAME 0x12
 #define SHOOTER_BURST_SPARK_LIFE 0x18 /* BurstActorWithSound spark life */
 #define SHOOTER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 #define SHOOTER_KNOCK_GRAVITY 0xA /* DriveActorTrackedMove gravity */
@@ -2640,6 +2658,28 @@ enum LungingGuardKind {
 #define LGUARD_BLG_SMALL_LUNGE_RANGE 0x4B0
 #define LGUARD_BLG_LUNGE_LEAVE 0x2710
 #define LGUARD_BLG_STRIKE_RANGE 0x6A4
+/* Lunge / knock animation frames. A lunge loops its wind-up LOOP_START ..
+ * LOOP_END until Spyro is within strike range before STRIKE_BEFORE, then
+ * jumps to the strike at LOOP_END (frame) and plays on. Knocked, a guard
+ * that lands mid-tumble (frames KNOCK_AIR_FIRST .. +KNOCK_AIR_FRAMES - 1)
+ * skips to its landing frame. The big kind (BLG) uses its own frames, loops
+ * its tumble from KNOCK_LOOP_END back to KNOCK_LOOP_START until it lands,
+ * and growls on GROWL_FRAME of the wind-up. */
+#define LGUARD_LUNGE_LOOP_START 7
+#define LGUARD_LUNGE_LOOP_END 0x15
+#define LGUARD_STRIKE_BEFORE 0x12
+#define LGUARD_KNOCK_AIR_FIRST 0xB
+#define LGUARD_KNOCK_AIR_FRAMES 9
+#define LGUARD_SMALL_LAND_FRAME 0x14
+#define LGUARD_BIG_LAND_FRAME 0x16
+#define LGUARD_BLG_LUNGE_LOOP_START 5
+#define LGUARD_BLG_LUNGE_LOOP_END 0xF
+#define LGUARD_BLG_STRIKE_BEFORE 0xE
+#define LGUARD_BLG_STRIKE_FRAME 0x10
+#define LGUARD_BLG_GROWL_FRAME 6
+#define LGUARD_BLG_LAND_FRAME 0xA
+#define LGUARD_BLG_KNOCK_LOOP_START 5
+#define LGUARD_BLG_KNOCK_LOOP_END 9
 #define LGUARD_FOLLOW1_RELOAD 0x28
 #define LGUARD_FOLLOW2_RELOAD 0x50
 
