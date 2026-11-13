@@ -105,7 +105,7 @@ void Level29_AdvanceEmitList(int step) {
         v[2] += 0x100;
         VectorToSVectorShr2(POS, v);
         ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
-        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & 0xFFF)) / 170;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & ANGLE12_MASK)) / 170;
       }
       break;
 

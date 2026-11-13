@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "globals.h"
 #include "main_shared.h"
 #include "spyro_block.h"
@@ -30,13 +31,13 @@ void DampenSpyroFreeFallAttitude(void) {
   err[0] = 0;
   err[1] = 0;
   pitch = g_anSpyroBodyPitchBlock[0];
-  wrapped = (-pitch) & 0xFFF;
+  wrapped = (-pitch) & ANGLE12_MASK;
   err[0] = wrapped;
   if (wrapped >= 0x800) {
     err[0] = wrapped - 0x1000;
   }
   roll = g_anSpyroBodyPitchBlock[SPY_ROLL - SPY_PITCH];
-  wrapped = (-roll) & 0xFFF;
+  wrapped = (-roll) & ANGLE12_MASK;
   err[1] = wrapped;
   if (wrapped >= 0x800) {
     err[1] = wrapped - 0x1000;

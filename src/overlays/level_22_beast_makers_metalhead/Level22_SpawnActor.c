@@ -200,7 +200,7 @@ Actor *Level22_SpawnActor(int type, Actor *parent) {
       st->vel[1] += g_anSpyroVelocity[1] >> 6;
       st->vel[2] += g_anSpyroVelocity[2] >> 6;
     } else {
-      yaw = GetRandomU32() & 0xFFF;
+      yaw = GetRandomU32() & ANGLE12_MASK;
       pitch = GetRandomU32() & 0x7FF;
       st->vel[0] = (LookupCosine(pitch) >> 5) * LookupCosine(yaw) >> 12;
       st->vel[1] = (LookupCosine(pitch) >> 5) * LookupSine(yaw) >> 12;
@@ -269,7 +269,7 @@ Actor *Level22_SpawnActor(int type, Actor *parent) {
     rec->cullRadius = CULL_RADIUS(0x2000);
     CopyVector(&rec->posX, &parent->posX);
     InsertActorIntoSpatialGrid(rec);
-    yaw = GetRandomU32() & 0xFFF;
+    yaw = GetRandomU32() & ANGLE12_MASK;
     pitch = GetRandomU32() & 0x7FF;
     st->vel[0] = (LookupCosine(pitch) >> 5) * LookupCosine(yaw) >> 12;
     st->vel[1] = (LookupCosine(pitch) >> 5) * LookupSine(yaw) >> 12;

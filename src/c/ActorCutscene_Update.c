@@ -264,7 +264,7 @@ void ActorCutscene_Update(void) {
       /* Written back to the block before the cosine call so the angle is read
          once and reused as the sine argument. */
       g_anActorCutsceneTimerBlock[ACSW_CAM_YAW_GOAL] =
-          ((g_pActorCutsceneRecord->rotZ << 4) + 0x390) & 0xFFF;
+          ((g_pActorCutsceneRecord->rotZ << 4) + 0x390) & ANGLE12_MASK;
 
       cam = g_anCameraPosBlock;
       cam[0] = g_pActorCutsceneRecord->posX +
@@ -297,7 +297,7 @@ void ActorCutscene_Update(void) {
       g_anActorCutsceneTimerBlock[ACSW_CAM_HEIGHT_START] =
           g_anCameraPos[2] - 0xFCE;
       g_anActorCutsceneTimerBlock[ACSW_CAM_YAW_START] =
-          ((face << 4) + 0xBA0) & 0xFFF;
+          ((face << 4) + 0xBA0) & ANGLE12_MASK;
     }
   } else {
     g_pfnActorCutsceneSubstateUpdate();

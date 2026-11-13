@@ -413,8 +413,8 @@ void UpdateSpyroStateBehavior(void) {
     if (ApplySpyroTriggerEvents(SPYRO_EV_MASK_NO_HAZARD)) {
       if (g_nSpyroStateTimer >= SPYRO_FACE_TARGET_SNAP_TICKS) {
         g_nSpyroBodyYaw = g_nSpyroMoveTargetYaw;
-        g_nSpyroBodyPitch = -g_nSpyroBodyPitch & 0xFFF;
-        g_nSpyroBodyRoll = -g_nSpyroBodyRoll & 0xFFF;
+        g_nSpyroBodyPitch = -g_nSpyroBodyPitch & ANGLE12_MASK;
+        g_nSpyroBodyRoll = -g_nSpyroBodyRoll & ANGLE12_MASK;
       }
       break;
     }
@@ -422,8 +422,8 @@ void UpdateSpyroStateBehavior(void) {
       break;
     }
     g_nSpyroBodyYaw = g_nSpyroMoveTargetYaw;
-    g_nSpyroBodyPitch = -g_nSpyroBodyPitch & 0xFFF;
-    g_nSpyroBodyRoll = -g_nSpyroBodyRoll & 0xFFF;
+    g_nSpyroBodyPitch = -g_nSpyroBodyPitch & ANGLE12_MASK;
+    g_nSpyroBodyRoll = -g_nSpyroBodyRoll & ANGLE12_MASK;
     if (g_nPadDirectionalIdleFlag != 0) {
       ChangeSpyroState(SPYRO_ST_IDLE);
     } else {

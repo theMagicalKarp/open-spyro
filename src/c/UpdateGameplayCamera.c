@@ -34,9 +34,9 @@ typedef struct {
  * shift). */
 #define TRY_ESCAPE(off, shift)                                                 \
   (CAM[CAM_SPRING_YAW] =                                                       \
-       (CAM[CAM_YAW] + (ESCAPE(off).yaw << (shift))) & 0xFFF,                  \
+       (CAM[CAM_YAW] + (ESCAPE(off).yaw << (shift))) & ANGLE12_MASK,           \
    CAM[CAM_SPRING_YAW + 1] =                                                   \
-       (CAM[CAM_YAW + 1] + (ESCAPE(off).pitch << (shift))) & 0xFFF,            \
+       (CAM[CAM_YAW + 1] + (ESCAPE(off).pitch << (shift))) & ANGLE12_MASK,     \
    CAM[CAM_SPRING_YAW + 2] =                                                   \
        CAM[CAM_YAW + 2] + (ESCAPE(off).distance << (shift)),                   \
    ComputeCameraOrbitOffset(&CAM[CAM_EYE]),                                    \

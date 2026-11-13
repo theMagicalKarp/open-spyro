@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "funcs.h"
 #include "globals.h"
 #include "main_shared.h"
@@ -32,12 +33,12 @@ void AlignSpyroBodyToVelocity(void) {
   v = d[0];
   pitch = g_nSpyroBodyPitch;
   v -= pitch;
-  v &= 0xFFF;
+  v &= ANGLE12_MASK;
   d[0] = v;
   if (v >= 0x800) {
     d[0] = v - 0x1000;
   }
-  v = (d[1] - (roll = g_nSpyroBodyRoll)) & 0xFFF;
+  v = (d[1] - (roll = g_nSpyroBodyRoll)) & ANGLE12_MASK;
   d[1] = v;
   if (v >= 0x800) {
     d[1] = v - 0x1000;

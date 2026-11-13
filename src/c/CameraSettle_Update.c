@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "globals.h"
 #include "main_shared.h"
 
@@ -10,7 +11,7 @@ void CameraSettle_Update(void) {
 
   TickSpyroGameplayFrame();
   UpdateCameraFrame();
-  pitch = g_anCameraEulerPitchBlock[0] & 0xFFF;
+  pitch = g_anCameraEulerPitchBlock[0] & ANGLE12_MASK;
   g_anCameraEulerPitchBlock[0] = pitch;
   if (pitch > 0x800) {
     g_anCameraEulerPitchBlock[0] = pitch - 0x1000;

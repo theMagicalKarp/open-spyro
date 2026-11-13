@@ -1741,7 +1741,7 @@ void Level34_UpdateActors(void) {
             yaw -= ANGLE8_TURN;
           }
           st->rollVel += ((-yaw << 8) - (st->rollVel << 3) - st->roll) >> 6;
-          st->roll = (st->roll + st->rollVel) & 0xFFF;
+          st->roll = (st->roll + st->rollVel) & ANGLE12_MASK;
           if (st->roll > 0x800) {
             st->roll -= 0x1000;
           }

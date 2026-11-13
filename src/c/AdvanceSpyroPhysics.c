@@ -253,7 +253,7 @@ int AdvanceSpyroPhysics(void) {
                 SubtractVector(e, ACTOR_POS(SPY[SPY_SCRIPTED_ACTOR]), SPY);
                 a = ArcTan2(e[0], e[1], ATAN_ANGLE12);
                 h = g_pScriptedCameraActor->rotZ;
-                a = (a - (h << 4)) & 0xFFF;
+                a = (a - (h << 4)) & ANGLE12_MASK;
                 if (a < 0x800) {
                   side = 1;
                   t = h + LOCK_ON_ORBIT_TURN;

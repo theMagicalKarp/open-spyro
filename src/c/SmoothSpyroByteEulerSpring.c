@@ -1,3 +1,4 @@
+#include "angle.h"
 #include "globals.h"
 #include "match_asm.h"
 
@@ -67,7 +68,7 @@ void SmoothSpyroByteEulerSpring(void) {
   int acc2;
 
   do {
-    d = (g_nSpyroSwingEulerTargetX - g_nSpyroSwingEulerPrev0) & 0xFFF;
+    d = (g_nSpyroSwingEulerTargetX - g_nSpyroSwingEulerPrev0) & ANGLE12_MASK;
   } while (0);
   f = d << 7;
   if (d > 0x800) {
@@ -75,7 +76,7 @@ void SmoothSpyroByteEulerSpring(void) {
     f = d << 7;
   }
 
-  d = (g_nSpyroSwingEulerTargetY - g_nSpyroSwingEulerPrev1) & 0xFFF;
+  d = (g_nSpyroSwingEulerTargetY - g_nSpyroSwingEulerPrev1) & ANGLE12_MASK;
   acc0 = g_nSpyroSwingEulerSpringAccum0;
   f = f - (acc0 << 4);
   do {
@@ -91,7 +92,7 @@ void SmoothSpyroByteEulerSpring(void) {
     f = d << 7;
   }
 
-  d = (g_nSpyroSwingEulerTargetZ - g_nSpyroSwingEulerPrev2) & 0xFFF;
+  d = (g_nSpyroSwingEulerTargetZ - g_nSpyroSwingEulerPrev2) & ANGLE12_MASK;
   acc1 = g_nSpyroSwingEulerSpringAccum1;
   f = f - (acc1 << 4);
   f = f >> 6;

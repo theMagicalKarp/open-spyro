@@ -35,12 +35,12 @@ int ComputeCameraToTargetAngle(int *target) {
   g_nCameraPitch = ArcTan2(dist, vec[2], ATAN_ANGLE12);
   yaw = ArcTan2(vec[0], -vec[1], ATAN_ANGLE12);
   oldYaw = g_nCameraYaw;
-  yawDelta = (yaw - oldYaw) & 0xFFF;
+  yawDelta = (yaw - oldYaw) & ANGLE12_MASK;
   if (yawDelta >= 0x801) {
     yawDelta -= 0x1000;
   }
   flipYaw = oldYaw - 0x800;
-  flipDelta = (yaw - flipYaw) & 0xFFF;
+  flipDelta = (yaw - flipYaw) & ANGLE12_MASK;
   if (flipDelta >= 0x801) {
     flipDelta -= 0x1000;
   }
@@ -59,7 +59,7 @@ int ComputeCameraToTargetAngle(int *target) {
   flip:
     yaw = 1;
     pitch = g_anCameraPitchBlock;
-    pitch[0] = (0x800 - pitch[0]) & 0xFFF;
+    pitch[0] = (0x800 - pitch[0]) & ANGLE12_MASK;
   } else {
     if (abs(vec[0]) >= 0x81 || abs(vec[1]) >= 0x81) {
       g_nCameraYaw = yaw;
@@ -68,13 +68,13 @@ int ComputeCameraToTargetAngle(int *target) {
     }
     yaw = 0;
   }
-  pitchBias = (g_nCameraEulerPitch - g_nCameraPitch) & 0xFFF;
+  pitchBias = (g_nCameraEulerPitch - g_nCameraPitch) & ANGLE12_MASK;
   g_nCameraDraftRoll = g_nCameraEulerRoll;
   g_nCameraDraftPitchBias = pitchBias;
   if (pitchBias >= 0x801) {
     g_nCameraDraftPitchBias = pitchBias - 0x1000;
   }
-  yawBias = (0x800 - g_nCameraEulerYaw - g_nCameraYaw) & 0xFFF;
+  yawBias = (0x800 - g_nCameraEulerYaw - g_nCameraYaw) & ANGLE12_MASK;
   g_nCameraDraftYawBias = yawBias;
   if (yawBias >= 0x801) {
     g_nCameraDraftYawBias = yawBias - 0x1000;

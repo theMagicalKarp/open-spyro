@@ -47,6 +47,6 @@ void Level1_BeginActorCutscene(Actor *actor) {
   g_nActorCutsceneCamHeightStart = g_nCameraPosZ;
   b = actor->rotZ;
   g_nActorCutsceneCamRadiusGoal = 0x52E;
-  g_nActorCutsceneCamYawGoal = ((b << 4) - 0x312) & 0xFFF;
+  g_nActorCutsceneCamYawGoal = ((b << 4) - 0x312) & ANGLE12_MASK;
   g_nActorCutsceneCamHeightGoal = ACTOR_RAW(actor, int, posZ) + 0x58F;
 }

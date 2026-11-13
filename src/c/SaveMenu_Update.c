@@ -51,7 +51,7 @@ void SaveMenu_Update(void) {
       actor = &g_pActorListBase[((SaveHostState *)ACT->state)->anchor];
       if (actor->mode == CHECKPT_FLASH) {
         actor->subMode += g_nFrameStep;
-        if (actor->subMode >= 0x30) {
+        if (actor->subMode >= CHECKPT_FLASH_FRAMES) {
           actor->mode = CHECKPT_REARM;
           actor->anim = CHECKPT_ANIM_REST;
         }

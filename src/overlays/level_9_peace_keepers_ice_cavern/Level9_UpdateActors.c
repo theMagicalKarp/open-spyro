@@ -2304,7 +2304,7 @@ void Level9_UpdateActors(void) {
           orbitPoint[2] = st->height;
           AddVector(orbitPoint, orbitPoint, &SPY.posX);
           SteerActorTowardPoint(actor, orbitPoint, 0x60, 8, 8, 0x100);
-          st->angle = (st->angle + 0x10) & 0xFFF;
+          st->angle = (st->angle + 0x10) & ANGLE12_MASK;
           st->timer--;
         }
         if (TICK_DOWN(st->call) != 0) {
