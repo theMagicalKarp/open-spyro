@@ -1418,8 +1418,8 @@ void Level20_UpdateActors(void) {
                  (st->timer < SPARX_CATCH_EARLY_FRAMES &&
                   AbsAngleDelta8(
                       (actor->rotZ + (bp->circleDir * SPARX_CATCH_LEAD)) & ANGLE8_MASK,
-                      (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + 0x80) &
-                          0xFF) < 8))) {
+                      (((unsigned short)g_nCameraEulerYaw << 16 >> 20) + ANGLE8_HALF) &
+                          ANGLE8_MASK) < SPARX_CATCH_ALIGN))) {
               if (actor->nextAnim != actor->nextAnim + 1) {
                 g_nActorAnimDone = 0;
                 ANIM_ADVANCE(actor, actor->nextAnim + 1);

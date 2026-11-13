@@ -83,10 +83,11 @@ enum SparxSubMode {
 #define SPARX_CHASE_MAX_FRAMES 210
 #define SPARX_CATCH_EARLY_FRAMES 80
 /* "Lines up": his heading, led by the butterfly's circleDir * CATCH_LEAD,
- * within 8 of the camera's reverse yaw. Chasing, he closes CHASE_STEP a
+ * within CATCH_ALIGN of the camera's reverse yaw. Chasing, he closes CHASE_STEP a
  * frame (CHASE_STEP_HIGH in the catch animation) on a point just behind the
  * butterfly, CHASE_STEP_SLACK more while further than that, less once within. */
 #define SPARX_CATCH_LEAD 0x6E
+#define SPARX_CATCH_ALIGN 8
 #define SPARX_CHASE_STEP 0x82
 #define SPARX_CHASE_STEP_HIGH 0x96
 #define SPARX_CHASE_STEP_SLACK 5
