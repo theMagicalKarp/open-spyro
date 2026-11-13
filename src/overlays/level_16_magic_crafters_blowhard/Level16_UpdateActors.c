@@ -3092,12 +3092,12 @@ void Level16_UpdateActors(void) {
             }
             if (st->prev >= 0) {
               Actor *a = &g_pActorListBase[st->prev];
-              int *as = a->state;
+              GemHolderState *as = a->state;
 
               CopyVector(&a->posX, &actor->posX);
               SpawnActorDeathDrop(a, DROP_SCATTER, 0, 0);
               MarkActorLiveKill(a);
-              st->prev = *as;
+              st->prev = as->next;
               DespawnActorRecord(a);
             }
             ENTER_POSE(actor, BLOWHARD_HIT);
@@ -3131,7 +3131,7 @@ void Level16_UpdateActors(void) {
           }
         } else {
           Actor *a = &g_pActorListBase[st->prev];
-          int *as = a->state;
+          GemHolderState *as = a->state;
 
           st->started = 1;
           if (g_nLevelProgressCheckpoint[0] > 0) {
@@ -3145,7 +3145,7 @@ void Level16_UpdateActors(void) {
               MarkActorLiveKill(a);
               DespawnActorRecord(a);
             }
-            st->prev = *as;
+            st->prev = as->next;
             ModifyWorldChunkAnimFlags(BLOWHARD_CHUNK_PHASE1, CHUNK_ANIM_RESUME, 0);
             st->chunkAnim = -1;
           }
@@ -3159,7 +3159,7 @@ void Level16_UpdateActors(void) {
               MarkActorLiveKill(a);
               DespawnActorRecord(a);
             }
-            st->prev = *as;
+            st->prev = as->next;
           }
           CopyVector(&actor->posX, &st->path->nodes[0].x);
           st->floorZ = actor->posZ + BLOWHARD_BOB_HEIGHT;

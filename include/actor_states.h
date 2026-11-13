@@ -318,4 +318,10 @@ typedef struct TetherState {
 /* Frames a guard freed by the homing orb keeps playing its bound pose. */
 #define TGUARD_ORB_FREE_FRAMES 0x20
 
+/* ACTOR_TYPE_GEM_HOLDER (levels 0/4/10/16): a hidden gem drop whose owner
+ * (a flock, Blowhard) releases its chain one holder at a time. */
+typedef struct GemHolderState {
+  int next; /* 0x00 next holder in the chain (pool index), -1 ends; level data */
+} GemHolderState;
+
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

@@ -2518,17 +2518,17 @@ void Level0_UpdateActors(void) {
 
       if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 && actor->mode < FLOCK_BOLT) {
         while (st->chainA >= 0 && g_pActorListBase[st->chainA].mode >= ACTOR_MODE_DORMANT) {
-          st->chainA = *(int *)g_pActorListBase[st->chainA].state;
+          st->chainA = ((GemHolderState *)g_pActorListBase[st->chainA].state)->next;
         }
 
         if (st->chainA >= 0) {
           Actor *p = &g_pActorListBase[st->chainA];
-          int *link = p->state;
+          GemHolderState *link = p->state;
 
           CopyVector(&p->posX, &actor->posX);
           SpawnActorDeathDrop(p, DROP_SCATTER, 0, 0);
           MarkActorLiveKill(p);
-          st->chainA = *link;
+          st->chainA = link->next;
           DespawnActorRecord(p);
           actor->flags = 0;
           ENTER_POSE(actor, FLOCK_BOLT);
@@ -2537,7 +2537,7 @@ void Level0_UpdateActors(void) {
 
           while (st->chainB >= 0) {
             Actor *p = &g_pActorListBase[st->chainB];
-            int *link = p->state;
+            GemHolderState *link = p->state;
 
             if (p->mode < ACTOR_MODE_DORMANT) {
               CopyVector(&p->posX, &actor->posX);
@@ -2550,7 +2550,7 @@ void Level0_UpdateActors(void) {
               DespawnActorRecord(p);
             }
 
-            st->chainB = *link;
+            st->chainB = link->next;
           }
 
           st->slots[n][0] = actor->posX + (LookupCosine(n * FLOCK_PRIZE_ANGLE_STEP) >> 2);
