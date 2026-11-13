@@ -122,7 +122,7 @@ void UpdateCameraSpringForMode(void) {
       if (left == 0) {
         break;
       }
-      d = (g_nCameraYaw - 0x800 + g_nSpyroBodyYaw) & ANGLE12_MASK;
+      d = (g_nCameraYaw - ANGLE12_HALF + g_nSpyroBodyYaw) & ANGLE12_MASK;
       if (d > ANGLE12_HALF) {
         d -= ANGLE12_TURN;
       }

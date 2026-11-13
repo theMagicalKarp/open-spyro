@@ -3585,7 +3585,7 @@ void Level20_UpdateActors(void) {
           SPY.posX = actor->posX;
           g_nSpyroDrawSuppressed = 1;
           SPY.posY = actor->posY;
-          v = actor->rotZ + 0x80;
+          v = actor->rotZ + ANGLE8_HALF;
           g_bSpyroPersistentEulerZ = v;
           g_nSpyroBodyYaw = (v & ANGLE8_MASK) << 4;
           if (g_nSparxHealth == SPARX_GONE) {

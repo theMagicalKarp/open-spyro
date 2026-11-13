@@ -643,7 +643,7 @@ void Level12_BalloonistCutscene_Update(void)
         g_nCameraEulerPitch = ArcTan2(VectorLength(vecC, VEC_LEN_XY), -vecC[2], ATAN_ANGLE12);
         g_nCameraEulerYaw = ArcTan2(vecC[0], vecC[1], ATAN_ANGLE12);
         g_nSpyroWorldPosZ = ACTOR_RAW(g_pActorCutsceneRecord, int, posZ) + 0x2D4;
-        g_bSpyroPersistentEulerZ = g_pActorCutsceneRecord->rotZ + 0x80;
+        g_bSpyroPersistentEulerZ = g_pActorCutsceneRecord->rotZ + ANGLE8_HALF;
       }
       else
       {
@@ -774,7 +774,7 @@ void Level12_BalloonistCutscene_Update(void)
         g_nCameraEulerPitch = ArcTan2(VectorLength(vecE, VEC_LEN_XY), -vecE[2], ATAN_ANGLE12);
         g_nCameraEulerYaw = ArcTan2(vecE[0], vecE[1], ATAN_ANGLE12);
         g_nSpyroWorldPosZ = ACTOR_RAW(g_pActorCutsceneRecord, int, posZ) + 0x2D4;
-        g_bSpyroPersistentEulerZ = g_pActorCutsceneRecord->rotZ + 0x80;
+        g_bSpyroPersistentEulerZ = g_pActorCutsceneRecord->rotZ + ANGLE8_HALF;
       }
       else
       {

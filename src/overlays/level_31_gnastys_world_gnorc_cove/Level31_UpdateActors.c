@@ -2174,7 +2174,7 @@ void Level31_UpdateActors(void) {
 
           h->subMode = FLOATBARREL_TUMBLING;
           hs = h->state;
-          st->held->rotZ = actor->rotZ + 0x40;
+          st->held->rotZ = actor->rotZ + ANGLE8_QUARTER;
           *hs = HCARRIER_THROW_SPEED;
           st->held = 0;
         }

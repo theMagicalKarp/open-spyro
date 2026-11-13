@@ -12,5 +12,6 @@ void UpdateCameraEulerAngles(void) {
       (g_nCameraPitch + g_nCameraSpringPitchBias) & ANGLE12_MASK;
   g_nCameraEulerRoll = angle;
   angle = g_nCameraYaw;
-  g_nCameraEulerYaw = (0x800 - angle - g_nCameraSpringYawBias) & ANGLE12_MASK;
+  g_nCameraEulerYaw =
+      (ANGLE12_HALF - angle - g_nCameraSpringYawBias) & ANGLE12_MASK;
 }

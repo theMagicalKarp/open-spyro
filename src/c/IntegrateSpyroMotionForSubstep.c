@@ -1013,7 +1013,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             gb[0] = 1;
             gb[SPY_BODY_YAW - SPY_GLIDE_BANK] =
                 (yy + ANGLE12_HALF) & ANGLE12_MASK;
-            gb[SPY_ROLL - SPY_GLIDE_BANK] = (0x800 - r) & ANGLE12_MASK;
+            gb[SPY_ROLL - SPY_GLIDE_BANK] = (ANGLE12_HALF - r) & ANGLE12_MASK;
             g_nSpyroTurnRateAccum = 0;
             g_nSpyroBodyPitch =
                 (g_nSpyroBodyPitch + ANGLE12_HALF) & ANGLE12_MASK;
@@ -1303,7 +1303,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             y = 0x1E;
             if ((unsigned int)(g_nSpyroBodyRoll + 0x100) > 0x500) {
               g_nSpyroGlideBankingFlag = 1;
-              y = (-0x400 - g_nSpyroBodyRoll) & ANGLE12_MASK;
+              y = (-ANGLE12_QUARTER - g_nSpyroBodyRoll) & ANGLE12_MASK;
               if (y > ANGLE12_HALF) {
                 y -= ANGLE12_TURN;
               }

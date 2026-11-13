@@ -59,7 +59,7 @@ int ComputeCameraToTargetAngle(int *target) {
   flip:
     yaw = 1;
     pitch = g_anCameraPitchBlock;
-    pitch[0] = (0x800 - pitch[0]) & ANGLE12_MASK;
+    pitch[0] = (ANGLE12_HALF - pitch[0]) & ANGLE12_MASK;
   } else {
     if (abs(vec[0]) >= 0x81 || abs(vec[1]) >= 0x81) {
       g_nCameraYaw = yaw;
@@ -74,7 +74,7 @@ int ComputeCameraToTargetAngle(int *target) {
   if (pitchBias >= 0x801) {
     g_nCameraDraftPitchBias = pitchBias - 0x1000;
   }
-  yawBias = (0x800 - g_nCameraEulerYaw - g_nCameraYaw) & ANGLE12_MASK;
+  yawBias = (ANGLE12_HALF - g_nCameraEulerYaw - g_nCameraYaw) & ANGLE12_MASK;
   g_nCameraDraftYawBias = yawBias;
   if (yawBias >= 0x801) {
     g_nCameraDraftYawBias = yawBias - 0x1000;

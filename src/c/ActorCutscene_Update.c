@@ -259,7 +259,7 @@ void ActorCutscene_Update(void) {
                  &((Actor *)g_anActorCutsceneTimerBlock[ACSW_RECORD])->posX);
       g_nSpyroWorldPosZ += 0x2D4;
 
-      g_abSpyroPersistentEuler[2] = g_pActorCutsceneRecord->rotZ + 0x80;
+      g_abSpyroPersistentEuler[2] = g_pActorCutsceneRecord->rotZ + ANGLE8_HALF;
 
       /* Written back to the block before the cosine call so the angle is read
          once and reused as the sine argument. */
