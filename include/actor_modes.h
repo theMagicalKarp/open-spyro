@@ -2813,6 +2813,15 @@ enum GrabberAnim {
 #define GRABBER_RETREAT_SPEED 0xC8
 #define GRABBER_HOME_ARRIVE 0x100
 #define GRABBER_HOME_REST 0x78
+/* Grabber animation frames: an idle lurk loops back from LURK_LOOP_END, one
+ * with a grab chance emerges once its lurk reaches LURK_EMERGE_FRAME; SEIZE
+ * swallows Spyro (hides him in its mouth) at SEIZE_FRAME; the throws let him
+ * go at THROW_RELEASE_FRAME / THROW_SHORT_RELEASE_FRAME. */
+#define GRABBER_LURK_LOOP_END 0xF
+#define GRABBER_LURK_EMERGE_FRAME 0x1C
+#define GRABBER_SEIZE_FRAME 0xD
+#define GRABBER_THROW_RELEASE_FRAME 0x29
+#define GRABBER_THROW_SHORT_RELEASE_FRAME 0x10
 #define GRABBER_BURST_SPARK_LIFE 0x30 /* BurstActorWithSound spark life */
 #define GRABBER_KNOCK_DRAG 0xC /* DriveActorTrackedMove friction */
 #define GRABBER_KNOCK_GRAVITY 0xE /* DriveActorTrackedMove gravity */

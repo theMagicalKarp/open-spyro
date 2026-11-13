@@ -3439,12 +3439,12 @@ void Level20_UpdateActors(void) {
           int r;
 
           if (st->grabChance == 0) {
-            if (actor->nextAnim == GRABBER_ANIM_LURK && actor->nextFrame >= 0xF) {
+            if (actor->nextAnim == GRABBER_ANIM_LURK && actor->nextFrame >= GRABBER_LURK_LOOP_END) {
               actor->frame = 0;
               actor->nextFrame = 1;
               actor->frameProgress = 0;
             }
-          } else if (actor->nextAnim == GRABBER_ANIM_LURK && actor->nextFrame >= 0x1C) {
+          } else if (actor->nextAnim == GRABBER_ANIM_LURK && actor->nextFrame >= GRABBER_LURK_EMERGE_FRAME) {
             g_nActorAnimDone = 0;
             ANIM_ADVANCE(actor, GRABBER_ANIM_EMERGE);
           }
@@ -3581,7 +3581,7 @@ void Level20_UpdateActors(void) {
           }
         }
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_FREEZE_INPUT);
-        if (actor->nextFrame >= 0xD) {
+        if (actor->nextFrame >= GRABBER_SEIZE_FRAME) {
           SPY.posX = actor->posX;
           g_nSpyroDrawSuppressed = 1;
           SPY.posY = actor->posY;
@@ -3616,7 +3616,7 @@ void Level20_UpdateActors(void) {
       case GRABBER_THROW:
         ANIM_GO(actor, GRABBER_ANIM_THROW);
         if (g_nSpyroDrawSuppressed != 0) {
-          if (actor->nextFrame >= 0x29) {
+          if (actor->nextFrame >= GRABBER_THROW_RELEASE_FRAME) {
             g_nSpyroDrawSuppressed = 0;
             SPY.triggerEvents = (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
             SPY.posX =
@@ -3648,7 +3648,7 @@ void Level20_UpdateActors(void) {
       case GRABBER_THROW_SHORT:
         ANIM_GO(actor, GRABBER_ANIM_THROW_SHORT);
         if (g_nSpyroDrawSuppressed != 0) {
-          if (actor->nextFrame >= 0x10) {
+          if (actor->nextFrame >= GRABBER_THROW_SHORT_RELEASE_FRAME) {
             g_nSpyroDrawSuppressed = 0;
             SPY.triggerEvents = (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
             SPY.posX =
