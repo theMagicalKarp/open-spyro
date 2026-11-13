@@ -1701,7 +1701,7 @@ void Level32_UpdateActors(void) {
         TrackEntityYawTowardSpyro(actor, 4, 0, YAW_HOLD_IN_BAND);
         if (st->flags != GUNNER_F_ARMED && dist < SWEEPGUN_SWEEP_RANGE && ABS2(SPY_DZ(actor)) < SWEEPGUN_SWEEP_DZ) {
           st->yawToSpyro = actor->rotZ;
-          st->sweepYaw = actor->rotZ << 4;
+          st->sweepYaw = ANGLE8_TO_12(actor->rotZ);
           actor->subMode = SWEEPGUN_STEP_FIRE;
           ENTER_POSE_B(actor, SWEEPGUN_SWEEP);
         }
@@ -1736,12 +1736,12 @@ void Level32_UpdateActors(void) {
             st->yawToSpyro = st->yawLimitB;
           }
           st->sweepYaw += st->sweepRate;
-          d = WrapAngleDelta8(st->yawToSpyro, st->sweepYaw >> 4);
+          d = WrapAngleDelta8(st->yawToSpyro, ANGLE12_TO_8(st->sweepYaw));
           if (TICK_DOWN(st->timer) != 0 && ABS(d) > SWEEPGUN_OVERSHOOT &&
               ((d < 0 && st->sweepRate < 0) || (d > 0 && st->sweepRate > 0))) {
             actor->subMode = SWEEPGUN_STEP_REVERSE;
           }
-          actor->rotZ = st->sweepYaw >> 4;
+          actor->rotZ = ANGLE12_TO_8(st->sweepYaw);
           if (g_dwGamestateFrames & 1) {
             Actor *o = g_pfnLevelSpawnActor(ACTOR_TYPE_BURST_GUNNER_SHOT, actor);
             unsigned char i = actor->rotZ - 5;

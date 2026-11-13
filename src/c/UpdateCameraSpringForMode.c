@@ -426,7 +426,7 @@ void UpdateCameraSpringForMode(void) {
     y = actor->posY;
     g_anCameraScriptedTargetPos[2] = z;
     g_anCameraScriptedTargetPos[1] = y;
-    g_nCameraParamsReferenceYaw = actor->rotZ << 4;
+    g_nCameraParamsReferenceYaw = ANGLE8_TO_12(actor->rotZ);
     g_nCameraTargetInverted = ComputeCameraToTargetAngle(&s[S_POS]);
     g_nCameraSpringYaw = g_nCameraYaw;
     g_nCameraSpringPitch = g_nCameraPitch;

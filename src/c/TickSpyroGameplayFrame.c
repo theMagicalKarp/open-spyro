@@ -88,9 +88,9 @@ void TickSpyroGameplayFrame(void) {
   }
   euler = g_abSpyroPersistentEulerBlock;
   bodyMtx = (int *)(euler + EULER_TO_BODY_MTX);
-  euler[0] = g_nSpyroBodyPitch >> 4;
+  euler[0] = ANGLE12_TO_8(g_nSpyroBodyPitch);
   g_abSpyroPersistentEuler[1] = g_nSpyroBodyRoll >> 4;
-  g_abSpyroPersistentEuler[2] = g_nSpyroBodyYaw >> 4;
+  g_abSpyroPersistentEuler[2] = ANGLE12_TO_8(g_nSpyroBodyYaw);
   ApplyEulerRotation(euler, bodyMtx, 0);
   composedMtx = (int *)(euler + EULER_TO_COMPOSED_MTX);
   ApplyEulerRotation(euler + 4, composedMtx, 0);

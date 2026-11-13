@@ -22,6 +22,11 @@
 #define ANGLE12_SHORT_WAY_UP(a, b) ((((a) - (b)) & ANGLE12_MASK) < ANGLE12_HALF + 1)
 #define ANGLE8_SHORT_WAY_UP(a, b) ((((a) - (b)) & ANGLE8_MASK) < ANGLE8_HALF + 1)
 
+/* Between the 8-bit angles of actor rot bytes / headings and the 12-bit
+ * angles of the camera, Spyro's body eulers and the sine LUT. */
+#define ANGLE8_TO_12(a) ((a) << 4)
+#define ANGLE12_TO_8(a) ((a) >> 4)
+
 /* A slow-in / slow-out ramp, FIXED_ONE - cos(phase): 0 at phase 0, 2.0
  * (0x2000) at a half turn (phase ANGLE12_HALF). The eased cutscene moves
  * scale a span by it >> 13. */

@@ -1622,8 +1622,8 @@ void Level22_UpdateActors(void) {
           }
           if (d < r && SPY_DZ(actor) < -GATEKEEPER_SWIPE_MIN_BELOW) {
             g_dwSpyroTriggerEventFlags |= (SPYRO_EV_CHARGE_HIT | SPYRO_EV_KNOCKBACK_2);
-            g_anSpyroRequestVelocity.x = (LookupCosine(actor->rotZ << 4) * GATEKEEPER_SWIPE_KNOCK_SPEED) >> 12;
-            g_nSpyroRequestVelocityY = (LookupSine(actor->rotZ << 4) * GATEKEEPER_SWIPE_KNOCK_SPEED) >> 12;
+            g_anSpyroRequestVelocity.x = (LookupCosine(ANGLE8_TO_12(actor->rotZ)) * GATEKEEPER_SWIPE_KNOCK_SPEED) >> 12;
+            g_nSpyroRequestVelocityY = (LookupSine(ANGLE8_TO_12(actor->rotZ)) * GATEKEEPER_SWIPE_KNOCK_SPEED) >> 12;
             g_nSpyroRequestVelocityZ = GATEKEEPER_SWIPE_KNOCK_VZ;
           }
         }

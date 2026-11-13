@@ -34,7 +34,7 @@ void SetSpawnAnchorFromActor(Actor *actor, int heading) {
   int *src;
   int i;
   int t;
-  g_anLevelSpawnYawBlock[0] = (heading << 4) & ANGLE12_MASK;
+  g_anLevelSpawnYawBlock[0] = (ANGLE8_TO_12(heading)) & ANGLE12_MASK;
   CopyVector(SPAWN_POS, &actor->posX);
   t = 1;
   *((volatile int *)(&g_nSpawnAnchorValid)) = t;

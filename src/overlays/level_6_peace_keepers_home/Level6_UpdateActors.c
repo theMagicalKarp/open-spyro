@@ -3224,7 +3224,7 @@ void Level6_UpdateActors(void) {
       }
       if (st->init == 0) {
         st->init = one;
-        st->heading = actor->rotZ << 4;
+        st->heading = ANGLE8_TO_12(actor->rotZ);
       }
       if (st->camFlag != 0) {
         g_dwSpyroRequestMask = (SPYRO_RQ_PENDING | SPYRO_RQ_LOCK_ON);
@@ -3276,7 +3276,7 @@ void Level6_UpdateActors(void) {
           }
         } else {
           actor->flags = 0;
-          st->heading = actor->rotZ << 4;
+          st->heading = ANGLE8_TO_12(actor->rotZ);
         }
         break;
 
@@ -4190,7 +4190,7 @@ void Level6_UpdateActors(void) {
           CAM.sim.v[0] += SPY.bodyYaw;
 
           SPY.bodyYaw += g_nPortalSkyYawSpin;
-          SPY.bodyRotZ = SPY.bodyYaw >> 4;
+          SPY.bodyRotZ = ANGLE12_TO_8(SPY.bodyYaw);
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);
@@ -4229,7 +4229,7 @@ void Level6_UpdateActors(void) {
           CAM.sim.v[0] += SPY.bodyYaw;
 
           SPY.bodyYaw += g_nPortalSkyYawSpin;
-          SPY.bodyRotZ = SPY.bodyYaw >> 4;
+          SPY.bodyRotZ = ANGLE12_TO_8(SPY.bodyYaw);
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);

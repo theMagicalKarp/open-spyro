@@ -2404,7 +2404,7 @@ void Level14_UpdateActors(void) {
           svF[0] += LookupCosine(h) >> 4;
           svF[1] += LookupSine(h) >> 4;
           CopyVector(&actor->posX, svF);
-          TurnActorYawTowardAngle(actor, g_nSpyroBodyYaw >> 4, 8, 0x20, YAW_STEP_IN_BAND);
+          TurnActorYawTowardAngle(actor, ANGLE12_TO_8(g_nSpyroBodyYaw), 8, 0x20, YAW_STEP_IN_BAND);
           st->bob = (st->bob + g_nFrameStep * 2) & 0xFF;
           EncodeHitNormalToActorGroundCode(actor);
           RefreshActorDerivedState(actor, ACTOR_REFRESH_GRID);

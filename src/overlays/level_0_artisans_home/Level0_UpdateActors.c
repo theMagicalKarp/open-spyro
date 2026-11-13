@@ -559,15 +559,15 @@ void Level0_UpdateActors(void) {
         } else {
           CopyVector(svA, &SPY.posX);
           {
-            int c = LookupCosine(SPY.bodyRotZ << 4);
-            int s = LookupSine(SPY.bodyRotZ << 4);
+            int c = LookupCosine(ANGLE8_TO_12(SPY.bodyRotZ));
+            int s = LookupSine(ANGLE8_TO_12(SPY.bodyRotZ));
             int cr = c * EGG_APEX_DIAG;
             int sr = s * EGG_APEX_DIAG;
             svA[0] = svA[0] + ((sr + cr) >> 12);
           }
           {
-            int s = LookupSine(SPY.bodyRotZ << 4);
-            int c = LookupCosine(SPY.bodyRotZ << 4);
+            int s = LookupSine(ANGLE8_TO_12(SPY.bodyRotZ));
+            int c = LookupCosine(ANGLE8_TO_12(SPY.bodyRotZ));
             int sr = s * EGG_APEX_DIAG;
             int cr = c * EGG_APEX_DIAG;
             svA[1] = svA[1] + ((sr - cr) >> 12);
@@ -595,8 +595,8 @@ void Level0_UpdateActors(void) {
           actor->rotZ = actor->rotZ + (g_nFrameStep << 2);
         } else {
           CopyVector(svD, &SPY.posX);
-          svD[0] = svD[0] + (LookupCosine(SPY.bodyRotZ << 4) >> 3);
-          svD[1] = svD[1] + (LookupSine(SPY.bodyRotZ << 4) >> 3);
+          svD[0] = svD[0] + (LookupCosine(ANGLE8_TO_12(SPY.bodyRotZ)) >> 3);
+          svD[1] = svD[1] + (LookupSine(ANGLE8_TO_12(SPY.bodyRotZ)) >> 3);
           svD[2] = svD[2] + EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
           st->angle = SPY.bodyRotZ - ANGLE8_QUARTER;
@@ -2862,7 +2862,7 @@ void Level0_UpdateActors(void) {
           CAM.sim.v[0] += SPY.bodyYaw;
 
           SPY.bodyYaw += g_nPortalSkyYawSpin;
-          SPY.bodyRotZ = SPY.bodyYaw >> 4;
+          SPY.bodyRotZ = ANGLE12_TO_8(SPY.bodyYaw);
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);
@@ -2901,7 +2901,7 @@ void Level0_UpdateActors(void) {
           CAM.sim.v[0] += SPY.bodyYaw;
 
           SPY.bodyYaw += g_nPortalSkyYawSpin;
-          SPY.bodyRotZ = SPY.bodyYaw >> 4;
+          SPY.bodyRotZ = ANGLE12_TO_8(SPY.bodyYaw);
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);

@@ -296,15 +296,15 @@ void Level17_UpdateActors(void) {
         } else {
           CopyVector(svA, &spy->posX);
           {
-            int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
-            int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
+            int c = LookupCosine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ));
+            int s = LookupSine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ));
             int cr = c * EGG_APEX_DIAG;
             int sr = s * EGG_APEX_DIAG;
             svA[0] = svA[0] + ((sr + cr) >> 12);
           }
           {
-            int s = LookupSine(g_bSpyroPersistentEulerZ << 4);
-            int c = LookupCosine(g_bSpyroPersistentEulerZ << 4);
+            int s = LookupSine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ));
+            int c = LookupCosine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ));
             int sr = s * EGG_APEX_DIAG;
             int cr = c * EGG_APEX_DIAG;
             svA[1] = svA[1] + ((sr - cr) >> 12);
@@ -332,8 +332,8 @@ void Level17_UpdateActors(void) {
           actor->rotZ = actor->rotZ + (g_nFrameStep << 2);
         } else {
           CopyVector(svD, &spy->posX);
-          svD[0] = svD[0] + (LookupCosine(g_bSpyroPersistentEulerZ << 4) >> 3);
-          svD[1] = svD[1] + (LookupSine(g_bSpyroPersistentEulerZ << 4) >> 3);
+          svD[0] = svD[0] + (LookupCosine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ)) >> 3);
+          svD[1] = svD[1] + (LookupSine(ANGLE8_TO_12(g_bSpyroPersistentEulerZ)) >> 3);
           svD[2] = svD[2] + EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, svD);
           st->angle = g_bSpyroPersistentEulerZ - ANGLE8_QUARTER;

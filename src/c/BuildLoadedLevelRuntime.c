@@ -85,7 +85,7 @@ void BuildLoadedLevelRuntime(int fullSetup) {
   if (g_anSpawnAnchorBlock[0] != 0) {
     CopyVector(g_anSpyroWorldPos,
                g_anSpawnAnchorBlock + 20); /* g_anLevelSpawnPos */
-    yaw = g_nLevelSpawnYaw >> 4;
+    yaw = ANGLE12_TO_8(g_nLevelSpawnYaw);
     g_abSpyroPersistentEuler[2] = yaw;
   } else if (g_nReturnPortalLevelId == 0) {
     g_anLevelSpawnPos[0] = p[0];

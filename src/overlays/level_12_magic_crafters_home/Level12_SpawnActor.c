@@ -109,8 +109,8 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
       rec->nextAnim = SPLITSHOT_FRAGMENT;
       *timer = 3;
     } else if (parent->nextFrame >= 6) {
-      rec->posX += LookupCosine(parent->rotZ << 4) >> 2;
-      rec->posY += LookupSine(parent->rotZ << 4) >> 2;
+      rec->posX += LookupCosine(ANGLE8_TO_12(parent->rotZ)) >> 2;
+      rec->posY += LookupSine(ANGLE8_TO_12(parent->rotZ)) >> 2;
       rec->posZ += 0x12C;
       rec->rotZ = parent->rotZ;
       turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ,

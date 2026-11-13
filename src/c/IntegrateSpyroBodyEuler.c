@@ -50,7 +50,7 @@ void IntegrateSpyroBodyEuler(int rate) {
       g_anSpyroBodyPitchBlock[SPY_ROLL - SPY_PITCH] >> 4;
   delta[2] = yawStep;
   YAW = (YAW + delta[2]) & 0xfff;
-  g_abSpyroPersistentEuler[2] = YAW >> 4;
+  g_abSpyroPersistentEuler[2] = ANGLE12_TO_8(YAW);
   delta[0] = (rollTerm * cosPitch) >> 12;
   g_anSpyroBodyPitchBlock[0] = (g_anSpyroBodyPitchBlock[0] + delta[0]) & 0xfff;
   g_abSpyroPersistentEuler[0] = g_anSpyroBodyPitchBlock[0] >> 4;

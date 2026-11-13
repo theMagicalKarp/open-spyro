@@ -579,7 +579,7 @@ extern int g_nFrameStep;                     /* 0x800756cc: VBlanks the last fra
 extern int g_nPortalTransitionActive;           /* 0x800756d0: set by a portal exit or hub return, cleared when TickLevelTransitionStream finishes; Spyro takes the scripted arrival (the hub portal glide-out, or the exit nudge) instead of the plain level spawn, and cannot bonk meanwhile */
 extern int g_nSubMenuScrollDelta;            /* 0x800756d4 */
 extern int g_nPadIsDualshockFlag;            /* 0x800756d8 */
-extern int g_nCameraShakeMagnitude;          /* 0x800756dc */
+extern int g_nCameraShakeMagnitude;          /* 0x800756dc: vertical camera shake scale; vestigial: only ResetCameraStateToTarget writes it (0), and nothing ever arms g_nCameraShakeDuration (xref audit) */
 extern int g_nCdStallTimeoutTicks;                 /* 0x800756e0: vblanks the in-flight CD read may take before RestartStalledCdRead reissues it (CD_STALL_TIMEOUT_TICKS); 0 = disarmed */
 extern void *g_pActorAuxPoolTop;             /* 0x800756e8 */
 extern int g_anSecondaryActorTexWords[2];    /* 0x800756f0 */
@@ -640,7 +640,7 @@ extern void *g_pEmitListBase;                /* 0x80075824: the emit list Raster
 extern struct Actor *g_pActorListBase;       /* 0x80075828: the level actor pool (0x58-byte Actor records, mode 0xFF ends it) */
 extern int g_nExtraLives;                    /* 0x8007582c: spare lives */
 extern int g_nLevelKeyState;                 /* 0x80075830: the level key (enum LevelKeyState): none, carried (key 173 picked up), locked chest (174) opened, its reward collected; shown as HUD counter 4 */
-extern int g_nCameraShakePeakAmplitude;      /* 0x80075848 */
+extern int g_nCameraShakePeakAmplitude;      /* 0x80075848: the shake's starting duration, its fade divisor (UpdateCameraFrame); vestigial like g_nCameraShakeMagnitude */
 extern int g_nPulseRumbleAmount;             /* 0x8007584c */
 extern int g_nPortalSkyYawSpin;        /* 0x80075858: portal-surface view spin, +2 a frame (DrawPortalsAndSky) */
 extern void *g_pDemoPadCursor;           /* 0x8007585c: read/write cursor into the recorded demo pad stream (SampleDemoPadFrame) */
@@ -677,7 +677,7 @@ extern int g_nLevelSelectWorldIndex;         /* 0x800758ec */
 extern int g_nLevelSelectSubIndex;           /* 0x800758f0: level slot (id % 10) last committed in level-select (warp) mode (HandleLevelSelectInput); write-only, nothing reads it back (xref audit) */
 extern int g_nPortalSkyPitchTilt;      /* 0x800758fc: portal-surface view tilt, +2 a frame (DrawPortalsAndSky) */
 extern int g_nHitRumbleTimer;                /* 0x80075904 */
-extern int g_nCameraShakeDuration;           /* 0x8007590c */
+extern int g_nCameraShakeDuration;           /* 0x8007590c: shake frames left; only reset to 0 and ticked down, so UpdateCameraFrame's shake never runs (xref audit) */
 extern unsigned int g_dwActiveCameraOptions;         /* 0x80075914: camera option word, CAM_OPT_ACTIVE or CAM_OPT_PASSIVE (camera.h); saved */
 extern int g_nScreenFadeLevel;              /* 0x80075918: fade-to-black level (drawn as a subtractive fullscreen tint, decays by g_nFrameStep in gameplay) */
 extern int g_nPortalDistanceFogEnabled;                /* 0x8007591c: portals beyond 0x4000 fade into g_dwWorldFogColor (DrawPortalsAndSky); set for Beast Makers home + Misty Bog and the opening-story cutscene */

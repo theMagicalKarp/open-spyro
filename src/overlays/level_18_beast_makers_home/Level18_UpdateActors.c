@@ -3390,7 +3390,7 @@ void Level18_UpdateActors(void) {
             *(Xform *)&g_nCameraSpringYaw = *(Xform *)&g_nCameraYaw;
             g_nSpyroBodyYaw = yaw + g_nPortalSkyYawSpin;
           }
-          g_bSpyroPersistentEulerZ = g_nSpyroBodyYaw >> 4;
+          g_bSpyroPersistentEulerZ = ANGLE12_TO_8(g_nSpyroBodyYaw);
           g_nCameraSpringYaw -= g_bSpyroPersistentEulerZ * 0x10;
           ComputeCameraOrbitOffset(&CAM.posX);
           AddVector(&CAM.posX, &CAM.posX, &SPY.posX);
@@ -3435,7 +3435,7 @@ void Level18_UpdateActors(void) {
             *(Xform *)&g_nCameraSpringYaw = *(Xform *)&g_nCameraYaw;
             g_nSpyroBodyYaw = yaw + g_nPortalSkyYawSpin;
           }
-          g_bSpyroPersistentEulerZ = g_nSpyroBodyYaw >> 4;
+          g_bSpyroPersistentEulerZ = ANGLE12_TO_8(g_nSpyroBodyYaw);
           g_nCameraSpringYaw -= g_bSpyroPersistentEulerZ * 0x10;
           ComputeCameraOrbitOffset(&CAM.posX);
           AddVector(&CAM.posX, &CAM.posX, &SPY.posX);

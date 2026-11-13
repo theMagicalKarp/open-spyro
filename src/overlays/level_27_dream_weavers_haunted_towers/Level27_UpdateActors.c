@@ -499,15 +499,15 @@ void Level27_UpdateActors(void) {
         } else {
           CopyVector(g056, &SPY.posX);
           {
-            int c = LookupCosine(SPY.bodyRotZ << 4);
-            int s = LookupSine(SPY.bodyRotZ << 4);
+            int c = LookupCosine(ANGLE8_TO_12(SPY.bodyRotZ));
+            int s = LookupSine(ANGLE8_TO_12(SPY.bodyRotZ));
             int cr = c * EGG_APEX_DIAG;
             int sr = s * EGG_APEX_DIAG;
             g056[0] = g056[0] + ((sr + cr) >> 12);
           }
           {
-            int s = LookupSine(SPY.bodyRotZ << 4);
-            int c = LookupCosine(SPY.bodyRotZ << 4);
+            int s = LookupSine(ANGLE8_TO_12(SPY.bodyRotZ));
+            int c = LookupCosine(ANGLE8_TO_12(SPY.bodyRotZ));
             int sr = s * EGG_APEX_DIAG;
             int cr = c * EGG_APEX_DIAG;
             g056[1] = g056[1] + ((sr - cr) >> 12);
@@ -535,8 +535,8 @@ void Level27_UpdateActors(void) {
           actor->rotZ = actor->rotZ + (g_nFrameStep << 2);
         } else {
           CopyVector(g104, &SPY.posX);
-          g104[0] = g104[0] + (LookupCosine(SPY.bodyRotZ << 4) >> 3);
-          g104[1] = g104[1] + (LookupSine(SPY.bodyRotZ << 4) >> 3);
+          g104[0] = g104[0] + (LookupCosine(ANGLE8_TO_12(SPY.bodyRotZ)) >> 3);
+          g104[1] = g104[1] + (LookupSine(ANGLE8_TO_12(SPY.bodyRotZ)) >> 3);
           g104[2] = g104[2] + EGG_APEX_HEIGHT;
           VectorToSVectorShr2(st->centre, g104);
           st->angle = SPY.bodyRotZ - ANGLE8_QUARTER;

@@ -5159,7 +5159,7 @@ void Level13_UpdateActors(void) {
           CAM.sim.v[0] += SPY.bodyYaw;
 
           SPY.bodyYaw += g_nPortalSkyYawSpin;
-          SPY.bodyRotZ = SPY.bodyYaw >> 4;
+          SPY.bodyRotZ = ANGLE12_TO_8(SPY.bodyYaw);
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);
@@ -5198,7 +5198,7 @@ void Level13_UpdateActors(void) {
           CAM.sim.v[0] += SPY.bodyYaw;
 
           SPY.bodyYaw += g_nPortalSkyYawSpin;
-          SPY.bodyRotZ = SPY.bodyYaw >> 4;
+          SPY.bodyRotZ = ANGLE12_TO_8(SPY.bodyYaw);
           CAM.sphere = CAM.sim;
           CAM.sphere.v[0] -= (SPY.bodyRotZ) << 4;
           ComputeCameraOrbitOffset(&CAM.posX);

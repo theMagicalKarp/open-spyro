@@ -175,7 +175,7 @@ void SaveMenu_Update(void) {
         SM[SM_MODE] = SAVE_MODE_MENU;
         SM[SM_PHASE] = 0;
         g_anCameraPos[2] = g_nSaveMenuCameraToZ;
-        SPYB[SPYB_EULER_Z] = g_nSaveMenuSpyroToYaw >> 4;
+        SPYB[SPYB_EULER_Z] = ANGLE12_TO_8(g_nSaveMenuSpyroToYaw);
         g_anCameraPos[1] =
             g_anSpyroWorldPos[1] + ((sn * g_nSaveMenuCameraToDist) >> 12);
       }

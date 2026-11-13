@@ -661,7 +661,7 @@ void Level28_UpdateActors(void) {
             AbsAngleDelta8(spy->bodyRotZ,
                           ArcTan2(actor->posX - spy->posX,
                                         actor->posY - spy->posY, ATAN_ANGLE8)) < CRAM_REAR_FACING &&
-            AbsAngleDelta8(g_nCameraEulerYaw >> 4,
+            AbsAngleDelta8(ANGLE12_TO_8(g_nCameraEulerYaw),
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
                 CRAM_REAR_CAM_CONE) {
@@ -2146,7 +2146,7 @@ void Level28_UpdateActors(void) {
         }
         if (ApproxDist2D(&actor->posX, &g_anSpyroWorldPos) < 0x2800 &&
             TICK_DOWN(st->timer) != 0 && actor->drawn != 0 &&
-            AbsAngleDelta8(g_nCameraEulerYaw >> 4,
+            AbsAngleDelta8(ANGLE12_TO_8(g_nCameraEulerYaw),
                           ArcTan2(actor->posX - g_anCameraPos[0],
                                         actor->posY - g_anCameraPos[1], ATAN_ANGLE8)) <
                 0x1E) {

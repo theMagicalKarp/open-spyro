@@ -2479,9 +2479,9 @@ void Level9_UpdateActors(void) {
         }
         if (st->speed != 0) {
           actor->posX +=
-              (st->speed * LookupCosine(st->knockHeading << 4)) >> 12;
+              (st->speed * LookupCosine(ANGLE8_TO_12(st->knockHeading))) >> 12;
           actor->posY +=
-              (st->speed * LookupSine(st->knockHeading << 4)) >> 12;
+              (st->speed * LookupSine(ANGLE8_TO_12(st->knockHeading))) >> 12;
         }
         actor->posZ += TRAM_PROBE_RAISE;
         z = FindGroundHeightBelow(&actor->posX, TRAM_PROBE_DEPTH);
