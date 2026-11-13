@@ -993,7 +993,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
             }
             gb[SPY_PITCH - SPY_GLIDE_BANK] =
                 (gb[SPY_PITCH - SPY_GLIDE_BANK] + g_nSpyroTurnRateAccum) &
-                0xFFF;
+                ANGLE12_MASK;
           }
           if (SPY[SPY_PITCH] > ANGLE12_HALF) {
             SPY[SPY_PITCH] -= ANGLE12_TURN;

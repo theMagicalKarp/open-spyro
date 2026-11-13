@@ -215,12 +215,12 @@ void ActorCutscene_Update(void) {
              ((SignedAngleDelta12(aim.vy, g_nCameraEulerPitch) *
                g_nActorCutsceneTimer) >>
               6)) &
-            0xFFF;
+            ANGLE12_MASK;
         g_nCameraEulerYaw = (*(unsigned short *)&g_nCameraEulerYaw +
                              ((SignedAngleDelta12(aim.vz, g_nCameraEulerYaw) *
                                g_nActorCutsceneTimer) >>
                               6)) &
-                            0xFFF;
+                            ANGLE12_MASK;
       } else {
         g_nCameraEulerPitch =
             ArcTan2(VectorLength(delta, VEC_LEN_XY), -delta[2], ATAN_ANGLE12);

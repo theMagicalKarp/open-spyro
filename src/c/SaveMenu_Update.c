@@ -97,18 +97,18 @@ void SaveMenu_Update(void) {
                               ((SignedAngleDelta12(ang[0], g_nCameraEulerRoll) *
                                 g_nSaveMenuAnimPhase) >>
                                5)) &
-                             0xFFF;
+                             ANGLE12_MASK;
         g_nCameraEulerPitch =
             (g_nCameraEulerPitch +
              ((SignedAngleDelta12(ang[1], g_nCameraEulerPitch) *
                g_nSaveMenuAnimPhase) >>
               5)) &
-            0xFFF;
+            ANGLE12_MASK;
         g_nCameraEulerYaw = (g_nCameraEulerYaw +
                              ((SignedAngleDelta12(ang[2], g_nCameraEulerYaw) *
                                g_nSaveMenuAnimPhase) >>
                               5)) &
-                            0xFFF;
+                            ANGLE12_MASK;
       } else {
         g_nCameraEulerRoll = 0;
         g_nCameraEulerPitch =

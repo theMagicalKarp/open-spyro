@@ -94,7 +94,7 @@ void ChangeSpyroState(int state) {
     SPY[SPY_SUBSTATE] = 0;
     a = (ArcTan2(SPY[SPY_MOTION], g_anSpyroMotionVec[1], ATAN_ANGLE12) -
          g_nSpyroBodyYaw) &
-        0xFFF;
+        ANGLE12_MASK;
     if (ANGLE12_BEHIND(a)) {
       g_nSpyroMotionSpeed = 0;
     } else {
@@ -501,7 +501,7 @@ void ChangeSpyroState(int state) {
     if (ANGLE12_BEHIND(
             (ArcTan2(SPY[SPY_MOTION], g_anSpyroMotionVec[1], ATAN_ANGLE12) -
              g_nSpyroBodyYaw) &
-            0xFFF)) {
+            ANGLE12_MASK)) {
       g_nSpyroMotionSpeed = 0;
     } else {
       g_nSpyroMotionSpeed = VectorLength(&SPY[SPY_MOTION], VEC_LEN_XY);
