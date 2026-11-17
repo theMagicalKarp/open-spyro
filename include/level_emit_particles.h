@@ -8,6 +8,7 @@
 #ifndef OPEN_SPYRO_LEVEL_EMIT_PARTICLES_H
 #define OPEN_SPYRO_LEVEL_EMIT_PARTICLES_H
 
+#include "port.h"
 #include "sparx.h"
 #include "spyro_state.h"
 
@@ -27,7 +28,7 @@ extern int g_anSpyroBodyMtx[];          /* Spyro orientation matrix (position at
 
 extern int g_nSparxHealth;
 
-extern unsigned char g_bSpyroPersistentEulerZ;
+extern PORT_VOLATILE unsigned char g_bSpyroPersistentEulerZ;
 
 /* Declared identically (by type) in two or more including files; hoisted here. */
 extern char *g_apSpritePrimQueue[];

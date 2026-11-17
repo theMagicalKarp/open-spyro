@@ -30,6 +30,13 @@ typedef struct {
   int z;
 } DeltaVec;
 
+#ifdef __psyz
+/* native: callers pass the delta as three ints, as the PS1 passes the struct
+   ($a1-$a3); wasm passes a by-value struct as a pointer. The callers' entry
+   point is in src/native/game/actor/move_by_delta.c. */
+#define MoveActorByDelta MoveActorByDelta_ByValue
+#endif
+
 /* The delta stays a by-value struct: all three words are homed together,
    which the in-place scaling below relies on (three int parameters would
    only home the one whose address is taken). */

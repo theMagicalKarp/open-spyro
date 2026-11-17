@@ -206,7 +206,7 @@ void Credits_Update(void) {
                   g_nWorldBundleChunkOffset + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
     S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pLevelDataBuffer_blk[0], 1);
     {
-      register char *src asm("$5");
+      REG_PIN(char *, src, "$5");
       S.pathTableBuffer = S.worldUnpackHead;
       src = S.pathTableBuffer;
       g_nSkyChunkCount = g_nLevelSkyChunkCount;

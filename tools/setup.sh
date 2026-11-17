@@ -7,10 +7,9 @@
 # the Docker image (tools/Dockerfile), not fetched as a prebuilt binary.
 #
 # Phases (run all, or one by name):
-#   tools      clone maspsx / decomp-permuter at pinned commits
+#   tools      clone maspsx at its pinned commit
 #   iso        clone + cmake-build mkpsxiso (host-native dumpsxiso + mkpsxiso)
-#   python     create the uv venv (splat/spimdisasm + open-spyro CLI) and sync
-#              the tools/open-spyro `match` group (m2c, asm-differ, permuter deps)
+#   python     create the uv venv (splat/spimdisasm + open-spyro CLI)
 #   docker     build the matching Docker image (tools/Dockerfile); this is where
 #              gcc 2.7.2 cc1 is compiled from source
 #
@@ -30,11 +29,8 @@ GCC272_SRC_SHA="e6271f14b095d7d8b2638c2b5e07d0d5cd05bc14"
 MASPSX_URL="https://github.com/mkst/maspsx.git"
 MASPSX_SHA="42b862c988fe7a13fe4e7ac0ebec90ed6b9fb763"
 
-PERMUTER_URL="https://github.com/simonlindholm/decomp-permuter.git"
-PERMUTER_SHA="efc5c5e7d9850f7267323b7dca6b41bc30a42d1f"
-
-# The Python matching tooling — splat/spimdisasm and m2c/asm-differ/permuter libs —
-# is pinned solely in tools/open-spyro (pyproject.toml `split`/`match` groups,
+# The Python tooling — splat/spimdisasm and the open-spyro CLI — is pinned
+# solely in tools/open-spyro (pyproject.toml `split` group,
 # locked in uv.lock). Both the host (`uv run --project tools/open-spyro`) and the
 # Docker image (`uv export | uv pip install --system`) install from that one lock,
 # so there are no version pins to keep in sync here.
@@ -71,9 +67,6 @@ clone_pinned() {
 }
 phase_tools() {
   clone_pinned "$MASPSX_URL"    "$MASPSX_SHA"    tools/maspsx
-  # m2c + asm-differ are uv git deps now (tools/open-spyro `match` group); only
-  # decomp-permuter still needs a clone (it ships no installable package).
-  clone_pinned "$PERMUTER_URL"  "$PERMUTER_SHA"  tools/decomp-permuter
 }
 
 # ---- mkpsxiso disc tools (host-native cmake build) ---------------------------
@@ -109,16 +102,15 @@ phase_iso() {
 # ---- python tooling (uv project) ---------------------------------------------
 # All host Python tooling lives in the tools/open-spyro uv project, locked in its
 # uv.lock and materialised into tools/open-spyro/.venv:
-#   project (open-spyro CLI) + dev (ruff/ty) + split (splat/spimdisasm) + match
-#   (m2c, asm-differ, decomp-permuter deps). The Makefile and CI invoke it via
+#   project (open-spyro CLI) + dev (ruff/ty) + split (splat/spimdisasm). The Makefile and CI invoke it via
 #   `uv run --project tools/open-spyro …`; there is no bare root .venv anymore.
 # The Docker image installs the same groups from the same uv.lock (via
 # `uv export | uv pip install --system`, see tools/Dockerfile), so host and image
 # share one set of pins — there are no versions to keep in sync here.
 phase_python() {
   command -v uv >/dev/null 2>&1 || die "uv not found — install from https://docs.astral.sh/uv/"
-  log "syncing tools/open-spyro (split + match groups: splat/spimdisasm, m2c/asm-differ, permuter deps)"
-  uv sync --group split --group match --project tools/open-spyro
+  log "syncing tools/open-spyro (split group: splat/spimdisasm)"
+  uv sync --group split --project tools/open-spyro
 }
 
 # ---- docker matching image ---------------------------------------------------
@@ -150,7 +142,6 @@ phase_verify() {
     echo "== cc1 -version ==";         /opt/gcc2.7.2/cc1 -version < /dev/null 2>&1 | grep -i "version" | head -1
     echo "== maspsx --help ==";        python3 /opt/maspsx/maspsx.py --help >/dev/null && echo ok
     echo "== splat --version ==";       splat --version
-    echo "== m2c --help ==";           m2c --help >/dev/null && echo ok
     echo "== trivial compile chain =="; tmp=$(mktemp -d)
     printf "int f(void){return 0;}\n" > "$tmp/t.c"
     bash config/compile.sh main "$tmp/t.c" "$tmp/t.o"

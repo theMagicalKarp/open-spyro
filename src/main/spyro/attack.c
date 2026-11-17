@@ -306,8 +306,8 @@ void TickSpyroAttackEffects(int steps) {
         if (FLAME_SLOT_AGE[i] >= limit) {
           FLAME_SLOT_AGE[i] = 0;
         } else if (FLAME_SLOT_STATE[i] != 2) {
-          register short *tbl asm("$2");
-          register short *path asm("$3");
+          REG_PIN(short *, tbl, "$2");
+          REG_PIN(short *, path, "$3");
 
           if (i < 4) {
             k = i * count;
@@ -456,7 +456,7 @@ void TickSpyroFlameAttack(void) {
     cancel[0] = 0;
     ZeroVector(&cancel[3]);
   } else {
-    register int *strike asm("$17") = g_anSpyroFlameStateBlock;
+    REG_PIN(int *, strike, "$17") = g_anSpyroFlameStateBlock;
 
     switch (strike[0]) {
     case SPYRO_FLAME_IDLE:

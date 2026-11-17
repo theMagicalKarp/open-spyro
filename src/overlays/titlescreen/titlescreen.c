@@ -147,8 +147,8 @@ void Titlescreen_Update(void) {
         /* kick off loading titlescreen data from the CD */
         /* StartCdReadAsync's lba in a0 and the sector offset in a3, as in
          * the original (A374). */
-        register int cd asm("$4");
-        register int t asm("$7");
+        REG_PIN(int, cd, "$4");
+        REG_PIN(int, t, "$7");
         cd = *((volatile int *) &g_nCdBaseLba.baseLba);
         t = g_nTitleSceneSectorOffset;
         StartCdReadAsync(cd, g_pRenderScratchRegionBase - TIM_PAGE_BYTES, TIM_PAGE_BYTES,

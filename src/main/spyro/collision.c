@@ -314,9 +314,9 @@ void NudgeSpyroFromWallProbes(void) {
   int i;
   int a;
   short *cosp;
-  register short *sinTab asm("$18");
+  REG_PIN(short *, sinTab, "$18");
   int *pos;
-  register int *pto asm("$20");
+  REG_PIN(int *, pto, "$20");
   int sh0;
   int sh1;
 

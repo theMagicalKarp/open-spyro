@@ -751,7 +751,7 @@ int AdvanceSpyroPhysics(void) {
   CopyVector(&SPY[SPY_PREV_POS], SPY);
   if ((int)g_dwSpyroRequestMask < 0) {
     unsigned int m;
-    register unsigned int t asm("$4");
+    REG_PIN(unsigned int, t, "$4");
     unsigned int *rq;
     unsigned int *rq2;
 
@@ -924,7 +924,7 @@ int AdvanceSpyroPhysics(void) {
       } else if (m & SPYRO_RQ_TARGET_CAMERA) {
         g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_SCRIPTED_TARGET);
       } else {
-        register unsigned int r asm("$2") = t & SPYRO_RQ_FOLLOW_CAMERA;
+        REG_PIN(unsigned int, r, "$2") = t & SPYRO_RQ_FOLLOW_CAMERA;
 
         if (r) {
           g_nCameraNextMode_blk[0] = (CAM_HELD | CAM_MODE_SCRIPTED_FOLLOW);
@@ -952,11 +952,11 @@ int AdvanceSpyroPhysics(void) {
     }
     i = 0;
     if (steps > 0) {
-      register int *fp6 asm("$16") = g_anSpyroVelocityFp6;
+      REG_PIN(int *, fp6, "$16") = g_anSpyroVelocityFp6;
       int *from = fp6 + 3;
       int *pos = fp6 - SPY_VELOCITY_FP6;
-      register int *st asm("$21") = fp6 - (SPY_VELOCITY_FP6 - SPY_STATE);
-      register int one asm("$20") = 1;
+      REG_PIN(int *, st, "$21") = fp6 - (SPY_VELOCITY_FP6 - SPY_STATE);
+      REG_PIN(int, one, "$20") = 1;
 
       do {
         int tries;
@@ -1257,7 +1257,7 @@ void UpdateSpyroStateBehavior(void) {
     }
     if (AbsAngleDelta12(g_nSpyroMoveTargetYaw, g_nSpyroBodyYaw) >
         SPYRO_REVERSE_ANGLE) {
-      register int a0 asm("$4");
+      REG_PIN(int, a0, "$4");
 
       REG_RESERVE(a0);
       if (g_nPadStickActiveFlag != 0) {
@@ -2511,7 +2511,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     OPAQUE(w);
     WALL_SLIDE(w, g_nSpyroMotionSpeed = VectorLength(w, VEC_LEN_XYZ));
     {
-      register int *cb asm("$6") = &SPY[SPY_CLIFF];
+      REG_PIN(int *, cb, "$6") = &SPY[SPY_CLIFF];
 
       OPAQUE(cb);
       if (cb[0] != 0 || g_nSpyroAirborneFrames != 0) {
@@ -2605,7 +2605,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     OPAQUE(w);
     WALL_SLIDE(w, g_nSpyroMotionSpeed = VectorLength(w, VEC_LEN_XYZ));
     {
-      register int *ab asm("$6") = &SPY[SPY_AIRBORNE];
+      REG_PIN(int *, ab, "$6") = &SPY[SPY_AIRBORNE];
 
       OPAQUE(ab);
       if (ab[0] != 0) {
@@ -2941,10 +2941,10 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     if (g_nSpyroFlightMode != 0) {
       int moving;
       int n;
-      register int mix asm("$20");
+      REG_PIN(int, mix, "$20");
       int i;
       int k;
-      register unsigned char *ap asm("$19");
+      REG_PIN(unsigned char *, ap, "$19");
       int n0;
       int *next;
 
@@ -2953,8 +2953,8 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         int w;
         int z;
         int c;
-        register int nx asm("$17");
-        register int *sp asm("$21");
+        REG_PIN(int, nx, "$17");
+        REG_PIN(int *, sp, "$21");
 
         if (g_pPadSubstepState->stickActive != 0) {
           x = PADB[PAD_LX_OFFSET] - PAD_STICK_CENTER;
@@ -3174,7 +3174,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         break;
       }
       case SPYRO_SUB_GLIDE_L1: {
-        register int *gb asm("$6") = &SPY[SPY_GLIDE_BANK];
+        REG_PIN(int *, gb, "$6") = &SPY[SPY_GLIDE_BANK];
 
         OPAQUE(gb);
         if (gb[0] != 0) {
@@ -3441,7 +3441,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
         g_nSpyroSpeedTarget = SPYRO_GLIDE_SPEED;
       }
       {
-        register int *t asm("$5") = &SPY[SPY_SPEED_TARGET];
+        REG_PIN(int *, t, "$5") = &SPY[SPY_SPEED_TARGET];
         int tg;
 
         OPAQUE(t);
@@ -3744,7 +3744,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
     int y;
     int a;
     int c;
-    register int *yp asm("$19");
+    REG_PIN(int *, yp, "$19");
 
     INVULN_TICK(&SPY[SPY_INVULN]);
     READ_STICK(x, y);
@@ -3774,7 +3774,7 @@ void IntegrateSpyroMotionForSubstep(int substep) {
   case SPYRO_ST_SCRIPTED_WALK: {
     int *obj;
     int *ob;
-    register int *obj2 asm("$19");
+    REG_PIN(int *, obj2, "$19");
     int dist;
     int ang;
     int dt;
@@ -3950,12 +3950,12 @@ void IntegrateSpyroMotionForSubstep(int substep) {
   g_abSpyroPersistentEuler[1] = g_nSpyroBodyRoll >> 4;
   g_abSpyroPersistentEuler[2] = ANGLE12_TO_8(g_nSpyroBodyYaw);
   {
-    register int hr asm("$9");
+    REG_PIN(int, hr, "$9");
 
     __asm__ volatile("" : "=r"(hr));
   }
   {
-    register int hs asm("$18");
+    REG_PIN(int, hs, "$18");
 
     __asm__ volatile("" : "=r"(hs));
   }

@@ -6,7 +6,9 @@
 /* Empty stub at 0x80037E98 — bare `jr $ra; nop`. Every animation queue in
    the actor code (the ANIM_* / ENTER_POSE macros and their open-coded
    copies) calls it right after setting nextAnim/nextFrame. */
+#ifndef __psyz /* natively: src/native/game/actor/helpers.c */
 void OnActorAnimQueued(void) {}
+#endif
 
 /* Uniform random integer in the inclusive range [lo, hi]: reduce a fresh 32-bit
    draw modulo the span (hi - lo + 1) and bias by lo. The draw is taken as

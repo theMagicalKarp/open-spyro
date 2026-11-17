@@ -40,11 +40,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0 # need base branch to compute the PR progress delta
-
-      - name: Set up uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
@@ -60,36 +55,68 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Build + verify + progress
+      - name: Build + verify + 100% match gate
         run: |
           docker run --rm -v "$PWD:/work" -w /work \
             open-spyro/matchenv:latest bash tools/ci.sh
 
-      # ---- PR: hand the delta off to the privileged commenter ----------
-      # This job runs the PR's own code, so on a forked PR its GITHUB_TOKEN is
-      # read-only no matter what `permissions:` asks for — it cannot post the
-      # comment itself. Instead it just uploads the rendered body, and
-      # pr-comment.yml (triggered by workflow_run, running from main with a
-      # write token and no PR checkout) posts it. See that file's header.
-      - name: Compute progress delta vs base
-        if: github.event_name == 'pull_request'
-        env:
-          BASE_REF: ${{ github.base_ref }}
-        run: |
-          # progress.json is a gitignored build artifact (not committed), so the
-          # base numbers come from the base branch's tracked PROGRESS.md headline.
-          mkdir -p /tmp/delta
-          git show "origin/${BASE_REF}:PROGRESS.md" > /tmp/base_progress.md 2>/dev/null \
-            || : > /tmp/base_progress.md
-          uv run --project tools/open-spyro -- open-spyro progress-delta \
-            --base-ref "$BASE_REF" \
-            --head-json progress.json \
-            --base-md /tmp/base_progress.md > /tmp/delta/body.md
+  # Native port on each supported host. Independent of build-verify,
+  # which stays the required matching gate; this only proves the native build
+  # still builds and boots. Disc-free: the stub executable runs no game data.
+  native:
+    name: native (${{ matrix.host }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - host: macos-arm64
+            runner: macos-15
+          - host: linux-arm64
+            runner: ubuntu-24.04-arm
+          - host: linux-x86_64
+            runner: ubuntu-24.04
+    runs-on: ${{ matrix.runner }}
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          submodules: true # external/psyz only; PsyZ's own submodules are not needed
 
-      - name: Upload progress delta
-        if: github.event_name == 'pull_request'
+      - name: Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+
+      - name: Cache native toolchain
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: build/native-tools
+          key: native-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/native_setup.sh') }}
+
+      - name: Linux packages (compiler, cmake, SDL3 build deps, software Vulkan)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y $(sed -n '/^LINUX_PACKAGES="/,/"$/p' tools/native_setup.sh \
+            | sed 's/LINUX_PACKAGES=//; s/[\\"]//g') mesa-vulkan-drivers
+
+      - name: Native toolchain (wasi-sdk, wasm2c, SDL3)
+        run: bash tools/native_setup.sh
+
+      - name: Build
+        run: make native
+
+      - name: Smoke run (stub main, 60 frames)
+        run: |
+          # Linux runners have no display.
+          if [ "$RUNNER_OS" = Linux ]; then export SDL_VIDEODRIVER=offscreen; fi
+          build/native/spyro --stub --frames 60 --screenshot build/native/smoke.bmp
+
+      - name: Upload smoke screenshot
+        if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: progress-delta
-          path: /tmp/delta/body.md
-          retention-days: 1
+          name: native-smoke-${{ matrix.host }}
+          path: build/native/smoke.bmp
+          if-no-files-found: ignore
+          retention-days: 7

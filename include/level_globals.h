@@ -226,7 +226,12 @@ extern int g_nCreditsPageIndex;
 extern char *g_pCreditsGlyphPool;
 
 /* Declared identically by two or more overlay files; hoisted here. */
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+extern int MoveImage();
+#else
 extern void MoveImage(); /* K&R: the credits pass their own rect views */
+#endif
 extern int (*g_pfnFlightTimeFormatter)();
 extern void (*g_pfnLevelHandleFlightResults)();
 
@@ -247,8 +252,20 @@ extern void RefreshHudLevelGemCounter(void);
 #endif
 extern void ResetSpyroEntity(int full);
 extern void ResetSpyroLinearMotion(void);
+#ifdef __psyz
+/* native: the definition takes a 4th (unused) argument */
+extern int (StepAngle8Toward)(int to, int from, int maxStep, int unused);
+#define StepAngle8Toward(to, from, maxStep) StepAngle8Toward(to, from, maxStep, 0)
+#else
 extern int StepAngle8Toward(int to, int from, int maxStep);
+#endif
+#ifdef __psyz
+/* native: the definition takes no arguments (callers set $a0/$a1 it ignores) */
+extern void (StubRewardHook)(void);
+#define StubRewardHook(...) (StubRewardHook)()
+#else
 extern void StubRewardHook(int script, int a);
+#endif
 extern void UnpackWorldCollisionTri(int chunk, int *verts);
 extern int WrapAngleDelta8(int a, int b);
 extern unsigned char g_abLevelVisitedFlag[];

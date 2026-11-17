@@ -204,7 +204,7 @@ void DrawPortalsAndSky(void) {
       g_pPortalDeferredTriStackTop = g_anPortalDeferredTriStack;
 
       for (; j < g_apPortals[i]->nPoints; j++) {
-        register int k asm("$5");
+        REG_PIN(int, k, "$5");
 
         if (facing > 0) {
           k = j + 1;
@@ -215,7 +215,7 @@ void DrawPortalsAndSky(void) {
           k = j - 1;
           if (k < 0) {
             {
-              register int n asm("$2") = g_apPortals[i]->nPoints;
+              REG_PIN(int, n, "$2") = g_apPortals[i]->nPoints;
 
               k = n - 1;
             }
@@ -285,7 +285,7 @@ void DrawPortalsAndSky(void) {
 
       if ((flagX == 0 && flagY == 0) || nEdges == 0) {
         {
-          register int np asm("$2") = g_apPortals[i]->nPoints;
+          REG_PIN(int, np, "$2") = g_apPortals[i]->nPoints;
 
           sumX /= np;
           g_nPortalOtDepthBin = (g_nPortalOtDepthBin / np) >> 7;
@@ -397,7 +397,7 @@ void DrawPortalsAndSky(void) {
           }
 
           for (j = 0; j < g_apPortals[i]->nPoints; j++) {
-            register int k asm("$5");
+            REG_PIN(int, k, "$5");
 
             if (facing > 0) {
               k = j + 1;
@@ -408,7 +408,7 @@ void DrawPortalsAndSky(void) {
               k = j - 1;
               if (k < 0) {
                 {
-                  register int n asm("$2") = g_apPortals[i]->nPoints;
+                  REG_PIN(int, n, "$2") = g_apPortals[i]->nPoints;
 
                   k = n - 1;
                 }

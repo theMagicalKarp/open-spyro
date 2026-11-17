@@ -222,8 +222,8 @@ void Level5_FlightResults_Draw(void)
     int off, bias;
     do { off = PRIM_BUFFER_BYTES; bias = -MENU_SNAPSHOT_BYTES; } while (0);
     {
-    register char *e8 asm("$3");
-    register char *f0 asm("$2");
+    REG_PIN(char *, e8, "$3");
+    REG_PIN(char *, f0, "$2");
     e8 = g_pRenderScratchRegionBase;
     f0 = g_pRenderScratchPrimTop[0];
     g_nPrimBufferOverflowFlag = 0;
@@ -236,19 +236,19 @@ void Level5_FlightResults_Draw(void)
     g_pSpriteRecordWriteCursor = (Actor *)tv;
     quad:
     {
-    register int xx asm("$3");
-    register int tp asm("$7");
+    REG_PIN(int, xx, "$3");
+    REG_PIN(int, tp, "$7");
     xx = i << 7;
 
     tp = i + MENU_BACKDROP_TPAGE;
     p = g_pPrimBufferWriteCursor;
     {
-    register int a asm("$2");
-    register int d asm("$3");
-    register unsigned short bh asm("$5");
-    register unsigned short ch asm("$6");
-    register unsigned char bq asm("$5");
-    register unsigned char cq asm("$6");
+    REG_PIN(int, a, "$2");
+    REG_PIN(int, d, "$3");
+    REG_PIN(unsigned short, bh, "$5");
+    REG_PIN(unsigned short, ch, "$6");
+    REG_PIN(unsigned char, bq, "$5");
+    REG_PIN(unsigned char, cq, "$6");
     QUAD->tag = PRIM_TAG(9);
     QUAD->code = GPU_CODE_POLY_FT4;
     QUAD->r0 = 0x4C;

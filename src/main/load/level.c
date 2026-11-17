@@ -763,8 +763,8 @@ sprites:
   }
   if (g_nDemoMode != DEMO_OFF) {
     {
-      register int demo asm("$3");
-      register int poseWord asm("$2");
+      REG_PIN(int, demo, "$3");
+      REG_PIN(int, poseWord, "$2");
 
       srand(1234);
       demo = g_nDemoIndex;
@@ -804,7 +804,7 @@ sprites:
       EncodeHitNormalToActorGroundCode(&g_pActorListBase[i]);
       type = g_pActorListBase[i].killGroup;
       if (((unsigned int)(type & 0x7F)) < 0x20) {
-        register int runBit asm("$5");
+        REG_PIN(int, runBit, "$5");
         killWord = i >> 5;
         runBit = i & 0x1F;
         runBit = 1 << runBit;
@@ -826,9 +826,9 @@ sprites:
   i = 0;
   if (((Actor *)rec)->mode != ACTOR_MODE_END) {
     do {
-      register int bitIdx asm("$5");
-      register int tbl asm("$3");
-      register int levelBit asm("$3");
+      REG_PIN(int, bitIdx, "$5");
+      REG_PIN(int, tbl, "$3");
+      REG_PIN(int, levelBit, "$3");
       killWord = i >> 5;
       bitIdx = i & 0x1F;
       tbl = (int)g_anLevelKillBitmapTable;
@@ -847,8 +847,8 @@ sprites:
           }
         } else {
           {
-            register int k3 asm("$3");
-            register int k4 asm("$4");
+            REG_PIN(int, k3, "$3");
+            REG_PIN(int, k4, "$4");
 
             REG_RESERVE(k3);
             REG_RESERVE(k4);
@@ -1322,7 +1322,7 @@ void ApplyPerLevelGlobalsTable(void) {
    frame slots and clear the merged-chain head and the OT. The empty volatile
    asm keeps the first FillWord's `a1 = 0` below the RegionBase store. */
 void InitActorMeshScratchRegions(int split) {
-  register char *top asm("$2");
+  REG_PIN(char *, top, "$2");
   int size;
 
   top = g_pWorkAreaTop;

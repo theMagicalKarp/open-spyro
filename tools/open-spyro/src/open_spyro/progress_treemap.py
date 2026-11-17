@@ -13,7 +13,7 @@ and colored by match status:
 
 The layout is a classic squarified treemap (Bruls/Huizing/van Wijk): tiles keep a
 near-1 aspect ratio so the eye reads relative size honestly. Pure stdlib — no
-toolchain, no external service. Run via ``open-spyro progress-map``.
+toolchain, no external service. Run via ``open-spyro progress-treemap``.
 """
 
 from __future__ import annotations

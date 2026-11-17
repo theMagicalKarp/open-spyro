@@ -21,20 +21,15 @@ from open_spyro import (
     gen_overlay_yaml,
     gen_slots_ld,
     gen_syms_ld,
-    merge_c,
+    handasm,
+    native,
+    neutral,
     normalize_binary,
     overlays,
-    partial,
-    permuter,
     progress,
-    progress_delta,
     progress_treemap,
-    readability,
-    rename,
     sectionize,
-    triage,
     wad,
-    xref,
 )
 from open_spyro.paths import repo_root
 
@@ -45,83 +40,28 @@ app = typer.Typer(
 )
 
 
-def _progress() -> None:
+def _progress(
+    require_full: Annotated[
+        bool,
+        typer.Option(
+            "--require-full",
+            help="exit non-zero unless every game function is matched from C (100.00%)",
+        ),
+    ] = False,
+) -> None:
     """Regenerate the C-match progress report (PROGRESS.md + badge)."""
-    progress.run()
-
-
-def _partial() -> None:
-    """Score parked `.c.wip` attempts (Docker) -> build/partial.json for `progress`."""
-    partial.run()
-
-
-def _partial_score(
-    manifest: Annotated[
-        Path, typer.Option("--manifest", help="per-function target/candidate objects")
-    ],
-    out: Annotated[Path, typer.Option("--out", help="write per-function matched_bytes here")],
-) -> None:
-    """In-container half of `partial`: objdump-diff each target/candidate object pair."""
-    partial.score_from_manifest(manifest, out)
-
-
-def _permuter(
-    name: Annotated[str, typer.Argument(help="function name (main EXE or any split overlay)")],
-    stage_only: Annotated[
-        bool, typer.Option("--stage-only", "-n", help="stage the dir, don't launch the permuter")
-    ] = False,
-    threads: Annotated[int, typer.Option("-j", "--threads", help="permuter worker threads")] = 4,
-    keep: Annotated[
-        bool, typer.Option("--keep", help="reuse an existing staged dir instead of restaging")
-    ] = False,
-    no_prune: Annotated[
-        bool, typer.Option("--no-prune", help="skip import.py source minimization (parse fallback)")
-    ] = False,
-    no_stop_on_zero: Annotated[
-        bool, typer.Option("--no-stop-on-zero", help="keep permuting after a byte-perfect match")
-    ] = False,
-) -> None:
-    """Stage a decomp-permuter dir for a parked `.c.wip` and launch the permuter (Docker)."""
-    permuter.run(
-        name,
-        stage_only=stage_only,
-        threads=threads,
-        keep=keep,
-        no_prune=no_prune,
-        stop_on_zero=not no_stop_on_zero,
-    )
+    if not progress.run() and require_full:
+        raise typer.Exit(1)
 
 
 def _progress_treemap(
     progress_json: Annotated[
-        Path | None, typer.Option("--progress-json", help="freshly generated head progress.json")
+        Path | None, typer.Option("--progress-json", help="progress.json to render")
     ] = None,
     output: Annotated[Path | None, typer.Option("-o", "--output", help="write SVG here")] = None,
 ) -> None:
-    """Regenerate the progress svg treemap."""
+    """Regenerate the progress svg treemap (docs/progress_map.svg)."""
     progress_treemap.run(progress_json, output)
-
-
-def _progress_delta(
-    base_ref: Annotated[
-        str, typer.Option("--base-ref", help="base branch name (shown in the comment)")
-    ],
-    head_json: Annotated[
-        Path, typer.Option("--head-json", help="freshly generated head progress.json")
-    ],
-    base_md: Annotated[
-        Path, typer.Option("--base-md", help="base branch PROGRESS.md (may be empty/missing)")
-    ],
-) -> None:
-    """Print the CI PR progress-delta comment body (head progress.json vs base PROGRESS.md)."""
-    progress_delta.run(base_ref, head_json, base_md)
-
-
-def _triage(
-    top: Annotated[int, typer.Option("--top", help="ranked candidates to print/table")] = 15,
-) -> None:
-    """Rank the remaining unmatched functions (TRIAGE.md + config/triage_overrides.yaml)."""
-    triage.run(top)
 
 
 def _sectionize() -> None:
@@ -157,14 +97,6 @@ def _gen_slots_ld(
         gen_slots_ld.run_overlay(overlay, check_objects)
     else:
         gen_slots_ld.run(check_objects)
-
-
-def _merge_c(
-    out: Annotated[Path, typer.Argument(help="the merged .c to write")],
-    srcs: Annotated[list[Path], typer.Argument(help="the .c files to merge (deleted after)")],
-) -> None:
-    """Merge C files into one translation unit, functions in address order."""
-    merge_c.merge(out, srcs)
 
 
 def _c_functions(
@@ -236,51 +168,23 @@ def _verify_overlays(
     overlays.verify(compare_bytes)
 
 
-def _rename(
-    old: Annotated[str, typer.Argument(help="current symbol name")],
-    new: Annotated[str, typer.Argument(help="new symbol name (a C identifier)")],
-    overlay: Annotated[
-        str, typer.Option("--overlay", help="overlay segment, for an autolabel several define")
-    ] = "",
-    views: Annotated[
-        bool, typer.Option("--views/--no-views", help="also rename OLD_<suffix> aliases")
-    ] = True,
-    dry_run: Annotated[bool, typer.Option("--dry-run", help="report, change nothing")] = False,
+def _neutral(
+    ref: Annotated[str, typer.Option("--ref", help="git ref to compare against")] = "HEAD",
+    host: Annotated[
+        bool, typer.Option("--host", help="use the host clang cpp instead of Docker's")
+    ] = False,
 ) -> None:
-    """Rename a symbol everywhere (seeds, asm, layout, headers, C + file names). Byte-neutral."""
-    rename.run(old, new, overlay, views, dry_run)
-
-
-def _canonicalize(
-    paths: Annotated[
-        list[str] | None, typer.Argument(help="limit to these src/ files or dirs")
-    ] = None,
-    dry_run: Annotated[bool, typer.Option("--dry-run", help="report, change nothing")] = False,
-) -> None:
-    """Rewrite C refs to autolabels (func_/D_<ADDR>) that main already names."""
-    rename.canonicalize(paths or [], dry_run)
-
-
-def _readability(
-    top: Annotated[int, typer.Option("--top", help="files to list in the table")] = 40,
-) -> None:
-    """Score per-file naming/typing debt in the matched C (READABILITY.md)."""
-    readability.run(top)
+    """Check the PS1 preprocessor output of every game .c is unchanged vs a ref."""
+    neutral.run(ref, host)
 
 
 app.command("progress")(_progress)
-app.command("partial")(_partial)
-app.command("partial-score")(_partial_score)
-app.command("permuter")(_permuter)
 app.command("progress-treemap")(_progress_treemap)
-app.command("progress-delta")(_progress_delta)
-app.command("triage")(_triage)
 app.command("sectionize")(_sectionize)
 app.command("sectionize-overlays")(_sectionize_overlays)
 app.command("gen-overlay-yaml")(_gen_overlay_yaml)
 app.command("gen-slots-ld")(_gen_slots_ld)
 app.command("c-functions")(_c_functions)
-app.command("merge-c")(_merge_c)
 app.command("gen-syms-ld")(_gen_syms_ld)
 app.command("diff")(_diff)
 app.command("fixup-hasm")(_fixup_hasm)
@@ -288,40 +192,7 @@ app.command("normalize-binary")(_normalize_binary)
 app.command("list-overlays")(_list_overlays)
 app.command("overlay-size")(_overlay_size)
 app.command("verify-overlays")(_verify_overlays)
-app.command("rename")(_rename)
-app.command("canonicalize")(_canonicalize)
-app.command("readability")(_readability)
-
-
-# ---- xref: nested group -----------------------------------------------------
-xref_app = typer.Typer(
-    help="Data / call cross-references from the disassembly.", no_args_is_help=True
-)
-app.add_typer(xref_app, name="xref")
-
-
-@xref_app.command("data")
-def xref_data(
-    target: Annotated[str, typer.Argument(help="symbol name or 0x address")],
-    size: Annotated[
-        str | None,
-        typer.Option("--size", help="bytes to cover (hex ok); default: the declared size:, else 4"),
-    ] = None,
-) -> None:
-    """Functions that read / write an address range (held bases and raw lui/addiu resolved)."""
-    xref.data(target, int(size, 0) if size else None)
-
-
-@xref_app.command("callers")
-def xref_callers(func: Annotated[str, typer.Argument(help="function name")]) -> None:
-    """jal callers of a function across main and every overlay."""
-    xref.callers(func)
-
-
-@xref_app.command("audit")
-def xref_audit() -> None:
-    """globals.h globals nothing references, only ever written, or (.bss) never stored."""
-    xref.audit()
+app.command("neutral")(_neutral)
 
 
 # ---- wad: nested group ------------------------------------------------------
@@ -356,6 +227,48 @@ def wad_pack(
 def wad_verify() -> None:
     """Round-trip proof: repack from current parts, assert SHA-1 == original."""
     wad.verify()
+
+
+# ---- native: nested group ---------------------------------------------------
+native_app = typer.Typer(
+    help="Native (wasm32 -> wasm2c -> arm64) port helpers.", no_args_is_help=True
+)
+app.add_typer(native_app, name="native")
+
+
+@native_app.command("got-table")
+def native_got_table(
+    header: Annotated[Path, typer.Argument(help="wasm2c module header (<name>_w.h)")],
+    module: Annotated[str, typer.Option("--module", help="wasm2c module name")],
+    output: Annotated[Path, typer.Option("-o", "--output", help="C file to write")],
+    syms: Annotated[
+        list[Path] | None,
+        typer.Option("--syms", help="extra `name = 0xADDR;` symbol files (overlays)"),
+    ] = None,
+) -> None:
+    """Resolve a module's GOT.mem imports to game globals' PS1 addresses."""
+    native.got_table(header, module, output, syms or [])
+
+
+@native_app.command("handasm")
+def native_handasm(
+    out: Annotated[
+        Path | None, typer.Option("-o", "--out", help="output directory (src/native/handasm)")
+    ] = None,
+) -> None:
+    """Translate the hand-written asm to C for the native build."""
+    handasm.run(out)
+
+
+@native_app.command("gate")
+def native_gate(
+    savestate: Annotated[Path, typer.Argument(help="DuckStation savestate taken in a level")],
+    binary: Annotated[Path, typer.Option("--binary", help="gate executable")] = Path(
+        "build/native/gate"
+    ),
+) -> None:
+    """ILP32 gate: native level load vs PS1 RAM from a savestate."""
+    native.gate(savestate, binary)
 
 
 if __name__ == "__main__":

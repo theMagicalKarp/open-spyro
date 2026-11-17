@@ -11,7 +11,10 @@ open-spyro --help
   gen-syms-ld        PROVIDE() linker script pinning known symbols
   gen-slots-ld       Fixed-VMA text-slot fragment for the main EXE
   fixup-hasm         De-symbolize hand-asm reloc operands
+  diff               Byte-diff one function at its VMA against disc/orig
+  neutral            Check shared-code edits leave the PS1 preprocessor output unchanged
   wad                WAD.WAD repack (unpack | pack | verify)
+  native             Native-port helpers (got-table | handasm | gate)
 ```
 
 All commands resolve the repo root from the current working directory (the dir
@@ -32,39 +35,10 @@ root `.venv` anymore. `make` and CI invoke everything via `uv run --project
 tools/open-spyro …`, with optional dependency groups:
 
 - **`split`** — `splat64[mips]` + `spimdisasm`, the disassembler behind `make split`.
-- **`match`** — the interactive byte-matching tools (below).
 - **`dev`** — `ruff`, `ty` (default group; used by the lint/type CI job).
 
-`make setup` runs `uv sync --group split --group match`. The Docker image installs
-the **same groups from this same `uv.lock`** (`uv export | uv pip install --system`,
+`make setup` runs `uv sync --group split`. The Docker image installs
+the **same group from this same `uv.lock`** (`uv export | uv pip install --system`,
 see `tools/Dockerfile`), so host and image versions never drift — `uv.lock` is the
 one source of truth. Only `maspsx` (invoked as a script by `compile.sh`) stays a
 separate clone.
-
-## Match-loop tools
-
-The interactive byte-matching tools come from the `match` group:
-
-```
-uv sync --group match                          # m2c + asm-differ (pinned git deps) + permuter libs
-uv run -- m2c <args>                            # asm → first-pass C
-uv run -- asm-differ <args>                     # byte-diff at the function VMA
-uv run -- python ../decomp-permuter/permuter.py <dir>
-open-spyro permuter <Func>                       # stage a decomp-permuter dir for a .c.wip + launch it
-```
-
-`open-spyro permuter <Func>` wraps the two lines above: it slices the function's target
-asm, stages a `nonmatchings/<Func>/` dir under `build/permuter/` via decomp-permuter's
-`import.py` (using `config/permuter_settings.toml` to override the tool's N64 defaults for
-this PS1 r3000/gcc-2.7.2 toolchain), then launches the permuter — all inside the match
-image. On a byte-perfect (score-0) result it writes the winning C to `<Func>.c` next to the `.c.wip`,
-verifies it with `open-spyro diff`, and drops the `.c.wip` on MATCH. The written file is
-decomp-permuter's pruned form (stub externs, no `globals.h`), so re-clothe it in the repo's
-`#include "globals.h"` convention afterward. Use `--stage-only` to stop after staging (e.g.
-in CI), `-j N` for worker threads.
-
-`m2c` and `asm-differ` are SHA-pinned git deps (locked in `uv.lock`, used by both
-the host and the Docker image). `decomp-permuter` ships no installable package, so it runs from its clone
-(`tools/decomp-permuter`, provisioned by `tools/setup.sh`); only its required libs
-(`toml`, `Levenshtein`) are declared here. The other vendored tools (`maspsx`,
-`mkpsxiso`) are not part of this package.

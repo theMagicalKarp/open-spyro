@@ -12,7 +12,12 @@
 
 #include "actor.h"
 
+#ifdef __psyz
+/* native: the definition returns a value; a wasm call must use its signature */
+extern int ComputeCameraToTargetAngle(int *target);
+#else
 extern void ComputeCameraToTargetAngle(int *target);
+#endif
 extern int g_anRotBillboardOffsetsRand[][3];
 extern Actor *g_pLockedChestReward;
 extern int g_anSpuVoiceRowPitch[][7];                        /* g_aSpuVoiceRows[i].nPitch (rows are 7 words) */
