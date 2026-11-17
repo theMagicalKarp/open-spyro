@@ -8,6 +8,7 @@
 #ifndef OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H
 #define OPEN_SPYRO_LEVEL_BALLOONIST_CUTSCENE_H
 
+#include "port.h"
 #include "actor_type.h"
 #include "actor_states.h"
 #include "actor_cutscene.h"
@@ -17,7 +18,12 @@ extern void CopyWords(void *dst, void *src, int byte_count);
 
 extern void ApplyEulerRotation(int *euler, int *mtx, int base);
 
+#ifdef __psyz
+/* native: the definition returns a value; a wasm call must use its signature */
+extern int ComputeCameraToTargetAngle(int *target);
+#else
 extern void ComputeCameraToTargetAngle(int *target);
+#endif
 
 extern int FindGroundHeightBelow(int *pos, int depth);
 
@@ -69,7 +75,7 @@ extern int g_nSpyroWorldPosY;
 
 extern unsigned char g_abSpyroPersistentEuler[];
 
-extern unsigned char g_bSpyroPersistentEulerZ;
+extern PORT_VOLATILE unsigned char g_bSpyroPersistentEulerZ;
 
 extern unsigned char g_bSpyroOtBinBias;
 

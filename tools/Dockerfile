@@ -81,7 +81,7 @@ COPY --from=uv /uv /usr/local/bin/uv
 
 # First-party build tooling: the `open-spyro` CLI plus its locked Python deps,
 # installed FROM tools/open-spyro's uv.lock — the single source of truth shared
-# with the host (so splat/spimdisasm/m2c/asm-differ versions can never drift
+# with the host (so splat/spimdisasm versions can never drift
 # between host and image). The build context is tools/, so the package source is
 # `open-spyro`. We install --system (no venv) to match the image's PATH model:
 # `uv export` flattens the lock to a pinned requirements set, then the project
@@ -89,11 +89,10 @@ COPY --from=uv /uv /usr/local/bin/uv
 # scripts prepend PYTHONPATH=tools/open-spyro/src (the mounted repo), so this baked
 # copy only supplies the entrypoint — repo edits stay authoritative for the link.
 #   split  — splat64[mips] + spimdisasm (disassembly + the verify-toolchain smoke)
-#   match  — m2c + asm-differ + decomp-permuter libs (in-image match parity)
 COPY open-spyro /opt/open-spyro
 RUN cd /opt/open-spyro \
     && uv export --frozen --no-hashes --no-emit-project --no-default-groups \
-         --group split --group match > /tmp/open-spyro-reqs.txt \
+         --group split > /tmp/open-spyro-reqs.txt \
     && uv pip install --system --break-system-packages --no-cache -r /tmp/open-spyro-reqs.txt \
     && uv pip install --system --break-system-packages --no-cache /opt/open-spyro
 

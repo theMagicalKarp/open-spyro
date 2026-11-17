@@ -74,7 +74,7 @@ void Level4_UpdateActors(void) {
   int one;
   short oneq;
   char *base;
-  register int dt asm("$5"); /* a1, as in the original (A374) */
+  REG_PIN(int, dt, "$5"); /* a1, as in the original (A374) */
 
   /* Scratch vectors shared by several cases. */
   int svA[3];
@@ -620,7 +620,7 @@ void Level4_UpdateActors(void) {
       if (CollideSphereWithWorldAndActors(&actor->posX, DEBRIS_RADIUS, DEBRIS_RADIUS) != 0) {
         int *nrm = &g_anCollisionHitNormal;
         int along;
-        register int push asm("$7"); /* a3, as in the original (A374) */
+        REG_PIN(int, push, "$7"); /* a3, as in the original (A374) */
 
         SetVector3Magnitude(nrm, FIXED_ONE);
         along = (st->vel[0] * nrm[0]) + (st->vel[1] * g_nCollisionHitNormalY) +
@@ -798,7 +798,7 @@ void Level4_UpdateActors(void) {
 
           if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
-            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            REG_PIN(int, spyZ, "$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 
             if (dz < 0) {
@@ -921,7 +921,7 @@ void Level4_UpdateActors(void) {
         enemy_settle:
           if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
-            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            REG_PIN(int, spyZ, "$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 
             if (dz < 0) {
@@ -2064,7 +2064,7 @@ void Level4_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
       TumbleState *st = actor->state;
-      register int i asm("$16"); /* s0, as in the original (A374) */
+      REG_PIN(int, i, "$16"); /* s0, as in the original (A374) */
 
       if (st->life > 0) {
         if (actor->drawn == 0) {

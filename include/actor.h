@@ -12,6 +12,7 @@
 #ifndef OPEN_SPYRO_ACTOR_H
 #define OPEN_SPYRO_ACTOR_H
 
+#include "port.h"
 #include "actor_type.h"
 
 /* Named actor-system entry points. */
@@ -30,6 +31,13 @@ void TickStatueBurstShard(Actor *actor);
 /* Actor behaviour helpers (main 0x80037E98..0x8003C994 and neighbours). */
 void BeginSaveMenuFromWorld(Actor *actor);
 void OnActorAnimQueued(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
+#ifdef __psyz
+/* actor/groups.c; level 22's actor code calls them undeclared (gcc 2.7.2
+ * accepts that). Natively an implicit declaration is an error on arm64 and a
+ * signature-mismatch trap on wasm32. */
+void OrPickupGroupActorFlags(int group, int bits);
+void DespawnPickupGroupActors(int a0);
+#endif
 int ProbeActorGroundHeight(Actor *actor);
 int IsActorGroundFlat(Actor *actor);
 int ProbeActorGroundHeightRaised(Actor *actor, int delta);

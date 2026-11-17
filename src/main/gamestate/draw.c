@@ -464,7 +464,7 @@ void PauseMenu_Draw(void) {
     void *arg;
     void **img2;
     DRAWENV *envBase;
-    register int k18 asm("$18");
+    REG_PIN(int, k18, "$18");
     i = 0;
     REG_RESERVE(k18);
     BuildRenderEntityLists();
@@ -535,7 +535,7 @@ void PauseMenu_Draw(void) {
     char *p;
     char *next;
     char *tv;
-    register int b asm("$20");
+    REG_PIN(int, b, "$20");
     int a;
     int d;
     int tpage;
@@ -558,8 +558,8 @@ void PauseMenu_Draw(void) {
         bias = -MENU_SNAPSHOT_BYTES;
       } while (0);
       {
-        register char *e8 asm("$3");
-        register char *f0 asm("$2");
+        REG_PIN(char *, e8, "$3");
+        REG_PIN(char *, f0, "$2");
         e8 = (*(char **)&g_pRenderScratchRegionBase);
         f0 = (*(char **)&g_pRenderScratchPrimTop);
         g_nPrimBufferOverflowFlag = 0;
@@ -571,19 +571,19 @@ void PauseMenu_Draw(void) {
     (*(char **)&g_pSpriteRecordBufferTop) = tv;
     (*(char **)&g_pSpriteRecordWriteCursor) = tv;
   quad: {
-    register int xx asm("$3");
-    register int tp asm("$7");
+    REG_PIN(int, xx, "$3");
+    REG_PIN(int, tp, "$7");
     xx = i << 7;
 
     tp = i + MENU_BACKDROP_TPAGE;
     p = (*(char **)&g_pPrimBufferWriteCursor);
     {
-      register int a asm("$2");
-      register int d asm("$3");
-      register unsigned short bh asm("$5");
-      register unsigned short ch asm("$6");
-      register unsigned char bq asm("$5");
-      register unsigned char cq asm("$6");
+      REG_PIN(int, a, "$2");
+      REG_PIN(int, d, "$3");
+      REG_PIN(unsigned short, bh, "$5");
+      REG_PIN(unsigned short, ch, "$6");
+      REG_PIN(unsigned char, bq, "$5");
+      REG_PIN(unsigned char, cq, "$6");
       QUAD->tag = PRIM_TAG(9);
       QUAD->code = GPU_CODE_POLY_FT4;
       QUAD->r0 = 0x4C;
@@ -1076,8 +1076,8 @@ void PauseMenu_Draw(void) {
       int pct = ComputeInventoryProgressPercent();
       int bias;
       char *fmt;
-      register int *pp asm("$20");
-      register char *bp asm("$22");
+      REG_PIN(int *, pp, "$20");
+      REG_PIN(char *, bp, "$22");
       pos[0] = 0x1b8;
       pos[1] = 0x2c;
       pos[2] = 0x900;
@@ -1258,7 +1258,7 @@ void PauseMenu_Draw(void) {
             g_nSubMenuScrollOffset + 0x1d1;
         ACTOR_RAW(g_pSpriteRecordWriteCursor, int, posY) = 0x6e;
         {
-          register int fr asm("$2");
+          REG_PIN(int, fr, "$2");
           fr = g_nMenuDrawFrames;
           g_pSpriteRecordWriteCursor->type = ACTOR_TYPE_HUD_DRAGON_ICON;
           bob = (fr * 0x10 & 0x1f0) >> 1;
@@ -1562,7 +1562,7 @@ void MenuTransition_Draw(void) {
   case 1: {
     /* Hard-register pins (A374 / F14j): each holds the register the
        original uses for it, which settles the competing temps. */
-    register DRAWENV *env asm("$4");
+    REG_PIN(DRAWENV *, env, "$4");
 
     g_dwSkyFadeColor = 0;
     prog = (0x20 - g_nMenuTickFrames) << 7;
@@ -2348,8 +2348,8 @@ void ActorCutscene_Draw(void) {
   if (g_nActorCutsceneSubstate >= ACS_STREAM_WAIT) {
     if (g_nActorCutsceneSubstate < ACS_DESCEND) {
       {
-        register void **drawList asm("$3");
-        register void *h asm("$2");
+        REG_PIN(void **, drawList, "$3");
+        REG_PIN(void *, h, "$2");
 
         h = g_pActorCutsceneRecord;
         KEEP_IN_REG(h);

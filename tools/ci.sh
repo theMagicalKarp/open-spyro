@@ -45,15 +45,10 @@ echo "::group::verify (SHA mode — no disc)"
 bash tools/verify_main.sh
 echo "::endgroup::"
 
-echo "::group::partial-match scoring (.c.wip)"
-# Instruction-level partial credit for parked .c.wip attempts -> build/partial.json,
-# folded into the progress headline below. We are already inside the matching image,
-# so `partial` assembles/compiles/scores directly (no nested docker).
-$OPEN_SPYRO partial
+echo "::group::progress report (must be 100% matched)"
+# --require-full fails the job if any game function is still linked from
+# original asm (INCLUDE_ASM) instead of matched C.
+$OPEN_SPYRO progress --require-full
 echo "::endgroup::"
 
-echo "::group::progress report"
-$OPEN_SPYRO progress
-echo "::endgroup::"
-
-echo "ci: OK — build byte-reproduces recorded SHA-1s; progress regenerated"
+echo "ci: OK — build byte-reproduces recorded SHA-1s; game code 100% matched"

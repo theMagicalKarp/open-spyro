@@ -291,7 +291,7 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
       if (actor->nextAnim != animId) {
         /* Hard-register pins (A374 / F14j): each holds the register the
            original uses for it, which settles the competing temps. */
-        register int old asm("$2");
+        REG_PIN(int, old, "$2");
         int oldFrame;
         g_nActorAnimDone = 0;
         old = actor->nextAnim;
@@ -306,7 +306,7 @@ int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
       }
     } else {
       if (actor->nextAnim != next) {
-        register int old asm("$2");
+        REG_PIN(int, old, "$2");
         int oldFrame;
         g_nActorAnimDone = 0;
         old = actor->nextAnim;
@@ -976,7 +976,7 @@ int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
   }
   vec[2] += GROUND_PROBE_LIFT;
   {
-    register int ground asm("$3");
+    REG_PIN(int, ground, "$3");
     ground = FindGroundHeightBelow(vec, 0x400);
     if (ground != 0) {
       vec[2] = ground;
@@ -1314,7 +1314,7 @@ int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
   int lim;
   int x;
   int n;
-  register int span asm("$6");
+  REG_PIN(int, span, "$6");
   int ret;
 
   ret = 0;

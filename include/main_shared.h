@@ -149,7 +149,12 @@ extern void EnqueuePendingSpritePrims(void);
 
 extern void UpdateHudCounters(void);
 
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+extern void *PutDrawEnv(void *env);
+#else
 extern void PutDrawEnv(void *env);
+#endif
 
 extern void *LinkOTPrimitives(int depth_max);
 

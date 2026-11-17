@@ -15,14 +15,14 @@
    the explicit $at uses; the bytes are unaffected. */
 
 void TransposePackedMatrix(unsigned int *dst, unsigned int *src) {
-  register unsigned int w0 asm("$6");
-  register unsigned int w1 asm("$7");
-  register unsigned int w2 asm("$8");
-  register unsigned int w3 asm("$9");
-  register unsigned int w4 asm("$10");
-  register unsigned int a asm("$1");
-  register unsigned int b asm("$2");
-  register unsigned int m asm("$3");
+  REG_PIN(unsigned int, w0, "$6");
+  REG_PIN(unsigned int, w1, "$7");
+  REG_PIN(unsigned int, w2, "$8");
+  REG_PIN(unsigned int, w3, "$9");
+  REG_PIN(unsigned int, w4, "$10");
+  REG_PIN(unsigned int, a, "$1");
+  REG_PIN(unsigned int, b, "$2");
+  REG_PIN(unsigned int, m, "$3");
 
   w0 = src[0];
   w1 = src[1];
@@ -67,7 +67,7 @@ void TransposePackedMatrix(unsigned int *dst, unsigned int *src) {
    a local register variable seeded through an empty asm, so gcc emits only
    the shift into $v0 and the return. */
 unsigned int ReturnT0Fixed12(void) {
-  register unsigned int t0 asm("$8");
+  REG_PIN(unsigned int, t0, "$8");
 
   REG_RESERVE(t0);
   return t0 >> 12;
@@ -86,9 +86,9 @@ void ZeroRecordField08(int *rec) { rec[2] = 0; }
    Matching notes (ex-"handwritten" $at-as-data): the three components are
    pinned to $at/$v0/$v1 with local register variables (A374/A405). */
 void LShiftVector3(int *vec, int shift) {
-  register int a asm("$1");
-  register int b asm("$2");
-  register int c asm("$3");
+  REG_PIN(int, a, "$1");
+  REG_PIN(int, b, "$2");
+  REG_PIN(int, c, "$3");
 
   a = vec[0];
   b = vec[1];
@@ -107,9 +107,9 @@ void LShiftVector3(int *vec, int shift) {
    Matching notes (ex-"handwritten" $at-as-data): the three components are
    pinned to $at/$v0/$v1 with local register variables (A374/A405). */
 void RShiftVector3(int *vec, int shift) {
-  register int a asm("$1");
-  register int b asm("$2");
-  register int c asm("$3");
+  REG_PIN(int, a, "$1");
+  REG_PIN(int, b, "$2");
+  REG_PIN(int, c, "$3");
 
   a = vec[0];
   b = vec[1];
@@ -134,9 +134,9 @@ void ZeroVector(int *vec) {
    Matching notes (ex-"handwritten" $at-as-data): the three components are
    pinned to $at/$v0/$v1 with local register variables (A374/A405). */
 void CopyVector(int *dst, int *src) {
-  register int a asm("$1");
-  register int b asm("$2");
-  register int c asm("$3");
+  REG_PIN(int, a, "$1");
+  REG_PIN(int, b, "$2");
+  REG_PIN(int, c, "$3");
 
   a = src[0];
   b = src[1];
@@ -153,7 +153,7 @@ void CopyVector(int *dst, int *src) {
    a local register variable seeded through an empty asm, so gcc emits only
    the shift into $v0 and the return. */
 unsigned int ReturnT0Fixed12Dup(void) {
-  register unsigned int t0 asm("$8");
+  REG_PIN(unsigned int, t0, "$8");
 
   REG_RESERVE(t0);
   return t0 >> 12;
@@ -165,9 +165,9 @@ unsigned int ReturnT0Fixed12Dup(void) {
    Matching notes (ex-"handwritten" $at-as-data): the three components are
    pinned to $at/$v0/$v1 with local register variables (A374/A405). */
 void VectorToSVectorShr2(short *dst, int *src) {
-  register int a asm("$1");
-  register int b asm("$2");
-  register int c asm("$3");
+  REG_PIN(int, a, "$1");
+  REG_PIN(int, b, "$2");
+  REG_PIN(int, c, "$3");
 
   a = src[0];
   b = src[1];
@@ -186,9 +186,9 @@ void VectorToSVectorShr2(short *dst, int *src) {
    Matching notes (ex-"handwritten" $at-as-data): the three components are
    pinned to $at/$v0/$v1 with local register variables (A374/A405). */
 void SVectorToVectorShl2(int *dst, unsigned short *src) {
-  register int a asm("$1");
-  register int b asm("$2");
-  register int c asm("$3");
+  REG_PIN(int, a, "$1");
+  REG_PIN(int, b, "$2");
+  REG_PIN(int, c, "$3");
 
   a = src[0];
   b = src[1];
@@ -206,9 +206,9 @@ void SVectorToVectorShl2(int *dst, unsigned short *src) {
    Matching notes (ex-"handwritten" $at-as-data): the three components are
    pinned to $at/$v0/$v1 with local register variables (A374/A405). */
 void SVectorToVector(int *dst, short *src) {
-  register int a asm("$1");
-  register int b asm("$2");
-  register int c asm("$3");
+  REG_PIN(int, a, "$1");
+  REG_PIN(int, b, "$2");
+  REG_PIN(int, c, "$3");
 
   a = src[0];
   b = src[1];
@@ -223,9 +223,9 @@ void SVectorToVector(int *dst, short *src) {
    Matching notes (ex-"handwritten" $at-as-data): the three components are
    pinned to $at/$v0/$v1 with local register variables (A374/A405). */
 void VectorToSVector(short *dst, int *src) {
-  register int a asm("$1");
-  register int b asm("$2");
-  register int c asm("$3");
+  REG_PIN(int, a, "$1");
+  REG_PIN(int, b, "$2");
+  REG_PIN(int, c, "$3");
 
   a = src[0];
   b = src[1];
@@ -244,9 +244,11 @@ void VectorToSVector(short *dst, int *src) {
    $at with a local register variable reaches it; the base is seeded through
    an empty asm so cse cannot fold the single-use constant back into the
    load. */
+#ifndef __psyz /* natively: src/native/game/math/math.c */
 unsigned short ReadRootCounter2(void) {
-  register unsigned short *io asm("$1");
+  REG_PIN(unsigned short *, io, "$1");
 
   OPAQUE_COPY(io, 0x1F800000);
   return io[0x1120 / 2];
 }
+#endif

@@ -862,7 +862,7 @@ void Level20_UpdateActors(void) {
 
           if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
-            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            REG_PIN(int, spyZ, "$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 
             if (dz < 0) {
@@ -985,7 +985,7 @@ void Level20_UpdateActors(void) {
         enemy_settle:
           if (toSpyro < SPARX_FETCH_RANGE) {
             int top = actor->posZ + SPYRO_RADIUS;
-            register int spyZ asm("$2") = SPY.posZ; /* v0, as in the original (A374) */
+            REG_PIN(int, spyZ, "$2") = SPY.posZ; /* v0, as in the original (A374) */
             int dz = spyZ - top;
 
             if (dz < 0) {
@@ -2347,7 +2347,7 @@ void Level20_UpdateActors(void) {
     case ACTOR_TYPE_WOOD_SHARD:
     case ACTOR_TYPE_WOOD_SHARD + 1: {
       TumbleState *st = actor->state;
-      register int i asm("$16"); /* s0, as in the original (A374) */
+      REG_PIN(int, i, "$16"); /* s0, as in the original (A374) */
 
       if (st->life > 0) {
         if (actor->drawn == 0) {

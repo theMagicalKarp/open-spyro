@@ -17,25 +17,10 @@ dev = [
     "ruff>=0.6",
     "ty",
 ]
-# Interactive match-loop tools (not used by `make build`/`verify`/CI). Install
-# with `uv sync --group match`; invoke via `uv run --project tools/open-spyro`.
-# None are on PyPI — m2c/asm-differ are pinned git deps (poetry-packaged, with
-# console scripts); decomp-permuter ships no installable package, so it runs from
-# its SHA-pinned clone (tools/decomp-permuter) and we declare only its libs here.
-# This file is the single source of truth for the Python matching toolchain: both
-# the host (`uv run --project tools/open-spyro`) and the Docker image
-# (`uv export | uv pip install --system`, see tools/Dockerfile) install these
-# groups from the shared uv.lock, so versions never drift between the two.
-match = [
-    # asm → first-pass C (pulls graphviz transitively).
-    "m2c @ git+https://github.com/matt-kempster/m2c@749b75bc218d969526524d968d2ba134bcf05130",
-    # byte-diff at the function VMA (pulls colorama/watchdog/levenshtein/cxxfilt).
-    "asm-differ @ git+https://github.com/simonlindholm/asm-differ@2ad4a4a4f77997982b47e3b0bde6554910bae3fe",
-    # decomp-permuter's required libs (it runs from tools/decomp-permuter):
-    "toml",
-    "Levenshtein",
-]
 # Disassembly toolchain for `make split` (locked transitive deps via uv.lock).
+# Both the host (`uv run --project tools/open-spyro`) and the Docker image
+# (`uv export | uv pip install --system`, see tools/Dockerfile) install it from
+# the shared uv.lock, so versions never drift between the two.
 split = [
     "splat64[mips]==0.41.0",
     "spimdisasm==1.42.0",

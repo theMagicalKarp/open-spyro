@@ -4,6 +4,8 @@
 #ifndef OPEN_SPYRO_MODEL_H
 #define OPEN_SPYRO_MODEL_H
 
+#include "port.h"
+
 typedef struct AnimationHeader {
   short m_NumFrames;              /* 0x00 */
   unsigned short m_NumColors;     /* 0x02 */

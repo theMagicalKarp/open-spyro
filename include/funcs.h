@@ -1130,14 +1130,24 @@ int ClearImage(RECT *rect, int r, int g, int b);
 int LoadImage(RECT *rect, void *p);
 
 /* 0x8005fa8c: libgpu StoreImage. Transfers VRAM rect r out to CPU memory at dst via the GPU command-dispatch table at g_pGpuDispatchTable. */
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+int StoreImage(RECT *r, void *dst);
+#else
 void StoreImage(RECT *r, void *dst);
+#endif
 
 /* 0x8005faf0: libgpu MoveImage. VRAM-to-VRAM rect copy: source rect (RECT *)rect, destination (x=x, y=y). Returns -1 if source rect has zero width or height. */
 int MoveImage(RECT *rect, int x, int y);
 
 void DrawOTag(void *ot);
 
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+void *PutDrawEnv(void *env);
+#else
 void PutDrawEnv(void *env);
+#endif
 
 DISPENV *PutDispEnv(DISPENV *env);
 
@@ -1215,7 +1225,12 @@ void InitGeom(void);
 
 void MulMatrix0(int *a, int *b, int *out);
 
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+MATRIX *MulMatrix(MATRIX *a, MATRIX *b);
+#else
 void MulMatrix(MATRIX *a, MATRIX *b);
+#endif
 
 void SetTransMatrix(MATRIX *m);
 
@@ -2105,7 +2120,14 @@ void StubRewardHook(void);
 void PollMemCardSyncRing(void);
 
 /* 0x80037e98: Empty `jr ra` stub; level actor code calls it with the actor. */
+#ifdef __psyz
+/* Natively every caller must see the same (variadic) signature as actor.h:
+ * wasm traps on a call whose argument list differs from the definition. */
+struct Actor;
+void OnActorAnimQueued(struct Actor *actor, ...);
+#else
 void OnActorAnimQueued(); /* no-op taking (void); callers pass the actor (SteerActorYawTowardSpyro two extra args), so no prototype */
+#endif
 
 /* 0x8003891c: Vertical launch speed for a lob from pos to target at horizontal
  * `speed` under `gravity`; flight time (frames) via pOutTime. */

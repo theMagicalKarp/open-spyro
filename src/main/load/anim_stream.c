@@ -42,7 +42,7 @@ extern int *g_apActorMeshTable; /* 0x80076378 */
 void InstallSpyroAnimStream(int *table) {
   /* Hard-register pins (A374 / F14j): each holds the register the
      original uses for it, which settles the competing temps. */
-  register int *stream asm("$6") = table;
+  REG_PIN(int *, stream, "$6") = table;
   int i;
   int *anim;
   int *w;
@@ -89,13 +89,13 @@ void InstallSpyroAnimStream(int *table) {
     count = (count << 2) + ANIM_HEADER_OFFSET(m_FrameWords);
     base = (int)stream + count;
     {
-      register int sum asm("$3") = base + word;
+      REG_PIN(int, sum, "$3") = base + word;
 
       PUBLISH(&anim[ANIM_HEADER_WORD(m_AnimationVertices)]) = sum;
     }
 
     {
-      register int *m asm("$2") = (int *)SPYRO_MODEL[ANIMS + idx];
+      REG_PIN(int *, m, "$2") = (int *)SPYRO_MODEL[ANIMS + idx];
       w = m + ANIM_HEADER_WORD(m_FrameWords);
       for (i = 0; i < *(short *)m; i++) {
         word = *w;

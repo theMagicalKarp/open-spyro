@@ -331,12 +331,12 @@ void Initialize(void) {
 
   LoadAssetDirectoryFromCd();
   {
-    register int stallTicks asm("$16") = CD_STALL_TIMEOUT_TICKS;
+    REG_PIN(int, stallTicks, "$16") = CD_STALL_TIMEOUT_TICKS;
     lba = (int *)g_anCdBaseLbaBlock;
     archOff = g_anWorldArchiveOffsetBlock;
     {
-      register int lba1 asm("$4") = lba[0];
-      register int off1 asm("$7") = *(volatile int *)archOff;
+      REG_PIN(int, lba1, "$4") = lba[0];
+      REG_PIN(int, off1, "$7") = *(volatile int *)archOff;
       void *buf1 = g_pSharedLoadBuffer;
       CdReadSyncSectors(lba1, buf1, CD_SECTOR_BYTES, off1, stallTicks);
     }

@@ -144,7 +144,7 @@ void TickCutsceneBundleLoadStream(void) {
       void *dst = *((void *volatile *)(&g_pWorldUnpackHead));
       /* Hard-register pins (A374 / F14j): each holds the register the
          original uses for it, which settles the competing temps. */
-      register int off asm("$3") =
+      REG_PIN(int, off, "$3") =
           *((volatile int *)(&g_nWorldDataExtChunkOffset));
       StartCdReadAsync(lba, dst, extSize,
                        off + (&g_nCutsceneArchiveOffset)[id * 2],
@@ -158,8 +158,7 @@ void TickCutsceneBundleLoadStream(void) {
     int size = *((volatile int *)(&g_nWorldDataExtChunkSize));
     int lba = *((volatile int *)(&g_nCdBaseLba));
     int id = *((volatile int *)(&g_nCutsceneId));
-    register int off asm("$3") =
-        *((volatile int *)(&g_nWorldDataExtChunkOffset));
+    REG_PIN(int, off, "$3") = *((volatile int *)(&g_nWorldDataExtChunkOffset));
     int arch = (&g_nCutsceneArchiveOffset)[id * 2] - 0x60000;
     StartCdReadAsync(lba, (((char *)head2) + size) - 0x60000, 0x60000,
                      (off + size) + arch, 0x258);
@@ -175,7 +174,7 @@ void TickCutsceneBundleLoadStream(void) {
       } while (g_anActorMeshOffsetBlock[i] > 0);
     }
     {
-      register void *volatile *pb asm("$5") = g_apLevelArchiveBufferBlock;
+      REG_PIN(void *volatile *, pb, "$5") = g_apLevelArchiveBufferBlock;
       void *head2 = *((void *volatile *)(&g_pWorldUnpackHead));
       int extsz = *((volatile int *)(&g_nWorldDataExtChunkSize));
       int lba = *((volatile int *)(&g_nCdBaseLba));
@@ -326,7 +325,7 @@ void TickDragonRescueAssetStream(void) {
     }
     if (g_nDragonRescueSplitFlag == 0) {
       {
-        register int top asm("$2") =
+        REG_PIN(int, top, "$2") =
             SPU_RAM_SIZE; /* v0 as in the original (A374) */
         SetSpuTransferStartAddr(top + (g_nDragonRescueSpuChunkIndex << 15) -
                                 g_nDragonRescueAudioSampleSize);
@@ -346,7 +345,7 @@ void TickDragonRescueAssetStream(void) {
       while (GetSpuTransferStatus(0) == 0) {
       }
       {
-        register int top asm("$2") =
+        REG_PIN(int, top, "$2") =
             SPU_RAM_SIZE; /* v0 as in the original (A374) */
         SetSpuTransferStartAddr(top + (CHUNK << 15) -
                                 g_nDragonRescueAudioSampleSize);
@@ -369,7 +368,7 @@ void TickDragonRescueAssetStream(void) {
     }
     {
       char **h = g_apWorldUnpackHeadBlock;
-      register char *p asm("$3"); /* v1, as in the original (A374) */
+      REG_PIN(char *, p, "$3"); /* v1, as in the original (A374) */
 
       p = *h + g_nDragonRescueCameraPathOffset;
       g_pDragonRescueCameraPath = p - g_nDragonRescueHeaderEndOffset;

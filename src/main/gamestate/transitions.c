@@ -517,7 +517,7 @@ void BeginDragonRescue(Actor *actor) {
   int idx;
   /* Hard-register pins (A374 / F14j): each holds the register the
      original uses for it, which settles the competing temps. */
-  register int one asm("$4");
+  REG_PIN(int, one, "$4");
   st = actor->state;
   if (((g_nActiveLevelId == LEVEL_ARTISANS) && (st->cutsceneId == 1)) &&
       ((((g_abLevelExited[LEVEL_SLOT(LEVEL_STONE_HILL)] != 0) ||
@@ -690,7 +690,7 @@ void BeginSaveMenuFromWorld(Actor *actor) {
   rec = (char *)(FIELD_RAW(owner, SaveHostState, int, anchor) * sizeof(Actor) +
                  (int)g_pActorListBase);
   {
-    register int ry asm("$2");
+    REG_PIN(int, ry, "$2");
     ry = ((Actor *)rec)->posY;
     g_nSaveMenuSpyroToYaw =
         ArcTan2(((Actor *)rec)->posX - SPY_PREV[-6], ry - py, ATAN_ANGLE12);

@@ -1,0 +1,3 @@
+[submodule "external/psyz"]
+	path = external/psyz
+	url = https://github.com/Xeeynamo/psyz

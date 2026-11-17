@@ -5,6 +5,8 @@
 #ifndef OPEN_SPYRO_TYPES_H
 #define OPEN_SPYRO_TYPES_H
 
+#include "port.h" /* PS1 / native portability macros */
+
 /* --- Ghidra base-type shims --------------------------------------------------
  * These mirror the builtin types Ghidra used in the dump so the seeded
  * prototypes/declarations below are valid C. Sizes match Ghidra's model; the

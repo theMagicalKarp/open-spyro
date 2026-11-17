@@ -641,7 +641,7 @@ void Level11_UpdateActors(void) {
           continue;
         } else {
           int r;
-          register int *pos asm("$4"); /* a0, as in the original (A374) */
+          REG_PIN(int *, pos, "$4"); /* a0, as in the original (A374) */
 
           bouncePos[2] += COLLECT_RADIUS;
 

@@ -22,7 +22,12 @@ extern void *AllocEmitListRecord(int cls);
 extern int ArcTan2(int dx, int dy, int scale);
 extern void BeginPauseToMenuTransition(void);
 extern void BuildActiveActorList(void);
+#ifdef __psyz
+/* native: the definition returns a value; a wasm call must use its signature */
+extern void *BuildTextSpriteChain();
+#else
 extern void BuildTextSpriteChain(); /* K&R: callers pass int-typed text buffers */
+#endif
 extern void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
 extern void ChangeSpyroState(int state);
 extern int CheckLineOfSightSegment(int *from, int *to);
@@ -50,13 +55,23 @@ extern void InitLightVectorConstants(void);
 struct TriggerBox;
 extern int IsPointInRotatedBox(int *pos, struct TriggerBox *box);
 extern void LoadAndStartLevelFromCd(void);
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+extern int LoadImage();
+#else
 extern void LoadImage(); /* K&R: callers pass their own rect views */
+#endif
 extern int LookupCosine(int ang);
 extern int LookupSine(int ang);
 extern void *memcpy(void *dst, const void *src, unsigned int n);
 extern void ProjectWorldPointGTEUnscaled(int *out, int *s);
 extern DISPENV *PutDispEnv(DISPENV *env);
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+extern void *PutDrawEnv(void *env);
+#else
 extern void PutDrawEnv(void *env);
+#endif
 extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 extern void RefreshHudLevelGemCounter(void);
 extern void ResetCameraStateToTarget(void);
@@ -71,18 +86,47 @@ extern void RShiftVector3(int *vec, int shift);
 extern void SampleSpyroShadowRingHeights(int probe);
 extern void ScaleVector3Sat(int *out, int *src, int scale);
 extern int SignedAngleDelta12(int a, int b);
+#ifdef __psyz
+/* native: sprintf is variadic, which a K&R call cannot reach in wasm */
+extern int (sprintf)(char *buf, const char *fmt, ...);
+#define sprintf(buf, ...) sprintf((char *)(buf), __VA_ARGS__)
+#else
 extern void sprintf(); /* K&R: callers format into int-typed buffers */
+#endif
+#ifdef __psyz
+/* native: the definition takes a 4th (unused) argument */
+extern int (StepAngle8Toward)(int to, int from, int maxStep, int unused);
+#define StepAngle8Toward(to, from, maxStep) StepAngle8Toward(to, from, maxStep, 0)
+#else
 extern int StepAngle8Toward(int to, int from, int maxStep);
+#endif
 #ifndef VOICE_RELEASE
 #define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
 #endif
 extern void StopSoundVoiceByIndex(int ch, int mode);
+#ifdef __psyz
+/* native: PsyZ returns a value; the stray third argument is dropped */
+extern int (StoreImage)();
+#define StoreImage(rect, p, ...) (StoreImage)(rect, p)
+#else
 extern void StoreImage(); /* K&R: the flight results draw passes a stray third argument (the original sets $a2) */
+#endif
 extern int strlen();                                         /* text glyph count */
+#ifdef __psyz
+/* native: the definition takes no arguments (callers set $a0/$a1 it ignores) */
+extern void (StubRewardHook)(void);
+#define StubRewardHook(...) (StubRewardHook)()
+#else
 extern void StubRewardHook(int script, int a);
+#endif
 extern void SubtractVector(int *out, int *a, int *b);
 extern void TallyFlightTarget(int tallyClass);
+#ifdef __psyz
+/* native: the definition returns a value; a wasm call must use its signature */
+extern int TickActiveSoundVoices(void);
+#else
 extern void TickActiveSoundVoices(void);
+#endif
 struct Actor;
 extern void TickActorAnims(struct Actor **list, int mode);
 extern void TickLevelTransitionStream(int full);

@@ -8,6 +8,16 @@
 #ifndef OPEN_SPYRO_MATCH_ASM_H
 #define OPEN_SPYRO_MATCH_ASM_H
 
+#ifdef __psyz
+/* Natively these only need their C meaning: no ordering, a plain copy, an
+ * evaluated value. A reserved register starts at 0 rather than garbage. */
+#define SCHED_FENCE() ((void)0)
+#define OPAQUE_COPY(dst, src) ((dst) = (src))
+#define OPAQUE(v) ((void)0)
+#define KEEP_IN_REG(v) ((void)(v))
+#define REG_RESERVE(v) ((v) = 0)
+#else
+
 /* A382: a scheduling barrier; no insn is moved across it in either direction. */
 #define SCHED_FENCE() __asm__ volatile("")
 
@@ -23,6 +33,7 @@
 
 /* A384: v is born here with no defined value (a register reservation). */
 #define REG_RESERVE(v) __asm__("" : "=r"(v))
+#endif
 
 /* A200 / A232: an empty loop. Its loop notes end cse's extended basic block
  * (so a held base is not folded back into absolute addresses) and split the

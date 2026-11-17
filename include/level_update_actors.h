@@ -22,7 +22,13 @@ extern int g_nActorFrameDelta;      /* frame delta, as seen by the callees */
 
 /* Ground-trigger region type under a probe point. Unprototyped on purpose:
  * some clones pass the point, others call it bare with $a0 already holding it. */
+#ifdef __psyz
+/* native: the definition takes no arguments; the stray argument is dropped */
+extern int (GetGroundTriggerRegionType)(void);
+#define GetGroundTriggerRegionType(...) (GetGroundTriggerRegionType)()
+#else
 extern int GetGroundTriggerRegionType(); /* K&R: the flight clones pass a stray pos argument the original sets in $a0 */
+#endif
 extern int g_nSparxHealth; /* scalar form; the array users go through g_anSparxHealthBlock */
 
 /* Spyro's persistent euler Z byte, re-read on every access. */
@@ -152,7 +158,13 @@ extern CamObj g_anWorldToCameraRotMtx;
 
 /* PortalCamPath (a hub portal's camera path) lives in portal.h. */
 
+#ifdef __psyz
+/* native: the definition takes no arguments (callers set $a0/$a1 it ignores) */
+extern void (StubRewardHook)(void);
+#define StubRewardHook(...) (StubRewardHook)()
+#else
 extern void StubRewardHook(int script, int a);
+#endif
 
 /* Callees used by the collectible and fairy behaviours. */
 extern void UnpackWorldCollisionTri(int chunk, int *verts);
@@ -181,7 +193,13 @@ extern FxNode *AllocWorldSparkle(void);
 
 extern void ClearWord(FxNode *node);
 
+#ifdef __psyz
+/* native: the definition takes a 4th (unused) argument */
+extern int (StepAngle8Toward)(int to, int from, int maxStep, int unused);
+#define StepAngle8Toward(to, from, maxStep) StepAngle8Toward(to, from, maxStep, 0)
+#else
 extern int StepAngle8Toward(int to, int from, int maxStep);
+#endif
 extern int ApproachAngle8(int target, int cur, int step, int lim);
 
 /* Spyro as one object at 0x80078A58, with the fields this function touches. */

@@ -827,7 +827,7 @@ extern struct Actor *g_pDragonRescueSpyroMirrorActor;      /* 0x800770bc: Spyro'
 extern struct Actor *g_pDragonRescueSourceActor;           /* 0x800770c0: the dragon statue being rescued (BeginDragonRescue) */
 extern int g_anWorldLightDirVec[6];                     /* 0x800770c8: two light directions: [0..2] lights the sprite queue (RasterizeSpritePrimQueue; the menus spin it with RotateLightVectorXZ), [3..5] the secondary (euler) actors (EmitSecondaryActorPrimitives). InitLightVectorConstants seeds both with the same default */
 extern short g_anBillboardBasisVectors[9];              /* 0x800770e0 */
-extern int g_nLightSweepAngle;                          /* 0x800770f4 */
+extern PORT_VOLATILE int g_nLightSweepAngle;                        /* 0x800770f4 */
 extern unsigned char g_abRotBillboardLife[128];       /* 0x80077114: g_aRotBillboards[0].life (RotBillboard +0x0C) as a byte array: ResetWorldParticleTables frees all 8 records by zeroing [i * 0x18] */
 extern int g_anLevelDragonsRescued[36];                 /* 0x800772d8 */
 extern int g_anCollisionHitNormal[3];                    /* 0x80077368: surface normal (1.12) of the last world/actor collision hit */

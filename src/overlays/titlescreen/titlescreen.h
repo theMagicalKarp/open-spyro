@@ -157,10 +157,25 @@ extern void EmitActorDrawList(void);
 extern void RenderWorldChunks(int);
 extern void EmitSkyMesh(int, void *, void *);
 extern void DrawFullscreenTint(int, int, int, int);
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+extern int DrawSync(int);
+#else
 extern void DrawSync(int);
+#endif
 extern int VSync(int);
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+extern void *PutDispEnv(void *);
+#else
 extern void PutDispEnv(void *);
+#endif
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+extern void *PutDrawEnv(void *);
+#else
 extern void PutDrawEnv(void *);
+#endif
 extern void *LinkOTPrimitives(int);
 extern void DrawOTag(void *);
 
@@ -238,11 +253,26 @@ extern void RestartStalledCdRead(void);
 extern int CallCdSync(int mode, unsigned char *result);
 extern void StartCdReadAsync(int, void *, int, int, int);
 extern void HandleMusicCommand(int, int);
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+extern int LoadImage(RECT *, void *);
+#else
 extern void LoadImage(RECT *, void *);
+#endif
+#ifdef __psyz
+/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+extern int ClearImage(RECT *, int, int, int);
+#else
 extern void ClearImage(RECT *, int, int, int);
+#endif
 extern void StopAllSoundExceptMask(int);
 extern void TickSpuPerFrame(void);
+#ifdef __psyz
+/* native: the definition returns a value; a wasm call must use its signature */
+extern int TickActiveSoundVoices(void);
+#else
 extern void TickActiveSoundVoices(void);
+#endif
 extern void TickCdMusicStream(void);
 extern void LaunchCrashDemo(void);
 extern void MemCardOpenSession(void);
@@ -260,7 +290,13 @@ extern void PollMemCardSyncRing(void);
 extern void CopyWords(void *, void *, int);
 extern int ReadRootCounter2(void);
 extern void InitNewGameState(void);
+#ifdef __psyz
+/* native: the definition is void; the PS1 caller tests the $v0 it leaves (src/native/game/gamestate/update.c) */
+#define RestartTitleCardCheckOnTriangle Native_RestartTitleCardCheckOnTriangle
 extern int RestartTitleCardCheckOnTriangle(void);
+#else
+extern int RestartTitleCardCheckOnTriangle(void);
+#endif
 extern void AdvanceCutsceneFrame(int);
 extern void RotateLightVectorXZ(int);
 

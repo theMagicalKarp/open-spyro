@@ -187,7 +187,7 @@ void InitHudCounters(int layout_butterflies) {
   int rectY;
   /* Hard-register pins (A374 / F14j): each holds the register the
      original uses for it, which settles the competing temps. */
-  register int dragons asm("$2");
+  REG_PIN(int, dragons, "$2");
   int worldEggs;
   int keyState;
   int count;
@@ -362,8 +362,8 @@ void UpdateHudCounters(void) {
   int av[3];
   int pad[2];
   int t;
-  register int q9 asm("$2");
-  register int q asm("$3");
+  REG_PIN(int, q9, "$2");
+  REG_PIN(int, q, "$3");
   unsigned int idx;
 
   t = g_nHudFrameCycleMod9 + 1;
