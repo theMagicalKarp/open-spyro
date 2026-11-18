@@ -82,7 +82,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
-          submodules: true # external/psyz only; PsyZ's own submodules are not needed
+          submodules: true # external/psyz + external/tomlc17; PsyZ's own submodules are not needed
 
       - name: Set up uv
         uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0

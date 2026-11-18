@@ -3,8 +3,11 @@
  *   spyro --disc game.cue [--frames N] [--screenshot out.bmp] [--shot N]...
  *         [--press N:BUTTONS[:HOLD]]... [--warp N:LEVEL]... [--fast]
  *         [--wav out.wav] [--memcard card.mcd] [--memcard2 card.mcd]
- *         [--log-level d|i|w|e]
+ *         [--log-level debug|info|warn|error]
  *   spyro --stub [--frames N] [--screenshot out.bmp]
+ *
+ * plus [--config file.toml | --no-config] on either form; --disc may instead
+ * come from the config file.
  *
  * --disc is the user's disc image (.cue + its .bin); the game's executable
  * and data are read from it. --stub instead runs the stub test scene (a
@@ -19,7 +22,14 @@
  * frame limiter. --wav writes the sound output to a WAV file as well.
  * --memcard / --memcard2 insert a raw 128 KiB card image (.mcd, created on
  * the first save) in port A / B; port A defaults to card1.mcd in the user's
- * data directory, "none" leaves the port empty.
+ * data directory, "none" leaves the port empty. --log-level takes the word
+ * or its first letter.
+ *
+ * Settings can also come from a TOML config file: config.toml in the user's
+ * data directory if it exists, or --config PATH (which must exist);
+ * --no-config reads none. Its keys are the persistent flags (disc, fast,
+ * log_level, memcard, memcard2); relative paths in it are relative to the
+ * file, unknown keys are warned about and ignored, and flags override it.
  *
  * Sets up the PS1 address space (psx_memory.c), instantiates the wasm2c'd
  * module (game C + PsyZ core) and runs it on this thread. PsyZ's platform
@@ -33,6 +43,7 @@
 #include <SDL3/SDL.h>
 
 #include "native_host.h"
+#include "tomlc17.h"
 
 /* PsyZ's psyz/video.h (its include/ shadows system headers, so it stays off
    this file's path): PsyzVsyncMode PSYZ_VSYNC_LIMITLESS. */
@@ -273,12 +284,124 @@ int StoreImage(void *rect, void *p) {
 }
 
 static void usage(void) {
-  fprintf(stderr, "usage: spyro (--disc game.cue | --stub) [--frames N] "
+  fprintf(stderr, "usage: spyro [--disc game.cue | --stub] [--frames N] "
                   "[--screenshot out.bmp] [--shot N]... "
                   "[--press N:BUTTONS[:HOLD]]... [--warp N:LEVEL]... "
                   "[--fast] [--wav out.wav] [--memcard card.mcd] "
-                  "[--memcard2 card.mcd] [--log-level d|i|w|e]\n");
+                  "[--memcard2 card.mcd] [--log-level debug|info|warn|error] "
+                  "[--config file.toml | --no-config]\n"
+                  "(--disc is needed unless the config file sets disc)\n");
   exit(2);
+}
+
+/* debug|info|warn|error (or its first letter) -> log_level; -1 if neither. */
+static int parse_log_level(const char *s) {
+  static const char *const names[] = {"debug", "info", "warn", "error"};
+
+  for (int i = 0; i < 4; i++) {
+    if (strcmp(s, names[i]) == 0 || (s[0] == names[i][0] && s[1] == '\0')) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+/* --- the config file --- */
+
+/* Kept for the whole run: the settings point at its strings. */
+static toml_result_t config;
+static const char *config_file;
+static const char *config_disc; /* disc_path as the config file set it */
+
+_Noreturn static void config_error(toml_datum_t d, const char *key,
+                                   const char *want) {
+  fprintf(stderr, "native: %s:%d: %s must be %s\n", config_file, d.lineno,
+          key, want);
+  exit(2);
+}
+
+static const char *config_string(toml_datum_t d, const char *key) {
+  if (d.type != TOML_STRING) {
+    config_error(d, key, "a string");
+  }
+  return d.u.s;
+}
+
+/* A relative path is relative to the config file's directory. */
+static const char *config_path(toml_datum_t d, const char *key) {
+  const char *s = config_string(d, key);
+  const char *slash = strrchr(config_file, '/');
+  int dir = slash ? (int)(slash - config_file) + 1 : 0;
+  char *p;
+
+  if (s[0] == '/' || dir == 0 || strcmp(s, "none") == 0) {
+    return s;
+  }
+  p = malloc(dir + strlen(s) + 1);
+  if (p == NULL) {
+    return s;
+  }
+  memcpy(p, config_file, dir);
+  strcpy(p + dir, s);
+  return p;
+}
+
+/* Reads PATH, or the default config.toml in the user's data directory when
+   PATH is NULL (where a missing file is no config). */
+static void load_config(const char *path) {
+  static char default_config[1024];
+  toml_datum_t top;
+  FILE *f;
+
+  if (path == NULL) {
+    char *dir = SDL_GetPrefPath("open-spyro", "spyro");
+
+    if (dir == NULL) {
+      return;
+    }
+    snprintf(default_config, sizeof(default_config), "%sconfig.toml", dir);
+    SDL_free(dir);
+    path = default_config;
+    if ((f = fopen(path, "rb")) == NULL) {
+      return;
+    }
+  } else if ((f = fopen(path, "rb")) == NULL) {
+    fprintf(stderr, "native: cannot read config %s\n", path);
+    exit(2);
+  }
+  config_file = path;
+  config = toml_parse_file_named(f, path);
+  fclose(f);
+  if (!config.ok) {
+    fprintf(stderr, "native: %s: %s\n", path, config.errmsg);
+    exit(2);
+  }
+
+  top = config.toptab;
+  for (int i = 0; i < top.u.tab.size; i++) {
+    const char *key = top.u.tab.key[i];
+    toml_datum_t v = top.u.tab.value[i];
+
+    if (strcmp(key, "disc") == 0) {
+      disc_path = config_disc = config_path(v, key);
+    } else if (strcmp(key, "fast") == 0) {
+      if (v.type != TOML_BOOLEAN) {
+        config_error(v, key, "true or false");
+      }
+      run_fast = v.u.boolean;
+    } else if (strcmp(key, "log_level") == 0) {
+      if ((log_level = parse_log_level(config_string(v, key))) < 0) {
+        config_error(v, key, "\"debug\", \"info\", \"warn\" or \"error\"");
+      }
+    } else if (strcmp(key, "memcard") == 0) {
+      card_paths[0] = config_path(v, key);
+    } else if (strcmp(key, "memcard2") == 0) {
+      card_paths[1] = config_path(v, key);
+    } else {
+      fprintf(stderr, "native: %s:%d: unknown key %s (ignored)\n", path,
+              v.lineno, key);
+    }
+  }
 }
 
 int main(int argc, char **argv) {
@@ -286,8 +409,30 @@ int main(int argc, char **argv) {
   int ret;
 
   setvbuf(stdout, NULL, _IOLBF, 0);
+  /* The config file first, so the flags below override it. */
+  {
+    const char *path = NULL;
+    int none = 0;
+
+    for (int i = 1; i < argc; i++) {
+      if (strcmp(argv[i], "--config") == 0 && i + 1 < argc) {
+        path = argv[++i];
+      } else if (strcmp(argv[i], "--no-config") == 0) {
+        none = 1;
+      }
+    }
+    if (none && path != NULL) {
+      usage();
+    }
+    if (!none) {
+      load_config(path);
+    }
+  }
   for (int i = 1; i < argc; i++) {
-    if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
+    if (strcmp(argv[i], "--config") == 0 && i + 1 < argc) {
+      i++; /* read above */
+    } else if (strcmp(argv[i], "--no-config") == 0) {
+    } else if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
       frame_limit = atoi(argv[++i]);
     } else if (strcmp(argv[i], "--disc") == 0 && i + 1 < argc) {
       disc_path = argv[++i];
@@ -332,12 +477,9 @@ int main(int argc, char **argv) {
         return 1;
       }
     } else if (strcmp(argv[i], "--log-level") == 0 && i + 1 < argc) {
-      const char *l = strchr("diwe", argv[++i][0]);
-
-      if (l == NULL) {
+      if ((log_level = parse_log_level(argv[++i])) < 0) {
         usage();
       }
-      log_level = (int)(l - "diwe");
     } else {
       usage();
     }
@@ -346,6 +488,20 @@ int main(int argc, char **argv) {
   if ((!run_stub && disc_path == NULL) ||
       (n_shots > 0 && screenshot_path == NULL)) {
     usage();
+  }
+  if (!run_stub) {
+    FILE *f = fopen(disc_path, "rb");
+
+    if (f == NULL) {
+      if (disc_path == config_disc) {
+        fprintf(stderr, "native: %s: cannot read disc image %s\n",
+                config_file, disc_path);
+      } else {
+        fprintf(stderr, "native: cannot read disc image %s\n", disc_path);
+      }
+      return 2;
+    }
+    fclose(f);
   }
   wasm_rt_init();
   if (psx_memory_init(&env.memory) != 0) {

@@ -48,3 +48,8 @@ __pycache__/
 notes.md
 
 .ruff_cache/
+
+*.mcd
+
+# local native-run config (copy of spyro.example.toml)
+spyro.toml
