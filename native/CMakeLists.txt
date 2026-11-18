@@ -37,6 +37,8 @@ endif()
 
 set(ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(PSYZ ${ROOT}/external/psyz/psyz)
+# tomlc17: the TOML parser for the host's config file (main.c).
+set(TOMLC17 ${ROOT}/external/tomlc17/src)
 set(TOOLS ${ROOT}/build/native-tools)
 set(WASI_SDK ${TOOLS}/wasi-sdk-34.0 CACHE PATH "wasi-sdk install")
 set(WASM2C_RT ${TOOLS}/wasm2c-runtime CACHE PATH "wasm2c runtime sources")
@@ -53,6 +55,9 @@ if(NOT EXISTS ${WASI_SDK}/bin/clang OR NOT EXISTS ${WASM2C_RT}/wasm-rt-impl.c)
 endif()
 if(NOT EXISTS ${PSYZ}/CMakeLists.txt)
   message(FATAL_ERROR "PsyZ missing: git submodule update --init external/psyz")
+endif()
+if(NOT EXISTS ${TOMLC17}/tomlc17.c)
+  message(FATAL_ERROR "tomlc17 missing: git submodule update --init external/tomlc17")
 endif()
 
 # --- 1. wasm modules ----------------------------------------------------------
@@ -107,7 +112,8 @@ add_library(psyz_platform STATIC
     ${PSYZ}/src/platform/sdl3_gpu.c
     ${PSYZ}/src/platform/sdl3_software.c
     ${PSYZ}/src/platform/sdl3_log.c)
-target_compile_definitions(psyz_platform PUBLIC __psyz PRIVATE _FILE_OFFSET_BITS=64)
+target_compile_definitions(psyz_platform PUBLIC __psyz
+    PRIVATE _FILE_OFFSET_BITS=64 "PSYZ_TITLE=\"open-spyro\"")
 # PRIVATE: PsyZ's include/ shadows system headers (setjmp.h) that the wasm2c
 # runtime needs; only imports.c sees it (below).
 target_include_directories(psyz_platform PRIVATE ${PSYZ}/include ${PSYZ}/src)
@@ -121,11 +127,12 @@ add_executable(spyro
     ${ROOT}/src/native/host/imports.c
     ${ROOT}/src/native/host/audio.c
     ${ROOT}/src/native/host/psx_memory.c
+    ${TOMLC17}/tomlc17.c
     ${CMAKE_BINARY_DIR}/spyro_w.c
     ${CMAKE_BINARY_DIR}/spyro_w_got.c
     ${WASM2C_SOURCES})
 target_include_directories(spyro PRIVATE
-    ${CMAKE_BINARY_DIR} ${WASM2C_RT} ${ROOT}/src/native/host)
+    ${CMAKE_BINARY_DIR} ${WASM2C_RT} ${ROOT}/src/native/host ${TOMLC17})
 target_compile_options(spyro PRIVATE -O2)
 set_source_files_properties(${CMAKE_BINARY_DIR}/spyro_w.c PROPERTIES
     COMPILE_OPTIONS "-w")

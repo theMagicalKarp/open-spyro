@@ -109,15 +109,31 @@ Prerequisites: **[uv](https://docs.astral.sh/uv/)**, plus
 
 ```sh
 tools/native_setup.sh   # pinned wasi-sdk + wasm2c (+ SDL3: Homebrew on macOS, system or pinned build on Linux)
-make native             # -> build/native/spyro (fetches the external/psyz submodule)
-make native-run         # plays the game from iso/*.cue (or NATIVE_DISC=path.cue)
+make native             # -> build/native/spyro (fetches the external/psyz + external/tomlc17 submodules)
+cp spyro.example.toml spyro.toml   # then set `disc` in it to your .cue
+make native-run         # plays the game with spyro.toml
+```
+
+`make native-run` reads its settings from `spyro.toml` in the repo root, your
+gitignored copy of [`spyro.example.toml`](spyro.example.toml); edit it to
+change how the game runs. Flags in `NATIVE_ARGS` override it, and
+`NATIVE_CONFIG=other.toml` picks another file. The example, every key
+optional:
+
+```toml
+disc = "iso/Spyro the Dragon (USA).cue"   # your .cue, relative to this file
+fast = false                              # true: no 59.94 Hz frame limiter
+log_level = "info"                        # "debug", "info", "warn" or "error"
+memcard = "card1.mcd"                     # port A card image; "none" = empty, unset = card1.mcd in the data dir
+# memcard2 = "card2.mcd"                  # port B
 ```
 
 Controls: arrows = D-pad, X / Z / S / D = Cross / Square / Triangle / Circle, Q
 / R / W / E = L1 / R1 / L2 / R2, Return = Start, Backspace = Select, or the
 first SDL gamepad. Saves go to a `.mcd` card image compatible with DuckStation
-_(`card1.mcd` in `~/Library/Application Support/open-spyro/spyro/` on macOS,
-`~/.local/share/open-spyro/spyro/` on Linux)_. Pass options with
+_(the example config's `memcard` puts it at `card1.mcd` in the repo root;
+without one it is `card1.mcd` in `~/Library/Application Support/open-spyro/spyro/`
+on macOS, `~/.local/share/open-spyro/spyro/` on Linux)_. Pass options with
 `NATIVE_ARGS="..."`: `--fast`, `--warp N:LEVEL`, scripted `--press` input and
 `--shot` screenshots are covered in [`docs/native.md`](docs/native.md).
 `build/native/spyro --stub` runs a test scene with no disc _(the CI smoke run;

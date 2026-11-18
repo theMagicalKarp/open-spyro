@@ -27,9 +27,10 @@ Linux needs a Vulkan driver (Mesa's `mesa-vulkan-drivers` includes the
 
 ```sh
 tools/native_setup.sh            # wasi-sdk + wasm2c (pinned, into build/native-tools) + SDL3/cmake (Homebrew on macOS)
-git submodule update --init external/psyz   # `make native` does this too; PsyZ's own submodules are not needed
+git submodule update --init external/psyz external/tomlc17   # `make native` does this too; PsyZ's own submodules are not needed
 make native                      # -> build/native/spyro (+ build/native/gate)
-make native-run NATIVE_ARGS="--frames 300 --screenshot out.bmp"   # NATIVE_DISC=path.cue
+cp spyro.example.toml spyro.toml # then set its `disc` to your .cue
+make native-run NATIVE_ARGS="--frames 300 --screenshot out.bmp"   # with spyro.toml (its `disc` key names the .cue)
 make native-run NATIVE_ARGS="--frames 1900 --screenshot out.bmp --press 1300:start \
   --press 1400:start --shot 1550"   # scripted pad 1 + a screenshot at VSync 1550
 make native-run NATIVE_ARGS="--fast --memcard none --frames 4400 --screenshot out.bmp \
@@ -42,6 +43,34 @@ open-spyro neutral [--ref main] [--host]   # shared-code change neutral for the 
 
 `make clean` empties `build/`, including `build/native-tools`; re-run
 `tools/native_setup.sh` after it.
+
+### Config file
+
+Settings that stay the same from run to run can live in a TOML file instead
+of on the command line. `spyro` reads `config.toml` from the user's data
+directory (`~/Library/Application Support/open-spyro/spyro/` on macOS,
+`~/.local/share/open-spyro/spyro/` on Linux) when it exists;
+`--config PATH` reads that file instead (and it must exist), and
+`--no-config` reads none, for repeatable scripted runs. Flags override the
+file. `make native-run` passes `--config spyro.toml` instead: the repo-root
+config, a gitignored copy of [`spyro.example.toml`](../spyro.example.toml)
+(`NATIVE_CONFIG=other.toml` for another, `NATIVE_CONFIG=` for the user's
+own); set `disc` there to point it at your dump.
+
+```toml
+disc = "/path/to/Spyro.cue"   # a relative path is relative to this file
+fast = false                   # --fast
+log_level = "info"             # --log-level: "debug", "info", "warn", "error" (or d/i/w/e)
+memcard = "card1.mcd"          # --memcard; "none" leaves port A empty
+memcard2 = "card2.mcd"         # --memcard2
+```
+
+Every key is optional. The keys are the persistent flags; the per-run ones
+(`--frames`, `--press`, `--shot`, `--warp`, `--screenshot`, `--wav`) stay
+flags only. A malformed file, or a key with the wrong type, stops the run
+with the file and line; an unknown key is reported and ignored. The parser is
+[tomlc17](https://github.com/cktan/tomlc17) (MIT), the `external/tomlc17`
+submodule, compiled into the host executable only (`native/CMakeLists.txt`).
 
 ## How it works
 
@@ -142,7 +171,7 @@ card image, the `.mcd` format emulators use, so saves move between this build
 and DuckStation. Port A is `card1.mcd` in the user's data directory
 (`~/Library/Application Support/open-spyro/spyro/` on macOS,
 `~/.local/share/open-spyro/spyro/` on Linux) unless `--memcard PATH`
-names another; `--memcard none` leaves it empty, and `--memcard2` fills port
+(or `memcard` in the config file) names another; `--memcard none` leaves it empty, and `--memcard2` fills port
 B. A missing file is a freshly formatted card, written on the first change;
 every change writes the whole image back. Operations finish at once and
 `MemCardSync` reports them on its next call.

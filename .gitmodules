@@ -1,3 +1,6 @@
 [submodule "external/psyz"]
 	path = external/psyz
 	url = https://github.com/Xeeynamo/psyz
+[submodule "external/tomlc17"]
+	path = external/tomlc17
+	url = https://github.com/cktan/tomlc17

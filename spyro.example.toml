@@ -1,0 +1,7 @@
+# make native-run's settings: copy to spyro.toml (gitignored) and edit.
+# Every key is optional; flags in NATIVE_ARGS override these.
+disc = "iso/Spyro the Dragon (USA).cue"   # your .cue, relative to this file
+fast = false                              # true: no 59.94 Hz frame limiter
+log_level = "info"                        # "debug", "info", "warn" or "error"
+memcard = "card1.mcd"                     # port A card image; "none" = empty, unset = card1.mcd in the data dir
+# memcard2 = "card2.mcd"                  # port B
