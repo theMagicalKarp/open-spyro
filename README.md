@@ -122,16 +122,20 @@ optional:
 
 ```toml
 disc = "iso/Spyro the Dragon (USA).cue"   # your .cue, relative to this file
+
+[memcard]
+port1 = "card1.mcd"                       # "none" = empty, unset = card1.mcd in the data dir
+# port2 = "card2.mcd"
+
+[debug]
 fast = false                              # true: no 59.94 Hz frame limiter
 log_level = "info"                        # "debug", "info", "warn" or "error"
-memcard = "card1.mcd"                     # port A card image; "none" = empty, unset = card1.mcd in the data dir
-# memcard2 = "card2.mcd"                  # port B
 ```
 
 Controls: arrows = D-pad, X / Z / S / D = Cross / Square / Triangle / Circle, Q
 / R / W / E = L1 / R1 / L2 / R2, Return = Start, Backspace = Select, or the
 first SDL gamepad. Saves go to a `.mcd` card image compatible with DuckStation
-_(the example config's `memcard` puts it at `card1.mcd` in the repo root;
+_(the example config's `memcard.port1` puts it at `card1.mcd` in the repo root;
 without one it is `card1.mcd` in `~/Library/Application Support/open-spyro/spyro/`
 on macOS, `~/.local/share/open-spyro/spyro/` on Linux)_. Pass options with
 `NATIVE_ARGS="..."`: `--fast`, `--warp N:LEVEL`, scripted `--press` input and

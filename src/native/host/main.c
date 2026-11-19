@@ -6,8 +6,8 @@
  *         [--log-level debug|info|warn|error]
  *   spyro --stub [--frames N] [--screenshot out.bmp]
  *
- * plus [--config file.toml | --no-config] on either form; --disc may instead
- * come from the config file.
+ * plus [--set KEY=VALUE]... and [[--config file.toml]... | --no-config] on
+ * either form; --disc may instead come from a config file.
  *
  * --disc is the user's disc image (.cue + its .bin); the game's executable
  * and data are read from it. --stub instead runs the stub test scene (a
@@ -25,11 +25,14 @@
  * data directory, "none" leaves the port empty. --log-level takes the word
  * or its first letter.
  *
- * Settings can also come from a TOML config file: config.toml in the user's
- * data directory if it exists, or --config PATH (which must exist);
- * --no-config reads none. Its keys are the persistent flags (disc, fast,
- * log_level, memcard, memcard2); relative paths in it are relative to the
- * file, unknown keys are warned about and ignored, and flags override it.
+ * The persistent settings have dotted keys (disc, memcard.port1/port2,
+ * debug.fast, debug.log_level; the settings table below). They can come
+ * from TOML config files: config.toml in the user's data directory if it
+ * exists, or each --config PATH in order (later files override earlier
+ * ones; each must exist); --no-config reads none. Relative paths in a file
+ * are relative to it, and unknown keys are warned about and ignored. Flags
+ * override the files: --set KEY=VALUE sets any key, and --disc, --memcard,
+ * --memcard2, --fast and --log-level are short forms of it.
  *
  * Sets up the PS1 address space (psx_memory.c), instantiates the wasm2c'd
  * module (game C + PsyZ core) and runs it on this thread. PsyZ's platform
@@ -289,8 +292,9 @@ static void usage(void) {
                   "[--press N:BUTTONS[:HOLD]]... [--warp N:LEVEL]... "
                   "[--fast] [--wav out.wav] [--memcard card.mcd] "
                   "[--memcard2 card.mcd] [--log-level debug|info|warn|error] "
-                  "[--config file.toml | --no-config]\n"
-                  "(--disc is needed unless the config file sets disc)\n");
+                  "[--set KEY=VALUE]... "
+                  "[[--config file.toml]... | --no-config]\n"
+                  "(--disc is needed unless a config file sets disc)\n");
   exit(2);
 }
 
@@ -306,30 +310,111 @@ static int parse_log_level(const char *s) {
   return -1;
 }
 
-/* --- the config file --- */
+/* --- settings: the config file and --set --- */
 
-/* Kept for the whole run: the settings point at its strings. */
-static toml_result_t config;
-static const char *config_file;
-static const char *config_disc; /* disc_path as the config file set it */
+/* Every persistent setting, by its dotted config key. A config file sets
+   them by key ([memcard] port1 = ... is memcard.port1), --set KEY=VALUE from
+   the command line, and the short flags (--fast, --memcard, ...) are aliases
+   for --set. */
+enum setting_kind { SET_PATH, SET_BOOL, SET_LOG_LEVEL };
+static const struct setting {
+  const char *key;
+  enum setting_kind kind;
+  void *target;
+} settings[] = {
+    {"disc", SET_PATH, &disc_path},
+    {"memcard.port1", SET_PATH, &card_paths[0]},
+    {"memcard.port2", SET_PATH, &card_paths[1]},
+    {"debug.fast", SET_BOOL, &run_fast},
+    {"debug.log_level", SET_LOG_LEVEL, &log_level},
+};
 
-_Noreturn static void config_error(toml_datum_t d, const char *key,
-                                   const char *want) {
-  fprintf(stderr, "native: %s:%d: %s must be %s\n", config_file, d.lineno,
-          key, want);
-  exit(2);
+/* Keys the first config format had at the top level: reported with the new
+   key instead of as unknown. */
+static const struct {
+  const char *old, *key;
+} renamed_keys[] = {
+    {"fast", "debug.fast"},
+    {"log_level", "debug.log_level"},
+    {"memcard", "memcard.port1"},
+    {"memcard2", "memcard.port2"},
+};
+
+enum { MAX_CONFIGS = 8 };
+/* Kept for the whole run: the settings point at their strings. */
+static toml_result_t configs[MAX_CONFIGS];
+static int n_configs;
+static const char *config_file; /* the file being read */
+static const char *disc_file;   /* the file that set disc, if one did */
+
+static const struct setting *find_setting(const char *key) {
+  for (size_t i = 0; i < sizeof(settings) / sizeof(settings[0]); i++) {
+    if (strcmp(settings[i].key, key) == 0) {
+      return &settings[i];
+    }
+  }
+  return NULL;
 }
 
-static const char *config_string(toml_datum_t d, const char *key) {
-  if (d.type != TOML_STRING) {
-    config_error(d, key, "a string");
+static const char *setting_want(const struct setting *s) {
+  switch (s->kind) {
+  case SET_PATH:
+    return "a string";
+  case SET_BOOL:
+    return "true or false";
+  case SET_LOG_LEVEL:
+    return "\"debug\", \"info\", \"warn\" or \"error\"";
   }
-  return d.u.s;
+  return "";
+}
+
+/* Stores VALUE (a string) in S; 0 if it is not a valid value. */
+static int set_setting(const struct setting *s, const char *value) {
+  switch (s->kind) {
+  case SET_PATH:
+    *(const char **)s->target = value;
+    return 1;
+  case SET_BOOL:
+    if (strcmp(value, "true") != 0 && strcmp(value, "false") != 0) {
+      return 0;
+    }
+    *(int *)s->target = value[0] == 't';
+    return 1;
+  case SET_LOG_LEVEL: {
+    int level = parse_log_level(value);
+
+    if (level < 0) {
+      return 0;
+    }
+    *(int *)s->target = level;
+    return 1;
+  }
+  }
+  return 0;
+}
+
+/* --set KEY=VALUE, and the short flags through it: a bad key or value ends
+   the run. */
+static void set_from_flag(const char *flag, const char *key,
+                          const char *value) {
+  const struct setting *s = find_setting(key);
+
+  if (s == NULL) {
+    fprintf(stderr, "native: %s: unknown setting %s\n", flag, key);
+    exit(2);
+  }
+  if (!set_setting(s, value)) {
+    fprintf(stderr, "native: %s: %s must be %s\n", flag, key,
+            setting_want(s));
+    exit(2);
+  }
+  if (s->target == &disc_path) {
+    disc_file = NULL;
+  }
 }
 
 /* A relative path is relative to the config file's directory. */
-static const char *config_path(toml_datum_t d, const char *key) {
-  const char *s = config_string(d, key);
+static const char *config_path(const char *s) {
   const char *slash = strrchr(config_file, '/');
   int dir = slash ? (int)(slash - config_file) + 1 : 0;
   char *p;
@@ -346,11 +431,59 @@ static const char *config_path(toml_datum_t d, const char *key) {
   return p;
 }
 
+static void config_value(const char *key, toml_datum_t v) {
+  const struct setting *s = find_setting(key);
+  const char *value = NULL;
+
+  if (s == NULL) {
+    for (size_t i = 0; i < sizeof(renamed_keys) / sizeof(renamed_keys[0]);
+         i++) {
+      if (strcmp(renamed_keys[i].old, key) == 0) {
+        fprintf(stderr, "native: %s:%d: %s is now %s (ignored)\n",
+                config_file, v.lineno, key, renamed_keys[i].key);
+        return;
+      }
+    }
+    fprintf(stderr, "native: %s:%d: unknown key %s (ignored)\n", config_file,
+            v.lineno, key);
+    return;
+  }
+  if (s->kind == SET_BOOL && v.type == TOML_BOOLEAN) {
+    value = v.u.boolean ? "true" : "false";
+  } else if (s->kind != SET_BOOL && v.type == TOML_STRING) {
+    value = s->kind == SET_PATH ? config_path(v.u.s) : v.u.s;
+  }
+  if (value == NULL || !set_setting(s, value)) {
+    fprintf(stderr, "native: %s:%d: %s must be %s\n", config_file, v.lineno,
+            key, setting_want(s));
+    exit(2);
+  }
+  if (s->target == &disc_path) {
+    disc_file = config_file;
+  }
+}
+
+/* Applies every value in TABLE, PREFIX naming the table ("" at the top). */
+static void config_table(const char *prefix, toml_datum_t table) {
+  for (int i = 0; i < table.u.tab.size; i++) {
+    char key[256];
+    toml_datum_t v = table.u.tab.value[i];
+
+    snprintf(key, sizeof(key), "%s%s%s", prefix, prefix[0] ? "." : "",
+             table.u.tab.key[i]);
+    if (v.type == TOML_TABLE) {
+      config_table(key, v);
+    } else {
+      config_value(key, v);
+    }
+  }
+}
+
 /* Reads PATH, or the default config.toml in the user's data directory when
    PATH is NULL (where a missing file is no config). */
 static void load_config(const char *path) {
   static char default_config[1024];
-  toml_datum_t top;
+  toml_result_t *config;
   FILE *f;
 
   if (path == NULL) {
@@ -370,38 +503,30 @@ static void load_config(const char *path) {
     exit(2);
   }
   config_file = path;
-  config = toml_parse_file_named(f, path);
+  config = &configs[n_configs++];
+  *config = toml_parse_file_named(f, path);
   fclose(f);
-  if (!config.ok) {
-    fprintf(stderr, "native: %s: %s\n", path, config.errmsg);
+  if (!config->ok) {
+    fprintf(stderr, "native: %s: %s\n", path, config->errmsg);
     exit(2);
   }
+  config_table("", config->toptab);
+}
 
-  top = config.toptab;
-  for (int i = 0; i < top.u.tab.size; i++) {
-    const char *key = top.u.tab.key[i];
-    toml_datum_t v = top.u.tab.value[i];
+/* The flags other than --config that take the next argument as a value. */
+static int takes_value(const char *arg) {
+  static const char *const flags[] = {
+      "--frames", "--set",      "--disc",     "--screenshot",
+      "--shot",   "--press",    "--warp",     "--memcard",
+      "--memcard2", "--wav",    "--log-level",
+  };
 
-    if (strcmp(key, "disc") == 0) {
-      disc_path = config_disc = config_path(v, key);
-    } else if (strcmp(key, "fast") == 0) {
-      if (v.type != TOML_BOOLEAN) {
-        config_error(v, key, "true or false");
-      }
-      run_fast = v.u.boolean;
-    } else if (strcmp(key, "log_level") == 0) {
-      if ((log_level = parse_log_level(config_string(v, key))) < 0) {
-        config_error(v, key, "\"debug\", \"info\", \"warn\" or \"error\"");
-      }
-    } else if (strcmp(key, "memcard") == 0) {
-      card_paths[0] = config_path(v, key);
-    } else if (strcmp(key, "memcard2") == 0) {
-      card_paths[1] = config_path(v, key);
-    } else {
-      fprintf(stderr, "native: %s:%d: unknown key %s (ignored)\n", path,
-              v.lineno, key);
+  for (size_t i = 0; i < sizeof(flags) / sizeof(flags[0]); i++) {
+    if (strcmp(arg, flags[i]) == 0) {
+      return 1;
     }
   }
+  return 0;
 }
 
 int main(int argc, char **argv) {
@@ -409,23 +534,31 @@ int main(int argc, char **argv) {
   int ret;
 
   setvbuf(stdout, NULL, _IOLBF, 0);
-  /* The config file first, so the flags below override it. */
+  /* The config files first, in order, so the flags below override them. */
   {
-    const char *path = NULL;
-    int none = 0;
+    const char *paths[MAX_CONFIGS];
+    int n = 0, none = 0;
 
     for (int i = 1; i < argc; i++) {
       if (strcmp(argv[i], "--config") == 0 && i + 1 < argc) {
-        path = argv[++i];
+        if (n == MAX_CONFIGS) {
+          usage();
+        }
+        paths[n++] = argv[++i];
       } else if (strcmp(argv[i], "--no-config") == 0) {
         none = 1;
+      } else if (takes_value(argv[i]) && i + 1 < argc) {
+        i++; /* a value, even one that reads --config */
       }
     }
-    if (none && path != NULL) {
+    if (none && n > 0) {
       usage();
     }
-    if (!none) {
-      load_config(path);
+    if (n == 0 && !none) {
+      load_config(NULL);
+    }
+    for (int i = 0; i < n; i++) {
+      load_config(paths[i]);
     }
   }
   for (int i = 1; i < argc; i++) {
@@ -434,8 +567,16 @@ int main(int argc, char **argv) {
     } else if (strcmp(argv[i], "--no-config") == 0) {
     } else if (strcmp(argv[i], "--frames") == 0 && i + 1 < argc) {
       frame_limit = atoi(argv[++i]);
+    } else if (strcmp(argv[i], "--set") == 0 && i + 1 < argc) {
+      char *key = argv[++i], *eq = strchr(key, '=');
+
+      if (eq == NULL) {
+        usage();
+      }
+      *eq = '\0';
+      set_from_flag("--set", key, eq + 1);
     } else if (strcmp(argv[i], "--disc") == 0 && i + 1 < argc) {
-      disc_path = argv[++i];
+      set_from_flag("--disc", "disc", argv[++i]);
     } else if (strcmp(argv[i], "--stub") == 0) {
       run_stub = 1;
     } else if (strcmp(argv[i], "--screenshot") == 0 && i + 1 < argc) {
@@ -466,20 +607,18 @@ int main(int argc, char **argv) {
       warps[n_warps].level = atoi(b + 1);
       n_warps++;
     } else if (strcmp(argv[i], "--fast") == 0) {
-      run_fast = 1;
+      set_from_flag("--fast", "debug.fast", "true");
     } else if (strcmp(argv[i], "--memcard") == 0 && i + 1 < argc) {
-      card_paths[0] = argv[++i];
+      set_from_flag("--memcard", "memcard.port1", argv[++i]);
     } else if (strcmp(argv[i], "--memcard2") == 0 && i + 1 < argc) {
-      card_paths[1] = argv[++i];
+      set_from_flag("--memcard2", "memcard.port2", argv[++i]);
     } else if (strcmp(argv[i], "--wav") == 0 && i + 1 < argc) {
       if (native_audio_wav(argv[++i]) != 0) {
         fprintf(stderr, "native: cannot write %s\n", argv[i]);
         return 1;
       }
     } else if (strcmp(argv[i], "--log-level") == 0 && i + 1 < argc) {
-      if ((log_level = parse_log_level(argv[++i])) < 0) {
-        usage();
-      }
+      set_from_flag("--log-level", "debug.log_level", argv[++i]);
     } else {
       usage();
     }
@@ -493,9 +632,9 @@ int main(int argc, char **argv) {
     FILE *f = fopen(disc_path, "rb");
 
     if (f == NULL) {
-      if (disc_path == config_disc) {
+      if (disc_file != NULL) {
         fprintf(stderr, "native: %s: cannot read disc image %s\n",
-                config_file, disc_path);
+                disc_file, disc_path);
       } else {
         fprintf(stderr, "native: cannot read disc image %s\n", disc_path);
       }

@@ -51,26 +51,42 @@ of on the command line. `spyro` reads `config.toml` from the user's data
 directory (`~/Library/Application Support/open-spyro/spyro/` on macOS,
 `~/.local/share/open-spyro/spyro/` on Linux) when it exists;
 `--config PATH` reads that file instead (and it must exist), and
-`--no-config` reads none, for repeatable scripted runs. Flags override the
-file. `make native-run` passes `--config spyro.toml` instead: the repo-root
-config, a gitignored copy of [`spyro.example.toml`](../spyro.example.toml)
-(`NATIVE_CONFIG=other.toml` for another, `NATIVE_CONFIG=` for the user's
-own); set `disc` there to point it at your dump.
+`--no-config` reads none, for repeatable scripted runs. `--config` can be
+given more than once (up to 8): the files are read in order and a later one
+overrides an earlier one, so a small file with only a few settings can be
+layered on a base config. Flags override the files. `make native-run` passes
+`--config spyro.toml` instead: the repo-root config, a gitignored copy of
+[`spyro.example.toml`](../spyro.example.toml) (`NATIVE_CONFIG=other.toml` for
+another, `NATIVE_CONFIG=` for the user's own); set `disc` there to point it at
+your dump.
 
 ```toml
-disc = "/path/to/Spyro.cue"   # a relative path is relative to this file
+disc = "/path/to/Spyro.cue"   # --disc; a relative path is relative to this file
+
+[memcard]
+port1 = "card1.mcd"            # --memcard; "none" leaves port A empty
+port2 = "card2.mcd"            # --memcard2
+
+[debug]
 fast = false                   # --fast
 log_level = "info"             # --log-level: "debug", "info", "warn", "error" (or d/i/w/e)
-memcard = "card1.mcd"          # --memcard; "none" leaves port A empty
-memcard2 = "card2.mcd"         # --memcard2
 ```
 
-Every key is optional. The keys are the persistent flags; the per-run ones
-(`--frames`, `--press`, `--shot`, `--warp`, `--screenshot`, `--wav`) stay
-flags only. A malformed file, or a key with the wrong type, stops the run
-with the file and line; an unknown key is reported and ignored. The parser is
-[tomlc17](https://github.com/cktan/tomlc17) (MIT), the `external/tomlc17`
-submodule, compiled into the host executable only (`native/CMakeLists.txt`).
+Every key is optional. Each setting has a dotted name, its table and key
+(`memcard.port1`, `debug.fast`), and `--set KEY=VALUE` sets any of them from
+the command line (`--set debug.log_level=debug`; a relative path there is
+relative to the working directory). The older flags are short forms of
+`--set`: `--disc`, `--memcard`, `--memcard2`, `--fast` and `--log-level`.
+The per-run flags (`--frames`, `--press`, `--shot`, `--warp`,
+`--screenshot`, `--wav`) have no config key. The settings are one table in
+`src/native/host/main.c` (`settings[]`), which the config files, `--set` and
+the short flags all go through; a new setting is one row there. A malformed
+file, or a key with the wrong type, stops the run with the file and line; an
+unknown key is reported and ignored. The first format's top-level keys
+(`fast`, `log_level`, `memcard`, `memcard2`) are reported with their new
+names and ignored. The parser is [tomlc17](https://github.com/cktan/tomlc17)
+(MIT), the `external/tomlc17` submodule, compiled into the host executable
+only (`native/CMakeLists.txt`).
 
 ## How it works
 
