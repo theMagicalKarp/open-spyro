@@ -38,6 +38,7 @@ make native-run NATIVE_ARGS="--fast --memcard none --frames 4400 --screenshot ou
   --press 2300:start --warp 3400:21 --shot 3990"   # Dry Canyon, unthrottled
 build/native/spyro --stub --frames 60    # no disc: a spinning-triangle test scene
 make native-gate SAVESTATE=~/Library/Application\ Support/DuckStation/savestates/<state>.sav
+make native-test                 # host unit tests (native/tests): C compiler + cmake only
 open-spyro neutral [--ref main] [--host]   # shared-code change neutral for the PS1 cpp?
 ```
 
@@ -87,6 +88,19 @@ unknown key is reported and ignored. The first format's top-level keys
 names and ignored. The parser is [tomlc17](https://github.com/cktan/tomlc17)
 (MIT), the `external/tomlc17` submodule, compiled into the host executable
 only (`native/CMakeLists.txt`).
+
+### Unit tests
+
+`make native-test` builds and runs `native/tests` (a CMake project of its own
+in `build/native-test`, with ASan and UBSan), which needs only a C compiler,
+cmake and the tomlc17 submodule. It covers the host code that has no SDL or
+wasm dependency: `src/native/host/config.c`, the config files, `--set` and the
+`--press` / `--warp` / `--log-level` value formats that `main.c` uses. A
+unit's tests live next to it as `<unit>_test.c` (`src/native/host/config_test.c`),
+which `native/tests/CMakeLists.txt` picks up by glob; `native/tests` holds only
+the harness. A test is a `TEST(name)` block with `CHECK`, `CHECK_INT` and
+`CHECK_STR` (`native/tests/test.h`); `build/native-test/native_tests FILTER`
+runs only the tests whose name contains FILTER.
 
 ## How it works
 

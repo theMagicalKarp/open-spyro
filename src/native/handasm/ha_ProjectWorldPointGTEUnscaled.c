@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster ProjectWorldPointGTEUnscaled: ProjectWorldPointGTEUnscaled (80017AA4) */
+/* cluster ProjectWorldPointGTEUnscaled: ProjectWorldPointGTEUnscaled (80017AA4)
+ */
 void ha_ProjectWorldPointGTEUnscaled(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -96,7 +97,9 @@ L_80017AA4:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017aa4u: bc = 0; goto L_80017AA4;
+  case 0x80017aa4u:
+    bc = 0;
+    goto L_80017AA4;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ProjectWorldPointGTEUnscaled", tgt, entry_ra);

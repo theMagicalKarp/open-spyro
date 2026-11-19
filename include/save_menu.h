@@ -43,14 +43,15 @@ enum SaveMenuMode {
 
 /* g_nSaveMenuSubstate: the screen shown in SAVE_MODE_MENU. */
 enum SaveMenuScreen {
-  SAVE_SCREEN_MAIN = 0,         /* HI SPYRO: save game / replay dragon / continue */
-  SAVE_SCREEN_NO_SESSION = 1,   /* game not started from a card: restart with one */
-  SAVE_SCREEN_SAVING = 2,       /* the card steps below, in the cursor word */
-  SAVE_SCREEN_NO_CARD = 3,      /* NO MEMORY CARD: insert the card with this save */
-  SAVE_SCREEN_NO_FILE = 4,      /* NO SAVE FILE (unformatted card or other file) */
-  SAVE_SCREEN_ERROR = 5,        /* SAVE ERROR: is the card still in place */
-  SAVE_SCREEN_FAILED = 6,       /* SAVE FAILED: retry / abort */
-  SAVE_SCREEN_SAVED = 7,        /* GAME SAVED */
+  SAVE_SCREEN_MAIN = 0, /* HI SPYRO: save game / replay dragon / continue */
+  /* game not started from a card: restart with one */
+  SAVE_SCREEN_NO_SESSION = 1,
+  SAVE_SCREEN_SAVING = 2,  /* the card steps below, in the cursor word */
+  SAVE_SCREEN_NO_CARD = 3, /* NO MEMORY CARD: insert the card with this save */
+  SAVE_SCREEN_NO_FILE = 4, /* NO SAVE FILE (unformatted card or other file) */
+  SAVE_SCREEN_ERROR = 5,   /* SAVE ERROR: is the card still in place */
+  SAVE_SCREEN_FAILED = 6,  /* SAVE FAILED: retry / abort */
+  SAVE_SCREEN_SAVED = 7,   /* GAME SAVED */
 };
 
 /* g_nSaveMenuCursor on SAVE_SCREEN_MAIN */
@@ -69,11 +70,11 @@ enum SaveFailedRow {
 
 /* g_nSaveMenuCursor during SAVE_SCREEN_SAVING */
 enum SaveStep {
-  SAVE_STEP_OPEN = 0,       /* open the session, MemCardLoad the slot */
-  SAVE_STEP_READ_HEADER = 1,/* read the file header */
-  SAVE_STEP_WRITE = 2,      /* file tag matches: build and write the save */
-  SAVE_STEP_READ_BACK = 3,  /* read the written save back */
-  SAVE_STEP_VERIFY = 4,     /* checksum it */
+  SAVE_STEP_OPEN = 0,        /* open the session, MemCardLoad the slot */
+  SAVE_STEP_READ_HEADER = 1, /* read the file header */
+  SAVE_STEP_WRITE = 2,       /* file tag matches: build and write the save */
+  SAVE_STEP_READ_BACK = 3,   /* read the written save back */
+  SAVE_STEP_VERIFY = 4,      /* checksum it */
 };
 
 /* A save-menu box rectangle, one per screen (SaveLoadMenu_Draw). */

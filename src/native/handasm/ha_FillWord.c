@@ -33,7 +33,9 @@ L_8001691C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80016914u: bc = 0; goto L_80016914;
+  case 0x80016914u:
+    bc = 0;
+    goto L_80016914;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("FillWord", tgt, entry_ra);

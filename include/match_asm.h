@@ -1,4 +1,5 @@
-/* match_asm.h — the zero-code idioms (empty asm statements and empty loops) the matched C uses to steer
+/* match_asm.h — the zero-code idioms (empty asm statements and empty loops) the
+ * matched C uses to steer
  * gcc 2.7.2's optimizers.
  *
  * Each macro expands to an empty asm statement: no instruction is emitted,
@@ -18,7 +19,8 @@
 #define REG_RESERVE(v) ((v) = 0)
 #else
 
-/* A382: a scheduling barrier; no insn is moved across it in either direction. */
+/* A382: a scheduling barrier; no insn is moved across it in either
+ * direction. */
 #define SCHED_FENCE() __asm__ volatile("")
 
 /* A383: dst = src through an opaque copy. The tied constraint keeps both in
@@ -38,13 +40,15 @@
 /* A200 / A232: an empty loop. Its loop notes end cse's extended basic block
  * (so a held base is not folded back into absolute addresses) and split the
  * scheduler's basic block (nothing moves across it). */
-#define EBB_BREAK() do { } while (0)
+#define EBB_BREAK()                                                            \
+  do {                                                                         \
+  } while (0)
 
 /* A400: p->field of struct type S as a plain byte-offset memory reference.
  * Same address and width, but gcc 2.7 does not mark it in-struct, so the
  * scheduler and cse treat it like the original's pointer arithmetic. Use it
  * only where p->field was measured to change the output. */
-#define FIELD_RAW(p, S, type, field) \
+#define FIELD_RAW(p, S, type, field)                                           \
   (*(type *)((char *)(p) + (int)&((S *)0)->field))
 
 #endif /* OPEN_SPYRO_MATCH_ASM_H */

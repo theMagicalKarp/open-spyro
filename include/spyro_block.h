@@ -4,67 +4,69 @@
  * Spyro globals that starts at g_anSpyroWorldPos; the matched code that holds
  * that base in one register addresses the other globals as SPY[index]. The
  * indices below are WORD offsets from 0x80078a58, each named after the global
- * that lives there. (Byte-offset views stay next to the code that uses them.) */
+ * that lives there. (Byte-offset views stay next to the code that uses
+ * them.) */
 
 #ifndef OPEN_SPYRO_SPYRO_BLOCK_H
 #define OPEN_SPYRO_SPYRO_BLOCK_H
 
 #define SPY g_anSpyroWorldPosBlock
 
-#define SPY_POS            0x00 /* g_anSpyroWorldPos */
-#define SPY_POS_Z          0x02 /* g_nSpyroWorldPosZ */
-#define SPY_PERSISTENT_EULER 0x03 /* g_abSpyroPersistentEuler (bytes) */
-#define SPY_BODY_MTX       0x0D /* g_anSpyroBodyMtx */
-#define SPY_TRIGGER_FLAGS  0x0B /* g_dwSpyroTriggerEventFlags */
-#define SPY_ANIM_PLAY_RATE 0x16 /* g_nSpyroAnimPlayRate */
-#define SPY_FLAME_PHASE    0x18 /* g_nSpyroFlamePhase */
+#define SPY_POS 0x00                /* g_anSpyroWorldPos */
+#define SPY_POS_Z 0x02              /* g_nSpyroWorldPosZ */
+#define SPY_PERSISTENT_EULER 0x03   /* g_abSpyroPersistentEuler (bytes) */
+#define SPY_BODY_MTX 0x0D           /* g_anSpyroBodyMtx */
+#define SPY_TRIGGER_FLAGS 0x0B      /* g_dwSpyroTriggerEventFlags */
+#define SPY_ANIM_PLAY_RATE 0x16     /* g_nSpyroAnimPlayRate */
+#define SPY_FLAME_PHASE 0x18        /* g_nSpyroFlamePhase */
 #define SPY_FLAME_LAYER1_STATE 0x1A /* g_nSpyroFlameLayer1State */
-#define SPY_STATE          0x1E /* g_nSpyroState */
-#define SPY_SUBSTATE       0x1F /* g_nSpyroSubstate */
-#define SPY_CONTACTED      0x22 /* g_nSpyroContactedActorFlag */
-#define SPY_PREV_POS       0x23 /* g_anSpyroPrevWorldPos */
-#define SPY_PROBE_SUSPEND  0x26 /* g_nSpyroGroundProbeSuspendFlag */
-#define SPY_AIRBORNE       0x27 /* g_nSpyroAirborneFrames */
-#define SPY_GROUND_NORMAL  0x29 /* g_anSpyroGroundNormal */
-#define SPY_GROUND_SLOPE   0x2C /* g_nSpyroGroundSlope */
-#define SPY_WALL_SLIDE     0x2D /* g_nSpyroWallSlideContributedFlag */
-#define SPY_NUDGE          0x2E /* g_anSpyroWallSlideNudgeAccum */
-#define SPY_CLIFF          0x31 /* g_nSpyroCliffEdgeHint */
-#define SPY_SPEED_TARGET   0x32 /* g_nSpyroSpeedTarget */
-#define SPY_MOVE_TARGET_YAW 0x33 /* g_nSpyroMoveTargetYaw */
-#define SPY_SLOPE_SLIDE    0x34 /* down-slope gravity along the ground tangent
-                                 (ApplyGravityAlongSpyroSlopeTangent) */
-#define SPY_SLOPE_GRAVITY  0x37 /* g_anSpyroSlopeGravityVec */
-#define SPY_CARRY          0x3A /* g_anSpyroCarryMotionVec */
-#define SPY_VELOCITY       0x3D /* g_anSpyroVelocity */
-#define SPY_VELOCITY_FP6   0x40 /* g_anSpyroVelocityFp6 */
-#define SPY_MOTION         0x43 /* g_anSpyroMotionVec */
-#define SPY_SPEED          0x46 /* g_nSpyroMotionSpeed */
-#define SPY_BODY_YAW       0x47 /* g_nSpyroBodyYaw */
-#define SPY_ROLL           0x48 /* g_nSpyroBodyRoll */
-#define SPY_PITCH          0x49 /* g_nSpyroBodyPitch */
-#define SPY_FRAME_MOTION   0x4A /* g_nSpyroFrameMotionLength */
-#define SPY_IMPULSE        0x4B /* g_anSpyroPendingImpulse */
-#define SPY_BODY_YAW_STEP  0x52 /* g_nSpyroBodyYawStep */
-#define SPY_GLIDE_SPENT    0x54 /* g_nSpyroGlideSpentFlag */
-#define SPY_INVULN        0x58 /* g_nSpyroInvulnFrames */
-#define SPY_SPARX_HEALTH    0x59 /* g_nSparxHealth */
-#define SPY_HAZARD_SINK    0x5A /* g_nSpyroHazardSinkDepth */
-#define SPY_FIRST_POINT    0x5F /* g_anSpyroFirstContactPoint */
-#define SPY_FIRST_NORMAL   0x62 /* g_anSpyroFirstContactNormal */
-#define SPY_SCRIPTED_MOVE  0x65 /* g_nSpyroScriptedMoveMode */
-#define SPY_FLAME_TIMER    0x68 /* g_nSpyroFlameTimer */
-#define SPY_SWING_TARGET   0x69 /* g_nSpyroSwingEulerTargetX (x, y, z) */
-#define SPY_INPUT_BLANK      0x7C /* g_nSpyroInputBlankCountdown */
-#define SPY_REQUEST        0x7D /* g_dwSpyroRequestMask */
+#define SPY_STATE 0x1E              /* g_nSpyroState */
+#define SPY_SUBSTATE 0x1F           /* g_nSpyroSubstate */
+#define SPY_CONTACTED 0x22          /* g_nSpyroContactedActorFlag */
+#define SPY_PREV_POS 0x23           /* g_anSpyroPrevWorldPos */
+#define SPY_PROBE_SUSPEND 0x26      /* g_nSpyroGroundProbeSuspendFlag */
+#define SPY_AIRBORNE 0x27           /* g_nSpyroAirborneFrames */
+#define SPY_GROUND_NORMAL 0x29      /* g_anSpyroGroundNormal */
+#define SPY_GROUND_SLOPE 0x2C       /* g_nSpyroGroundSlope */
+#define SPY_WALL_SLIDE 0x2D         /* g_nSpyroWallSlideContributedFlag */
+#define SPY_NUDGE 0x2E              /* g_anSpyroWallSlideNudgeAccum */
+#define SPY_CLIFF 0x31              /* g_nSpyroCliffEdgeHint */
+#define SPY_SPEED_TARGET 0x32       /* g_nSpyroSpeedTarget */
+#define SPY_MOVE_TARGET_YAW 0x33    /* g_nSpyroMoveTargetYaw */
+/* down-slope gravity along the ground tangent
+ * (ApplyGravityAlongSpyroSlopeTangent) */
+#define SPY_SLOPE_SLIDE 0x34
+#define SPY_SLOPE_GRAVITY 0x37  /* g_anSpyroSlopeGravityVec */
+#define SPY_CARRY 0x3A          /* g_anSpyroCarryMotionVec */
+#define SPY_VELOCITY 0x3D       /* g_anSpyroVelocity */
+#define SPY_VELOCITY_FP6 0x40   /* g_anSpyroVelocityFp6 */
+#define SPY_MOTION 0x43         /* g_anSpyroMotionVec */
+#define SPY_SPEED 0x46          /* g_nSpyroMotionSpeed */
+#define SPY_BODY_YAW 0x47       /* g_nSpyroBodyYaw */
+#define SPY_ROLL 0x48           /* g_nSpyroBodyRoll */
+#define SPY_PITCH 0x49          /* g_nSpyroBodyPitch */
+#define SPY_FRAME_MOTION 0x4A   /* g_nSpyroFrameMotionLength */
+#define SPY_IMPULSE 0x4B        /* g_anSpyroPendingImpulse */
+#define SPY_BODY_YAW_STEP 0x52  /* g_nSpyroBodyYawStep */
+#define SPY_GLIDE_SPENT 0x54    /* g_nSpyroGlideSpentFlag */
+#define SPY_INVULN 0x58         /* g_nSpyroInvulnFrames */
+#define SPY_SPARX_HEALTH 0x59   /* g_nSparxHealth */
+#define SPY_HAZARD_SINK 0x5A    /* g_nSpyroHazardSinkDepth */
+#define SPY_FIRST_POINT 0x5F    /* g_anSpyroFirstContactPoint */
+#define SPY_FIRST_NORMAL 0x62   /* g_anSpyroFirstContactNormal */
+#define SPY_SCRIPTED_MOVE 0x65  /* g_nSpyroScriptedMoveMode */
+#define SPY_FLAME_TIMER 0x68    /* g_nSpyroFlameTimer */
+#define SPY_SWING_TARGET 0x69   /* g_nSpyroSwingEulerTargetX (x, y, z) */
+#define SPY_INPUT_BLANK 0x7C    /* g_nSpyroInputBlankCountdown */
+#define SPY_REQUEST 0x7D        /* g_dwSpyroRequestMask */
 #define SPY_REQUEST_TARGET 0x7E /* g_anSpyroRequestTargetPos */
-#define SPY_REQUEST_STATE  0x86 /* g_nSpyroRequestState */
+#define SPY_REQUEST_STATE 0x86  /* g_nSpyroRequestState */
 #define SPY_SCRIPTED_ACTOR 0x89 /* g_pScriptedCameraActor */
-#define SPY_FLIGHT_MODE    0x93 /* g_nSpyroFlightMode */
-#define SPY_CHARGE_HOLD    0x94 /* g_nSpyroChargeHoldFlag */
-#define SPY_GLIDE_BANK     0x95 /* g_nSpyroGlideBankingFlag */
-#define SPY_GROUND_TRI   0x9D /* g_nSpyroGroundTriIndex */
-#define SPY_GROUND_VERTS   0x9E /* g_anSpyroGroundTriVerts */
+#define SPY_FLIGHT_MODE 0x93    /* g_nSpyroFlightMode */
+#define SPY_CHARGE_HOLD 0x94    /* g_nSpyroChargeHoldFlag */
+#define SPY_GLIDE_BANK 0x95     /* g_nSpyroGlideBankingFlag */
+#define SPY_GROUND_TRI 0x9D     /* g_nSpyroGroundTriIndex */
+#define SPY_GROUND_VERTS 0x9E   /* g_anSpyroGroundTriVerts */
 
 /* One Spyro-block global reached off another's address (the original keeps
  * the first one's base register): SPY_VIA(g_anSpyroVelocity, SPY_VELOCITY,
@@ -72,15 +74,16 @@
 #define SPY_VIA(base, from, to) ((base) + ((to) - (from)))
 
 /* Byte offsets into the same block, for the byte-wide globals. */
-#define SPYB_EULER       0x0C /* g_abSpyroPersistentEuler (x, y, z bytes) */
-#define SPYB_EULER_Z     0x0E /* g_bSpyroPersistentEulerZ */
-#define SPYB_ANIM_PREV   0x18 /* g_bSpyroAnimPrev (g_abSpyroAnimPrevBlock points here) */
-#define SPYB_ANIM_CURRENT 0x19 /* g_bSpyroAnimCurrent */
-#define SPYB_ANIM_FRAME  0x1F /* g_bSpyroAnimFrame */
+#define SPYB_EULER 0x0C   /* g_abSpyroPersistentEuler (x, y, z bytes) */
+#define SPYB_EULER_Z 0x0E /* g_bSpyroPersistentEulerZ */
+/* g_bSpyroAnimPrev (g_abSpyroAnimPrevBlock points here) */
+#define SPYB_ANIM_PREV 0x18
+#define SPYB_ANIM_CURRENT 0x19    /* g_bSpyroAnimCurrent */
+#define SPYB_ANIM_FRAME 0x1F      /* g_bSpyroAnimFrame */
 #define SPYB_SUB_FRAME_TIMER 0x24 /* g_bSpyroSubFrameTimer */
-#define SPYB_OT_BIN_BIAS 0x27 /* g_bSpyroOtBinBias */
-#define SPYB_BODY_MTX    0x34 /* g_anSpyroBodyMtx */
-#define SPYB_VOICE_MARKER 0x2A0 /* g_bSpyroSfxVoiceMarker */
+#define SPYB_OT_BIN_BIAS 0x27     /* g_bSpyroOtBinBias */
+#define SPYB_BODY_MTX 0x34        /* g_anSpyroBodyMtx */
+#define SPYB_VOICE_MARKER 0x2A0   /* g_bSpyroSfxVoiceMarker */
 
 /* Byte offset b of the block, from a pointer p to its anim-prev byte
  * (g_abSpyroAnimPrevBlock); b = 0 is the block base (g_anSpyroWorldPos). */

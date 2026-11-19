@@ -26,8 +26,9 @@ int LookupCosine(int angle);
 /* 2-arg arctangent of (x, y) in the scale ATAN_ANGLE8 / ATAN_ANGLE12, and
  * the byte-LUT 8-bit sibling (g_abArcTanOctantLut). */
 #ifndef ATAN_ANGLE8
-#define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
-#define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#define ATAN_ANGLE8 0 /* ArcTan2: 8-bit angle, 0..0xFF per turn */
+/* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#define ATAN_ANGLE12 1
 #endif
 int ArcTan2(int x, int y, int scale);
 /* A wrapped 12-bit angle (0..0xFFF) more than a quarter turn either way of 0
@@ -67,7 +68,8 @@ int VectorsEqual(int *a, int *b);
 void CrossProduct(int *dst, int *a, int *b);
 void CrossProductOfEdges(int *origin, int *a, int *b, int *dst);
 
-/* Length of an int[3] (GTE sqr + g_anSqrtLUT); withZ = 0 (VEC_LEN_XY) leaves Z out. */
+/* Length of an int[3] (GTE sqr + g_anSqrtLUT); withZ = 0 (VEC_LEN_XY) leaves Z
+ * out. */
 #ifndef VEC_LEN_XY
 #define VEC_LEN_XY 0  /* VectorLength: X/Y only (Z ignored) */
 #define VEC_LEN_XYZ 1 /* VectorLength: all three components */

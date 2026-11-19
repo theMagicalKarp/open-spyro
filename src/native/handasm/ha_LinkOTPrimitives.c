@@ -183,7 +183,9 @@ L_80016890:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80016784u: bc = 0; goto L_80016784;
+  case 0x80016784u:
+    bc = 0;
+    goto L_80016784;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("LinkOTPrimitives", tgt, entry_ra);

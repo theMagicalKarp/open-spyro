@@ -74,7 +74,9 @@ L_80017110:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017110u: bc = 0; goto L_80017110;
+  case 0x80017110u:
+    bc = 0;
+    goto L_80017110;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("WorldToCameraRotate", tgt, entry_ra);

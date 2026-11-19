@@ -5,8 +5,8 @@
  * the 0x20-byte record stream at g_pEmitListBase and ages one record per
  * iteration: integrates its position, fades its colour, ticks its life
  * counter and, when the record has expired (or its visible byte has been
- * cleared (culled)), hands it back with FreeEmitListRecord().  The walk stops at the
- * terminator record, whose class byte at +0x01 is 0xFF.
+ * cleared (culled)), hands it back with FreeEmitListRecord().  The walk stops
+ * at the terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Only `rec` is a real induction variable.  `pos` and `vel` are separate
  * pointers because the arms pass them to AddSVector() as values, so
@@ -20,15 +20,15 @@
  * orb fields); RasterizeEmitList's reading of each class is in emit_record.h.
  *
  * The Artisans-home arm set: the ground classes 0x6 (the orbiting spark) and
- * 0x18 (EMIT_RESCUE_SWIRL) plus the midpoint families all transfer verbatim from
- * the matched level_6 / level_2 copies.  Three arms are new here:
- *   0xE   EMIT_SLOWING_SPARK: its x/y velocity decays one step per frame
- *         toward zero, and its r/g/b fade together off the red channel;
- *   0x16  EMIT_DRIFTING_MOTE: the same decay pair, but the colour ramp is driven by the global
- *         step g_nFrameStep and the green/blue channels track half of red;
- *   0x1E  EMIT_RISING_PUFF: advances its height by the record's own phase
- *         word -- the one arm in this variant that dies on age ALONE, with no
- *         visible-byte test, so it cannot use the shared kill tail.
+ * 0x18 (EMIT_RESCUE_SWIRL) plus the midpoint families all transfer verbatim
+ * from the matched level_6 / level_2 copies.  Three arms are new here: 0xE
+ * EMIT_SLOWING_SPARK: its x/y velocity decays one step per frame toward zero,
+ * and its r/g/b fade together off the red channel; 0x16  EMIT_DRIFTING_MOTE:
+ * the same decay pair, but the colour ramp is driven by the global step
+ * g_nFrameStep and the green/blue channels track half of red; 0x1E
+ * EMIT_RISING_PUFF: advances its height by the record's own phase word -- the
+ * one arm in this variant that dies on age ALONE, with no visible-byte test, so
+ * it cannot use the shared kill tail.
  *
  * The decay pairs are the shape lever here: `short a; if (a > 0) { a--;
  * HS(n) = a; }` is what produces the original's `lh a; move copy,a; addiu
@@ -127,9 +127,10 @@ void Level0_AdvanceEmitList(int step) {
 
     case EMIT_SPYRO_HURT_SPARKLE:
       /* A hurt sparkle: circles Spyro (0x40 a tick) while his post-hit
-       * invulnerability runs; freed early if he is hidden or a hazard kills him. */
-      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
-          g_nSpyroInvulnFrames[0] <= 0) {
+       * invulnerability runs; freed early if he is hidden or a hazard kills
+       * him. */
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) ||
+          g_nSpyroDrawSuppressed != 0 || g_nSpyroInvulnFrames[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
         CopyVector(v, SPYRO_POS_VIA_INVULN);
@@ -138,7 +139,9 @@ void Level0_AdvanceEmitList(int step) {
         v[2] += 0x100;
         VectorToSVectorShr2(POS, v);
         ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
-        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & ANGLE12_MASK)) / 170;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) &
+                                ANGLE12_MASK)) /
+               170;
       }
       break;
 
@@ -268,8 +271,10 @@ void Level0_AdvanceEmitList(int step) {
       }
       RSWIRL_LIFT = (RSWIRL_BAND * (0x48 - heat)) >> 3;
       RSWIRL_RADIUS = (((0x20 - RSWIRL_BAND) * heat) >> 4) + 8;
-      POS_U[0] = RSWIRL_CENTRE_U[0] + ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
-      POS_U[1] = RSWIRL_CENTRE_U[1] + ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[0] = RSWIRL_CENTRE_U[0] +
+                 ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[1] = RSWIRL_CENTRE_U[1] +
+                 ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
       POS_U[2] = RSWIRL_CENTRE_U[2] + 0x20 + RSWIRL_LIFT_U;
       break;
     }

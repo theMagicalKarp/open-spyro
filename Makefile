@@ -11,14 +11,14 @@ UVRUN      := uv run --project tools/open-spyro --group split
 SPLAT      := $(UVRUN) -- python -m splat
 OPEN_SPYRO := $(UVRUN) -- open-spyro
 # clang-format ships from the tools/open-spyro `dev` group (pinned in uv.lock), so
-# the host gets the exact same formatter as CI. Scope is the hand-written matched
-# C in src/main/ only — the Ghidra-seeded headers in include/ are generated, not
-# hand-edited, so they are intentionally left out.
+# the host gets the exact same formatter as CI. Scope is every C source and
+# header in the repo (src/, include/, native/); the generated hand-asm
+# translation (src/native/handasm) is formatted by its generator.
 CLANG_FORMAT := $(UVRUN) -- clang-format
-CFMT_SRC     := $(shell find src/main -name '*.c')
-CFMT_WIP     := $(shell find src/main -name '*.c.wip')
+CFMT_SRC     := $(shell find src include native -name '*.[ch]')
+CFMT_WIP     := $(shell find src -name '*.c.wip')
 
-.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check wad iso progress lint lint-py lint-c fmt fmt-py fmt-c clean native native-run native-gate
+.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check wad iso progress lint lint-py lint-c fmt fmt-py fmt-c clean native native-run native-gate native-test
 
 help: ## Print this help (default target)
 	@echo "open-spyro — make targets:"
@@ -42,6 +42,7 @@ help: ## Print this help (default target)
 	@echo ""
 	@echo "  native       Build the native executable: macOS arm64, Linux arm64/x86_64 (build/native/spyro; needs tools/native_setup.sh)"
 	@echo "  native-run   Run it with spyro.toml (NATIVE_ARGS=\"--frames 300 --screenshot out.bmp\" to pass options)"
+	@echo "  native-test  Build + run the native host unit tests (build/native-test; needs only a C compiler + cmake)"
 	@echo "  native-gate  ILP32 gate: native level load vs a DuckStation savestate (SAVESTATE=path.sav)"
 
 setup: ## Build the matching toolchain
@@ -107,7 +108,7 @@ lint-py: ## Lint + type-check the Python tooling (ruff + ty)
 	cd tools/open-spyro && uv run --group split ruff format --check .
 	cd tools/open-spyro && uv run --group split ty check
 
-lint-c: ## Check matched C + parked .c.wip formatting (clang-format --dry-run --Werror)
+lint-c: ## Check all C + parked .c.wip formatting (clang-format --dry-run --Werror)
 	$(CLANG_FORMAT) --dry-run --Werror $(CFMT_SRC) $(CFMT_WIP)
 
 fmt: fmt-py fmt-c ## Auto-format everything (Python ruff + C clang-format)
@@ -116,7 +117,7 @@ fmt-py: ## Auto-format + autofix the Python tooling (ruff)
 	cd tools/open-spyro && uv run --group split ruff format .
 	cd tools/open-spyro && uv run --group split ruff check --fix .
 
-fmt-c: ## Auto-format the matched C sources + parked .c.wip attempts (clang-format -i)
+fmt-c: ## Auto-format all C sources + headers + parked .c.wip attempts (clang-format -i)
 	$(CLANG_FORMAT) -i $(CFMT_SRC) $(CFMT_WIP)
 
 # ---- native port ------------------------------------------------------------
@@ -141,6 +142,12 @@ native: ## Build the native executable (macOS arm64, Linux arm64/x86_64) (build/
 native-run: native ## Run the native executable with spyro.toml
 	@test -z "$(NATIVE_CONFIG)" -o -f "$(NATIVE_CONFIG)" || { echo "native-run: no $(NATIVE_CONFIG) (cp spyro.example.toml spyro.toml, then set its disc)"; exit 2; }
 	$(NATIVE_BUILD)/spyro $(if $(NATIVE_CONFIG),--config "$(NATIVE_CONFIG)") $(NATIVE_ARGS)
+
+native-test: ## Build + run the native host unit tests (native/tests; no wasm toolchain needed)
+	@test -f external/tomlc17/src/tomlc17.c || git submodule update --init external/tomlc17
+	cmake -S native/tests -B build/native-test -DCMAKE_BUILD_TYPE=Debug >/dev/null
+	cmake --build build/native-test -j $(NATIVE_JOBS)
+	ctest --test-dir build/native-test --output-on-failure
 
 native-gate: native ## ILP32 gate: native level load vs PS1 RAM in SAVESTATE (a DuckStation .sav)
 	@test -n "$(SAVESTATE)" || { echo "usage: make native-gate SAVESTATE=path/to/state.sav (taken in a level)"; exit 2; }

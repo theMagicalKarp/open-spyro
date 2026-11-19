@@ -24,12 +24,13 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into ->type and the parent's pool index into ->poolIndex, then runs a per-type
- * init arm: every arm starts from InitActorRenderDefaults (InitActorRenderDefaults) and
- * ends by placing the new actor -- most copy the parent's position
- * (CopyVector) and either register it in the spatial grid
- * (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).  With no parent
- * the position falls back to Spyro's (g_anSpyroWorldPos).
+ * type into ->type and the parent's pool index into ->poolIndex, then runs a
+ * per-type init arm: every arm starts from InitActorRenderDefaults
+ * (InitActorRenderDefaults) and ends by placing the new actor -- most copy the
+ * parent's position (CopyVector) and either register it in the spatial grid
+ * (InsertActorIntoSpatialGrid) or hide its render record
+ * (HideActorRenderRecord).  With no parent the position falls back to Spyro's
+ * (g_anSpyroWorldPos).
  *
  * Wild Flight shares the flight arm set with levels 5/11/17/29; the whole set
  * is word-identical here, including the 0x167..0x169 scatter burst decoded on
@@ -40,318 +41,285 @@
    carried to a full match from there; the earlier hand-written draft and its
    comments are in git history (7623bbd6^). */
 
-Actor *Level23_SpawnActor(int type, Actor *parent)
-{
+Actor *Level23_SpawnActor(int type, Actor *parent) {
   Actor *rec;
   int owner;
   rec = AllocActorRecordSlot();
   rec->type = type;
-  if ((parent == 0) || (((unsigned int) (owner = parent - g_pActorListBase)) >= 0x100))
-  {
+  if ((parent == 0) ||
+      (((unsigned int)(owner = parent - g_pActorListBase)) >= 0x100)) {
     owner = 0;
   }
   rec->poolIndex = owner;
-  switch (type)
-  {
-    case ACTOR_TYPE_SPARX_FOOD:
-    {
-      PickupState *st = rec->state;
-      InitActorRenderDefaults(rec);
-      st->vel[2] = PICKUP_DROP_POP_VZ;
+  switch (type) {
+  case ACTOR_TYPE_SPARX_FOOD: {
+    PickupState *st = rec->state;
+    InitActorRenderDefaults(rec);
+    st->vel[2] = PICKUP_DROP_POP_VZ;
+    st->bounces = PICKUP_DROP_BOUNCES;
+    st->sparkle = ROT_BILLBOARD_NONE;
+    st->vel[0] = 0;
+    st->vel[1] = 0;
+    st->restMode = COLLREST_STILL;
+    st->timer = 0;
+    st->pitch = 0;
+    st->yaw = 0;
+    st->roll = 0;
+    rec->subMode = COLLECT_BOUNCE;
+    rec->cullRadius = CULL_RADIUS(0x1800);
+    rec->updateDist = UPDATE_DIST(0x4000);
+    rec->rotX = 0x20;
+    rec->rotY = 0;
+    rec->rotZ = 0;
+    if (parent != 0) {
+      CopyVector(&rec->posX, &parent->posX);
+    }
+    InsertActorIntoSpatialGrid(rec);
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
+    rec->tintMode = TINT_WHITE;
+    rec->renderList |= ACTOR_RENDER_SECONDARY;
+    break;
+  }
+
+  case ACTOR_TYPE_BUTTERFLY: {
+    ButterflyState *st = rec->state;
+    int *pos;
+    InitActorRenderDefaults(rec);
+    InsertActorIntoSpatialGrid(rec);
+    pos = &rec->posX;
+    CopyVector(pos, &parent->posX);
+    rec->posZ += 0x200;
+    CopyVector(st->home, pos);
+    st->climbTimer = 0;
+    st->headingTimer = 0;
+    st->offscreenTimer = BUTTERFLY_OFFSCREEN_FRAMES;
+    break;
+  }
+
+  case ACTOR_TYPE_AIMED_SHOT: {
+    int *st;
+    int dir;
+    int d[3];
+    InitActorRenderDefaults(rec);
+    dir = parent->rotZ;
+    rec->rotZ = dir;
+    rec->posX = parent->posX + (g_anCosineLut[dir] >> 4);
+    rec->posY = parent->posY + (g_anSineLut[rec->rotZ] >> 4);
+    rec->posZ = parent->posZ;
+    d[0] = g_anSpyroWorldPos[0] - rec->posX;
+    d[1] = g_nSpyroWorldPosY - rec->posY;
+    d[2] = g_nSpyroWorldPosZ - rec->posZ;
+    ScaleVector3ByRatio(d, VectorLength(d, VEC_LEN_XYZ), 0xA0);
+    InsertActorIntoSpatialGrid(rec);
+    st = rec->state;
+    CopyVector(st, d);
+    st[3] = 0x50;
+    break;
+  }
+
+  case ACTOR_TYPE_DRAGON_EGG:
+    InitActorRenderDefaults(rec);
+    rec->cullRadius = CULL_RADIUS(0x2000);
+    rec->updateDist = ACTOR_UPDATE_ALWAYS;
+    if (parent != 0) {
+      CopyVector(&rec->posX, &parent->posX);
+    }
+    HideActorRenderRecord(rec);
+    break;
+
+  case ACTOR_TYPE_EXTRA_LIFE:
+
+  case ACTOR_TYPE_GEM_1 ... ACTOR_TYPE_GEM_25: {
+    PickupState *st = rec->state;
+    int *pos;
+    int probe[3];
+    InitActorRenderDefaults(rec);
+    st->vel[0] = 0;
+    st->vel[1] = 0;
+    st->vel[2] = PICKUP_DROP_POP_VZ;
+    st->restMode = COLLREST_STILL;
+    st->timer = 0;
+    st->pitch = 0;
+    st->yaw = 0;
+    st->roll = 0;
+    if (parent->type == ACTOR_TYPE_FOLLOWER) {
+      st->bounces = PICKUP_DROP_FOLLOWER_BOUNCES;
+    } else {
       st->bounces = PICKUP_DROP_BOUNCES;
-      st->sparkle = ROT_BILLBOARD_NONE;
-      st->vel[0] = 0;
-      st->vel[1] = 0;
-      st->restMode = COLLREST_STILL;
-      st->timer = 0;
-      st->pitch = 0;
-      st->yaw = 0;
-      st->roll = 0;
-      rec->subMode = COLLECT_BOUNCE;
-      rec->cullRadius = CULL_RADIUS(0x1800);
-      rec->updateDist = UPDATE_DIST(0x4000);
-      rec->rotX = 0x20;
-      rec->rotY = 0;
-      rec->rotZ = 0;
-      if (parent != 0)
-      {
-        CopyVector(&rec->posX, &parent->posX);
-      }
-      InsertActorIntoSpatialGrid(rec);
-      rec->tint0 = 0;
-      rec->tint1 = 0;
-      rec->tint2 = 0;
-      rec->tintMode = TINT_WHITE;
-      rec->renderList |= ACTOR_RENDER_SECONDARY;
-      break;
     }
-
-    case ACTOR_TYPE_BUTTERFLY:
-    {
-      ButterflyState *st = rec->state;
-      int *pos;
-      InitActorRenderDefaults(rec);
-      InsertActorIntoSpatialGrid(rec);
-      pos = &rec->posX;
-      CopyVector(pos, &parent->posX);
-      rec->posZ += 0x200;
-      CopyVector(st->home, pos);
-      st->climbTimer = 0;
-      st->headingTimer = 0;
-      st->offscreenTimer = BUTTERFLY_OFFSCREEN_FRAMES;
-      break;
+    pos = &rec->posX;
+    st->sparkle = ROT_BILLBOARD_NONE;
+    rec->subMode = COLLECT_BOUNCE;
+    rec->cullRadius = CULL_RADIUS(0x1800);
+    rec->updateDist = UPDATE_DIST(0x10000);
+    rec->rotX = 0x20;
+    rec->rotY = 0;
+    rec->rotZ = 0;
+    CopyVector(pos, &parent->posX);
+    HideActorRenderRecord(rec);
+    rec->groundCode = -1;
+    CopyVector(probe, pos);
+    probe[2] += GROUND_PROBE_LIFT;
+    FindGroundHeightBelow(probe, GROUND_PROBE_FAR);
+    EncodeHitNormalToActorGroundCode(rec);
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
+    if (rec->type == ACTOR_TYPE_EXTRA_LIFE) {
+      rec->tintMode = TINT_EXTRA_LIFE;
     }
-
-    case ACTOR_TYPE_AIMED_SHOT:
-    {
-      int *st;
-      int dir;
-      int d[3];
-      InitActorRenderDefaults(rec);
-      dir = parent->rotZ;
-      rec->rotZ = dir;
-      rec->posX = parent->posX + (g_anCosineLut[dir] >> 4);
-      rec->posY = parent->posY + (g_anSineLut[rec->rotZ] >> 4);
-      rec->posZ = parent->posZ;
-      d[0] = g_anSpyroWorldPos[0] - rec->posX;
-      d[1] = g_nSpyroWorldPosY - rec->posY;
-      d[2] = g_nSpyroWorldPosZ - rec->posZ;
-      ScaleVector3ByRatio(d, VectorLength(d, VEC_LEN_XYZ), 0xA0);
-      InsertActorIntoSpatialGrid(rec);
-      st = rec->state;
-      CopyVector(st, d);
-      st[3] = 0x50;
-      break;
+    if (rec->type == ACTOR_TYPE_GEM_1) {
+      rec->tintMode = TINT_GEM_1;
     }
+    if (rec->type == ACTOR_TYPE_GEM_2) {
+      rec->tintMode = TINT_GEM_2;
+    }
+    if (rec->type == ACTOR_TYPE_GEM_5) {
+      rec->tintMode = TINT_GEM_5;
+    }
+    if (rec->type == ACTOR_TYPE_GEM_10) {
+      rec->tintMode = TINT_GEM_10;
+    }
+    if (rec->type == ACTOR_TYPE_GEM_25) {
+      rec->tintMode = TINT_GEM_25;
+    }
+    break;
+  }
 
-    case ACTOR_TYPE_DRAGON_EGG:
-      InitActorRenderDefaults(rec);
-      rec->cullRadius = CULL_RADIUS(0x2000);
-      rec->updateDist = ACTOR_UPDATE_ALWAYS;
-      if (parent != 0)
-    {
+  case ACTOR_TYPE_SPARX: {
+    SparxState *st = rec->state;
+    InitActorRenderDefaults(rec);
+    InsertActorIntoSpatialGrid(rec);
+    rec->subMode = 0;
+    st->timer = 0;
+    st->drift[2] = 0;
+    st->drift[1] = 0;
+    st->drift[0] = 0;
+    st->glow = 0;
+    st->target = 0;
+    if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
     }
-      HideActorRenderRecord(rec);
-      break;
+    break;
+  }
 
-    case ACTOR_TYPE_EXTRA_LIFE:
-
-    case ACTOR_TYPE_GEM_1 ... ACTOR_TYPE_GEM_25:
-    {
-      PickupState *st = rec->state;
-      int *pos;
-      int probe[3];
-      InitActorRenderDefaults(rec);
-      st->vel[0] = 0;
-      st->vel[1] = 0;
-      st->vel[2] = PICKUP_DROP_POP_VZ;
-      st->restMode = COLLREST_STILL;
-      st->timer = 0;
-      st->pitch = 0;
-      st->yaw = 0;
-      st->roll = 0;
-      if (parent->type == ACTOR_TYPE_FOLLOWER)
-      {
-        st->bounces = PICKUP_DROP_FOLLOWER_BOUNCES;
-      }
-      else
-      {
-        st->bounces = PICKUP_DROP_BOUNCES;
-      }
-      pos = &rec->posX;
-      st->sparkle = ROT_BILLBOARD_NONE;
-      rec->subMode = COLLECT_BOUNCE;
-      rec->cullRadius = CULL_RADIUS(0x1800);
-      rec->updateDist = UPDATE_DIST(0x10000);
-      rec->rotX = 0x20;
-      rec->rotY = 0;
-      rec->rotZ = 0;
-      CopyVector(pos, &parent->posX);
-      HideActorRenderRecord(rec);
-      rec->groundCode = -1;
-      CopyVector(probe, pos);
-      probe[2] += GROUND_PROBE_LIFT;
-      FindGroundHeightBelow(probe, GROUND_PROBE_FAR);
-      EncodeHitNormalToActorGroundCode(rec);
-      rec->tint0 = 0;
-      rec->tint1 = 0;
-      rec->tint2 = 0;
-      if (rec->type == ACTOR_TYPE_EXTRA_LIFE)
-      {
-        rec->tintMode = TINT_EXTRA_LIFE;
-      }
-      if (rec->type == ACTOR_TYPE_GEM_1)
-      {
-        rec->tintMode = TINT_GEM_1;
-      }
-      if (rec->type == ACTOR_TYPE_GEM_2)
-      {
-        rec->tintMode = TINT_GEM_2;
-      }
-      if (rec->type == ACTOR_TYPE_GEM_5)
-      {
-        rec->tintMode = TINT_GEM_5;
-      }
-      if (rec->type == ACTOR_TYPE_GEM_10)
-      {
-        rec->tintMode = TINT_GEM_10;
-      }
-      if (rec->type == ACTOR_TYPE_GEM_25)
-      {
-        rec->tintMode = TINT_GEM_25;
-      }
-      break;
-    }
-
-    case ACTOR_TYPE_SPARX:
-    {
-      SparxState *st = rec->state;
-      InitActorRenderDefaults(rec);
-      InsertActorIntoSpatialGrid(rec);
-      rec->subMode = 0;
-      st->timer = 0;
-      st->drift[2] = 0;
-      st->drift[1] = 0;
-      st->drift[0] = 0;
-      st->glow = 0;
-      st->target = 0;
-      if (parent != 0)
-      {
-        CopyVector(&rec->posX, &parent->posX);
-      }
-      break;
-    }
-
-    case ACTOR_TYPE_FLIGHT_CHEST_SHARD ... ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2:
-    {
-      TumbleState *st = rec->state;
-      int yaw;
-      int pitch;
-      InitActorRenderDefaults(rec);
-      rec->cullRadius = CULL_RADIUS(0x2000);
-      CopyVector(&rec->posX, &parent->posX);
-      InsertActorIntoSpatialGrid(rec);
-      yaw = GetRandomU32() & ANGLE12_MASK;
-      pitch = GetRandomU32() & 0x7FF;
-      st->vel[0] = ((LookupCosine(pitch) >> 5) * LookupCosine(yaw)) >> 12;
-      st->vel[1] = ((LookupCosine(pitch) >> 5) * LookupSine(yaw)) >> 12;
-      st->vel[2] = LookupSine(pitch) >> 5;
-      if (parent->flags & ACTOR_HIT_CHARGE)
-      {
-        st->vel[0] += g_anSpyroVelocity[0] >> 6;
-        st->vel[1] += g_anSpyroVelocity[1] >> 6;
-        st->vel[2] += g_anSpyroVelocity[2] >> 6;
-      }
-      rec->posX += st->vel[0] * 4;
-      rec->posY += st->vel[1] * 4;
-      rec->posZ += st->vel[2] * 4;
-      st->spin[0] = GetRandomU32() & 0xF;
-      st->spin[1] = GetRandomU32() & 0xF;
-      st->spin[2] = GetRandomU32() & 0xF;
-      st->floorZ = parent->posZ - 0x40;
-      st->life = 0x40 - (GetRandomU32() & 0xF);
-      if (((unsigned int) (((unsigned short) rec->type) - 0x135)) < 3)
-      {
-        *((int *) (&rec->tint0)) = ACTOR_TINT_NEUTRAL;
-        rec->renderList |= ACTOR_RENDER_SECONDARY;
-      }
-      break;
-    }
-
-    case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 2:
-    {
-      TumbleState *st = rec->state;
-      int yaw;
-      int pitch;
-      InitActorRenderDefaults(rec);
-      rec->cullRadius = CULL_RADIUS(0x2000);
-      CopyVector(&rec->posX, &parent->posX);
-      InsertActorIntoSpatialGrid(rec);
-      yaw = GetRandomU32() & ANGLE12_MASK;
-      pitch = GetRandomU32() & 0x7FF;
-      st->vel[0] = ((LookupCosine(pitch) >> 5) * LookupCosine(yaw)) >> 12;
-      st->vel[1] = ((LookupCosine(pitch) >> 5) * LookupSine(yaw)) >> 12;
-      st->vel[2] = LookupSine(pitch) >> 5;
+  case ACTOR_TYPE_FLIGHT_CHEST_SHARD ... ACTOR_TYPE_FLIGHT_CHEST_SHARD + 2: {
+    TumbleState *st = rec->state;
+    int yaw;
+    int pitch;
+    InitActorRenderDefaults(rec);
+    rec->cullRadius = CULL_RADIUS(0x2000);
+    CopyVector(&rec->posX, &parent->posX);
+    InsertActorIntoSpatialGrid(rec);
+    yaw = GetRandomU32() & ANGLE12_MASK;
+    pitch = GetRandomU32() & 0x7FF;
+    st->vel[0] = ((LookupCosine(pitch) >> 5) * LookupCosine(yaw)) >> 12;
+    st->vel[1] = ((LookupCosine(pitch) >> 5) * LookupSine(yaw)) >> 12;
+    st->vel[2] = LookupSine(pitch) >> 5;
+    if (parent->flags & ACTOR_HIT_CHARGE) {
       st->vel[0] += g_anSpyroVelocity[0] >> 6;
       st->vel[1] += g_anSpyroVelocity[1] >> 6;
       st->vel[2] += g_anSpyroVelocity[2] >> 6;
-      rec->posX += st->vel[0] * 4;
-      rec->posY += st->vel[1] * 4;
-      rec->posZ += st->vel[2] * 4;
-      st->spin[0] = GetRandomU32() & 0xF;
-      st->spin[1] = GetRandomU32() & 0xF;
-      st->spin[2] = GetRandomU32() & 0xF;
-      st->floorZ = parent->posZ - 0x40;
-      st->life = 0x40 - (GetRandomU32() & 0xF);
-      break;
     }
-
-    case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
-    {
-      TumbleState *st = rec->state;
-      int seed;
-      InitActorRenderDefaults(rec);
-      rec->cullRadius = CULL_RADIUS(0x2000);
-      CopyVector(&rec->posX, &parent->posX);
-      InsertActorIntoSpatialGrid(rec);
-      seed = GetRandomU32();
-      rec->rotZ = seed;
-      st->vel[0] = g_anCosineLut[(unsigned char) seed] >> 7;
-      st->vel[1] = g_anSineLut[rec->rotZ] >> 7;
-      if (GetRandomU32() & 1)
-      {
-        st->vel[2] = 0x5A;
-      }
-      else
-      {
-        st->vel[2] = -0x5A;
-        rec->rotX = 0x80;
-      }
-      rec->posX += st->vel[0] * 4;
-      rec->posY += st->vel[1] * 4;
-      rec->posZ += st->vel[2] * 4;
-      if (st->vel[2] < 0x14)
-      {
-        st->vel[2] = 0x14;
-      }
-      st->spin[0] = GetRandomU32() & 0xF;
-      st->spin[1] = GetRandomU32() & 0xF;
-      st->spin[2] = GetRandomU32() & 0xF;
-      st->floorZ = parent->posZ - 0x40;
-      st->life = 0x40 - (GetRandomU32() & 0xF);
-      break;
+    rec->posX += st->vel[0] * 4;
+    rec->posY += st->vel[1] * 4;
+    rec->posZ += st->vel[2] * 4;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
+    st->floorZ = parent->posZ - 0x40;
+    st->life = 0x40 - (GetRandomU32() & 0xF);
+    if (((unsigned int)(((unsigned short)rec->type) - 0x135)) < 3) {
+      *((int *)(&rec->tint0)) = ACTOR_TINT_NEUTRAL;
+      rec->renderList |= ACTOR_RENDER_SECONDARY;
     }
+    break;
+  }
 
-    case ACTOR_TYPE_GEM_DIGIT_0 ... ACTOR_TYPE_GEM_DIGIT_0 + 9:
+  case ACTOR_TYPE_SPARK_DEBRIS ... ACTOR_TYPE_SPARK_DEBRIS + 2: {
+    TumbleState *st = rec->state;
+    int yaw;
+    int pitch;
+    InitActorRenderDefaults(rec);
+    rec->cullRadius = CULL_RADIUS(0x2000);
+    CopyVector(&rec->posX, &parent->posX);
+    InsertActorIntoSpatialGrid(rec);
+    yaw = GetRandomU32() & ANGLE12_MASK;
+    pitch = GetRandomU32() & 0x7FF;
+    st->vel[0] = ((LookupCosine(pitch) >> 5) * LookupCosine(yaw)) >> 12;
+    st->vel[1] = ((LookupCosine(pitch) >> 5) * LookupSine(yaw)) >> 12;
+    st->vel[2] = LookupSine(pitch) >> 5;
+    st->vel[0] += g_anSpyroVelocity[0] >> 6;
+    st->vel[1] += g_anSpyroVelocity[1] >> 6;
+    st->vel[2] += g_anSpyroVelocity[2] >> 6;
+    rec->posX += st->vel[0] * 4;
+    rec->posY += st->vel[1] * 4;
+    rec->posZ += st->vel[2] * 4;
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
+    st->floorZ = parent->posZ - 0x40;
+    st->life = 0x40 - (GetRandomU32() & 0xF);
+    break;
+  }
 
-    case ACTOR_TYPE_GLYPH_SLASH:
-
-    case ACTOR_TYPE_GLYPH_PERIOD:
-    {
-      int *st = rec->state;
-      InitActorRenderDefaults(rec);
-      HideActorRenderRecord(rec);
-      rec->tintMode = TINT_GOLD;
-      rec->tint0 = 0;
-      rec->tint1 = 0;
-      rec->tint2 = 0;
-      *st = 0x40;
-      break;
+  case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2: {
+    TumbleState *st = rec->state;
+    int seed;
+    InitActorRenderDefaults(rec);
+    rec->cullRadius = CULL_RADIUS(0x2000);
+    CopyVector(&rec->posX, &parent->posX);
+    InsertActorIntoSpatialGrid(rec);
+    seed = GetRandomU32();
+    rec->rotZ = seed;
+    st->vel[0] = g_anCosineLut[(unsigned char)seed] >> 7;
+    st->vel[1] = g_anSineLut[rec->rotZ] >> 7;
+    if (GetRandomU32() & 1) {
+      st->vel[2] = 0x5A;
+    } else {
+      st->vel[2] = -0x5A;
+      rec->rotX = 0x80;
     }
+    rec->posX += st->vel[0] * 4;
+    rec->posY += st->vel[1] * 4;
+    rec->posZ += st->vel[2] * 4;
+    if (st->vel[2] < 0x14) {
+      st->vel[2] = 0x14;
+    }
+    st->spin[0] = GetRandomU32() & 0xF;
+    st->spin[1] = GetRandomU32() & 0xF;
+    st->spin[2] = GetRandomU32() & 0xF;
+    st->floorZ = parent->posZ - 0x40;
+    st->life = 0x40 - (GetRandomU32() & 0xF);
+    break;
+  }
 
-    case ACTOR_TYPE_TIME_BONUS ... ACTOR_TYPE_TIME_BONUS + 2:
-      if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0)
-    {
+  case ACTOR_TYPE_GEM_DIGIT_0 ... ACTOR_TYPE_GEM_DIGIT_0 + 9:
+
+  case ACTOR_TYPE_GLYPH_SLASH:
+
+  case ACTOR_TYPE_GLYPH_PERIOD: {
+    int *st = rec->state;
+    InitActorRenderDefaults(rec);
+    HideActorRenderRecord(rec);
+    rec->tintMode = TINT_GOLD;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
+    *st = 0x40;
+    break;
+  }
+
+  case ACTOR_TYPE_TIME_BONUS ... ACTOR_TYPE_TIME_BONUS + 2:
+    if (g_anFlightClearTimes[g_nActiveWorldIndex] != 0) {
       HideActorRenderRecord(rec);
       DespawnActorRecord(rec);
       rec = 0;
-    }
-    else
-    {
+    } else {
       InitActorRenderDefaults(rec);
-      if (parent != 0)
-      {
+      if (parent != 0) {
         CopyVector(&rec->posX, &parent->posX);
       }
       rec->cullRadius = CULL_RADIUS(0x4000);
@@ -361,131 +329,124 @@ Actor *Level23_SpawnActor(int type, Actor *parent)
       rec->tint2 = 0;
       rec->tintMode = TINT_GOLD;
     }
-      break;
+    break;
 
-    case ACTOR_TYPE_FLIGHT_TARGET_SHARD:
-    {
-      int dx;
-      int dy;
-      int dz;
-      InitActorRenderDefaults(rec);
-      CopyVector(&rec->posX, &parent->posX);
-      dx = (signed char) parent->rotX;
-      dy = (signed char) parent->rotY;
-      dz = (signed char) parent->rotZ;
-      do {
+  case ACTOR_TYPE_FLIGHT_TARGET_SHARD: {
+    int dx;
+    int dy;
+    int dz;
+    InitActorRenderDefaults(rec);
+    CopyVector(&rec->posX, &parent->posX);
+    dx = (signed char)parent->rotX;
+    dy = (signed char)parent->rotY;
+    dz = (signed char)parent->rotZ;
+    do {
       rec->rotX = dx;
       rec->rotY = dy;
       rec->rotZ = dz;
-      } while (0);
-      InsertActorIntoSpatialGrid(rec);
-      rec->renderList = 0xBF;
-      rec->tint0 = parent->tint0;
-      rec->tint1 = parent->tint1;
-      rec->tint2 = parent->tint2;
-      rec->tintMode = parent->tintMode;
-      rec->cullRadius = parent->cullRadius;
-      break;
-    }
+    } while (0);
+    InsertActorIntoSpatialGrid(rec);
+    rec->renderList = 0xBF;
+    rec->tint0 = parent->tint0;
+    rec->tint1 = parent->tint1;
+    rec->tint2 = parent->tint2;
+    rec->tintMode = parent->tintMode;
+    rec->cullRadius = parent->cullRadius;
+    break;
+  }
 
-    case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 1 ... ACTOR_TYPE_FLIGHT_TARGET_SHARD + 12:
-    {
-      int dx;
-      int dy;
-      int dz;
-      InitActorRenderDefaults(rec);
+  case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 1 ... ACTOR_TYPE_FLIGHT_TARGET_SHARD +
+      12: {
+    int dx;
+    int dy;
+    int dz;
+    InitActorRenderDefaults(rec);
+    CopyVector(&rec->posX, &parent->posX);
+    dx = (signed char)parent->rotX;
+    dy = (signed char)parent->rotY;
+    do {
+      dz = (signed char)parent->rotZ;
+      rec->rotX = dx;
+      rec->rotY = dy;
+    } while (0);
+    rec->rotZ = dz;
+    InsertActorIntoSpatialGrid(rec);
+    rec->renderList = 0xBF;
+    rec->tint0 = parent->tint0;
+    rec->tint1 = parent->tint1;
+    rec->tint2 = parent->tint2;
+    rec->tintMode = parent->tintMode;
+    break;
+  }
+
+  case ACTOR_TYPE_TALLY_ICON_RING ... ACTOR_TYPE_TALLY_ICON_CHEST: /* flight
+                                                                      tally
+                                                                      icons */
+
+  case ACTOR_TYPE_TALLY_ICON_BANKER:
+
+  case ACTOR_TYPE_TALLY_ICON_CYCLER:
+    InitActorRenderDefaults(rec);
+    rec->posX = -0x64;
+    rec->posY = 0x1E;
+    rec->cullRadius = ACTOR_CULL_HIDDEN;
+    rec->posZ = 0x1000;
+    HideActorRenderRecord(rec);
+    rec->otBias = OT_BIAS_SCREEN;
+    rec->tint0 = 0;
+    rec->tint1 = 0;
+    rec->tint2 = 0;
+    rec->tintMode = 0;
+    break;
+
+  case ACTOR_TYPE_SPLASH:
+
+  case ACTOR_TYPE_HAZARD0_DEATH_FX:
+
+  case ACTOR_TYPE_HAZARD0_ENTER_FX: {
+    int ground;
+    int z;
+    int gap;
+    InitActorRenderDefaults(rec);
+    if (parent != 0) {
       CopyVector(&rec->posX, &parent->posX);
-      dx = (signed char) parent->rotX;
-      dy = (signed char) parent->rotY;
- do { dz = (signed char) parent->rotZ; rec->rotX = dx; rec->rotY = dy; } while (0);
-      rec->rotZ = dz;
-      InsertActorIntoSpatialGrid(rec);
-      rec->renderList = 0xBF;
-      rec->tint0 = parent->tint0;
-      rec->tint1 = parent->tint1;
-      rec->tint2 = parent->tint2;
-      rec->tintMode = parent->tintMode;
-      break;
-    }
-
-    case ACTOR_TYPE_TALLY_ICON_RING ... ACTOR_TYPE_TALLY_ICON_CHEST: /* flight tally icons */
-
-    case ACTOR_TYPE_TALLY_ICON_BANKER:
-
-    case ACTOR_TYPE_TALLY_ICON_CYCLER:
-      InitActorRenderDefaults(rec);
-      rec->posX = -0x64;
-      rec->posY = 0x1E;
-      rec->cullRadius = ACTOR_CULL_HIDDEN;
-      rec->posZ = 0x1000;
-      HideActorRenderRecord(rec);
-      rec->otBias = OT_BIAS_SCREEN;
-      rec->tint0 = 0;
-      rec->tint1 = 0;
-      rec->tint2 = 0;
-      rec->tintMode = 0;
-      break;
-
-    case ACTOR_TYPE_SPLASH:
-
-    case ACTOR_TYPE_HAZARD0_DEATH_FX:
-
-    case ACTOR_TYPE_HAZARD0_ENTER_FX:
-    {
-      int ground;
-      int z;
-      int gap;
-      InitActorRenderDefaults(rec);
-      if (parent != 0)
-      {
-        CopyVector(&rec->posX, &parent->posX);
-      }
-      else
-      {
-        CopyVector(&rec->posX, g_anSpyroWorldPos);
-      }
-      rec->posZ += HAZARD_FX_PROBE_RAISE;
-      ground = FindGroundHeightBelow(&rec->posX, HAZARD_FX_SNAP_RANGE);
-      z = rec->posZ;
-      gap = ground - z;
-      if (gap < 0)
-      {
-        gap = -gap;
-      }
-      if (gap < HAZARD_FX_SNAP_RANGE)
-      {
-        rec->posZ = ground;
-      }
-      else
-      {
-        rec->posZ = z - HAZARD_FX_PROBE_RAISE;
-      }
-      InsertActorIntoSpatialGrid(rec);
-      break;
-    }
-
-    case ACTOR_TYPE_GLYPH_COMMA:
-
-    case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
-      InitActorRenderDefaults(rec);
-      rec->cullRadius = CULL_RADIUS(0x2000);
-      rec->updateDist = ACTOR_UPDATE_ALWAYS;
-      HideActorRenderRecord(rec);
-      break;
-
-    default:
-      InitActorRenderDefaults(rec);
-      if (parent != 0)
-    {
-      CopyVector(&rec->posX, &parent->posX);
-    }
-    else
-    {
+    } else {
       CopyVector(&rec->posX, g_anSpyroWorldPos);
     }
-      InsertActorIntoSpatialGrid(rec);
-      break;
+    rec->posZ += HAZARD_FX_PROBE_RAISE;
+    ground = FindGroundHeightBelow(&rec->posX, HAZARD_FX_SNAP_RANGE);
+    z = rec->posZ;
+    gap = ground - z;
+    if (gap < 0) {
+      gap = -gap;
+    }
+    if (gap < HAZARD_FX_SNAP_RANGE) {
+      rec->posZ = ground;
+    } else {
+      rec->posZ = z - HAZARD_FX_PROBE_RAISE;
+    }
+    InsertActorIntoSpatialGrid(rec);
+    break;
+  }
 
+  case ACTOR_TYPE_GLYPH_COMMA:
+
+  case ACTOR_TYPE_LETTER_A ... ACTOR_TYPE_LETTER_A + 25:
+    InitActorRenderDefaults(rec);
+    rec->cullRadius = CULL_RADIUS(0x2000);
+    rec->updateDist = ACTOR_UPDATE_ALWAYS;
+    HideActorRenderRecord(rec);
+    break;
+
+  default:
+    InitActorRenderDefaults(rec);
+    if (parent != 0) {
+      CopyVector(&rec->posX, &parent->posX);
+    } else {
+      CopyVector(&rec->posX, g_anSpyroWorldPos);
+    }
+    InsertActorIntoSpatialGrid(rec);
+    break;
   }
 
   return rec;

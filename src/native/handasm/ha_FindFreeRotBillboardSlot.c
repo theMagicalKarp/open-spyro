@@ -52,7 +52,9 @@ L_8005885C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8005882cu: bc = 0; goto L_8005882C;
+  case 0x8005882cu:
+    bc = 0;
+    goto L_8005882C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("FindFreeRotBillboardSlot", tgt, entry_ra);

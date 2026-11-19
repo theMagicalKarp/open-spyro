@@ -89,7 +89,9 @@ L_80017EA8:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017e98u: bc = 0; goto L_80017E98;
+  case 0x80017e98u:
+    bc = 0;
+    goto L_80017E98;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ConvertRGB15ToLuma8", tgt, entry_ra);

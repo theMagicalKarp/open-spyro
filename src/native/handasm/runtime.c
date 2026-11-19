@@ -49,7 +49,8 @@ _Noreturn void ha_bad_jump(const char *cluster, uint32_t target,
   abort();
 }
 
-/* ---- GTE ------------------------------------------------------------------ */
+/* ---- GTE ------------------------------------------------------------------
+ */
 
 static uint32_t lzcs;
 
@@ -124,7 +125,8 @@ void ha_gte_ctrl_write(unsigned reg, uint32_t v) { Psyz_GteCtrlWrite(reg, v); }
 
 void ha_gte_command(uint32_t cmd) { Psyz_GteCommand(cmd); }
 
-/* ---- unaligned word access (little-endian lwl/lwr/swl/swr) ---------------- */
+/* ---- unaligned word access (little-endian lwl/lwr/swl/swr) ----------------
+ */
 
 uint32_t ha_lwl(uint32_t addr, uint32_t rt) {
   uint32_t w = HA_LW(addr & ~3u);

@@ -22,7 +22,8 @@ extern char *g_pPrimBufferLimit;
 extern char *g_pPrimBufferWriteCursor;
 extern struct Actor *g_pSpriteRecordBufferTop;
 
-/* Declared identically (by type) in two or more including files; hoisted here. */
+/* Declared identically (by type) in two or more including files; hoisted
+ * here. */
 extern int g_anFlightTargetTally;
 
 /* The all-clear bonus of the course whose 5-word bonus row starts at byte
@@ -30,12 +31,13 @@ extern int g_anFlightTargetTally;
  * the row, read through the _r4 view. The byte offset is shared by the two
  * reads (the original's $at-indexed %hi/%lo loads); indexing the view as an
  * int array materializes the address instead (HandleFlightResults). */
-#define COURSE_ALL_CLEAR_BONUS(off) \
+#define COURSE_ALL_CLEAR_BONUS(off)                                            \
   (*(int *)((char *)g_anFlightCourseBonusTable_r4 + (off)))
 
 /* g_nSubMenuCursor on the results screen: rows revealed so far (0..8), then */
-#define FLIGHT_REVEAL_ALL 9           /* every row shown; TRY AGAIN? is live */
-#define FLIGHT_REVEAL_TIME_BOARD 0x64 /* the TIME ATTACK board after a first all-clear */
+#define FLIGHT_REVEAL_ALL 9 /* every row shown; TRY AGAIN? is live */
+/* the TIME ATTACK board after a first all-clear */
+#define FLIGHT_REVEAL_TIME_BOARD 0x64
 
 /* g_nPauseMenuCursor on the results screen's "TRY AGAIN?" prompt. */
 enum FlightRetryRow {

@@ -1,0 +1,69 @@
+/* src/native/host/config.h — the native executable's settings: config files,
+ * --set, and the command-line value formats (config.c).
+ *
+ * Kept free of SDL and the wasm module so it builds into the host unit tests
+ * (native/tests). Parsing reports problems on config_log and returns nonzero;
+ * the caller decides whether that ends the run. */
+
+#ifndef OPEN_SPYRO_NATIVE_CONFIG_H
+#define OPEN_SPYRO_NATIVE_CONFIG_H
+
+#include <stdio.h>
+
+/* Every persistent setting, by its dotted config key (config.c settings). */
+typedef struct NativeSettings {
+  const char *disc;    /* disc */
+  const char *card[2]; /* memcard.port1, memcard.port2 */
+  int fast;            /* debug.fast */
+  int log_level;       /* debug.log_level: 0 debug .. 3 error */
+  /* The config file that set disc, if one did (for its error message). */
+  const char *disc_file;
+} NativeSettings;
+
+enum { CONFIG_MAX_FILES = 8 };
+
+/* Where parse problems and config warnings go; stderr unless changed. */
+extern FILE *config_log;
+
+/* debug|info|warn|error (or its first letter) -> 0..3; -1 if neither. */
+int config_parse_log_level(const char *s);
+
+/* Pad button names joined by '+' ("cross+up"), up to the end or a ':', as
+   a mask in PsyZ's bit order. Nonzero (reported) on an unknown name. */
+int config_parse_buttons(const char *s, unsigned *mask);
+
+/* --press N:BUTTONS[:HOLD] (HOLD defaults to 4). 1 if the form is wrong,
+   2 (reported) on an unknown button. */
+int config_parse_press(const char *arg, int *frame, unsigned *buttons,
+                       int *hold);
+
+/* --warp N:LEVEL; nonzero if the form is wrong or N is not positive. */
+int config_parse_warp(const char *arg, int *frame, int *level);
+
+/* Whether ARG is a flag other than --config that takes the next argument. */
+int config_takes_value(const char *arg);
+
+/* The first pass over argv: the --config paths in order (into PATHS, *N of
+   them) and whether --no-config was given. Nonzero if more than
+   CONFIG_MAX_FILES are named or --config is mixed with --no-config. */
+int config_scan_args(int argc, char **argv, const char *paths[CONFIG_MAX_FILES],
+                     int *n, int *none);
+
+/* --set KEY=VALUE (and the short flags through it); FLAG names the flag in
+   the message. Nonzero (reported) on an unknown key or a bad value. */
+int config_set(NativeSettings *s, const char *flag, const char *key,
+               const char *value);
+
+/* PATH relative to the directory of CONFIG_FILE, unless it is absolute or
+   "none" (returned as is). The result may be a new allocation. */
+const char *config_relative_path(const char *config_file, const char *path);
+
+/* Applies the TOML file PATH. A missing file is an error unless OPTIONAL
+   (then it is no config). Nonzero (reported) if it cannot be read or parsed
+   or a value is invalid; unknown keys are only warned about. */
+int config_load_file(NativeSettings *s, const char *path, int optional);
+
+/* Applies TOML source TEXT as if read from the file NAME. */
+int config_load_string(NativeSettings *s, const char *name, const char *text);
+
+#endif

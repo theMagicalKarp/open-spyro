@@ -20,16 +20,20 @@ enum PadType {
 };
 
 /* PSY-Q libpad values PollPadAndDistributeInput passes and tests. */
-#define PadStateFindPad 1  /* PadGetState: a controller is being identified */
-#define PadStateFindCTP1 2 /* PadGetState: identified, no actuator alignment needed */
-#define PadStateStable 6   /* PadGetState: identified, actuators ready to align */
-#define InfoModeCurExID 2  /* PadInfoMode: the current extended id (nonzero: DualShock) */
+#define PadStateFindPad 1 /* PadGetState: a controller is being identified */
+/* PadGetState: identified, no actuator alignment needed */
+#define PadStateFindCTP1 2
+/* PadGetState: identified, actuators ready to align */
+#define PadStateStable 6
+/* PadInfoMode: the current extended id (nonzero: DualShock) */
+#define InfoModeCurExID 2
 
 /* The controller report's id byte (g_abPadRawReport[1]): type in the high
  * nibble, data halfwords in the low. */
-#define PAD_ID_DIGITAL 0x41      /* standard digital pad */
-#define PAD_ID_ANALOG_STICK 0x53 /* analog joystick: Poll remaps its face and shoulder bits */
-#define PAD_ID_DUALSHOCK 0x73    /* DualShock / analog pad in analog mode */
+#define PAD_ID_DIGITAL 0x41 /* standard digital pad */
+/* analog joystick: Poll remaps its face and shoulder bits */
+#define PAD_ID_ANALOG_STICK 0x53
+#define PAD_ID_DUALSHOCK 0x73 /* DualShock / analog pad in analog mode */
 
 /* Stick axis bytes of the analog word, in controller-report order (right
  * stick first). 0x7F is centred; X grows rightward, Y grows downward
@@ -71,14 +75,14 @@ typedef struct PadSubstep {
 #define PAD_SUBSTEP(off) ((PadSubstep *)((char *)g_anPadSubstepRing + (off)))
 
 /* Byte offset of a PadSubstep field, and the field read as `type` through a
- * byte pointer to an entry: same address as the member, without the
- * in-struct MEM flag (or with a different width/signedness) where the matched
- * code needs that (ComputeSpyroMoveTargetFromPad, PollPadAndDistributeInput). */
+ * byte pointer to an entry: same address as the member, without the in-struct
+ * MEM flag (or with a different width/signedness) where the matched code needs
+ * that (ComputeSpyroMoveTargetFromPad, PollPadAndDistributeInput). */
 #define PAD_SUBSTEP_OFFSET(field) ((int)&((PadSubstep *)0)->field)
 /* Byte offsets of the left-stick axes in a PadSubstep (0x16 / 0x17). */
 #define PAD_LX_OFFSET (PAD_SUBSTEP_OFFSET(analog) + PAD_AXIS_LX)
 #define PAD_LY_OFFSET (PAD_SUBSTEP_OFFSET(analog) + PAD_AXIS_LY)
-#define PAD_SUBSTEP_RAW(p, type, field) \
+#define PAD_SUBSTEP_RAW(p, type, field)                                        \
   (*(type *)((char *)(p) + PAD_SUBSTEP_OFFSET(field)))
 
 /* One controller's live state + stick calibration block: pad 1 at
@@ -90,23 +94,26 @@ typedef struct PadSubstep {
  * (g_anPadSubstepRing for pad 1). Per-axis arrays are indexed by stick axis
  * 0..3 (the four analog bytes of the report). */
 typedef struct PadState {
-  unsigned int pressed;          /* 0x00 g_dwPadPressed */
-  unsigned int released;         /* 0x04 g_dwPadReleased */
-  unsigned int held;             /* 0x08 g_dwPadHeld */
-  int padType;                   /* 0x0C g_nPadType */
-  int stickActive;               /* 0x10 g_nPadStickActiveFlag */
-  unsigned char analog[4];       /* 0x14 g_dwPadAnalogCalibrated, 0x7F = centered */
-  int allInputIdle;              /* 0x18 g_nPadAllInputIdleFlag */
-  int directionalIdle;           /* 0x1C g_nPadDirectionalIdleFlag */
-  unsigned char stickNeutral[4]; /* 0x20 recorded center (g_dwPadAnalogRawSnapshot) */
+  unsigned int pressed;    /* 0x00 g_dwPadPressed */
+  unsigned int released;   /* 0x04 g_dwPadReleased */
+  unsigned int held;       /* 0x08 g_dwPadHeld */
+  int padType;             /* 0x0C g_nPadType */
+  int stickActive;         /* 0x10 g_nPadStickActiveFlag */
+  unsigned char analog[4]; /* 0x14 g_dwPadAnalogCalibrated, 0x7F = centered */
+  int allInputIdle;        /* 0x18 g_nPadAllInputIdleFlag */
+  int directionalIdle;     /* 0x1C g_nPadDirectionalIdleFlag */
+  /* recorded center (g_dwPadAnalogRawSnapshot) */
+  unsigned char stickNeutral[4]; /* 0x20 */
   unsigned char stickLow[4];     /* 0x24 reported minimum */
   unsigned char stickHigh[4];    /* 0x28 reported maximum */
-  unsigned char deadHigh[4];     /* 0x2C neutral + 0x30: above it the axis deflects up */
-  unsigned char deadLow[4];      /* 0x30 neutral - 0x30: below it the axis deflects down */
-  unsigned short scaleHigh[4];   /* 0x34 0x4000 / (high - deadHigh), Q7 gain */
-  unsigned short scaleLow[4];    /* 0x3C 0x3F80 / (deadLow - low), Q7 gain */
-  PadSubstep ring[4];            /* 0x44 per-substep snapshots */
-} PadState;                      /* 0xA4 */
+  /* neutral + 0x30: above it the axis deflects up */
+  unsigned char deadHigh[4]; /* 0x2C */
+  /* neutral - 0x30: below it the axis deflects down */
+  unsigned char deadLow[4];    /* 0x30 */
+  unsigned short scaleHigh[4]; /* 0x34 0x4000 / (high - deadHigh), Q7 gain */
+  unsigned short scaleLow[4];  /* 0x3C 0x3F80 / (deadLow - low), Q7 gain */
+  PadSubstep ring[4];          /* 0x44 per-substep snapshots */
+} PadState;                    /* 0xA4 */
 
 /* Byte offset of a PadState field. */
 #define PAD_STATE_OFFSET(field) ((int)&((PadState *)0)->field)
@@ -122,6 +129,7 @@ typedef struct PadState {
 /* A PadState field read through a byte pointer `p` that is offset from the
  * block base (per-axis or per-record cursors). Same address and width as the
  * struct member; the matched calibration code keeps byte-pointer bivs. */
-#define PAD_STATE_RAW(p, type, field) (*(type *)((char *)(p) + PAD_STATE_OFFSET(field)))
+#define PAD_STATE_RAW(p, type, field)                                          \
+  (*(type *)((char *)(p) + PAD_STATE_OFFSET(field)))
 
 #endif /* OPEN_SPYRO_PAD_H */

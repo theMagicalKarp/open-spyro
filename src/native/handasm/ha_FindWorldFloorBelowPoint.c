@@ -577,7 +577,9 @@ L_8004E2A8:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8004df24u: bc = 0; goto L_8004DF24;
+  case 0x8004df24u:
+    bc = 0;
+    goto L_8004DF24;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("FindWorldFloorBelowPoint", tgt, entry_ra);

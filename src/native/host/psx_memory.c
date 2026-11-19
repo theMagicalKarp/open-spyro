@@ -34,8 +34,8 @@ static int map_kuseg_mirror(uint8_t *data) {
 
   kr = mach_vm_remap(mach_task_self(), &mirror, PSX_RAM_SIZE, 0,
                      VM_FLAGS_FIXED | VM_FLAGS_OVERWRITE, mach_task_self(),
-                     (mach_vm_address_t)(uintptr_t)(data + PSX_RAM_BASE),
-                     FALSE, &cur, &max, VM_INHERIT_SHARE);
+                     (mach_vm_address_t)(uintptr_t)(data + PSX_RAM_BASE), FALSE,
+                     &cur, &max, VM_INHERIT_SHARE);
   if (kr != KERN_SUCCESS) {
     fprintf(stderr, "psx_memory: KUSEG mirror remap failed: %s\n",
             mach_error_string(kr));

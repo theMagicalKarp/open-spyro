@@ -35,7 +35,8 @@ void CopyVector(int *dst, int *src) {
   dst[2] = src[2];
 }
 
-/* --- stubs: out of the gate's scope ---------------------------------------- */
+/* --- stubs: out of the gate's scope ----------------------------------------
+ */
 
 void StopAllSoundExceptMask(int mask) { (void)mask; }
 void InitLightVectorConstants(void) {}

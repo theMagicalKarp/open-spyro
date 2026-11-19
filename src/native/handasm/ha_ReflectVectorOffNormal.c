@@ -161,7 +161,9 @@ L_800174B8:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017428u: bc = 0; goto L_80017428;
+  case 0x80017428u:
+    bc = 0;
+    goto L_80017428;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ReflectVectorOffNormal", tgt, entry_ra);

@@ -60,7 +60,8 @@ enum LevelId {
 #define LEVEL_FLIGHT_SLOT 5
 #define LEVELS_PER_WORLD 6
 /* First word of a level's eight-word kill-bitmap row in
- * g_anLevelKillBitmapTable (bit n: actor n's kill is saved, CommitActorKillGems). */
+ * g_anLevelKillBitmapTable (bit n: actor n's kill is saved,
+ * CommitActorKillGems). */
 #define KILL_ROW(id) (LEVEL_SLOT(id) * 8)
 
 #endif /* OPEN_SPYRO_LEVEL_ID_H */

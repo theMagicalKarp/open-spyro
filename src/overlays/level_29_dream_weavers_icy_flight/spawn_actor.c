@@ -4,12 +4,13 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into ->type and the parent's pool index into ->poolIndex, then runs a per-type
- * init arm: every arm starts from InitActorRenderDefaults (InitActorRenderDefaults) and
- * ends by placing the new actor -- most copy the parent's position
- * (CopyVector) and either register it in the spatial grid
- * (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).  With no parent
- * the position falls back to Spyro's (g_anSpyroWorldPos).
+ * type into ->type and the parent's pool index into ->poolIndex, then runs a
+ * per-type init arm: every arm starts from InitActorRenderDefaults
+ * (InitActorRenderDefaults) and ends by placing the new actor -- most copy the
+ * parent's position (CopyVector) and either register it in the spatial grid
+ * (InsertActorIntoSpatialGrid) or hide its render record
+ * (HideActorRenderRecord).  With no parent the position falls back to Spyro's
+ * (g_anSpyroWorldPos).
  *
  * Icy Flight is a flight level, so the arm set is the flight one shared with
  * levels 5/11/17/23 (thermal rings 0x104..0x10D, the race-object arms around
@@ -41,7 +42,8 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
 
   rec = AllocActorRecordSlot();
   rec->type = type;
-  if (parent == 0 || (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
+  if (parent == 0 ||
+      (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
     owner = 0;
   }
   rec->poolIndex = owner;
@@ -187,8 +189,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case ACTOR_TYPE_BOBBER_SPINOFF:
-  {
+  case ACTOR_TYPE_BOBBER_SPINOFF: {
     SpinRunState *st = rec->state;
 
     InitActorRenderDefaults(rec);
@@ -197,9 +198,10 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     InsertActorIntoSpatialGrid(rec);
     st->zSpeed = 0xC8;
     st->moveSpeed = 0x15E;
-    st->heading = StepAndLerpAngle8(
-        ArcTan2(rec->posX - g_anSpyroWorldPos[0], rec->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
-        g_bSpyroPersistentEulerZ, 0x28, 0x40);
+    st->heading =
+        StepAndLerpAngle8(ArcTan2(rec->posX - g_anSpyroWorldPos[0],
+                                  rec->posY - g_nSpyroWorldPosY, ATAN_ANGLE8),
+                          g_bSpyroPersistentEulerZ, 0x28, 0x40);
     st->timer = 0x78;
     break;
   }
@@ -231,7 +233,8 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
-    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) < 3) {
+    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) <
+        3) {
       *(int *)&rec->tint0 = ACTOR_TINT_NEUTRAL;
       rec->renderList |= ACTOR_RENDER_SECONDARY;
     }
@@ -266,8 +269,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
-  {
+  case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2: {
     TumbleState *st = rec->state;
     int seed;
 
@@ -299,8 +301,7 @@ Actor *Level29_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case ACTOR_TYPE_WRECK_EMBER:
-  {
+  case ACTOR_TYPE_WRECK_EMBER: {
     TumbleState *st = rec->state;
     SmokerState *pst = parent->state;
     int dir[3];

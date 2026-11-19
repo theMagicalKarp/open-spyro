@@ -590,7 +590,9 @@ L_8005846C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800580f4u: bc = 0; goto L_800580F4;
+  case 0x800580f4u:
+    bc = 0;
+    goto L_800580F4;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("DrawWorldSparkleParticles", tgt, entry_ra);

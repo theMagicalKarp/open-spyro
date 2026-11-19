@@ -124,6 +124,7 @@ set_target_properties(psyz_platform PROPERTIES C_STANDARD 11)
 # --- 3. executables -----------------------------------------------------------
 add_executable(spyro
     ${ROOT}/src/native/host/main.c
+    ${ROOT}/src/native/host/config.c
     ${ROOT}/src/native/host/imports.c
     ${ROOT}/src/native/host/audio.c
     ${ROOT}/src/native/host/psx_memory.c

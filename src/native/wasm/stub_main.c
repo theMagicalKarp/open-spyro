@@ -42,7 +42,8 @@ static int Sin12(int a) {
   return -q[64 - i];
 }
 
-__attribute__((export_name("native_stub_main"))) int native_stub_main(int frames) {
+__attribute__((export_name("native_stub_main"))) int
+native_stub_main(int frames) {
   int frame;
 
   ResetGraph(0);

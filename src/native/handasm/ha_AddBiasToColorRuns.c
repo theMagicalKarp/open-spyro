@@ -128,7 +128,9 @@ L_80017FCC:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017f24u: bc = 0; goto L_80017F24;
+  case 0x80017f24u:
+    bc = 0;
+    goto L_80017F24;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("AddBiasToColorRuns", tgt, entry_ra);

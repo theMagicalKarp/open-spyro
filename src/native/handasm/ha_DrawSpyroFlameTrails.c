@@ -1014,7 +1014,9 @@ L_80059428:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80058d64u: bc = 0; goto L_80058D64;
+  case 0x80058d64u:
+    bc = 0;
+    goto L_80058D64;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("DrawSpyroFlameTrails", tgt, entry_ra);

@@ -35,11 +35,16 @@ extern void LevelId4_AdvanceEmitList(int frameStep);
 extern void LevelId9_AdvanceEmitList(int frameStep);
 extern void LevelId3_AdvanceEmitList(int frameStep);
 extern void LevelId99_AdvanceEmitList(int frameStep);
-extern void LevelId1_EmitParticles(int count, int type, void *pos, int effectArg);
-extern void LevelId4_EmitParticles(int count, int type, void *pos, int effectArg);
-extern void LevelId9_EmitParticles(int count, int type, void *pos, int effectArg);
-extern void LevelId99_EmitParticles(int count, int type, void *pos, int effectArg);
-extern void LevelId3_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void LevelId1_EmitParticles(int count, int type, void *pos,
+                                   int effectArg);
+extern void LevelId4_EmitParticles(int count, int type, void *pos,
+                                   int effectArg);
+extern void LevelId9_EmitParticles(int count, int type, void *pos,
+                                   int effectArg);
+extern void LevelId99_EmitParticles(int count, int type, void *pos,
+                                    int effectArg);
+extern void LevelId3_EmitParticles(int count, int type, void *pos,
+                                   int effectArg);
 extern char LevelId1_OverlayEnd[];
 extern char LevelId4_OverlayEnd[];
 extern char LevelId9_OverlayEnd[];
@@ -51,13 +56,16 @@ extern struct Actor *LevelId2_SpawnActor(int type, struct Actor *parent);
 extern struct Actor *LevelId7_SpawnActor(int type, struct Actor *parent);
 extern void LevelId2_AdvanceEmitList(int frameStep);
 extern void LevelId7_AdvanceEmitList(int frameStep);
-extern void LevelId7_EmitParticles(int count, int type, void *pos, int effectArg);
-extern void LevelId2_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void LevelId7_EmitParticles(int count, int type, void *pos,
+                                   int effectArg);
+extern void LevelId2_EmitParticles(int count, int type, void *pos,
+                                   int effectArg);
 extern char LevelId7_OverlayEnd[];
 extern char LevelId2_OverlayEnd[];
 extern struct Actor *LevelId0_SpawnActor(int type, struct Actor *parent);
 extern void LevelId0_AdvanceEmitList(int frameStep);
-extern void LevelId0_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void LevelId0_EmitParticles(int count, int type, void *pos,
+                                   int effectArg);
 extern char LevelId0_OverlayEnd[];
 
 /* Level-overlay entry points (each level overlay loads at 0x8007aa38). */
@@ -143,7 +151,8 @@ extern char Level9_OverlayEnd[];
 extern void Level10_UpdateActors(void);
 extern struct Actor *Level10_SpawnActor(int type, struct Actor *parent);
 extern void Level10_AdvanceEmitList(int frameStep);
-extern void Level10_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level10_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level10_OverlayEnd[];
 extern void Level11_FlightEndHook(void);
 extern void Level11_HandleFlightResults(int reload);
@@ -153,7 +162,8 @@ extern void Level11_FlightResults_Draw(void);
 extern void Level11_UpdateActors(void);
 extern struct Actor *Level11_SpawnActor(int type, struct Actor *parent);
 extern void Level11_AdvanceEmitList(int frameStep);
-extern void Level11_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level11_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level11_OverlayEnd[];
 extern void Level12_BeginActorCutscene(struct Actor *actor);
 extern void Level12_OnSaveMenuExit(void);
@@ -162,27 +172,32 @@ extern void Level12_BalloonistCutscene_Draw(void);
 extern void Level12_UpdateActors(void);
 extern struct Actor *Level12_SpawnActor(int type, struct Actor *parent);
 extern void Level12_AdvanceEmitList(int frameStep);
-extern void Level12_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level12_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level12_OverlayEnd[];
 extern void Level13_UpdateActors(void);
 extern struct Actor *Level13_SpawnActor(int type, struct Actor *parent);
 extern void Level13_AdvanceEmitList(int frameStep);
-extern void Level13_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level13_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level13_OverlayEnd[];
 extern void Level14_UpdateActors(void);
 extern struct Actor *Level14_SpawnActor(int type, struct Actor *parent);
 extern void Level14_AdvanceEmitList(int frameStep);
-extern void Level14_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level14_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level14_OverlayEnd[];
 extern void Level15_UpdateActors(void);
 extern struct Actor *Level15_SpawnActor(int type, struct Actor *parent);
 extern void Level15_AdvanceEmitList(int frameStep);
-extern void Level15_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level15_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level15_OverlayEnd[];
 extern void Level16_UpdateActors(void);
 extern struct Actor *Level16_SpawnActor(int type, struct Actor *parent);
 extern void Level16_AdvanceEmitList(int frameStep);
-extern void Level16_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level16_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level16_OverlayEnd[];
 extern void Level17_FlightEndHook(void);
 extern void Level17_HandleFlightResults(int reload);
@@ -192,7 +207,8 @@ extern void Level17_FlightResults_Draw(void);
 extern void Level17_UpdateActors(void);
 extern struct Actor *Level17_SpawnActor(int type, struct Actor *parent);
 extern void Level17_AdvanceEmitList(int frameStep);
-extern void Level17_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level17_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level17_OverlayEnd[];
 extern void Level18_BeginActorCutscene(struct Actor *actor);
 extern void Level18_OnSaveMenuExit(void);
@@ -201,27 +217,32 @@ extern void Level18_BalloonistCutscene_Draw(void);
 extern void Level18_UpdateActors(void);
 extern struct Actor *Level18_SpawnActor(int type, struct Actor *parent);
 extern void Level18_AdvanceEmitList(int frameStep);
-extern void Level18_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level18_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level18_OverlayEnd[];
 extern void Level19_UpdateActors(void);
 extern struct Actor *Level19_SpawnActor(int type, struct Actor *parent);
 extern void Level19_AdvanceEmitList(int frameStep);
-extern void Level19_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level19_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level19_OverlayEnd[];
 extern void Level20_UpdateActors(void);
 extern struct Actor *Level20_SpawnActor(int type, struct Actor *parent);
 extern void Level20_AdvanceEmitList(int frameStep);
-extern void Level20_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level20_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level20_OverlayEnd[];
 extern void Level21_UpdateActors(void);
 extern struct Actor *Level21_SpawnActor(int type, struct Actor *parent);
 extern void Level21_AdvanceEmitList(int frameStep);
-extern void Level21_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level21_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level21_OverlayEnd[];
 extern void Level22_UpdateActors(void);
 extern struct Actor *Level22_SpawnActor(int type, struct Actor *parent);
 extern void Level22_AdvanceEmitList(int frameStep);
-extern void Level22_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level22_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level22_OverlayEnd[];
 extern void Level23_FlightEndHook(void);
 extern void Level23_HandleFlightResults(int reload);
@@ -231,7 +252,8 @@ extern void Level23_FlightResults_Draw(void);
 extern void Level23_UpdateActors(void);
 extern struct Actor *Level23_SpawnActor(int type, struct Actor *parent);
 extern void Level23_AdvanceEmitList(int frameStep);
-extern void Level23_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level23_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level23_OverlayEnd[];
 extern void Level24_BeginActorCutscene(struct Actor *actor);
 extern void Level24_OnSaveMenuExit(void);
@@ -240,27 +262,32 @@ extern void Level24_BalloonistCutscene_Draw(void);
 extern void Level24_UpdateActors(void);
 extern struct Actor *Level24_SpawnActor(int type, struct Actor *parent);
 extern void Level24_AdvanceEmitList(int frameStep);
-extern void Level24_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level24_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level24_OverlayEnd[];
 extern void Level25_UpdateActors(void);
 extern struct Actor *Level25_SpawnActor(int type, struct Actor *parent);
 extern void Level25_AdvanceEmitList(int frameStep);
-extern void Level25_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level25_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level25_OverlayEnd[];
 extern void Level26_UpdateActors(void);
 extern struct Actor *Level26_SpawnActor(int type, struct Actor *parent);
 extern void Level26_AdvanceEmitList(int frameStep);
-extern void Level26_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level26_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level26_OverlayEnd[];
 extern void Level27_UpdateActors(void);
 extern struct Actor *Level27_SpawnActor(int type, struct Actor *parent);
 extern void Level27_AdvanceEmitList(int frameStep);
-extern void Level27_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level27_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level27_OverlayEnd[];
 extern void Level28_UpdateActors(void);
 extern struct Actor *Level28_SpawnActor(int type, struct Actor *parent);
 extern void Level28_AdvanceEmitList(int frameStep);
-extern void Level28_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level28_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level28_OverlayEnd[];
 extern void Level29_FlightEndHook(void);
 extern void Level29_HandleFlightResults(int reload);
@@ -270,7 +297,8 @@ extern void Level29_FlightResults_Draw(void);
 extern void Level29_UpdateActors(void);
 extern struct Actor *Level29_SpawnActor(int type, struct Actor *parent);
 extern void Level29_AdvanceEmitList(int frameStep);
-extern void Level29_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level29_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level29_OverlayEnd[];
 extern void Level30_BeginActorCutscene(struct Actor *actor);
 extern void Level30_OnSaveMenuExit(void);
@@ -279,32 +307,38 @@ extern void Level30_BalloonistCutscene_Draw(void);
 extern void Level30_UpdateActors(void);
 extern struct Actor *Level30_SpawnActor(int type, struct Actor *parent);
 extern void Level30_AdvanceEmitList(int frameStep);
-extern void Level30_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level30_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level30_OverlayEnd[];
 extern void Level31_UpdateActors(void);
 extern struct Actor *Level31_SpawnActor(int type, struct Actor *parent);
 extern void Level31_AdvanceEmitList(int frameStep);
-extern void Level31_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level31_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level31_OverlayEnd[];
 extern void Level32_UpdateActors(void);
 extern struct Actor *Level32_SpawnActor(int type, struct Actor *parent);
 extern void Level32_AdvanceEmitList(int frameStep);
-extern void Level32_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level32_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level32_OverlayEnd[];
 extern void Level33_UpdateActors(void);
 extern struct Actor *Level33_SpawnActor(int type, struct Actor *parent);
 extern void Level33_AdvanceEmitList(int frameStep);
-extern void Level33_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level33_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level33_OverlayEnd[];
 extern void Level34_UpdateActors(void);
 extern struct Actor *Level34_SpawnActor(int type, struct Actor *parent);
 extern void Level34_AdvanceEmitList(int frameStep);
-extern void Level34_EmitParticles(int count, int type, void *pos, int effectArg);
+extern void Level34_EmitParticles(int count, int type, void *pos,
+                                  int effectArg);
 extern char Level34_OverlayEnd[];
 
 /* 0x8005a470 (0x1288): after a level overlay loads, points the engine's
    per-level hook slots (overlay init, gamestate-0 early/late hooks, particle
-   spawner, fall-impact callback, gamestate-7 handlers, ...) at that overlay's entry
+   spawner, fall-impact callback, gamestate-7 handlers, ...) at that overlay's
+   entry
    points and g_pLoadStagingBuffer at its end (Level<N>_OverlayEnd, the first
    free byte), keyed on g_nActiveLevelId. Levels without an entry keep their
    previous hooks. Finally copies g_pLoadStagingBuffer into

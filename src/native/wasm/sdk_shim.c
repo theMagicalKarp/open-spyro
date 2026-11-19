@@ -25,7 +25,8 @@
 
 #define SHIM_LOG(...) printf("sdk_shim: " __VA_ARGS__)
 
-/* ---- libc ------------------------------------------------------------------ */
+/* ---- libc ------------------------------------------------------------------
+ */
 
 unsigned int GetRandomU32(void) { return (unsigned int)rand(); }
 
@@ -39,7 +40,8 @@ int WritePrintf(const char *fmt, ...) {
   return n;
 }
 
-/* ---- libapi / kernel -------------------------------------------------------- */
+/* ---- libapi / kernel --------------------------------------------------------
+ */
 
 void InstallVSyncCallback(unsigned int cb) { VSyncCallback((void (*)())cb); }
 
@@ -57,7 +59,8 @@ long Shim_LoadExec(char *file, unsigned long sp, unsigned long sp_size) {
   exit(0);
 }
 
-/* ---- libgpu ----------------------------------------------------------------- */
+/* ---- libgpu -----------------------------------------------------------------
+ */
 
 DRAWENV *InitDefaultDrawEnv(DRAWENV *env, int x, int y, int w, int h) {
   return SetDefDrawEnv(env, x, y, w, h);
@@ -77,7 +80,8 @@ DISPENV *InitDefaultDispEnv(DISPENV *env, int x, int y, int w, int h) {
  * is free again afterwards. */
 #define OT_END 0xFFFFFFu
 #define OT_BUF_WORDS (64 * 1024)
-#define OT_MAX_PACKETS (1 << 20) /* a corrupt chain stops here, not in a loop */
+/* a corrupt chain stops here, not in a loop */
+#define OT_MAX_PACKETS (1 << 20)
 
 static u_long ot_buf[OT_BUF_WORDS];
 
@@ -176,7 +180,8 @@ void Shim_SetDrawMode(void *p, int dfe, int dtd, int tpage, RECT *tw) {
   w[2] = get_tw(tw);
 }
 
-/* ---- libgte ----------------------------------------------------------------- */
+/* ---- libgte -----------------------------------------------------------------
+ */
 
 static short sat16(int v) {
   return v < -0x8000 ? -0x8000 : v > 0x7FFF ? 0x7FFF : (short)v;
@@ -202,7 +207,8 @@ void Shim_MulMatrix0(MATRIX *m0, MATRIX *m1, MATRIX *m2) {
   }
 }
 
-/* ---- libspu ----------------------------------------------------------------- */
+/* ---- libspu -----------------------------------------------------------------
+ */
 
 void InitSpu(void) { SpuInit(); }
 
@@ -260,7 +266,8 @@ void SetSpuVoiceVolumeLR(int voice, short l, short r) {
   SpuSetVoiceVolume(voice, l, r);
 }
 
-/* ---- libcd ------------------------------------------------------------------ */
+/* ---- libcd ------------------------------------------------------------------
+ */
 
 /* PsyZ reads sectors synchronously, so the read is complete when CdRead
  * returns and the shim raises the CdlComplete callback right then: the PS1's
@@ -349,7 +356,8 @@ int CdControlForce(unsigned char com, unsigned char *param) {
  * status byte. */
 int GetCdStatusByte(void) { return cd_last_com; }
 
-/* ---- libpad (direct mode) --------------------------------------------------- */
+/* ---- libpad (direct mode) ---------------------------------------------------
+ */
 
 /* PsyZ's InitPAD fills the two raw report buffers on every VBlank, the way
  * libpad's direct mode does. */
@@ -376,4 +384,3 @@ int PadInfoMode(int socket, int term, int offs) {
 }
 
 void PadStopCom(void) {}
-

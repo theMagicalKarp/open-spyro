@@ -47,7 +47,9 @@ L_80017E54:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017e54u: bc = 0; goto L_80017E54;
+  case 0x80017e54u:
+    bc = 0;
+    goto L_80017E54;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ComputeDepthCuedColor", tgt, entry_ra);

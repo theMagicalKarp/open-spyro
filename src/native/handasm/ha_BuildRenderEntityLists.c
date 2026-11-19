@@ -171,7 +171,9 @@ L_800522A4:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800521c0u: bc = 0; goto L_800521C0;
+  case 0x800521c0u:
+    bc = 0;
+    goto L_800521C0;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("BuildRenderEntityLists", tgt, entry_ra);

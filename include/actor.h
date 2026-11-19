@@ -23,14 +23,16 @@ int GetSoundVoiceStatusByOwner(Actor *actor, int sampleId);
 void HideActorRenderRecord(Actor *actor);
 void InitActorRenderDefaults(Actor *actor);
 void InsertActorIntoSpatialGrid(Actor *actor);
-unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
+unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
+                             unsigned int mode, unsigned char *pPlaying);
 void StopSoundVoicesByOwner(Actor *actor, int mode);
 void TickActorAnims(struct Actor **list, int mode);
 void TickStatueBurstShard(Actor *actor);
 
 /* Actor behaviour helpers (main 0x80037E98..0x8003C994 and neighbours). */
 void BeginSaveMenuFromWorld(Actor *actor);
-void OnActorAnimQueued(Actor *actor, ...); /* no-op; SteerActorYawTowardSpyro passes two extra args */
+/* no-op; SteerActorYawTowardSpyro passes two extra args */
+void OnActorAnimQueued(Actor *actor, ...);
 #ifdef __psyz
 /* actor/groups.c; level 22's actor code calls them undeclared (gcc 2.7.2
  * accepts that). Natively an implicit declaration is an error on arm64 and a
@@ -47,33 +49,45 @@ void PlayActorMeshVoice(Actor *actor, int voice, void *voiceRow);
 void BurstActorWithSound(Actor *actor, int sparkLife);
 #ifndef YAW_HOLD_IN_BAND
 #define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
-#define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */
+/* inside the band: keep stepping onto the target */
+#define YAW_STEP_IN_BAND 1
 #endif
-int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold, int flag);
-int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed, int thresh, int animId);
-int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int contactRadius, int radius, int flags);
-int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius, int flags);
-int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius, int radius, int flags);
-int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz, int friction, int gravity);
+int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold,
+                            int flag);
+int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
+                             int thresh, int animId);
+int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int contactRadius,
+                     int radius, int flags);
+int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
+                          int radius, int flags);
+int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius,
+                        int radius, int flags);
+int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz,
+                          int friction, int gravity);
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
 int StepActorScorchTint(Actor *actor, int band);
 void TickActorFlameGlow(Actor *actor);
 int SpawnActorRotBillboard(Actor *actor, int *offset);
 Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);
 void SetActorGroupState(Actor *actor, int value);
-void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits, int distLim, int zLim, int xyLim, int angLim);
+void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits,
+                             int distLim, int zLim, int xyLim, int angLim);
 void SetActorGroupStateExcept(Actor *actor, int value, int match);
 void ReplaceActorGroupState(Actor *actor, int value, int match);
 void SetActorGroupSubstate(Actor *actor, int value);
 void MarkActorLiveKill(Actor *actor);
 void CollectPickupActor(Actor *actor);
-int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR, int flags);
+int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
+                        int flags);
 #ifndef NAME_LETTERS_RETURN_HOME
-#define NAME_LETTERS_RETURN_HOME 0 /* "RETURN HOME", facing Spyro (level exits) */
-#define NAME_LETTERS_LEVEL       1 /* the sign's level name, along its yaw (portals) */
+/* "RETURN HOME", facing Spyro (level exits) */
+#define NAME_LETTERS_RETURN_HOME 0
+/* the sign's level name, along its yaw (portals) */
+#define NAME_LETTERS_LEVEL 1
 #endif
 void SpawnNameLetterActors(Actor *sign, int named);
-void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold, int cap, int radius, int yawLim, int pitchLim);
+void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold,
+                             int cap, int radius, int yawLim, int pitchLim);
 void RefreshActorDerivedState(Actor *actor, int mode);
 void SetSpawnAnchorFromActor(Actor *actor, int heading);
 

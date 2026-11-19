@@ -145,7 +145,9 @@ L_8004E3C0:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8004e2e8u: bc = 0; goto L_8004E2E8;
+  case 0x8004e2e8u:
+    bc = 0;
+    goto L_8004E2E8;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("RaiseSpyroTriggerInRadius", tgt, entry_ra);

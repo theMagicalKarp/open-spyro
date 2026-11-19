@@ -36,14 +36,14 @@ typedef struct DrMode {
 
 /* Flat-shaded quad (GPU code 0x28, +2 semi-transparent). */
 typedef struct PolyF4 {
-  unsigned int tag;        /* 0x00 */
+  unsigned int tag;         /* 0x00 */
   unsigned char r0, g0, b0; /* 0x04 */
-  unsigned char code;      /* 0x07 */
-  short x0, y0;            /* 0x08 */
-  short x1, y1;            /* 0x0C */
-  short x2, y2;            /* 0x10 */
-  short x3, y3;            /* 0x14 */
-} PolyF4;                  /* 0x18 */
+  unsigned char code;       /* 0x07 */
+  short x0, y0;             /* 0x08 */
+  short x1, y1;             /* 0x0C */
+  short x2, y2;             /* 0x10 */
+  short x3, y3;             /* 0x14 */
+} PolyF4;                   /* 0x18 */
 
 /* Flat line (GPU code 0x40, +2 semi-transparent). */
 typedef struct LineF2 {
@@ -95,8 +95,8 @@ typedef struct LineG2 {
 
 /* A draw-mode packet followed by the quad it applies to. */
 typedef struct ModePolyF4 {
-  DrMode mode;  /* 0x00 */
-  PolyF4 poly;  /* 0x0C */
-} ModePolyF4;   /* 0x24 */
+  DrMode mode; /* 0x00 */
+  PolyF4 poly; /* 0x0C */
+} ModePolyF4;  /* 0x24 */
 
 #endif /* OPEN_SPYRO_GPU_PRIM_H */

@@ -99,7 +99,9 @@ L_80017690:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017614u: bc = 0; goto L_80017614;
+  case 0x80017614u:
+    bc = 0;
+    goto L_80017614;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ScaleVector3Shifted", tgt, entry_ra);

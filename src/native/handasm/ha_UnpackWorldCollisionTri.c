@@ -113,7 +113,9 @@ L_80017CB8:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017cb8u: bc = 0; goto L_80017CB8;
+  case 0x80017cb8u:
+    bc = 0;
+    goto L_80017CB8;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("UnpackWorldCollisionTri", tgt, entry_ra);

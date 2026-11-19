@@ -31,7 +31,7 @@ jobs:
         run: uv run ty check
 
       - name: clang-format check (C)
-        run: uv run --project tools/open-spyro -- clang-format --dry-run --Werror $(find src/main -name '*.c')
+        run: make lint-c
 
   build-verify:
     runs-on: ubuntu-latest
@@ -102,6 +102,9 @@ jobs:
 
       - name: Native toolchain (wasi-sdk, wasm2c, SDL3)
         run: bash tools/native_setup.sh
+
+      - name: Unit tests (host code)
+        run: make native-test
 
       - name: Build
         run: make native

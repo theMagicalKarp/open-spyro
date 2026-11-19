@@ -70,7 +70,9 @@ L_80017894:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017894u: bc = 0; goto L_80017894;
+  case 0x80017894u:
+    bc = 0;
+    goto L_80017894;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("LerpVectorGTE", tgt, entry_ra);

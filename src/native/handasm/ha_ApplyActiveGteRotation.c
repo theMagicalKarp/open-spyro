@@ -54,7 +54,9 @@ L_800170C0:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800170c0u: bc = 0; goto L_800170C0;
+  case 0x800170c0u:
+    bc = 0;
+    goto L_800170C0;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ApplyActiveGteRotation", tgt, entry_ra);

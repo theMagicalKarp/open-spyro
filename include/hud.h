@@ -14,7 +14,8 @@
 #include "globals.h"
 #include "hud_counter.h"
 
-/* Icon actor record at byte offset `o` (slot * 0x58) of g_aHudIconActorRecords. */
+/* Icon actor record at byte offset `o` (slot * 0x58) of
+ * g_aHudIconActorRecords. */
 #define HUD_ICON(o) ((Actor *)((char *)g_aHudIconActorRecords + (o)))
 
 /* Icon actor record `slot` (a constant slot folds to the same address). */
@@ -22,22 +23,23 @@
 
 /* A byte field of icon `slot` as an element of the byte array itself (the
  * form the subMode RMWs need, see UpdateHudCounters). */
-#define HUD_ICON_BYTE(slot, field) \
+#define HUD_ICON_BYTE(slot, field)                                             \
   g_aHudIconActorRecords[(slot) * ACTOR_SIZE + ACTOR_OFFSET(field)]
 
 /* The 12 icon slots, one counter per run: digits first, then its icon
  * (InitHudCounters types the icons, SetHudCounterDigits fills the digits,
  * OffsetHudIconRollAxis rolls a digit run plus its icon in and out). */
-#define HUD_SLOT_GEM_DIGITS 0    /* 4 level-gem digits */
-#define HUD_SLOT_GEMS 4          /* gem icon (ACTOR_TYPE_HUD_GEM_ICON), spun and tilted */
+#define HUD_SLOT_GEM_DIGITS 0 /* 4 level-gem digits */
+/* gem icon (ACTOR_TYPE_HUD_GEM_ICON), spun and tilted */
+#define HUD_SLOT_GEMS 4
 #define HUD_SLOT_DRAGON_DIGITS 5 /* 2 dragons-rescued digits */
 #define HUD_SLOT_DRAGONS 7       /* dragon icon (ACTOR_TYPE_HUD_DRAGON_ICON) */
 /* The dragon counter's slots: its two digits and the icon. */
 #define HUD_DRAGON_SLOTS (HUD_SLOT_DRAGONS - HUD_SLOT_DRAGON_DIGITS + 1)
-#define HUD_SLOT_LIVES_DIGITS 8  /* 2 extra-life digits */
-#define HUD_SLOT_LIVES 10        /* lives icon (ACTOR_TYPE_HUD_LIVES_ICON); the
-                                  * sparx-food butterflies ring it */
-#define HUD_SLOT_KEY 11          /* the level key icon (ACTOR_TYPE_KEY) */
+#define HUD_SLOT_LIVES_DIGITS 8 /* 2 extra-life digits */
+/* lives icon (ACTOR_TYPE_HUD_LIVES_ICON); the sparx-food butterflies ring it */
+#define HUD_SLOT_LIVES 10
+#define HUD_SLOT_KEY 11 /* the level key icon (ACTOR_TYPE_KEY) */
 
 /* A digit roll turns each digit record's rotZ down in 0x10 steps from 0;
  * at this phase, a quarter turn in, CommitHudCounterAnimState swaps the
@@ -81,8 +83,9 @@
 #define HUD_BFLY_TO_LIVES_ICON_Y (HUD_BFLY_TO_LIVES_ICON_X + 1)
 /* g_dwHudIconSpinAngle (0x80077fe4) -> g_nHudFrameCycleMod9 */
 #define HUD_SPIN_TO_FRAME_CYCLE 1
-/* g_dwHudIconSpinAngle / g_nHudFrameCycleMod9 -> &g_anLevelSpriteTexWordPairs[2],
- * the 9 animated egg-icon frames (two words each) of the inventory screen */
+/* g_dwHudIconSpinAngle / g_nHudFrameCycleMod9 ->
+ * &g_anLevelSpriteTexWordPairs[2], the 9 animated egg-icon frames (two words
+ * each) of the inventory screen */
 #define HUD_SPIN_TO_EGG_ICON_FRAMES ((0x8007850c - 0x80077fe4) / 4 + 2)
 #define HUD_CYCLE_TO_EGG_ICON_FRAMES ((0x8007850c - 0x80077fe8) / 4 + 2)
 

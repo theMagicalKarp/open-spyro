@@ -10,11 +10,12 @@
  * portal ring is filled with this sky (EmitPortalSky) or, up close, with its
  * flat background colour (EmitPortalColorFill). */
 typedef struct SkyHeader {
-  int chunkCount;       /* +0x00 */
-  void **chunks;        /* +0x04 */
-  int zoneListCount;    /* +0x08 */
-  void **zoneLists;     /* +0x0C per vis zone */
-  unsigned int color;   /* +0x10 background colour (g_dwWorldFogColor when active) */
+  int chunkCount;    /* +0x00 */
+  void **chunks;     /* +0x04 */
+  int zoneListCount; /* +0x08 */
+  void **zoneLists;  /* +0x0C per vis zone */
+  /* +0x10 background colour (g_dwWorldFogColor when active) */
+  unsigned int color;
 } SkyHeader;
 
 #endif /* OPEN_SPYRO_SKY_H */

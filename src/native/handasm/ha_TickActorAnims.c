@@ -290,9 +290,12 @@ L_80052478:
   ra = 0x80052498u;
   /* 80052494 20A70054 (delay) */
   a3 = a1 + 0x54u;
-  { uint32_t ha_save = ha_mips_sp; ha_mips_sp = sp;
+  {
+    uint32_t ha_save = ha_mips_sp;
+    ha_mips_sp = sp;
     v0 = (uint32_t)PlaySoundEffect(a0, a1, a2, a3);
-    ha_mips_sp = ha_save; }
+    ha_mips_sp = ha_save;
+  }
 L_80052498:
   /* 80052498 3C0F8007 */
   t7 = 0x80070000u;
@@ -318,8 +321,12 @@ L_80052498:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800522c0u: bc = 0; goto L_800522C0;
-  case 0x80052498u: bc = 0; goto L_80052498;
+  case 0x800522c0u:
+    bc = 0;
+    goto L_800522C0;
+  case 0x80052498u:
+    bc = 0;
+    goto L_80052498;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("TickActorAnims", tgt, entry_ra);

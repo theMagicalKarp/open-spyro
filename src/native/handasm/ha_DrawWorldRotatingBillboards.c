@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster DrawWorldRotatingBillboards: DrawWorldRotatingBillboards (800584C4) */
+/* cluster DrawWorldRotatingBillboards: DrawWorldRotatingBillboards (800584C4)
+ */
 void ha_DrawWorldRotatingBillboards(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -499,7 +500,9 @@ L_8005881C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800584c4u: bc = 0; goto L_800584C4;
+  case 0x800584c4u:
+    bc = 0;
+    goto L_800584C4;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("DrawWorldRotatingBillboards", tgt, entry_ra);

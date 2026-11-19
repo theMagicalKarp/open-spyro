@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster EmitSecondaryActorPrimitives: EmitSecondaryActorPrimitives (80020F34), StoreAndRestoreStaticRegs (800229E8) */
+/* cluster EmitSecondaryActorPrimitives: EmitSecondaryActorPrimitives
+ * (80020F34), StoreAndRestoreStaticRegs (800229E8) */
 void ha_EmitSecondaryActorPrimitives(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -1894,7 +1895,10 @@ L_80021B88:
   /* 80021BA4 8FC10000 (delay) */
   at = HA_LW(fp + 0u);
   if (bc) {
-    { bc = 0; goto L_80021BC0; }
+    {
+      bc = 0;
+      goto L_80021BC0;
+    }
   }
   /* 80021BA8 080085F1 */
   /* 80021BAC 00000000 (delay) */
@@ -2945,7 +2949,10 @@ L_80022238:
   /* 80022238 216B0080 (delay) */
   t3 = t3 + 0x80u;
   if (bc) {
-    { bc = 0; goto L_80022270; }
+    {
+      bc = 0;
+      goto L_80022270;
+    }
   }
 L_8002223C:
   /* 8002223C 1960000C */
@@ -2954,7 +2961,10 @@ L_80022240:
   /* 80022240 010A5822 (delay) */
   t3 = t0 - t2;
   if (bc) {
-    { bc = 0; goto L_80022270; }
+    {
+      bc = 0;
+      goto L_80022270;
+    }
   }
 L_80022244:
   /* 80022244 216BFFC0 */
@@ -2966,7 +2976,10 @@ L_8002224C:
   /* 8002224C 216B0080 (delay) */
   t3 = t3 + 0x80u;
   if (bc) {
-    { bc = 0; goto L_80022270; }
+    {
+      bc = 0;
+      goto L_80022270;
+    }
   }
 L_80022250:
   /* 80022250 19600007 */
@@ -2975,7 +2988,10 @@ L_80022254:
   /* 80022254 012A5822 (delay) */
   t3 = t1 - t2;
   if (bc) {
-    { bc = 0; goto L_80022270; }
+    {
+      bc = 0;
+      goto L_80022270;
+    }
   }
 L_80022258:
   /* 80022258 216BFFC0 */
@@ -2987,7 +3003,10 @@ L_80022260:
   /* 80022260 216B0080 (delay) */
   t3 = t3 + 0x80u;
   if (bc) {
-    { bc = 0; goto L_80022270; }
+    {
+      bc = 0;
+      goto L_80022270;
+    }
   }
 L_80022264:
   /* 80022264 19600002 */
@@ -2995,7 +3014,10 @@ L_80022264:
 L_80022268:
   /* 80022268 00000000 (delay) */
   if (bc) {
-    { bc = 0; goto L_80022270; }
+    {
+      bc = 0;
+      goto L_80022270;
+    }
   }
 L_8002226C:
   /* 8002226C 080088A5 */
@@ -4193,105 +4215,303 @@ L_800229E8:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80020f34u: bc = 0; goto L_80020F34;
-  case 0x80022110u: bc = 0; goto L_80022110;
-  case 0x80022114u: bc = 0; goto L_80022114;
-  case 0x80022118u: bc = 0; goto L_80022118;
-  case 0x8002211cu: bc = 0; goto L_8002211C;
-  case 0x80022120u: bc = 0; goto L_80022120;
-  case 0x80022124u: bc = 0; goto L_80022124;
-  case 0x80022128u: bc = 0; goto L_80022128;
-  case 0x8002212cu: bc = 0; goto L_8002212C;
-  case 0x80022130u: bc = 0; goto L_80022130;
-  case 0x80022134u: bc = 0; goto L_80022134;
-  case 0x80022138u: bc = 0; goto L_80022138;
-  case 0x8002213cu: bc = 0; goto L_8002213C;
-  case 0x80022140u: bc = 0; goto L_80022140;
-  case 0x80022144u: bc = 0; goto L_80022144;
-  case 0x80022148u: bc = 0; goto L_80022148;
-  case 0x8002214cu: bc = 0; goto L_8002214C;
-  case 0x80022150u: bc = 0; goto L_80022150;
-  case 0x80022154u: bc = 0; goto L_80022154;
-  case 0x80022158u: bc = 0; goto L_80022158;
-  case 0x8002215cu: bc = 0; goto L_8002215C;
-  case 0x80022160u: bc = 0; goto L_80022160;
-  case 0x80022164u: bc = 0; goto L_80022164;
-  case 0x80022168u: bc = 0; goto L_80022168;
-  case 0x8002216cu: bc = 0; goto L_8002216C;
-  case 0x80022170u: bc = 0; goto L_80022170;
-  case 0x80022174u: bc = 0; goto L_80022174;
-  case 0x80022178u: bc = 0; goto L_80022178;
-  case 0x8002217cu: bc = 0; goto L_8002217C;
-  case 0x80022180u: bc = 0; goto L_80022180;
-  case 0x80022184u: bc = 0; goto L_80022184;
-  case 0x80022188u: bc = 0; goto L_80022188;
-  case 0x8002218cu: bc = 0; goto L_8002218C;
-  case 0x80022190u: bc = 0; goto L_80022190;
-  case 0x80022194u: bc = 0; goto L_80022194;
-  case 0x80022198u: bc = 0; goto L_80022198;
-  case 0x8002219cu: bc = 0; goto L_8002219C;
-  case 0x800221a0u: bc = 0; goto L_800221A0;
-  case 0x800221a4u: bc = 0; goto L_800221A4;
-  case 0x800221a8u: bc = 0; goto L_800221A8;
-  case 0x800221acu: bc = 0; goto L_800221AC;
-  case 0x800221b0u: bc = 0; goto L_800221B0;
-  case 0x800221b4u: bc = 0; goto L_800221B4;
-  case 0x800221b8u: bc = 0; goto L_800221B8;
-  case 0x800221bcu: bc = 0; goto L_800221BC;
-  case 0x800221c0u: bc = 0; goto L_800221C0;
-  case 0x800221c4u: bc = 0; goto L_800221C4;
-  case 0x800221c8u: bc = 0; goto L_800221C8;
-  case 0x800221ccu: bc = 0; goto L_800221CC;
-  case 0x800221d0u: bc = 0; goto L_800221D0;
-  case 0x800221d4u: bc = 0; goto L_800221D4;
-  case 0x800221d8u: bc = 0; goto L_800221D8;
-  case 0x800221dcu: bc = 0; goto L_800221DC;
-  case 0x800221e0u: bc = 0; goto L_800221E0;
-  case 0x800221e4u: bc = 0; goto L_800221E4;
-  case 0x800221e8u: bc = 0; goto L_800221E8;
-  case 0x800221ecu: bc = 0; goto L_800221EC;
-  case 0x800221f0u: bc = 0; goto L_800221F0;
-  case 0x800221f4u: bc = 0; goto L_800221F4;
-  case 0x800221f8u: bc = 0; goto L_800221F8;
-  case 0x800221fcu: bc = 0; goto L_800221FC;
-  case 0x80022200u: bc = 0; goto L_80022200;
-  case 0x80022204u: bc = 0; goto L_80022204;
-  case 0x80022208u: bc = 0; goto L_80022208;
-  case 0x8002220cu: bc = 0; goto L_8002220C;
-  case 0x80022210u: bc = 0; goto L_80022210;
-  case 0x80022214u: bc = 0; goto L_80022214;
-  case 0x80022218u: bc = 0; goto L_80022218;
-  case 0x8002221cu: bc = 0; goto L_8002221C;
-  case 0x80022220u: bc = 0; goto L_80022220;
-  case 0x80022224u: bc = 0; goto L_80022224;
-  case 0x80022228u: bc = 0; goto L_80022228;
-  case 0x8002222cu: bc = 0; goto L_8002222C;
-  case 0x80022230u: bc = 0; goto L_80022230;
-  case 0x80022234u: bc = 0; goto L_80022234;
-  case 0x80022238u: bc = 0; goto L_80022238;
-  case 0x8002223cu: bc = 0; goto L_8002223C;
-  case 0x80022240u: bc = 0; goto L_80022240;
-  case 0x80022244u: bc = 0; goto L_80022244;
-  case 0x80022248u: bc = 0; goto L_80022248;
-  case 0x8002224cu: bc = 0; goto L_8002224C;
-  case 0x80022250u: bc = 0; goto L_80022250;
-  case 0x80022254u: bc = 0; goto L_80022254;
-  case 0x80022258u: bc = 0; goto L_80022258;
-  case 0x8002225cu: bc = 0; goto L_8002225C;
-  case 0x80022260u: bc = 0; goto L_80022260;
-  case 0x80022264u: bc = 0; goto L_80022264;
-  case 0x80022268u: bc = 0; goto L_80022268;
-  case 0x8002226cu: bc = 0; goto L_8002226C;
-  case 0x80022270u: bc = 0; goto L_80022270;
-  case 0x80022274u: bc = 0; goto L_80022274;
-  case 0x80022278u: bc = 0; goto L_80022278;
-  case 0x8002227cu: bc = 0; goto L_8002227C;
-  case 0x80022280u: bc = 0; goto L_80022280;
-  case 0x80022284u: bc = 0; goto L_80022284;
-  case 0x80022288u: bc = 0; goto L_80022288;
-  case 0x8002228cu: bc = 0; goto L_8002228C;
-  case 0x80022290u: bc = 0; goto L_80022290;
-  case 0x800229e8u: bc = 0; goto L_800229E8;
+  case 0x80020f34u:
+    bc = 0;
+    goto L_80020F34;
+  case 0x80022110u:
+    bc = 0;
+    goto L_80022110;
+  case 0x80022114u:
+    bc = 0;
+    goto L_80022114;
+  case 0x80022118u:
+    bc = 0;
+    goto L_80022118;
+  case 0x8002211cu:
+    bc = 0;
+    goto L_8002211C;
+  case 0x80022120u:
+    bc = 0;
+    goto L_80022120;
+  case 0x80022124u:
+    bc = 0;
+    goto L_80022124;
+  case 0x80022128u:
+    bc = 0;
+    goto L_80022128;
+  case 0x8002212cu:
+    bc = 0;
+    goto L_8002212C;
+  case 0x80022130u:
+    bc = 0;
+    goto L_80022130;
+  case 0x80022134u:
+    bc = 0;
+    goto L_80022134;
+  case 0x80022138u:
+    bc = 0;
+    goto L_80022138;
+  case 0x8002213cu:
+    bc = 0;
+    goto L_8002213C;
+  case 0x80022140u:
+    bc = 0;
+    goto L_80022140;
+  case 0x80022144u:
+    bc = 0;
+    goto L_80022144;
+  case 0x80022148u:
+    bc = 0;
+    goto L_80022148;
+  case 0x8002214cu:
+    bc = 0;
+    goto L_8002214C;
+  case 0x80022150u:
+    bc = 0;
+    goto L_80022150;
+  case 0x80022154u:
+    bc = 0;
+    goto L_80022154;
+  case 0x80022158u:
+    bc = 0;
+    goto L_80022158;
+  case 0x8002215cu:
+    bc = 0;
+    goto L_8002215C;
+  case 0x80022160u:
+    bc = 0;
+    goto L_80022160;
+  case 0x80022164u:
+    bc = 0;
+    goto L_80022164;
+  case 0x80022168u:
+    bc = 0;
+    goto L_80022168;
+  case 0x8002216cu:
+    bc = 0;
+    goto L_8002216C;
+  case 0x80022170u:
+    bc = 0;
+    goto L_80022170;
+  case 0x80022174u:
+    bc = 0;
+    goto L_80022174;
+  case 0x80022178u:
+    bc = 0;
+    goto L_80022178;
+  case 0x8002217cu:
+    bc = 0;
+    goto L_8002217C;
+  case 0x80022180u:
+    bc = 0;
+    goto L_80022180;
+  case 0x80022184u:
+    bc = 0;
+    goto L_80022184;
+  case 0x80022188u:
+    bc = 0;
+    goto L_80022188;
+  case 0x8002218cu:
+    bc = 0;
+    goto L_8002218C;
+  case 0x80022190u:
+    bc = 0;
+    goto L_80022190;
+  case 0x80022194u:
+    bc = 0;
+    goto L_80022194;
+  case 0x80022198u:
+    bc = 0;
+    goto L_80022198;
+  case 0x8002219cu:
+    bc = 0;
+    goto L_8002219C;
+  case 0x800221a0u:
+    bc = 0;
+    goto L_800221A0;
+  case 0x800221a4u:
+    bc = 0;
+    goto L_800221A4;
+  case 0x800221a8u:
+    bc = 0;
+    goto L_800221A8;
+  case 0x800221acu:
+    bc = 0;
+    goto L_800221AC;
+  case 0x800221b0u:
+    bc = 0;
+    goto L_800221B0;
+  case 0x800221b4u:
+    bc = 0;
+    goto L_800221B4;
+  case 0x800221b8u:
+    bc = 0;
+    goto L_800221B8;
+  case 0x800221bcu:
+    bc = 0;
+    goto L_800221BC;
+  case 0x800221c0u:
+    bc = 0;
+    goto L_800221C0;
+  case 0x800221c4u:
+    bc = 0;
+    goto L_800221C4;
+  case 0x800221c8u:
+    bc = 0;
+    goto L_800221C8;
+  case 0x800221ccu:
+    bc = 0;
+    goto L_800221CC;
+  case 0x800221d0u:
+    bc = 0;
+    goto L_800221D0;
+  case 0x800221d4u:
+    bc = 0;
+    goto L_800221D4;
+  case 0x800221d8u:
+    bc = 0;
+    goto L_800221D8;
+  case 0x800221dcu:
+    bc = 0;
+    goto L_800221DC;
+  case 0x800221e0u:
+    bc = 0;
+    goto L_800221E0;
+  case 0x800221e4u:
+    bc = 0;
+    goto L_800221E4;
+  case 0x800221e8u:
+    bc = 0;
+    goto L_800221E8;
+  case 0x800221ecu:
+    bc = 0;
+    goto L_800221EC;
+  case 0x800221f0u:
+    bc = 0;
+    goto L_800221F0;
+  case 0x800221f4u:
+    bc = 0;
+    goto L_800221F4;
+  case 0x800221f8u:
+    bc = 0;
+    goto L_800221F8;
+  case 0x800221fcu:
+    bc = 0;
+    goto L_800221FC;
+  case 0x80022200u:
+    bc = 0;
+    goto L_80022200;
+  case 0x80022204u:
+    bc = 0;
+    goto L_80022204;
+  case 0x80022208u:
+    bc = 0;
+    goto L_80022208;
+  case 0x8002220cu:
+    bc = 0;
+    goto L_8002220C;
+  case 0x80022210u:
+    bc = 0;
+    goto L_80022210;
+  case 0x80022214u:
+    bc = 0;
+    goto L_80022214;
+  case 0x80022218u:
+    bc = 0;
+    goto L_80022218;
+  case 0x8002221cu:
+    bc = 0;
+    goto L_8002221C;
+  case 0x80022220u:
+    bc = 0;
+    goto L_80022220;
+  case 0x80022224u:
+    bc = 0;
+    goto L_80022224;
+  case 0x80022228u:
+    bc = 0;
+    goto L_80022228;
+  case 0x8002222cu:
+    bc = 0;
+    goto L_8002222C;
+  case 0x80022230u:
+    bc = 0;
+    goto L_80022230;
+  case 0x80022234u:
+    bc = 0;
+    goto L_80022234;
+  case 0x80022238u:
+    bc = 0;
+    goto L_80022238;
+  case 0x8002223cu:
+    bc = 0;
+    goto L_8002223C;
+  case 0x80022240u:
+    bc = 0;
+    goto L_80022240;
+  case 0x80022244u:
+    bc = 0;
+    goto L_80022244;
+  case 0x80022248u:
+    bc = 0;
+    goto L_80022248;
+  case 0x8002224cu:
+    bc = 0;
+    goto L_8002224C;
+  case 0x80022250u:
+    bc = 0;
+    goto L_80022250;
+  case 0x80022254u:
+    bc = 0;
+    goto L_80022254;
+  case 0x80022258u:
+    bc = 0;
+    goto L_80022258;
+  case 0x8002225cu:
+    bc = 0;
+    goto L_8002225C;
+  case 0x80022260u:
+    bc = 0;
+    goto L_80022260;
+  case 0x80022264u:
+    bc = 0;
+    goto L_80022264;
+  case 0x80022268u:
+    bc = 0;
+    goto L_80022268;
+  case 0x8002226cu:
+    bc = 0;
+    goto L_8002226C;
+  case 0x80022270u:
+    bc = 0;
+    goto L_80022270;
+  case 0x80022274u:
+    bc = 0;
+    goto L_80022274;
+  case 0x80022278u:
+    bc = 0;
+    goto L_80022278;
+  case 0x8002227cu:
+    bc = 0;
+    goto L_8002227C;
+  case 0x80022280u:
+    bc = 0;
+    goto L_80022280;
+  case 0x80022284u:
+    bc = 0;
+    goto L_80022284;
+  case 0x80022288u:
+    bc = 0;
+    goto L_80022288;
+  case 0x8002228cu:
+    bc = 0;
+    goto L_8002228C;
+  case 0x80022290u:
+    bc = 0;
+    goto L_80022290;
+  case 0x800229e8u:
+    bc = 0;
+    goto L_800229E8;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("EmitSecondaryActorPrimitives", tgt, entry_ra);

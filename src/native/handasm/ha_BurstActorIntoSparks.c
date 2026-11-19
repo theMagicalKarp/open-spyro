@@ -5,7 +5,8 @@
 
 extern uint32_t GetRandomU32(void);
 
-/* cluster BurstActorIntoSparks: BurstActorIntoSparks (800530C0), AllocEmitListRecord (80053570) */
+/* cluster BurstActorIntoSparks: BurstActorIntoSparks (800530C0),
+ * AllocEmitListRecord (80053570) */
 void ha_BurstActorIntoSparks(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -237,9 +238,12 @@ L_80053260:
   /* 80053260 0C0189CB */
   ra = 0x80053268u;
   /* 80053264 00000000 (delay) */
-  { uint32_t ha_save = ha_mips_sp; ha_mips_sp = sp;
+  {
+    uint32_t ha_save = ha_mips_sp;
+    ha_mips_sp = sp;
     v0 = (uint32_t)GetRandomU32();
-    ha_mips_sp = ha_save; }
+    ha_mips_sp = ha_save;
+  }
 L_80053268:
   /* 80053268 204E0000 */
   t6 = v0 + 0x0u;
@@ -460,9 +464,12 @@ L_80053570:
   ra = 0x800535a0u;
   /* 8005359C 20860000 (delay) */
   a2 = a0 + 0x0u;
-  { uint32_t ha_save = ha_mips_sp; ha_mips_sp = sp;
+  {
+    uint32_t ha_save = ha_mips_sp;
+    ha_mips_sp = sp;
     v0 = (uint32_t)GetRandomU32();
-    ha_mips_sp = ha_save; }
+    ha_mips_sp = ha_save;
+  }
 L_800535A0:
   /* 800535A0 304200FF */
   v0 = v0 & 0xffu;
@@ -535,11 +542,21 @@ L_80053600:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800530c0u: bc = 0; goto L_800530C0;
-  case 0x80053268u: bc = 0; goto L_80053268;
-  case 0x80053274u: bc = 0; goto L_80053274;
-  case 0x80053570u: bc = 0; goto L_80053570;
-  case 0x800535a0u: bc = 0; goto L_800535A0;
+  case 0x800530c0u:
+    bc = 0;
+    goto L_800530C0;
+  case 0x80053268u:
+    bc = 0;
+    goto L_80053268;
+  case 0x80053274u:
+    bc = 0;
+    goto L_80053274;
+  case 0x80053570u:
+    bc = 0;
+    goto L_80053570;
+  case 0x800535a0u:
+    bc = 0;
+    goto L_800535A0;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("BurstActorIntoSparks", tgt, entry_ra);

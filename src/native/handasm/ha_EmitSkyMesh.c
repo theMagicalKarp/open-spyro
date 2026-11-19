@@ -643,7 +643,9 @@ L_8004EFC0:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8004eba8u: bc = 0; goto L_8004EBA8;
+  case 0x8004eba8u:
+    bc = 0;
+    goto L_8004EBA8;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("EmitSkyMesh", tgt, entry_ra);

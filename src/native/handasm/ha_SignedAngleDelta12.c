@@ -38,7 +38,9 @@ L_80017988:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8001796cu: bc = 0; goto L_8001796C;
+  case 0x8001796cu:
+    bc = 0;
+    goto L_8001796C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("SignedAngleDelta12", tgt, entry_ra);

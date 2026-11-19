@@ -5,8 +5,8 @@
  * Walks the 0x20-byte record stream at g_pEmitListBase and ages one record per
  * iteration: integrates its position, fades its colour, ticks its life
  * counter and, when the record has expired (or its visible byte has been
- * cleared (culled)), hands it back with FreeEmitListRecord().  The walk stops at the
- * terminator record, whose class byte at +0x01 is 0xFF.
+ * cleared (culled)), hands it back with FreeEmitListRecord().  The walk stops
+ * at the terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Head and arms 0x7/0x8/0x41 come from Level12_AdvanceEmitList, the ground
  * classes from level_2, 0x10/0x11 from level_33, the rest are shared.
@@ -18,8 +18,8 @@
  *    the split has to be declared in that sequence or every sp-relative
  *    offset in the function shifts by 16.
  *  - An A200 cse barrier (`do { } while (0);`) between arm 0x8's first
- *    SVectorToVectorShl2(p2, POS) and the direction-vector group.  Without it the
- *    whole arm shares ONE address pseudo: gcc either hoists it to the loop
+ *    SVectorToVectorShl2(p2, POS) and the direction-vector group.  Without it
+ * the whole arm shares ONE address pseudo: gcc either hoists it to the loop
  *    preheader and spills it or holds it in s0 from the first use, where the
  *    original rematerialises `addiu a0,sp,0x20` there and only takes s0 for
  *    the middle four uses.
@@ -212,9 +212,10 @@ void Level16_AdvanceEmitList(int step) {
 
     case EMIT_SPYRO_HURT_SPARKLE:
       /* A hurt sparkle: circles Spyro (0x40 a tick) while his post-hit
-       * invulnerability runs; freed early if he is hidden or a hazard kills him. */
-      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
-          g_nSpyroInvulnFrames[0] <= 0) {
+       * invulnerability runs; freed early if he is hidden or a hazard kills
+       * him. */
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) ||
+          g_nSpyroDrawSuppressed != 0 || g_nSpyroInvulnFrames[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
         CopyVector(w, SPYRO_POS_VIA_INVULN);
@@ -223,7 +224,9 @@ void Level16_AdvanceEmitList(int step) {
         w[2] += 0x100;
         VectorToSVectorShr2(POS, w);
         ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
-        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & ANGLE12_MASK)) / 170;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) &
+                                ANGLE12_MASK)) /
+               170;
       }
       break;
 
@@ -285,7 +288,8 @@ void Level16_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = SPIRAL_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SPIRAL_CENTRE_U[0] +
+                 ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += *(const int *)&g_nFrameStep * 6;
       SPIN += 4;
@@ -315,8 +319,10 @@ void Level16_AdvanceEmitList(int step) {
       }
       RSWIRL_LIFT = (RSWIRL_BAND * (0x48 - heat)) >> 3;
       RSWIRL_RADIUS = (((0x20 - RSWIRL_BAND) * heat) >> 4) + 8;
-      POS_U[0] = RSWIRL_CENTRE_U[0] + ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
-      POS_U[1] = RSWIRL_CENTRE_U[1] + ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[0] = RSWIRL_CENTRE_U[0] +
+                 ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[1] = RSWIRL_CENTRE_U[1] +
+                 ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
       POS_U[2] = RSWIRL_CENTRE_U[2] + 0x20 + RSWIRL_LIFT_U;
       break;
     }
@@ -550,7 +556,8 @@ void Level16_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = SMEAR_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SMEAR_CENTRE_U[0] +
+                 ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += g_nFrameStep * 6;
       POS_U[1] = SMEAR_CENTRE_U[1] + (s >> 12);

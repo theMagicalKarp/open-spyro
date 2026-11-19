@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster DispatchActorContactAtSphere: DispatchActorContactAtSphere (8004E3C8), DispatchActorContactAtSphere_Tail (8004E60C) */
+/* cluster DispatchActorContactAtSphere: DispatchActorContactAtSphere
+ * (8004E3C8), DispatchActorContactAtSphere_Tail (8004E60C) */
 void ha_DispatchActorContactAtSphere(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -995,7 +996,10 @@ L_8004EA24:
   bc = ((int32_t)t1 < 0);
   /* 8004EA5C 00000000 (delay) */
   if (bc) {
-    { bc = 0; goto L_8004EA68; }
+    {
+      bc = 0;
+      goto L_8004EA68;
+    }
   }
   /* 8004EA60 01215004 */
   t2 = at << (t1 & 31);
@@ -1172,16 +1176,36 @@ L_8004EB68:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8004e3c8u: bc = 0; goto L_8004E3C8;
-  case 0x8004e5b8u: bc = 0; goto L_8004E5B8;
-  case 0x8004e5bcu: bc = 0; goto L_8004E5BC;
-  case 0x8004e5c0u: bc = 0; goto L_8004E5C0;
-  case 0x8004e5c4u: bc = 0; goto L_8004E5C4;
-  case 0x8004e5c8u: bc = 0; goto L_8004E5C8;
-  case 0x8004e5ccu: bc = 0; goto L_8004E5CC;
-  case 0x8004e5d0u: bc = 0; goto L_8004E5D0;
-  case 0x8004e5d4u: bc = 0; goto L_8004E5D4;
-  case 0x8004e60cu: bc = 0; goto L_8004E60C;
+  case 0x8004e3c8u:
+    bc = 0;
+    goto L_8004E3C8;
+  case 0x8004e5b8u:
+    bc = 0;
+    goto L_8004E5B8;
+  case 0x8004e5bcu:
+    bc = 0;
+    goto L_8004E5BC;
+  case 0x8004e5c0u:
+    bc = 0;
+    goto L_8004E5C0;
+  case 0x8004e5c4u:
+    bc = 0;
+    goto L_8004E5C4;
+  case 0x8004e5c8u:
+    bc = 0;
+    goto L_8004E5C8;
+  case 0x8004e5ccu:
+    bc = 0;
+    goto L_8004E5CC;
+  case 0x8004e5d0u:
+    bc = 0;
+    goto L_8004E5D0;
+  case 0x8004e5d4u:
+    bc = 0;
+    goto L_8004E5D4;
+  case 0x8004e60cu:
+    bc = 0;
+    goto L_8004E60C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("DispatchActorContactAtSphere", tgt, entry_ra);
@@ -1189,7 +1213,8 @@ dispatch:
   HA_SPILL();
 }
 
-uint32_t DispatchActorContactAtSphere(uint32_t p0, uint32_t p1, uint32_t p2, uint32_t p3, uint32_t p4, uint32_t p5) {
+uint32_t DispatchActorContactAtSphere(uint32_t p0, uint32_t p1, uint32_t p2,
+                                      uint32_t p3, uint32_t p4, uint32_t p5) {
   HaRegs R;
   ha_enter(&R);
   R.r[29] = ha_mips_sp - 0x28u;

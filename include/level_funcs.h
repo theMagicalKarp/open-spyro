@@ -16,8 +16,9 @@ extern void AddSVector(short *dst, short *src, short *delta);
 extern void AddVector(int *out, int *a, int *b);
 extern void *AllocEmitListRecord(int cls);
 #ifndef ATAN_ANGLE8
-#define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
-#define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#define ATAN_ANGLE8 0 /* ArcTan2: 8-bit angle, 0..0xFF per turn */
+/* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#define ATAN_ANGLE12 1
 #endif
 extern int ArcTan2(int dx, int dy, int scale);
 extern void BeginPauseToMenuTransition(void);
@@ -26,13 +27,16 @@ extern void BuildActiveActorList(void);
 /* native: the definition returns a value; a wasm call must use its signature */
 extern void *BuildTextSpriteChain();
 #else
-extern void BuildTextSpriteChain(); /* K&R: callers pass int-typed text buffers */
+/* K&R: callers pass int-typed text buffers */
+extern void BuildTextSpriteChain();
 #endif
-extern void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
+extern void *BuildTextSprites(char *text, int *pos, int *attr, int spacing,
+                              int flags);
 extern void ChangeSpyroState(int state);
 extern int CheckLineOfSightSegment(int *from, int *to);
 extern int CheckSpyroLineOfSightTo(int *pos);
-extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2); /* ground/wall probe */
+/* ground/wall probe */
+extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 struct Actor;
 extern void CommitActorKillGems(int value, struct Actor *actor);
 extern void ComputeCameraOrbitOffset(int *out);
@@ -49,14 +53,16 @@ extern void EnqueuePendingSpritePrims(void);
 extern void FillWord(void *dst, unsigned int value, int bytes);
 extern void FreeEmitListRecord(unsigned char *rec);
 extern int ReflectVectorOffNormal(int *v, int *n, int *out);
-extern int GetRandomU32(void); /* int, not unsigned: the callers' % and >> are signed */
+/* int, not unsigned: the callers' % and >> are signed */
+extern int GetRandomU32(void);
 extern void InitHudCounters(int layout_butterflies);
 extern void InitLightVectorConstants(void);
 struct TriggerBox;
 extern int IsPointInRotatedBox(int *pos, struct TriggerBox *box);
 extern void LoadAndStartLevelFromCd(void);
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's
+ * signature */
 extern int LoadImage();
 #else
 extern void LoadImage(); /* K&R: callers pass their own rect views */
@@ -67,7 +73,8 @@ extern void *memcpy(void *dst, const void *src, unsigned int n);
 extern void ProjectWorldPointGTEUnscaled(int *out, int *s);
 extern DISPENV *PutDispEnv(DISPENV *env);
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's
+ * signature */
 extern void *PutDrawEnv(void *env);
 #else
 extern void PutDrawEnv(void *env);
@@ -76,8 +83,10 @@ extern int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 extern void RefreshHudLevelGemCounter(void);
 extern void ResetCameraStateToTarget(void);
 #ifndef RESET_SPYRO_SOFT
-#define RESET_SPYRO_SOFT 0 /* clears input/charge flags, rebuilds body angles */
-#define RESET_SPYRO_FULL 1 /* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
+/* clears input/charge flags, rebuilds body angles */
+#define RESET_SPYRO_SOFT 0
+/* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
+#define RESET_SPYRO_FULL 1
 #endif
 extern void ResetSpyroEntity(int full);
 extern void ResetSpyroLinearMotion(void);
@@ -88,33 +97,38 @@ extern void ScaleVector3Sat(int *out, int *src, int scale);
 extern int SignedAngleDelta12(int a, int b);
 #ifdef __psyz
 /* native: sprintf is variadic, which a K&R call cannot reach in wasm */
-extern int (sprintf)(char *buf, const char *fmt, ...);
+extern int(sprintf)(char *buf, const char *fmt, ...);
 #define sprintf(buf, ...) sprintf((char *)(buf), __VA_ARGS__)
 #else
 extern void sprintf(); /* K&R: callers format into int-typed buffers */
 #endif
 #ifdef __psyz
 /* native: the definition takes a 4th (unused) argument */
-extern int (StepAngle8Toward)(int to, int from, int maxStep, int unused);
-#define StepAngle8Toward(to, from, maxStep) StepAngle8Toward(to, from, maxStep, 0)
+extern int(StepAngle8Toward)(int to, int from, int maxStep, int unused);
+#define StepAngle8Toward(to, from, maxStep)                                    \
+  StepAngle8Toward(to, from, maxStep, 0)
 #else
 extern int StepAngle8Toward(int to, int from, int maxStep);
 #endif
 #ifndef VOICE_RELEASE
-#define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
+/* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other
+ * modes only key off) */
+#define VOICE_RELEASE 4
 #endif
 extern void StopSoundVoiceByIndex(int ch, int mode);
 #ifdef __psyz
 /* native: PsyZ returns a value; the stray third argument is dropped */
-extern int (StoreImage)();
+extern int(StoreImage)();
 #define StoreImage(rect, p, ...) (StoreImage)(rect, p)
 #else
-extern void StoreImage(); /* K&R: the flight results draw passes a stray third argument (the original sets $a2) */
+/* K&R: the flight results draw passes a stray third argument (the original sets
+ * $a2) */
+extern void StoreImage();
 #endif
-extern int strlen();                                         /* text glyph count */
+extern int strlen(); /* text glyph count */
 #ifdef __psyz
 /* native: the definition takes no arguments (callers set $a0/$a1 it ignores) */
-extern void (StubRewardHook)(void);
+extern void(StubRewardHook)(void);
 #define StubRewardHook(...) (StubRewardHook)()
 #else
 extern void StubRewardHook(int script, int a);
@@ -139,11 +153,13 @@ extern void UpdateCameraEulerAngles(void);
 #endif
 extern int VectorLength(int *vec, int withZ);
 extern int VSync(int mode);
-extern int WrapAngleDelta8(int a, int b);                    /* signed angle delta */
+extern int WrapAngleDelta8(int a, int b); /* signed angle delta */
 
 /* Level/asset streaming helpers the credits overlay drives directly. */
-extern void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset, int stallTicks);
-extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int stallTicks);
+extern void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
+                              int stallTicks);
+extern void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
+                             int stallTicks);
 extern char *UnpackWorldDataChunks(int *p, int flag);
 extern void CopyWords(void *dst, void *src, int len);
 extern int TickCountdownByFrameDelta(void *pValue, int width);

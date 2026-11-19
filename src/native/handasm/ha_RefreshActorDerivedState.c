@@ -486,7 +486,9 @@ L_80052D5C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800529e4u: bc = 0; goto L_800529E4;
+  case 0x800529e4u:
+    bc = 0;
+    goto L_800529E4;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("RefreshActorDerivedState", tgt, entry_ra);

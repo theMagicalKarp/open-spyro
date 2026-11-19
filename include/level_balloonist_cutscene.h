@@ -1,5 +1,7 @@
-/* level_balloonist_cutscene.h — declarations shared by the *_BalloonistCutscene_Update.c / _Draw.c clones
- * (also included by the flight-results clones for the same names), declared once.
+/* level_balloonist_cutscene.h — declarations shared by the
+ * *_BalloonistCutscene_Update.c / _Draw.c clones
+ * (also included by the flight-results clones for the same names), declared
+ * once.
  *
  * Each item is spelled identically in every file that includes this header;
  * files that declare any of these names differently keep their own
@@ -27,7 +29,8 @@ extern void ComputeCameraToTargetAngle(int *target);
 
 extern int FindGroundHeightBelow(int *pos, int depth);
 
-extern unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
+extern unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
+                                    unsigned int mode, unsigned char *pPlaying);
 
 extern void StopAllSoundExceptMask(int mask);
 
@@ -55,7 +58,8 @@ extern int g_pCameraTargetParams;
 
 extern int g_dwPadPressed[];
 
-extern int g_nActorCutsceneSubstate[];            /* [0] substate [1] phase [2] selected [3] submode [4] greeting */
+/* [0] substate [1] phase [2] selected [3] submode [4] greeting */
+extern int g_nActorCutsceneSubstate[];
 
 extern int g_nActorCutsceneTimer[];
 
@@ -96,23 +100,25 @@ extern void RasterizeEmitList(void);
  * Actor * they would compare unsigned). */
 extern int g_pSpriteRecordWriteCursor;
 
-extern int g_apSpritePrimQueue;              /* sprite prim queue head */
+extern int g_apSpritePrimQueue; /* sprite prim queue head */
 
-extern int g_apMainDrawEntityList[];            /* main draw list (NULL-terminated actor pointers) */
+/* main draw list (NULL-terminated actor pointers) */
+extern int g_apMainDrawEntityList[];
 
 extern unsigned short g_anCosineLut[]; /* cosine LUT */
 
-extern char *g_apBalloonistNames[];          /* [world] balloonist name; [0] is "RETURN HOME" */
+/* [world] balloonist name; [0] is "RETURN HOME" */
+extern char *g_apBalloonistNames[];
 
-extern char *g_apBalloonistDialogueLines[];          /* dialogue lines */
+extern char *g_apBalloonistDialogueLines[]; /* dialogue lines */
 
-/* Declared identically (by type) in two or more including files; hoisted here. */
+/* Declared identically (by type) in two or more including files; hoisted
+ * here. */
 extern unsigned int g_dwHudIconSpinAngle[];
 
 /* The balloonist actor record (Update reads its fields; Draw links it into
  * the OT as the pending node). */
 extern Actor *g_pActorCutsceneRecord;
-
 
 /* g_nActorCutsceneSpyroToX (From + 12), stored through a char * off the From
  * base: not in-struct, so sched keeps the following load below it (lever L2

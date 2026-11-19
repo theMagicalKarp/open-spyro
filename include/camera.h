@@ -55,11 +55,16 @@ typedef struct ScriptedCamView {
 /* Byte views onto the camera globals from the held bases the original keeps
  * live (g_anCameraEulerPitchBlock, g_anCameraViewMtx, g_apCameraAnchorBlock);
  * each is the named global's address. */
-#define CAM_VIEW_MTX_VIA_EULER ((char *)g_anCameraEulerPitchBlock - 0x3A) /* g_anCameraViewMtx */
-#define CAM_W2C_MTX_VIA_EULER ((char *)g_anCameraEulerPitchBlock - 0x4E)  /* g_anWorldToCameraRotMtx */
-#define CAM_W2C_MTX_VIA_VIEW ((char *)g_anCameraViewMtx - 0x14)           /* g_anWorldToCameraRotMtx */
-#define CAM_POS_VIA_ANCHOR ((char *)g_apCameraAnchorBlock - 0xA8)         /* g_anCameraPos */
-#define CAM_YAW_VIA_ANCHOR ((char *)g_apCameraAnchorBlock - 0x40)         /* g_nCameraYaw */
+/* g_anCameraViewMtx */
+#define CAM_VIEW_MTX_VIA_EULER ((char *)g_anCameraEulerPitchBlock - 0x3A)
+/* g_anWorldToCameraRotMtx */
+#define CAM_W2C_MTX_VIA_EULER ((char *)g_anCameraEulerPitchBlock - 0x4E)
+/* g_anWorldToCameraRotMtx */
+#define CAM_W2C_MTX_VIA_VIEW ((char *)g_anCameraViewMtx - 0x14)
+/* g_anCameraPos */
+#define CAM_POS_VIA_ANCHOR ((char *)g_apCameraAnchorBlock - 0xA8)
+/* g_nCameraYaw */
+#define CAM_YAW_VIA_ANCHOR ((char *)g_apCameraAnchorBlock - 0x40)
 
 /* g_nCameraCurrentMode / g_nCameraNextMode. Modes 0..6 and 0xF are the
  * per-Spyro-state picks (g_abSpyroStateCameraModeTable, by SpyroState); the
@@ -67,34 +72,40 @@ typedef struct ScriptedCamView {
  * mode SelectCameraMode keeps until its own exit condition instead of
  * re-reading the state table. */
 enum CameraMode {
-  CAM_MODE_STAND = 0,             /* idle, teeter, hurt */
-  CAM_MODE_MOVE = 1,              /* walk/run/jog, jump, slide, lift */
-  CAM_MODE_SIDESTEP = 2,          /* sidestep, knockback (FollowBehind/Facing, as MOVE) */
-  CAM_MODE_CHARGE = 3,            /* the charge states */
+  CAM_MODE_STAND = 0, /* idle, teeter, hurt */
+  CAM_MODE_MOVE = 1,  /* walk/run/jog, jump, slide, lift */
+  /* sidestep, knockback (FollowBehind/Facing, as MOVE) */
+  CAM_MODE_SIDESTEP = 2,
+  CAM_MODE_CHARGE = 3, /* the charge states */
   CAM_MODE_FALL = 4,
-  CAM_MODE_GLIDE = 5,             /* glide and flight (GlideLeft/RightBias) */
+  CAM_MODE_GLIDE = 5, /* glide and flight (GlideLeft/RightBias) */
   CAM_MODE_HAZARD = 6,
-  CAM_MODE_SCRIPTED_TARGET = 7,   /* SPYRO_RQ_TARGET_CAMERA */
-  CAM_MODE_FREE_LOOK = 9,         /* Triangle held while idle */
-  CAM_MODE_REQUEST = 0xA,         /* SPYRO_RQ_CAMERA: request anchor + params */
-  CAM_MODE_PORTAL_PATH = 0xB,        /* UpdatePortalPathCamera; SPYRO_RQ_PORTAL_PATH_CAMERA */
-  CAM_MODE_SCRIPTED_FOLLOW = 0xC, /* SPYRO_RQ_FOLLOW_CAMERA */
-  CAM_MODE_SCRIPTED_VANTAGE = 0xE, /* UpdateScriptedCameraView */
-  CAM_MODE_BONK = 0xF,            /* SPYRO_ST_CHARGE_BONK */
-  CAM_MODE_PASSIVE = 0x10,        /* passive-camera option, hold timer */
-  CAM_MODE_PASSIVE_SETTLE = 0x11, /* passive re-engage after a mode change */
+  CAM_MODE_SCRIPTED_TARGET = 7, /* SPYRO_RQ_TARGET_CAMERA */
+  CAM_MODE_FREE_LOOK = 9,       /* Triangle held while idle */
+  CAM_MODE_REQUEST = 0xA,       /* SPYRO_RQ_CAMERA: request anchor + params */
+  /* UpdatePortalPathCamera; SPYRO_RQ_PORTAL_PATH_CAMERA */
+  CAM_MODE_PORTAL_PATH = 0xB,
+  CAM_MODE_SCRIPTED_FOLLOW = 0xC,   /* SPYRO_RQ_FOLLOW_CAMERA */
+  CAM_MODE_SCRIPTED_VANTAGE = 0xE,  /* UpdateScriptedCameraView */
+  CAM_MODE_BONK = 0xF,              /* SPYRO_ST_CHARGE_BONK */
+  CAM_MODE_PASSIVE = 0x10,          /* passive-camera option, hold timer */
+  CAM_MODE_PASSIVE_SETTLE = 0x11,   /* passive re-engage after a mode change */
   CAM_MODE_LEVEL_TRANSITION = 0x12, /* UpdateLevelTransitionCamera */
 };
 #define CAM_HELD 0x80000000
 
 /* g_dwActiveCameraOptions (saved in SaveGameBuffer.cameraOptions). The pause
  * menu's Camera option toggles the whole word between CAM_OPT_ACTIVE and
- * CAM_OPT_PASSIVE (new games start passive); only bits 0x10 / 0x40 are tested. */
-#define CAM_OPT_ACTIVE 0x02          /* the "Active" setting (bit never tested) */
-#define CAM_OPT_PASSIVE_FOLLOW 0x10  /* idle Spyro: drift into CAM_MODE_PASSIVE */
-#define CAM_OPT_SMOOTH_SWING 0x40    /* clamp free-look/charge spring deltas to
-                                      * +-0x2000; keep the yaw on sidestep/fall entry */
-#define CAM_OPT_PASSIVE (CAM_OPT_ACTIVE | CAM_OPT_PASSIVE_FOLLOW | CAM_OPT_SMOOTH_SWING)
+ * CAM_OPT_PASSIVE (new games start passive); only bits 0x10 / 0x40 are
+ * tested. */
+#define CAM_OPT_ACTIVE 0x02 /* the "Active" setting (bit never tested) */
+/* idle Spyro: drift into CAM_MODE_PASSIVE */
+#define CAM_OPT_PASSIVE_FOLLOW 0x10
+/* clamp free-look/charge spring deltas to +-0x2000; keep the yaw on
+ * sidestep/fall entry */
+#define CAM_OPT_SMOOTH_SWING 0x40
+#define CAM_OPT_PASSIVE                                                        \
+  (CAM_OPT_ACTIVE | CAM_OPT_PASSIVE_FOLLOW | CAM_OPT_SMOOTH_SWING)
 
 /* UpdateCameraSpringForMode tuning (12-bit angles). Spyro facing more than
  * FACING_ANGLE off the camera yaw switches MOVE / SIDESTEP / glide / fall to

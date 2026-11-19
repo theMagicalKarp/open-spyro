@@ -71,7 +71,9 @@ L_800169A4:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80016958u: bc = 0; goto L_80016958;
+  case 0x80016958u:
+    bc = 0;
+    goto L_80016958;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("CopyWords", tgt, entry_ra);

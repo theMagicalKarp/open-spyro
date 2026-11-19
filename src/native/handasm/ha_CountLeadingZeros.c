@@ -38,7 +38,9 @@ L_80016D24:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80016d08u: bc = 0; goto L_80016D08;
+  case 0x80016d08u:
+    bc = 0;
+    goto L_80016D08;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("CountLeadingZeros", tgt, entry_ra);

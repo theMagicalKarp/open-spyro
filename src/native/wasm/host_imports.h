@@ -7,7 +7,7 @@
 #ifndef OPEN_SPYRO_HOST_IMPORTS_H
 #define OPEN_SPYRO_HOST_IMPORTS_H
 
-#define HOST_IMPORT(name) \
+#define HOST_IMPORT(name)                                                      \
   __attribute__((import_module("host"), import_name(#name)))
 
 HOST_IMPORT(write) int host_write(int fd, const void *buf, int len);

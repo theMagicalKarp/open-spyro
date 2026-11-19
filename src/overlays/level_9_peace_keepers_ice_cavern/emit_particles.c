@@ -19,12 +19,12 @@
  * GENERATED from the matched donor library (cookbook A220 / the emit-spawn
  * generator): arms lifted verbatim from the donors that already carry them,
  * emitted in jump-table ADDRESS order, which is source order.
- * This variant's classes: 0x0, 0x1, 0x2, 0x9, 0xA, 0xC, 0xF, 0x15, 0x18, 0x21, 0x42, 0x46, 0x47, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50.
- * PLACEHOLDER *
- * Arm 0x18 is the family's per-variant knob: `fx = 0x2E` must be a plain
- * literal, `depthBias`/`lift` written after it, and the 0x30 carrier must be
- * MULTI-SET or `li v0,48` is birthing-boosted and swaps with `sll v1,i,4`.
- * Here that carrier is `v`.
+ * This variant's classes: 0x0, 0x1, 0x2, 0x9, 0xA, 0xC, 0xF, 0x15, 0x18, 0x21,
+ * 0x42, 0x46, 0x47, 0x4B, 0x4C, 0x4D, 0x4E, 0x4F, 0x50. PLACEHOLDER * Arm 0x18
+ * is the family's per-variant knob: `fx = 0x2E` must be a plain literal,
+ * `depthBias`/`lift` written after it, and the 0x30 carrier must be MULTI-SET
+ * or `li v0,48` is birthing-boosted and swaps with `sll v1,i,4`. Here that
+ * carrier is `v`.
  */
 
 #include "vecmath.h"
@@ -156,7 +156,8 @@ void Level9_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
+      rec->u.spark.vel[0] =
+          ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -168,9 +169,11 @@ void Level9_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (src->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &src->posX);
-      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
+      } else if (src->type == ACTOR_TYPE_KEY ||
+                 src->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          RotateVectorByMatrix(src->mtx,
+                               &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &src->posX);
         } else {
           rec->cls = EMIT_CLASS_FADED_QUAD;
@@ -203,9 +206,12 @@ void Level9_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.vel[0] = (GetRandomU32() & 0x1E) - 0xF;
       rec->u.spark.vel[1] = (GetRandomU32() & 0x1E) - 0xF;
       rec->u.spark.vel[2] = (GetRandomU32() & 0x1E) - 0xF;
-      rec->u.spark.pos[0] = rec->u.spark.pos[0] + (unsigned short)rec->u.spark.vel[0];
-      rec->u.spark.pos[1] = rec->u.spark.pos[1] + (unsigned short)rec->u.spark.vel[1];
-      rec->u.spark.pos[2] = rec->u.spark.pos[2] + (unsigned short)rec->u.spark.vel[2];
+      rec->u.spark.pos[0] =
+          rec->u.spark.pos[0] + (unsigned short)rec->u.spark.vel[0];
+      rec->u.spark.pos[1] =
+          rec->u.spark.pos[1] + (unsigned short)rec->u.spark.vel[1];
+      rec->u.spark.pos[2] =
+          rec->u.spark.pos[2] + (unsigned short)rec->u.spark.vel[2];
       rec->u.spark.size = (GetRandomU32() & 7) + 0xC;
       rec->u.spark.spin = (GetRandomU32() & 7) + 0xA;
       rec->u.spark.r = 0x80;
@@ -415,9 +421,12 @@ void Level9_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->phase = GetRandomU32() & 7;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      rec->u.spark.pos[0] = rec->u.spark.pos[0] - (0x1F - (int)(GetRandomU32() & 0x3E));
-      rec->u.spark.pos[1] = rec->u.spark.pos[1] - (0x1F - (int)(GetRandomU32() & 0x3E));
-      rec->u.spark.pos[2] = rec->u.spark.pos[2] - (0x1F - (int)(GetRandomU32() & 0x3E));
+      rec->u.spark.pos[0] =
+          rec->u.spark.pos[0] - (0x1F - (int)(GetRandomU32() & 0x3E));
+      rec->u.spark.pos[1] =
+          rec->u.spark.pos[1] - (0x1F - (int)(GetRandomU32() & 0x3E));
+      rec->u.spark.pos[2] =
+          rec->u.spark.pos[2] - (0x1F - (int)(GetRandomU32() & 0x3E));
       rec->u.spark.vel[0] = 0;
       rec->u.spark.vel[1] = 0;
       rec->u.spark.vel[2] = 0;
@@ -459,7 +468,8 @@ void Level9_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      rec->u.line.a[1] =
+          rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
       u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[1] = 0x40;

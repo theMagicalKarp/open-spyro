@@ -10,7 +10,7 @@ enum SparxHealth {
   SPARX_GONE = 0,   /* no Sparx: the next hit is fatal */
   SPARX_GREEN = 1,
   SPARX_BLUE = 2,
-  SPARX_GOLD = 3    /* full health (a new game) */
+  SPARX_GOLD = 3 /* full health (a new game) */
 };
 
 #endif /* OPEN_SPYRO_SPARX_H */

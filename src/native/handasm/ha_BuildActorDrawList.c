@@ -892,7 +892,9 @@ L_8001F744:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8001f158u: bc = 0; goto L_8001F158;
+  case 0x8001f158u:
+    bc = 0;
+    goto L_8001F158;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("BuildActorDrawList", tgt, entry_ra);

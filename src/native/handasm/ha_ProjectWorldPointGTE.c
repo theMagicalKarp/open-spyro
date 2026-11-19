@@ -104,7 +104,9 @@ L_80017B48:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017b48u: bc = 0; goto L_80017B48;
+  case 0x80017b48u:
+    bc = 0;
+    goto L_80017B48;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ProjectWorldPointGTE", tgt, entry_ra);

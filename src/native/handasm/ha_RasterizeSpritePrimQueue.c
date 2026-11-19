@@ -2326,7 +2326,10 @@ L_80023990:
   /* 800239B4 AE600004 (delay) */
   HA_SW(s3 + 4u, 0u);
   if (bc) {
-    { bc = 0; goto L_80023990; }
+    {
+      bc = 0;
+      goto L_80023990;
+    }
   }
 L_800239B8:
   /* 800239B8 3C038007 */
@@ -2484,7 +2487,9 @@ L_80023A78:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80022a2cu: bc = 0; goto L_80022A2C;
+  case 0x80022a2cu:
+    bc = 0;
+    goto L_80022A2C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("RasterizeSpritePrimQueue", tgt, entry_ra);

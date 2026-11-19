@@ -6,11 +6,11 @@
 
 /* g_abHudCounterDisplayState index */
 enum HudCounter {
-  HUD_CTR_GEMS = 0,    /* level gems */
+  HUD_CTR_GEMS = 0, /* level gems */
   HUD_CTR_DRAGONS = 1,
-  HUD_CTR_LIVES = 2,   /* lives + the sparx-food butterfly ring */
-  HUD_CTR_EGGS = 3,    /* world eggs */
-  HUD_CTR_KEY = 4,     /* the level key */
+  HUD_CTR_LIVES = 2, /* lives + the sparx-food butterfly ring */
+  HUD_CTR_EGGS = 3,  /* world eggs */
+  HUD_CTR_KEY = 4,   /* the level key */
 };
 
 /* g_abHudCounterDisplayState value */

@@ -24,12 +24,13 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into ->type and the parent's pool index into ->poolIndex, then runs a per-type
- * init arm: every arm starts from InitActorRenderDefaults (InitActorRenderDefaults) and
- * ends by placing the new actor -- most copy the parent's position
- * (CopyVector) and either register it in the spatial grid
- * (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).  With no parent
- * the position falls back to Spyro's (g_anSpyroWorldPos).
+ * type into ->type and the parent's pool index into ->poolIndex, then runs a
+ * per-type init arm: every arm starts from InitActorRenderDefaults
+ * (InitActorRenderDefaults) and ends by placing the new actor -- most copy the
+ * parent's position (CopyVector) and either register it in the spatial grid
+ * (InsertActorIntoSpatialGrid) or hide its render record
+ * (HideActorRenderRecord).  With no parent the position falls back to Spyro's
+ * (g_anSpyroWorldPos).
  *
  * Sunny Flight carries the full flight arm set shared with levels 11/17/23/29.
  */
@@ -40,7 +41,8 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
 
   rec = AllocActorRecordSlot();
   rec->type = type;
-  if (parent == 0 || (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
+  if (parent == 0 ||
+      (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
     owner = 0;
   }
   rec->poolIndex = owner;
@@ -235,7 +237,8 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
-    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) < 3) {
+    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) <
+        3) {
       *(int *)&rec->tint0 = ACTOR_TINT_NEUTRAL;
       rec->renderList |= ACTOR_RENDER_SECONDARY;
     }
@@ -270,8 +273,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2:
-  {
+  case ACTOR_TYPE_TUMBLE_SHARD ... ACTOR_TYPE_TUMBLE_SHARD + 2: {
     TumbleState *st = rec->state;
     int seed;
 
@@ -303,8 +305,7 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case ACTOR_TYPE_WRECK_EMBER:
-  {
+  case ACTOR_TYPE_WRECK_EMBER: {
     TumbleState *st = rec->state;
     SmokerState *pst = parent->state;
     int dir[3];
@@ -396,9 +397,9 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     dy = (signed char)parent->rotY;
     dz = (signed char)parent->rotZ;
     do {
-    rec->rotX = dx;
-    rec->rotY = dy;
-    rec->rotZ = dz;
+      rec->rotX = dx;
+      rec->rotY = dy;
+      rec->rotZ = dz;
     } while (0);
     InsertActorIntoSpatialGrid(rec);
     rec->renderList = 0xBF;
@@ -410,7 +411,8 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     break;
   }
 
-  case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 1 ... ACTOR_TYPE_FLIGHT_TARGET_SHARD + 12: {
+  case ACTOR_TYPE_FLIGHT_TARGET_SHARD + 1 ... ACTOR_TYPE_FLIGHT_TARGET_SHARD +
+      12: {
     int dx;
     int dy;
     int dz;
@@ -421,9 +423,9 @@ Actor *Level5_SpawnActor(int type, Actor *parent) {
     dy = (signed char)parent->rotY;
     dz = (signed char)parent->rotZ;
     do {
-    rec->rotX = dx;
-    rec->rotY = dy;
-    rec->rotZ = dz;
+      rec->rotX = dx;
+      rec->rotY = dy;
+      rec->rotZ = dz;
     } while (0);
     InsertActorIntoSpatialGrid(rec);
     rec->renderList = 0xBF;

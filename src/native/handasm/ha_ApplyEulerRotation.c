@@ -361,7 +361,9 @@ L_80016FB4:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80016d2cu: bc = 0; goto L_80016D2C;
+  case 0x80016d2cu:
+    bc = 0;
+    goto L_80016D2C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ApplyEulerRotation", tgt, entry_ra);

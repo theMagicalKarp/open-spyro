@@ -1,4 +1,5 @@
-/* level_advance_emit_list.h — declarations shared by the *_AdvanceEmitList.c clones, declared once.
+/* level_advance_emit_list.h — declarations shared by the *_AdvanceEmitList.c
+ * clones, declared once.
  *
  * Each item is spelled identically in every file that includes this header;
  * files that declare any of these names differently keep their own
@@ -24,13 +25,14 @@ extern unsigned char *g_pEmitListBase;
 
 extern struct Actor *g_pActorListBase; /* level actor pool */
 
-extern short g_anSineLut[];        /* sine table */
+extern short g_anSineLut[]; /* sine table */
 
-extern short g_anCosineLut[];        /* cosine table */
+extern short g_anCosineLut[]; /* cosine table */
 
 extern int g_anCameraPos[];
 
-extern int g_nSpyroInvulnFrames[]; /* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
+/* [-0x58] is the Spyro world position (g_anSpyroWorldPos) */
+extern int g_nSpyroInvulnFrames[];
 
 /* g_anSpyroWorldPos reached through the invulnerability counter's held base. */
 #define SPYRO_POS_VIA_INVULN (g_nSpyroInvulnFrames - 0x58)
@@ -41,8 +43,8 @@ extern int g_nSparxHealth;
  * by class; see each file's field map). These stay byte-offset accessors on
  * purpose: every field must be an address giv off `rec` so loop.c folds them
  * onto one base register, which a struct view does not reproduce. */
-#define CLASS rec[0x1]                         /* class; 0xFF ends the list */
-#define AGE rec[0x2]                           /* frames lived */
+#define CLASS rec[0x1]   /* class; 0xFF ends the list */
+#define AGE rec[0x2]     /* frames lived */
 #define VISIBLE rec[0x3] /* RasterizeEmitList: 1 drawn, 0 culled last frame */
 /* The usual free test: aged past `n` frames, or culled off screen. */
 #define AGED_OR_CULLED(n) (AGE >= (n) || VISIBLE == 0)
@@ -50,12 +52,13 @@ extern int g_nSparxHealth;
 #define HU(n) (*(unsigned short *)(rec + (n))) /* u16 field at +n */
 #define W(n) (*(int *)(rec + (n)))             /* s32 field at +n */
 #define POS ((short *)(rec + 4))               /* tail point, svector */
-#define POS_U ((unsigned short *)(rec + 4))    /* POS through its unsigned view */
+/* POS through its unsigned view */
+#define POS_U ((unsigned short *)(rec + 4))
 /* A streak's head point (the LINE_G2's second vertex; the quad classes keep
  * SIZE / SPIN / colour there instead). */
 #define HEAD ((short *)(rec + 0xA))
 #define HEAD_U ((unsigned short *)(rec + 0xA))
-#define VEL ((short *)(rec + 0x18))            /* velocity / spin, svector */
+#define VEL ((short *)(rec + 0x18)) /* velocity / spin, svector */
 #define VEL_U ((unsigned short *)(rec + 0x18))
 /* The drifting quads' spin step (added to SPIN each tick) and the 0/1
  * toggle that paces the sparks' z climb (SPARK_Z_CLIMB). */
@@ -90,8 +93,10 @@ extern int g_nSparxHealth;
 #define DEPTH_BIAS rec[0x11]
 /* Swirl records (ribbon / smear): the point circles its centre at
  * SWIRL_ANGLE (sine-LUT index), SWIRL_RADIUS growing until it is freed. */
-#define SPIRAL_CENTRE_U ((unsigned short *)(rec + 0x12)) /* EMIT_RISING_SPIRAL x, y */
-#define SMEAR_CENTRE_U ((unsigned short *)(rec + 0x10))  /* EMIT_RISING_SPIRAL_SMEAR x, y */
+/* EMIT_RISING_SPIRAL x, y */
+#define SPIRAL_CENTRE_U ((unsigned short *)(rec + 0x12))
+/* EMIT_RISING_SPIRAL_SMEAR x, y */
+#define SMEAR_CENTRE_U ((unsigned short *)(rec + 0x10))
 /* Per-class fields past the colour word: the jittering motes' (twinkle /
  * ember / yellow dust) drift step, a burst spark's velocity, the Spyro
  * hurt sparkle's 12-bit orbit angle and a rising puff's climb rate. */

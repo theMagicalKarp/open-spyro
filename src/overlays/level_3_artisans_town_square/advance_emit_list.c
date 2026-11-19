@@ -3,11 +3,11 @@
  *
  * The emit-list ADVANCE pass -- the ground-level (non-flight) 1106-insn
  * variant of the walk matched in level_11 / level_5.  Walks the 0x20-byte
- * record stream at g_pEmitListBase and ages one record per iteration: integrates
- * its position, fades its colour, ticks its life counter and, when the record
- * has expired (or its visible byte has been cleared (culled)), hands it back with
- * FreeEmitListRecord().  The walk stops at the terminator record, whose class byte
- * at +0x01 is 0xFF.
+ * record stream at g_pEmitListBase and ages one record per iteration:
+ * integrates its position, fades its colour, ticks its life counter and, when
+ * the record has expired (or its visible byte has been cleared (culled)), hands
+ * it back with FreeEmitListRecord().  The walk stops at the terminator record,
+ * whose class byte at +0x01 is 0xFF.
  *
  * Only `rec` is a real induction variable.  `pos` and `vel` are separate
  * pointers because the arms pass them to AddSVector() as values, so
@@ -23,13 +23,14 @@
  * orb fields); RasterizeEmitList's reading of each class is in emit_record.h.
  *
  * The ground-level arm set: it drops the flight classes 0xD/0x13/0x1A/0x1B
- * and the orbiting-spark class 0x6, and adds 0x15 and 0x4C (the two unit-circle swirls, which share
- * a cross-jumped sine tail), 0x18 (EMIT_RESCUE_SWIRL, whose radius and height track
- * g_nDragonRescueTimer), 0x46 and 0x50 (two midpoint-relaxation
- * classes).  This is the level_2 variant minus class 0x6; dropping that arm
- * also drops the only use of the second stack vector, and the array must go
- * with it -- left declared, its address wins a callee-saved register and the
- * two `&v[0]` call arguments stop being rematerialised at their use sites
+ * and the orbiting-spark class 0x6, and adds 0x15 and 0x4C (the two unit-circle
+ * swirls, which share a cross-jumped sine tail), 0x18 (EMIT_RESCUE_SWIRL, whose
+ * radius and height track g_nDragonRescueTimer), 0x46 and 0x50 (two
+ * midpoint-relaxation classes).  This is the level_2 variant minus class 0x6;
+ * dropping that arm also drops the only use of the second stack vector, and the
+ * array must go with it -- left declared, its address wins a callee-saved
+ * register and the two `&v[0]` call arguments stop being rematerialised at
+ * their use sites
  * (+1 insn, and the whole record base shifts s0 -> s1).  Word-identical (bar
  * the jump-table symbol and branch displacements) to the copy in level_20.
  *
@@ -108,9 +109,10 @@ void Level3_AdvanceEmitList(int step) {
 
     case EMIT_SPYRO_HURT_SPARKLE:
       /* A hurt sparkle: circles Spyro (0x40 a tick) while his post-hit
-       * invulnerability runs; freed early if he is hidden or a hazard kills him. */
-      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
-          g_nSpyroInvulnFrames[0] <= 0) {
+       * invulnerability runs; freed early if he is hidden or a hazard kills
+       * him. */
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) ||
+          g_nSpyroDrawSuppressed != 0 || g_nSpyroInvulnFrames[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
         CopyVector(v, SPYRO_POS_VIA_INVULN);
@@ -119,7 +121,9 @@ void Level3_AdvanceEmitList(int step) {
         v[2] += 0x100;
         VectorToSVectorShr2(POS, v);
         ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
-        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & ANGLE12_MASK)) / 170;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) &
+                                ANGLE12_MASK)) /
+               170;
       }
       break;
 
@@ -153,7 +157,8 @@ void Level3_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = SPIRAL_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SPIRAL_CENTRE_U[0] +
+                 ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += *(const int *)&g_nFrameStep * 6;
       SPIN += 4;
@@ -183,8 +188,10 @@ void Level3_AdvanceEmitList(int step) {
       }
       RSWIRL_LIFT = (RSWIRL_BAND * (0x48 - heat)) >> 3;
       RSWIRL_RADIUS = (((0x20 - RSWIRL_BAND) * heat) >> 4) + 8;
-      POS_U[0] = RSWIRL_CENTRE_U[0] + ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
-      POS_U[1] = RSWIRL_CENTRE_U[1] + ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[0] = RSWIRL_CENTRE_U[0] +
+                 ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[1] = RSWIRL_CENTRE_U[1] +
+                 ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
       POS_U[2] = RSWIRL_CENTRE_U[2] + 0x20 + RSWIRL_LIFT_U;
       break;
     }
@@ -389,7 +396,8 @@ void Level3_AdvanceEmitList(int step) {
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = SMEAR_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SMEAR_CENTRE_U[0] +
+                 ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += g_nFrameStep * 6;
       POS_U[1] = SMEAR_CENTRE_U[1] + (s >> 12);

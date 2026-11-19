@@ -22,9 +22,9 @@ typedef struct {
   unsigned char blockCount;
   unsigned char title[0x40];
   char reserved[0x1C];
-  unsigned short clut[0x10]; /* clut[15] holds the file tag (g_nSaveFileTag) the
-                       * title screen stamps at creation; the save menu
-                       * checks it before writing */
+  /* clut[15] holds the file tag (g_nSaveFileTag) the title screen stamps at
+   * creation; the save menu checks it before writing */
+  unsigned short clut[0x10];
   unsigned char icon[0x80][3];
 } McFileHeader; /* 0x200 */
 

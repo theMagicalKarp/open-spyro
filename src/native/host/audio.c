@@ -35,12 +35,17 @@ static uint32_t wav_bytes;
 
 static void wav_header(void) {
   uint32_t riff[11] = {
-      0x46464952, 36 + wav_bytes, 0x45564157, /* "RIFF" size "WAVE" */
-      0x20746D66, 16,                         /* "fmt " */
-      1 | AUDIO_CHANNELS << 16,               /* PCM, channels */
-      AUDIO_RATE, AUDIO_RATE * AUDIO_FRAME_BYTES,
-      AUDIO_FRAME_BYTES | 16 << 16,           /* block align, bits */
-      0x61746164, wav_bytes,                  /* "data" size */
+      0x46464952,
+      36 + wav_bytes,
+      0x45564157, /* "RIFF" size "WAVE" */
+      0x20746D66,
+      16,                       /* "fmt " */
+      1 | AUDIO_CHANNELS << 16, /* PCM, channels */
+      AUDIO_RATE,
+      AUDIO_RATE * AUDIO_FRAME_BYTES,
+      AUDIO_FRAME_BYTES | 16 << 16, /* block align, bits */
+      0x61746164,
+      wav_bytes, /* "data" size */
   };
 
   fseek(wav, 0, SEEK_SET);

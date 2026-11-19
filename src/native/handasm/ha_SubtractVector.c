@@ -42,7 +42,9 @@ L_8001778C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8001778cu: bc = 0; goto L_8001778C;
+  case 0x8001778cu:
+    bc = 0;
+    goto L_8001778C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("SubtractVector", tgt, entry_ra);

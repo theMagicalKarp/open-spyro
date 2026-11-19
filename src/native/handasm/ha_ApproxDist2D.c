@@ -75,7 +75,9 @@ L_800179DC:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017990u: bc = 0; goto L_80017990;
+  case 0x80017990u:
+    bc = 0;
+    goto L_80017990;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ApproxDist2D", tgt, entry_ra);

@@ -250,7 +250,9 @@ L_80052EE8:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80052d64u: bc = 0; goto L_80052D64;
+  case 0x80052d64u:
+    bc = 0;
+    goto L_80052D64;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("GetActorAttachPoint", tgt, entry_ra);

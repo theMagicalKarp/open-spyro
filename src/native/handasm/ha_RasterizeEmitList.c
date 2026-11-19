@@ -407,21 +407,30 @@ L_800574C0:
   /* 80057694 00542822 (delay) */
   a1 = v0 - s4;
   if (bc) {
-    { bc = 0; goto L_800576AC; }
+    {
+      bc = 0;
+      goto L_800576AC;
+    }
   }
   /* 80057698 1CA00004 */
   bc = ((int32_t)a1 > 0);
   /* 8005769C 00742822 (delay) */
   a1 = v1 - s4;
   if (bc) {
-    { bc = 0; goto L_800576AC; }
+    {
+      bc = 0;
+      goto L_800576AC;
+    }
   }
   /* 800576A0 1CA00002 */
   bc = ((int32_t)a1 > 0);
   /* 800576A4 00942822 (delay) */
   a1 = a0 - s4;
   if (bc) {
-    { bc = 0; goto L_800576AC; }
+    {
+      bc = 0;
+      goto L_800576AC;
+    }
   }
   /* 800576A8 18A0FF85 */
   bc = ((int32_t)a1 <= 0);
@@ -436,21 +445,30 @@ L_800576AC:
   /* 800576B4 00552822 (delay) */
   a1 = v0 - s5;
   if (bc) {
-    { bc = 0; goto L_800576CC; }
+    {
+      bc = 0;
+      goto L_800576CC;
+    }
   }
   /* 800576B8 04A00004 */
   bc = ((int32_t)a1 < 0);
   /* 800576BC 00752822 (delay) */
   a1 = v1 - s5;
   if (bc) {
-    { bc = 0; goto L_800576CC; }
+    {
+      bc = 0;
+      goto L_800576CC;
+    }
   }
   /* 800576C0 04A00002 */
   bc = ((int32_t)a1 < 0);
   /* 800576C4 00952822 (delay) */
   a1 = a0 - s5;
   if (bc) {
-    { bc = 0; goto L_800576CC; }
+    {
+      bc = 0;
+      goto L_800576CC;
+    }
   }
   /* 800576C8 04A1FF7D */
   bc = ((int32_t)a1 >= 0);
@@ -465,21 +483,30 @@ L_800576CC:
   /* 800576D4 00022C00 (delay) */
   a1 = v0 << 16;
   if (bc) {
-    { bc = 0; goto L_800576EC; }
+    {
+      bc = 0;
+      goto L_800576EC;
+    }
   }
   /* 800576D8 1CA00004 */
   bc = ((int32_t)a1 > 0);
   /* 800576DC 00032C00 (delay) */
   a1 = v1 << 16;
   if (bc) {
-    { bc = 0; goto L_800576EC; }
+    {
+      bc = 0;
+      goto L_800576EC;
+    }
   }
   /* 800576E0 1CA00002 */
   bc = ((int32_t)a1 > 0);
   /* 800576E4 00042C00 (delay) */
   a1 = a0 << 16;
   if (bc) {
-    { bc = 0; goto L_800576EC; }
+    {
+      bc = 0;
+      goto L_800576EC;
+    }
   }
   /* 800576E8 18A0FF75 */
   bc = ((int32_t)a1 <= 0);
@@ -496,7 +523,10 @@ L_800576EC:
   /* 800576F8 00022C00 (delay) */
   a1 = v0 << 16;
   if (bc) {
-    { bc = 0; goto L_8005771C; }
+    {
+      bc = 0;
+      goto L_8005771C;
+    }
   }
   /* 800576FC 00B62822 */
   a1 = a1 - s6;
@@ -505,7 +535,10 @@ L_800576EC:
   /* 80057704 00032C00 (delay) */
   a1 = v1 << 16;
   if (bc) {
-    { bc = 0; goto L_8005771C; }
+    {
+      bc = 0;
+      goto L_8005771C;
+    }
   }
   /* 80057708 00B62822 */
   a1 = a1 - s6;
@@ -514,7 +547,10 @@ L_800576EC:
   /* 80057710 00042C00 (delay) */
   a1 = a0 << 16;
   if (bc) {
-    { bc = 0; goto L_8005771C; }
+    {
+      bc = 0;
+      goto L_8005771C;
+    }
   }
   /* 80057714 00B62822 */
   a1 = a1 - s6;
@@ -1951,7 +1987,9 @@ L_800580AC:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800573c8u: bc = 0; goto L_800573C8;
+  case 0x800573c8u:
+    bc = 0;
+    goto L_800573C8;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("RasterizeEmitList", tgt, entry_ra);

@@ -1,5 +1,5 @@
-/* Level19_EmitParticles (0x800866d8, level_19_beast_makers_terrace_village overlay,
- * 0x126c bytes).
+/* Level19_EmitParticles (0x800866d8, level_19_beast_makers_terrace_village
+ * overlay, 0x126c bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).
@@ -19,7 +19,8 @@
  * GENERATED from the matched donor library (cookbook A220 / the emit-spawn
  * generator): arms lifted verbatim from the donors that already carry them,
  * emitted in jump-table ADDRESS order, which is source order.
- * This variant's classes: 0x0, 0x1, 0x2, 0x6, 0x7, 0x9, 0xA, 0xC, 0x15, 0x18, 0x21, 0x42, 0x46, 0x47, 0x4A, 0x4C, 0x4D, 0x4E, 0x4F, 0x50.
+ * This variant's classes: 0x0, 0x1, 0x2, 0x6, 0x7, 0x9, 0xA, 0xC, 0x15, 0x18,
+ * 0x21, 0x42, 0x46, 0x47, 0x4A, 0x4C, 0x4D, 0x4E, 0x4F, 0x50.
  *
  * Arm 0x7 is decoded here (the terrace-village drifting spark: an optional
  * effectArg-scaled random offset on the spawn point, life = phase * 4, and a
@@ -204,9 +205,15 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       if (effectArg != 0) {
-        rec->u.spark.pos[0] = rec->u.spark.pos[0] + ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
-        rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
-        rec->u.spark.pos[2] = rec->u.spark.pos[2] + ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x30)) >> 8);
+        rec->u.spark.pos[0] =
+            rec->u.spark.pos[0] +
+            ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
+        rec->u.spark.pos[1] =
+            rec->u.spark.pos[1] +
+            ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
+        rec->u.spark.pos[2] =
+            rec->u.spark.pos[2] +
+            ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x30)) >> 8);
       }
       rec->u.spark.size = rec->phase * 4;
       rec->u.spark.spin = GetRandomU32();
@@ -268,7 +275,8 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
+      rec->u.spark.vel[0] =
+          ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -280,9 +288,11 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (src->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &src->posX);
-      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
+      } else if (src->type == ACTOR_TYPE_KEY ||
+                 src->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          RotateVectorByMatrix(src->mtx,
+                               &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &src->posX);
         } else {
           rec->cls = EMIT_CLASS_FADED_QUAD;
@@ -544,7 +554,8 @@ void Level19_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      rec->u.line.a[1] =
+          rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
       u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[1] = 0x40;
