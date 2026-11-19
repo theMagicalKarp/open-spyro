@@ -4,12 +4,13 @@
  * only scrolls the double-height framebuffer: DrawSync/VSync, then MoveImage
  * (MoveImage) of the 512x224 strip at y=8 (front env active) or y=0xF8
  * to the opposite half, and a final DrawSync. Otherwise draws a full frame:
- * copies the fog colour (g_dwWorldFogColor) into both frame DRAWENV backgrounds,
- * builds one 0x58-byte sprite prim per credits line (records at g_pCreditsGlyphPool,
- * 0x1C stride; prim cursor g_pSpriteRecordWriteCursor grows downward; record type 0x115 gets
- * a +0x29 glyph offset and depth 0x1C00), submits the pending sprite queue,
- * clears the OT bins, emits the static world, then runs the standard
- * 2-vblank pace loop and PutDispEnv/PutDrawEnv/DrawOTag submit.
+ * copies the fog colour (g_dwWorldFogColor) into both frame DRAWENV
+ * backgrounds, builds one 0x58-byte sprite prim per credits line (records at
+ * g_pCreditsGlyphPool, 0x1C stride; prim cursor g_pSpriteRecordWriteCursor
+ * grows downward; record type 0x115 gets a +0x29 glyph offset and depth
+ * 0x1C00), submits the pending sprite queue, clears the OT bins, emits the
+ * static world, then runs the standard 2-vblank pace loop and
+ * PutDispEnv/PutDrawEnv/DrawOTag submit.
  */
 
 #include "credits.h"
@@ -97,7 +98,7 @@ void Credits_Draw(void) {
     g_nFarPlaneDrawDistance = 0x28000;
     RenderWorldChunks(-1);
     EmitSkyMesh(-1, g_anCameraViewMtx,
-                            (char *)g_anCameraViewMtx - 0x14 /* g_anWorldToCameraRotMtx */);
+                (char *)g_anCameraViewMtx - 0x14 /* g_anWorldToCameraRotMtx */);
   }
   DrawSync(0);
   if (g_nDemoActive != 0) {

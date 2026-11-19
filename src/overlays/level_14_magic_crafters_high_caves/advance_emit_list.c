@@ -4,8 +4,8 @@
  * The emit-list ADVANCE pass -- the 1815-insn high-caves variant, the largest
  * of the 35 and the last one in the family with undecoded arms.  Walks the
  * 0x20-byte record stream at g_pEmitListBase and ages one record per iteration,
- * handing expired records back with FreeEmitListRecord().  The walk stops at the
- * terminator record, whose class byte at +0x01 is 0xFF.
+ * handing expired records back with FreeEmitListRecord().  The walk stops at
+ * the terminator record, whose class byte at +0x01 is 0xFF.
  *
  * 28 classes.  Arms 0x4/0x5 come from the matched Level15_AdvanceEmitList,
  * 0x8/0x10/0x11 and the seven-vector frame from the level_13 park, 0x1E/0x1F
@@ -96,8 +96,7 @@ void Level14_AdvanceEmitList(int step) {
       }
       break;
 
-    case EMIT_HOMING_ORB:
-    {
+    case EMIT_HOMING_ORB: {
       int len;
       int near;
       int rise;
@@ -220,8 +219,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_JITTER_DRIFT:
-    {
+    case EMIT_JITTER_DRIFT: {
       int rq;
       int rr;
       int jq;
@@ -253,8 +251,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_TRACKING_SPARK:
-    {
+    case EMIT_TRACKING_SPARK: {
       int len;
       int *home;
       int *bolt;
@@ -327,11 +324,12 @@ void Level14_AdvanceEmitList(int step) {
       break;
 
     case EMIT_SPYRO_HURT_SPARKLE:
-    /* <- Level10_AdvanceEmitList */
+      /* <- Level10_AdvanceEmitList */
       /* A hurt sparkle: circles Spyro (0x40 a tick) while his post-hit
-       * invulnerability runs; freed early if he is hidden or a hazard kills him. */
-      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
-          g_nSpyroInvulnFrames[0] <= 0) {
+       * invulnerability runs; freed early if he is hidden or a hazard kills
+       * him. */
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) ||
+          g_nSpyroDrawSuppressed != 0 || g_nSpyroInvulnFrames[0] <= 0) {
         goto expire;
       } else {
         CopyVector(w, SPYRO_POS_VIA_INVULN);
@@ -340,7 +338,9 @@ void Level14_AdvanceEmitList(int step) {
         w[2] += 0x100;
         VectorToSVectorShr2(POS, w);
         ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
-        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & ANGLE12_MASK)) / 170;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) &
+                                ANGLE12_MASK)) /
+               170;
       }
       break;
 
@@ -397,13 +397,13 @@ void Level14_AdvanceEmitList(int step) {
       }
       break;
 
-    case EMIT_RISING_SPIRAL:
-    {
+    case EMIT_RISING_SPIRAL: {
       int s;
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = SPIRAL_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SPIRAL_CENTRE_U[0] +
+                 ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += *(const int *)&g_nFrameStep * 6;
       SPIN += 4;
@@ -414,8 +414,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_RESCUE_SWIRL:
-    {
+    case EMIT_RESCUE_SWIRL: {
       int heat;
 
       if (COL_R < 0xF0) {
@@ -434,8 +433,10 @@ void Level14_AdvanceEmitList(int step) {
       }
       RSWIRL_LIFT = (RSWIRL_BAND * (0x48 - heat)) >> 3;
       RSWIRL_RADIUS = (((0x20 - RSWIRL_BAND) * heat) >> 4) + 8;
-      POS_U[0] = RSWIRL_CENTRE_U[0] + ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
-      POS_U[1] = RSWIRL_CENTRE_U[1] + ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[0] = RSWIRL_CENTRE_U[0] +
+                 ((g_anCosineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
+      POS_U[1] = RSWIRL_CENTRE_U[1] +
+                 ((g_anSineLut[RSWIRL_ANGLE] * RSWIRL_RADIUS) >> 12);
       POS_U[2] = RSWIRL_CENTRE_U[2] + 0x20 + RSWIRL_LIFT_U;
       break;
     }
@@ -459,8 +460,7 @@ void Level14_AdvanceEmitList(int step) {
       }
       break;
 
-    case EMIT_DUST_PUFF:
-    {
+    case EMIT_DUST_PUFF: {
       int c;
 
       AddSVector(POS, POS, VEL);
@@ -491,8 +491,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_TWINKLE:
-    {
+    case EMIT_TWINKLE: {
       int i;
       int j;
       int r;
@@ -528,8 +527,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_PATH_DOT:
-    {
+    case EMIT_PATH_DOT: {
       unsigned char *path;
       int *base;
       int *hop;
@@ -561,8 +559,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_STREAK_BURST:
-    {
+    case EMIT_STREAK_BURST: {
       unsigned short d[3];
       int j;
       int r;
@@ -616,8 +613,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_STREAK_BURST_WHITE:
-    {
+    case EMIT_STREAK_BURST_WHITE: {
       int d[3];
       int j;
       int r;
@@ -657,8 +653,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_CRAWLING_STREAK:
-    {
+    case EMIT_CRAWLING_STREAK: {
       int d[3];
       int j;
       int r;
@@ -706,13 +701,13 @@ void Level14_AdvanceEmitList(int step) {
       POS_U[2] += ODOT_CENTRE_U[2];
       break;
 
-    case EMIT_RISING_SPIRAL_SMEAR:
-    {
+    case EMIT_RISING_SPIRAL_SMEAR: {
       int s;
 
       SWIRL_ANGLE += g_nFrameStep * 4;
       SWIRL_RADIUS += g_nFrameStep;
-      POS_U[0] = SMEAR_CENTRE_U[0] + ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
+      POS_U[0] = SMEAR_CENTRE_U[0] +
+                 ((g_anCosineLut[SWIRL_ANGLE] * SWIRL_RADIUS) >> 12);
       s = g_anSineLut[SWIRL_ANGLE] * SWIRL_RADIUS;
       POS_U[2] += g_nFrameStep * 6;
       POS_U[1] = SMEAR_CENTRE_U[1] + (s >> 12);
@@ -722,8 +717,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_DRIFT_STREAK:
-    {
+    case EMIT_DRIFT_STREAK: {
       short d[3];
 
       d[0] = (HEAD[0] - POS[0]) >> 1;
@@ -743,8 +737,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_EMBER:
-    {
+    case EMIT_EMBER: {
       int j;
       int k;
       int r;
@@ -781,8 +774,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_FLAME_STREAK:
-    {
+    case EMIT_FLAME_STREAK: {
       short d[3];
 
       d[0] = (HEAD[0] - POS[0]) >> 1;
@@ -809,8 +801,7 @@ void Level14_AdvanceEmitList(int step) {
       break;
     }
 
-    case EMIT_FALLING_STREAK_BURST:
-    {
+    case EMIT_FALLING_STREAK_BURST: {
       short d[3];
 
       d[0] = HEAD_U[0] - POS_U[0];

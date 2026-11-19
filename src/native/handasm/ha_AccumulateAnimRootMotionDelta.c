@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster AccumulateAnimRootMotionDelta: AccumulateAnimRootMotionDelta (80052F38) */
+/* cluster AccumulateAnimRootMotionDelta: AccumulateAnimRootMotionDelta
+ * (80052F38) */
 void ha_AccumulateAnimRootMotionDelta(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -226,7 +227,9 @@ L_800530B0:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80052f38u: bc = 0; goto L_80052F38;
+  case 0x80052f38u:
+    bc = 0;
+    goto L_80052F38;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("AccumulateAnimRootMotionDelta", tgt, entry_ra);
@@ -234,7 +237,8 @@ dispatch:
   HA_SPILL();
 }
 
-void AccumulateAnimRootMotionDelta(uint32_t p0, uint32_t p1, uint32_t p2, uint32_t p3) {
+void AccumulateAnimRootMotionDelta(uint32_t p0, uint32_t p1, uint32_t p2,
+                                   uint32_t p3) {
   HaRegs R;
   ha_enter(&R);
   R.r[4] = p0;

@@ -42,7 +42,9 @@ L_80017758:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017758u: bc = 0; goto L_80017758;
+  case 0x80017758u:
+    bc = 0;
+    goto L_80017758;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("AddVector", tgt, entry_ra);

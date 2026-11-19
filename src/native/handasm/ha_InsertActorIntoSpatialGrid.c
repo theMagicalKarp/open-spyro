@@ -428,7 +428,9 @@ L_800529B0:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800526a8u: bc = 0; goto L_800526A8;
+  case 0x800526a8u:
+    bc = 0;
+    goto L_800526A8;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("InsertActorIntoSpatialGrid", tgt, entry_ra);

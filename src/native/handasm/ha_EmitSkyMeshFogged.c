@@ -685,7 +685,9 @@ L_8004F47C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8004f000u: bc = 0; goto L_8004F000;
+  case 0x8004f000u:
+    bc = 0;
+    goto L_8004F000;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("EmitSkyMeshFogged", tgt, entry_ra);

@@ -4,7 +4,8 @@
  * image (SaveGame) is named from BuildSaveGameBuffer's field order and the
  * memory-card file header (McFileHeader) follows the standard PS1 save-block
  * header; TitleState fields are named from their use in Titlescreen_Update /
- * _Draw. Unread fields are padNN; sprite and state ids are in this header and title_state.h.
+ * _Draw. Unread fields are padNN; sprite and state ids are in this header and
+ * title_state.h.
  */
 #ifndef OVL_TITLESCREEN_H
 #define OVL_TITLESCREEN_H
@@ -22,22 +23,23 @@ typedef unsigned int u_int;
  * that shows them and the choice each option leads to. ---- */
 enum {
   TITLE_SPR_LOGO = 0,
-  TITLE_SPR_BORDER = 1,              /* left half; -1 = mirrored right half */
-  TITLE_SPR_WORLD_NAME = 2,          /* + world index (save's levelId / 10 - 1) */
+  TITLE_SPR_BORDER = 1,     /* left half; -1 = mirrored right half */
+  TITLE_SPR_WORLD_NAME = 2, /* + world index (save's levelId / 10 - 1) */
   TITLE_SPR_EMPTY_SLOT = 8,
   TITLE_SPR_SLOT_CURSOR = 9,
-  TITLE_SPR_SLOT_MARK = 10,          /* under the cursor while confirming overwrite */
+  TITLE_SPR_SLOT_MARK = 10, /* under the cursor while confirming overwrite */
   TITLE_SPR_PRESS_START = 11,
-  TITLE_SPR_DIGIT0 = 13,             /* + digit, the save's dragon count */
+  TITLE_SPR_DIGIT0 = 13, /* + digit, the save's dragon count */
   TITLE_SPR_DRAGON_ICON = 23,
-  TITLE_SPR_MSG_CHECKING = 24,       /* TITLE_CARD_PROBE / _READ */
-  TITLE_SPR_MSG_NO_CARD = 25,        /* TITLE_CARD_NONE */
-  TITLE_SPR_MSG_CARD_UNUSABLE = 26,  /* TITLE_CARD_UNUSABLE */
-  TITLE_SPR_MSG_WARNING = 27,        /* first line of NO_SAVE_WARNING and FORMAT_CONFIRM */
+  TITLE_SPR_MSG_CHECKING = 24,      /* TITLE_CARD_PROBE / _READ */
+  TITLE_SPR_MSG_NO_CARD = 25,       /* TITLE_CARD_NONE */
+  TITLE_SPR_MSG_CARD_UNUSABLE = 26, /* TITLE_CARD_UNUSABLE */
+  TITLE_SPR_MSG_WARNING =
+      27, /* first line of NO_SAVE_WARNING and FORMAT_CONFIRM */
   TITLE_SPR_MSG_NO_SAVE_L2 = 28,
   TITLE_SPR_MSG_NO_SAVE_L3 = 29,
   TITLE_SPR_MSG_NO_SAVE_L4 = 30,
-  TITLE_SPR_MSG_CARD_IN_SLOT = 31,   /* + card port */
+  TITLE_SPR_MSG_CARD_IN_SLOT = 31, /* + card port */
   TITLE_SPR_MSG_UNFORMATTED_L1 = 33,
   TITLE_SPR_MSG_UNFORMATTED_L2 = 34,
   TITLE_SPR_MSG_FORMAT_SURE_L1 = 35,
@@ -45,7 +47,7 @@ enum {
   TITLE_SPR_MSG_FORMATTING = 37,
   TITLE_SPR_MSG_FORMAT_DONE = 38,
   TITLE_SPR_MSG_FORMAT_FAILED = 39,
-  TITLE_SPR_MSG_NO_FILE_L1 = 40,     /* TITLE_CARD_CREATE_ASK */
+  TITLE_SPR_MSG_NO_FILE_L1 = 40, /* TITLE_CARD_CREATE_ASK */
   TITLE_SPR_MSG_NO_FILE_L2 = 41,
   TITLE_SPR_MSG_CREATING = 42,
   TITLE_SPR_MSG_CARD_FULL_L1 = 43,
@@ -60,7 +62,7 @@ enum {
   TITLE_SPR_OPT_CANCEL = 54,
   TITLE_SPR_OPT_FORMAT = 55,
   TITLE_SPR_OPT_CREATE = 56,
-  TITLE_SPR_OPT_CONTINUE = 57,       /* single "continue" prompt */
+  TITLE_SPR_OPT_CONTINUE = 57, /* single "continue" prompt */
   TITLE_SPR_OPT_LOAD_GAME = 58,
   TITLE_SPR_OPT_NEW_GAME = 59,
   TITLE_SPR_OPT_SLOT1 = 60,
@@ -87,9 +89,9 @@ enum {
 /* sprite color/flash variants */
 enum {
   TITLE_COLOR_NORMAL = 0,
-  TITLE_COLOR_HIGHLIGHT = 1,         /* selected option, blinking */
-  TITLE_COLOR_PROMPT = 2,            /* "press start" blink */
-  TITLE_COLOR_DIMMED = 3             /* save slots outside the active picker */
+  TITLE_COLOR_HIGHLIGHT = 1, /* selected option, blinking */
+  TITLE_COLOR_PROMPT = 2,    /* "press start" blink */
+  TITLE_COLOR_DIMMED = 3     /* save slots outside the active picker */
 };
 
 /* ---- save file: the 0x600-byte image (save_game.h) ---- */
@@ -101,25 +103,25 @@ enum {
 
 /* ---- titlescreen state (0x5C bytes) ---- */
 typedef struct {
-  int mode;               /* 0x00 */
-  int menuState;                /* 0x04 */
-  int idleFrames;                 /* 0x08 */
+  int mode;                   /* 0x00 */
+  int menuState;              /* 0x04 */
+  int idleFrames;             /* 0x08 */
   int animTimer;              /* 0x0C */
-  int subState;             /* 0x10 */
-  int selection;       /* 0x14 */
-  int yesNoChoice;                 /* 0x18 load-confirm toggle: 0 yes, 1 no */
-  int exitPath;                 /* 0x1C enum TitleExitPath (g_nTitleExitPath) */
-  int savedSelection;/* 0x20 */
-  int retryCount;        /* 0x24 */
-  int cardPort;         /* 0x28 */
-  int pad2C;           /* 0x2C */
-  int cardStatus[2];        /* 0x30 */
-  int needsFormat[2];   /* 0x38 per port: card reported McErrNotFormat */
-  int mcCmd;    /* 0x40 */
-  int mcResult;    /* 0x44 */
-  int anySaveUsed;           /* 0x48 some save slot has levelVisited[0] */
-  MemCardSaveFile *file; /* 0x4C */
-  SaveGameBuffer *apSaves[3];   /* 0x50 */
+  int subState;               /* 0x10 */
+  int selection;              /* 0x14 */
+  int yesNoChoice;            /* 0x18 load-confirm toggle: 0 yes, 1 no */
+  int exitPath;               /* 0x1C enum TitleExitPath (g_nTitleExitPath) */
+  int savedSelection;         /* 0x20 */
+  int retryCount;             /* 0x24 */
+  int cardPort;               /* 0x28 */
+  int pad2C;                  /* 0x2C */
+  int cardStatus[2];          /* 0x30 */
+  int needsFormat[2];         /* 0x38 per port: card reported McErrNotFormat */
+  int mcCmd;                  /* 0x40 */
+  int mcResult;               /* 0x44 */
+  int anySaveUsed;            /* 0x48 some save slot has levelVisited[0] */
+  MemCardSaveFile *file;      /* 0x4C */
+  SaveGameBuffer *apSaves[3]; /* 0x50 */
 } TitleState;
 
 extern TitleState g_nTitleMode;
@@ -141,13 +143,14 @@ typedef struct {
 extern FrameEnvPair *g_pActiveFrameDrawEnv;
 
 extern struct {
-  int post; /* 0x80075950 */
-  int pre;  /* 0x80075954 */
+  int post;                /* 0x80075950 */
+  int pre;                 /* 0x80075954 */
 } g_nVsyncFramePaceAnchor; /* vsync frame pacing pair */
 
-extern u_char g_apMainDrawEntityList[];  /* scratch image buffer */
-extern int g_nFarPlaneDrawDistance;       /* far-plane culling distance */
-extern char g_anCameraViewMtx[];    /* camera view matrix (g_anWorldToCameraRotMtx at -0x14) */
+extern u_char g_apMainDrawEntityList[]; /* scratch image buffer */
+extern int g_nFarPlaneDrawDistance;     /* far-plane culling distance */
+extern char g_anCameraViewMtx[]; /* camera view matrix (g_anWorldToCameraRotMtx
+                                    at -0x14) */
 
 /* ---- main-EXE functions this overlay calls ---- */
 extern void FillWord(void *, int, int);
@@ -158,20 +161,23 @@ extern void RenderWorldChunks(int);
 extern void EmitSkyMesh(int, void *, void *);
 extern void DrawFullscreenTint(int, int, int, int);
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's signature
+ */
 extern int DrawSync(int);
 #else
 extern void DrawSync(int);
 #endif
 extern int VSync(int);
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's signature
+ */
 extern void *PutDispEnv(void *);
 #else
 extern void PutDispEnv(void *);
 #endif
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's signature
+ */
 extern void *PutDrawEnv(void *);
 #else
 extern void PutDrawEnv(void *);
@@ -194,23 +200,25 @@ extern struct {
 
 /* ---- CD / music state ---- */
 extern struct {
-  int baseLba;         /* 0x00 g_nCdBaseLba */
-  int readSectorCount;/* 0x04 g_nCdReadSectorCount */
-  int cdlLoc;         /* 0x08 CdlLOC g_abCdlLocScratch */
-  void *readDst;        /* 0x0C g_pCdReadDstBuffer */
-  char cdlFile[24];      /* 0x10 CdlFILE */
+  int baseLba;               /* 0x00 g_nCdBaseLba */
+  int readSectorCount;       /* 0x04 g_nCdReadSectorCount */
+  int cdlLoc;                /* 0x08 CdlLOC g_abCdlLocScratch */
+  void *readDst;             /* 0x0C g_pCdReadDstBuffer */
+  char cdlFile[24];          /* 0x10 CdlFILE */
   volatile int readInFlight; /* 0x28 g_nCdReadInFlight */
 } g_nCdBaseLba;
 
 extern struct {
-  int track;      /* 0x000 g_nCurrentMusicTrack */
-  int streamStatus;             /* 0x004 g_dwMusicStreamStatus */
-  struct { int start, end; } trackLba[64]; /* 0x008 */
-  int readHead;     /* 0x208 g_dwCdMusicReadHead */
-  char pad20C[8];         /* 0x20C */
-  int lastCommand;   /* 0x214 g_nLastCdMusicCommand */
-  int pendingCommand;            /* 0x218 g_nPendingMusicCommand */
-  int streamTimeout;    /* 0x21C g_nCdMusicStreamTimeout */
+  int track;        /* 0x000 g_nCurrentMusicTrack */
+  int streamStatus; /* 0x004 g_dwMusicStreamStatus */
+  struct {
+    int start, end;
+  } trackLba[64];     /* 0x008 */
+  int readHead;       /* 0x208 g_dwCdMusicReadHead */
+  char pad20C[8];     /* 0x20C */
+  int lastCommand;    /* 0x214 g_nLastCdMusicCommand */
+  int pendingCommand; /* 0x218 g_nPendingMusicCommand */
+  int streamTimeout;  /* 0x21C g_nCdMusicStreamTimeout */
 } g_nCurrentMusicTrack;
 
 /* The memory-card save slot the game was loaded from (main 0x80078D14..0x20,
@@ -232,7 +240,7 @@ extern struct {
 typedef struct {
   short x, y, w, h;
 } RECT;
-#define setRECT(r, _x, _y, _w, _h) \
+#define setRECT(r, _x, _y, _w, _h)                                             \
   (r)->x = (_x), (r)->y = (_y), (r)->w = (_w), (r)->h = (_h)
 
 extern int g_nSkipGamestateDraw;
@@ -246,7 +254,9 @@ extern int g_nTitleSceneSectorOffset;
 
 extern int GetRandomU32(void);
 #ifndef VOICE_RELEASE
-#define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
+/* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other
+ * modes only key off) */
+#define VOICE_RELEASE 4
 #endif
 extern void StopSoundVoiceByIndex(int, int);
 extern void RestartStalledCdRead(void);
@@ -254,13 +264,15 @@ extern int CallCdSync(int mode, unsigned char *result);
 extern void StartCdReadAsync(int, void *, int, int, int);
 extern void HandleMusicCommand(int, int);
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's signature
+ */
 extern int LoadImage(RECT *, void *);
 #else
 extern void LoadImage(RECT *, void *);
 #endif
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's signature
+ */
 extern int ClearImage(RECT *, int, int, int);
 #else
 extern void ClearImage(RECT *, int, int, int);
@@ -291,7 +303,8 @@ extern void CopyWords(void *, void *, int);
 extern int ReadRootCounter2(void);
 extern void InitNewGameState(void);
 #ifdef __psyz
-/* native: the definition is void; the PS1 caller tests the $v0 it leaves (src/native/game/gamestate/update.c) */
+/* native: the definition is void; the PS1 caller tests the $v0 it leaves
+ * (src/native/game/gamestate/update.c) */
 #define RestartTitleCardCheckOnTriangle Native_RestartTitleCardCheckOnTriangle
 extern int RestartTitleCardCheckOnTriangle(void);
 #else

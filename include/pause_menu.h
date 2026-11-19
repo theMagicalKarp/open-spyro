@@ -15,7 +15,8 @@ enum PauseMainRow {
   PAUSE_ROW_CONTINUE = 0,
   PAUSE_ROW_OPTIONS = 1,
   PAUSE_ROW_INVENTORY = 2,
-  PAUSE_ROW_EXIT = 3, /* QUIT (flight level), EXIT LEVEL, or QUIT GAME (home world) */
+  /* QUIT (flight level), EXIT LEVEL, or QUIT GAME (home world) */
+  PAUSE_ROW_EXIT = 3,
 };
 
 enum PauseOptionsRow {

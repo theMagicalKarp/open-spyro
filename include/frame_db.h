@@ -19,7 +19,8 @@ typedef struct FrameDB {
   int pad7C[2];            /* 0x7C */
 } FrameDB;                 /* 0x84 */
 
-/* A frame record seen from its DRAWENV (g_pActiveFrameDrawEnv, &g_FrameDrawEnv0). */
+/* A frame record seen from its DRAWENV (g_pActiveFrameDrawEnv,
+ * &g_FrameDrawEnv0). */
 #define FRAME_DB(env) ((FrameDB *)(env))
 
 /* Each frame's primitive buffer, carved below g_pRenderScratchPrimTop by
@@ -31,7 +32,8 @@ typedef struct FrameDB {
  * 0x20-byte records), the depth-bin OT shared by both frames, and the
  * 8-byte merged-chain slot. */
 #define EMIT_LIST_BYTES 0x2000
-#define OT_BIN_COUNT 0x800 /* depth bins, 8 bytes each (LinkOTPrimitives walks them all) */
+/* depth bins, 8 bytes each (LinkOTPrimitives walks them all) */
+#define OT_BIN_COUNT 0x800
 #define OT_BIN_BYTES (OT_BIN_COUNT * 8)
 #define OT_CHAIN_SLOT_BYTES 8
 
@@ -40,7 +42,8 @@ typedef struct FrameDB {
  * 0x100 x 0xE1 16-bit frame. */
 #define MENU_SNAPSHOT_W 0x100
 #define MENU_SNAPSHOT_H 0xE1
-#define MENU_SNAPSHOT_BYTES (MENU_SNAPSHOT_W * MENU_SNAPSHOT_H * 2) /* 0x1C200 */
+/* 0x1C200 */
+#define MENU_SNAPSHOT_BYTES (MENU_SNAPSHOT_W * MENU_SNAPSHOT_H * 2)
 /* ...because the frozen frame overwrites that VRAM: MENU_BACKDROP_STRIPS
  * strips of the drawing area, MENU_BACKDROP_STRIP_W wide, are read back,
  * packed to 8-bit luma (MENU_BACKDROP_LUMA_PIXELS each, half as many VRAM
@@ -52,7 +55,9 @@ typedef struct FrameDB {
 #define MENU_BACKDROP_LUMA_PIXELS 0x7000 /* MENU_BACKDROP_STRIP_W x 0xE0 */
 #define MENU_BACKDROP_X 0x200
 #define MENU_BACKDROP_CLUT_Y 0xE0
-#define MENU_BACKDROP_CLUT 0x3820  /* the CLUT id of (MENU_BACKDROP_X, MENU_BACKDROP_CLUT_Y) */
-#define MENU_BACKDROP_TPAGE 0x88   /* 8-bit texture page at x = MENU_BACKDROP_X */
+/* the CLUT id of (MENU_BACKDROP_X, MENU_BACKDROP_CLUT_Y) */
+#define MENU_BACKDROP_CLUT 0x3820
+/* 8-bit texture page at x = MENU_BACKDROP_X */
+#define MENU_BACKDROP_TPAGE 0x88
 
 #endif /* OPEN_SPYRO_FRAME_DB_H */

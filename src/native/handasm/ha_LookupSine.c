@@ -63,7 +63,9 @@ L_80016C9C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80016c58u: bc = 0; goto L_80016C58;
+  case 0x80016c58u:
+    bc = 0;
+    goto L_80016C58;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("LookupSine", tgt, entry_ra);

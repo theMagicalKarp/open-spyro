@@ -40,7 +40,10 @@ L_80017A38:
   bc = ((int32_t)a2 < 0);
   /* 80017A64 00000000 (delay) */
   if (bc) {
-    { bc = 0; goto L_80017A70; }
+    {
+      bc = 0;
+      goto L_80017A70;
+    }
   }
   /* 80017A68 00C43804 */
   a3 = a0 << (a2 & 31);
@@ -80,8 +83,12 @@ L_80017A9C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017a38u: bc = 0; goto L_80017A38;
-  case 0x80017a9cu: bc = 0; goto L_80017A9C;
+  case 0x80017a38u:
+    bc = 0;
+    goto L_80017A38;
+  case 0x80017a9cu:
+    bc = 0;
+    goto L_80017A9C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("IntegerSqrt", tgt, entry_ra);

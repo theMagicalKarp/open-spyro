@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster BuildSecondaryActorDrawList: BuildSecondaryActorDrawList (800208FC) */
+/* cluster BuildSecondaryActorDrawList: BuildSecondaryActorDrawList (800208FC)
+ */
 void ha_BuildSecondaryActorDrawList(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -885,7 +886,9 @@ L_80020EE0:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800208fcu: bc = 0; goto L_800208FC;
+  case 0x800208fcu:
+    bc = 0;
+    goto L_800208FC;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("BuildSecondaryActorDrawList", tgt, entry_ra);

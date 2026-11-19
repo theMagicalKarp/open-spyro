@@ -1,5 +1,5 @@
-/* Level14_EmitParticles (0x8008b0b0, level_14_magic_crafters_high_caves overlay,
- * 0x168c bytes).
+/* Level14_EmitParticles (0x8008b0b0, level_14_magic_crafters_high_caves
+ * overlay, 0x168c bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).
@@ -23,10 +23,10 @@
  *     `table[w] >> sh` (the B13 lever -- see Level27_EmitParticles's header).
  *   - Arms 0x45 and 0x49 are the same effect with two record layouts: 0x45 is
  *     a `dust` mote that keeps the emitter argument as an INT at +0x18 with a
- *     zero int at +0x1C (new `src`/`waypoint` fields on the dust struct), 0x49 is
- *     an `orbitDot` record that copies its own position into `centre[]` at +0x18
- *     and carries `phase = rand()` / `radius = (rand() & 0x1F) + 0x20`.  Both end
- *     in the SAME eight-way `switch (rand() & 7)` colour block (the level_25
+ *     zero int at +0x1C (new `src`/`waypoint` fields on the dust struct), 0x49
+ * is an `orbitDot` record that copies its own position into `centre[]` at +0x18
+ *     and carries `phase = rand()` / `radius = (rand() & 0x1F) + 0x20`.  Both
+ * end in the SAME eight-way `switch (rand() & 7)` colour block (the level_25
  *     arm-0x42 palette) and `fx = 0x40`; gcc cross-jumps the two switches into
  *     one, which is why arm 0x45's table points into arm 0x49's body.
  *   - Arm 0x4D wants `c0[0] = 0x80` written FIRST in its colour block (A220:
@@ -280,7 +280,8 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
+      rec->u.spark.vel[0] =
+          ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -292,9 +293,11 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (src->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &src->posX);
-      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
+      } else if (src->type == ACTOR_TYPE_KEY ||
+                 src->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          RotateVectorByMatrix(src->mtx,
+                               &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &src->posX);
         } else {
           rec->cls = EMIT_CLASS_FADED_QUAD;
@@ -406,7 +409,8 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->phase = 0;
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
-      rec->u.spark.toggle = (int)GetRandomU32() % 2 + 1; /* RISE_SPEED_U: climbs 1 or 2 */
+      rec->u.spark.toggle =
+          (int)GetRandomU32() % 2 + 1; /* RISE_SPEED_U: climbs 1 or 2 */
       rec->u.spark.size = 8;
       rec->u.spark.spin = GetRandomU32();
       rec->u.spark.r = 0x40;
@@ -733,7 +737,8 @@ void Level14_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      rec->u.line.a[1] =
+          rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
       u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[0] = 0x80;

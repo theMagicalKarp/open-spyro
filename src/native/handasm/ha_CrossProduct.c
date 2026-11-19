@@ -46,7 +46,9 @@ L_80017854:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017854u: bc = 0; goto L_80017854;
+  case 0x80017854u:
+    bc = 0;
+    goto L_80017854;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("CrossProduct", tgt, entry_ra);

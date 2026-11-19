@@ -6,31 +6,38 @@
 /* g_nGamestate values, from the GamestateUpdate / GamestateDraw dispatch and
  * the setters (EnterPauseMenu, TriggerRespawnOrGameOver, ...). g_nGamestate
  * itself stays an int: an enum with no negative values is unsigned here. */
-typedef enum Gamestate
-{
-  GS_GAMEPLAY = 0,        /* the in-level frame (render pipeline in GamestateDraw) */
-  GS_LEVEL_LOAD = 1,      /* portal / hub return: ticks the world-bundle CD stream */
-  GS_PAUSE_MENU = 2,      /* EnterPauseMenu */
-  GS_INVENTORY = 3,       /* EnterInventoryMenu (SubMenu_Update) */
-  GS_RESPAWN = 4,         /* TriggerRespawnOrGameOver, lives left */
-  GS_GAME_OVER = 5,       /* TriggerRespawnOrGameOver, no lives */
-  GS_UNUSED_6 = 6,        /* no setter in the EXE or any overlay; update is a no-op, draw is the menu drawer */
-  GS_FLIGHT_RESULTS = 7,  /* flight levels: the results screen (g_pfnFlightResultsUpdate / Draw), entered by LevelN_FlightEndHook */
-  GS_DRAGON_RESCUE = 8,      /* BeginDragonRescue */
-  GS_ARRIVAL_CAMERA = 9,  /* CameraSettle_Update after a level transition */
+typedef enum Gamestate {
+  GS_GAMEPLAY = 0,   /* the in-level frame (render pipeline in GamestateDraw) */
+  GS_LEVEL_LOAD = 1, /* portal / hub return: ticks the world-bundle CD stream */
+  GS_PAUSE_MENU = 2, /* EnterPauseMenu */
+  GS_INVENTORY = 3,  /* EnterInventoryMenu (SubMenu_Update) */
+  GS_RESPAWN = 4,    /* TriggerRespawnOrGameOver, lives left */
+  GS_GAME_OVER = 5,  /* TriggerRespawnOrGameOver, no lives */
+  /* no setter in the EXE or any overlay; update is a no-op, draw is the menu
+   * drawer */
+  GS_UNUSED_6 = 6,
+  /* flight levels: the results screen (g_pfnFlightResultsUpdate / Draw),
+   * entered by LevelN_FlightEndHook */
+  GS_FLIGHT_RESULTS = 7,
+  GS_DRAGON_RESCUE = 8,    /* BeginDragonRescue */
+  GS_ARRIVAL_CAMERA = 9,   /* CameraSettle_Update after a level transition */
   GS_MENU_TRANSITION = 10, /* BeginPauseToMenuTransition (pause -> world map) */
-  GS_SAVE_MENU = 11,      /* SaveLoadMenu_Draw */
-  GS_ACTOR_CUTSCENE = 12, /* LevelN_BeginActorCutscene: balloonist / fly-in cutscenes */
-  GS_TITLE = 13,          /* title screen; g_nTitleMode TITLE_MODE_STORY_INTRO is the story intro */
-  GS_CUTSCENE = 14,   /* BeginCutscene */
-  GS_CREDITS = 15,        /* BeginCreditsSequence; mode >= CREDITS_MODE_RETURN_HOME is ReturningHome */
+  GS_SAVE_MENU = 11,       /* SaveLoadMenu_Draw */
+  /* LevelN_BeginActorCutscene: balloonist / fly-in cutscenes */
+  GS_ACTOR_CUTSCENE = 12,
+  /* title screen; g_nTitleMode TITLE_MODE_STORY_INTRO is the story intro */
+  GS_TITLE = 13,
+  GS_CUTSCENE = 14, /* BeginCutscene */
+  /* BeginCreditsSequence; mode >= CREDITS_MODE_RETURN_HOME is ReturningHome */
+  GS_CREDITS = 15,
 } Gamestate;
 
 /* g_nDemoMode: the attract demo. */
 enum DemoMode {
   DEMO_OFF = 0,
-  DEMO_PLAYBACK = 1, /* replay the bundle's recorded pad stream (StoryIntro_Update) */
-  DEMO_RECORD = 2,   /* sample the real pad into DEMO_RECORD_BUFFER */
+  /* replay the bundle's recorded pad stream (StoryIntro_Update) */
+  DEMO_PLAYBACK = 1,
+  DEMO_RECORD = 2, /* sample the real pad into DEMO_RECORD_BUFFER */
 };
 /* DEMO_RECORD's pad buffer, in the dev kit's RAM above the retail 2 MB
  * (BuildLoadedLevelRuntime zero-fills it; SampleDemoPadFrame appends). */

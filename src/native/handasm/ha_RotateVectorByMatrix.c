@@ -74,7 +74,9 @@ L_80017048:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017048u: bc = 0; goto L_80017048;
+  case 0x80017048u:
+    bc = 0;
+    goto L_80017048;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("RotateVectorByMatrix", tgt, entry_ra);

@@ -63,7 +63,9 @@ L_80016CF4:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80016cb0u: bc = 0; goto L_80016CB0;
+  case 0x80016cb0u:
+    bc = 0;
+    goto L_80016CB0;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("LookupCosine", tgt, entry_ra);

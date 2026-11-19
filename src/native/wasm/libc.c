@@ -303,7 +303,7 @@ int vsnprintf(char *restrict buf, size_t cap, const char *restrict fmt,
     switch (*fmt) {
     case 'd':
     case 'i':
-      s = len >= 2 ? va_arg(ap, long long)
+      s = len >= 2   ? va_arg(ap, long long)
           : len == 1 ? va_arg(ap, long)
                      : va_arg(ap, int);
       if (len == -1) {
@@ -311,14 +311,14 @@ int vsnprintf(char *restrict buf, size_t cap, const char *restrict fmt,
       } else if (len <= -2) {
         s = (signed char)s;
       }
-      emit_number(&o, s < 0 ? (uintmax_t)-s : (uintmax_t)s, s < 0, 10, 0,
-                  flags, width, prec);
+      emit_number(&o, s < 0 ? (uintmax_t)-s : (uintmax_t)s, s < 0, 10, 0, flags,
+                  width, prec);
       break;
     case 'u':
     case 'x':
     case 'X':
     case 'o':
-      u = len >= 2 ? va_arg(ap, unsigned long long)
+      u = len >= 2   ? va_arg(ap, unsigned long long)
           : len == 1 ? va_arg(ap, unsigned long)
                      : va_arg(ap, unsigned int);
       if (len == -1) {

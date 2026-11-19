@@ -1,4 +1,5 @@
-/* Level30_OnSaveMenuExit (0x8007AF4C, level_30_gnastys_world_gnorc_gnexus overlay).
+/* Level30_OnSaveMenuExit (0x8007AF4C, level_30_gnastys_world_gnorc_gnexus
+ * overlay).
  *
  * Level hook run when leaving the save menu back to the world: forwards to
  * EndSaveMenuToWorld, zeroes the second swing-euler spring component

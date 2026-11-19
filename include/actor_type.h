@@ -8,58 +8,63 @@
 #define OPEN_SPYRO_ACTOR_TYPE_H
 
 typedef struct Actor {
-  void *state;         /* 0x00 class-specific state block */
-  struct Actor *gridNext; /* 0x04 next actor in the same spatial-grid cell (InsertActorIntoSpatialGrid) */
-  int collision;       /* 0x08 collision record; < 0 (a KSEG0 pointer) when the
-                        * actor can be hit, 0 / >= 0 when not (overlay target
-                        * scans skip those) */
-  int posX;            /* 0x0C position */
-  int posY;            /* 0x10 */
-  int posZ;            /* 0x14 */
-  int flags;           /* 0x18 damage flags */
-  int groundCode;      /* 0x1C packed ground contact, written by
-                        * EncodeHitNormalToActorGroundCode from the last ground
-                        * probe: bit 31 valid, two 6-bit floor-normal angles
-                        * at bits 22 and 16, floor z >> 2 below. Overlays
-                        * store -1 / 0 to reset it and toggle bit 31 (bit 31
-                        * also puts the actor on BuildActorDrawList's near
-                        * list: DrawActorDropShadows). */
-  int mtx[5];          /* 0x20 rotation matrix (packed GTE, see RefreshActorDerivedState) */
-  short gridCell;      /* 0x34 spatial-grid cell (RefreshActorDerivedState bit 2) */
-  short type;          /* 0x36 actor class */
-  short floorOffset;   /* 0x38 signed offset above the ground (SnapActorToGround) */
-  unsigned char killGroup; /* 0x3A low 7 bits: kill group (< 0x20 a group bit,
-                            * else ACTOR_KILL_GROUP_*; BuildLoadedLevelRuntime);
-                            * bit 7 latches the death drop (SpawnActorDeathDrop) */
-  unsigned char probeDist; /* 0x3B DriveActorTrackedMove ground-probe distance / 4;
-                           * 0 default 0x12C, ACTOR_PROBE_NONE / ACTOR_PROBE_LIFT_ONLY */
-  unsigned char anim;  /* 0x3C current animation */
-  unsigned char nextAnim; /* 0x3D next animation */
-  unsigned char frame; /* 0x3E current frame */
-  unsigned char nextFrame; /* 0x3F next frame */
+  void *state; /* 0x00 class-specific state block */
+  /* next actor in the same spatial-grid cell (InsertActorIntoSpatialGrid) */
+  struct Actor *gridNext; /* 0x04 */
+  /* collision record; < 0 (a KSEG0 pointer) when the actor can be hit, 0 / >= 0
+   * when not (overlay target scans skip those) */
+  int collision; /* 0x08 */
+  int posX;      /* 0x0C position */
+  int posY;      /* 0x10 */
+  int posZ;      /* 0x14 */
+  int flags;     /* 0x18 damage flags */
+  /* packed ground contact, written by EncodeHitNormalToActorGroundCode from the
+   * last ground probe: bit 31 valid, two 6-bit floor-normal angles at bits 22
+   * and 16, floor z >> 2 below. Overlays store -1 / 0 to reset it and toggle
+   * bit 31 (bit 31 also puts the actor on BuildActorDrawList's near list:
+   * DrawActorDropShadows). */
+  int groundCode; /* 0x1C */
+  /* rotation matrix (packed GTE, see RefreshActorDerivedState) */
+  int mtx[5];     /* 0x20 */
+  short gridCell; /* 0x34 spatial-grid cell (RefreshActorDerivedState bit 2) */
+  short type;     /* 0x36 actor class */
+  /* signed offset above the ground (SnapActorToGround) */
+  short floorOffset; /* 0x38 */
+  /* low 7 bits: kill group (< 0x20 a group bit, else ACTOR_KILL_GROUP_*;
+   * BuildLoadedLevelRuntime); bit 7 latches the death drop
+   * (SpawnActorDeathDrop) */
+  unsigned char killGroup; /* 0x3A */
+  /* DriveActorTrackedMove ground-probe distance / 4; 0 default 0x12C,
+   * ACTOR_PROBE_NONE / ACTOR_PROBE_LIFT_ONLY */
+  unsigned char probeDist;     /* 0x3B */
+  unsigned char anim;          /* 0x3C current animation */
+  unsigned char nextAnim;      /* 0x3D next animation */
+  unsigned char frame;         /* 0x3E current frame */
+  unsigned char nextFrame;     /* 0x3F next frame */
   unsigned char frameProgress; /* 0x40 frame progress */
-  unsigned char frameRate; /* 0x41 progress per frame */
-  unsigned char animFlags; /* 0x42 bit 1 done (g_nActorAnimDone), bit 0 new frame */
-  unsigned char group; /* 0x43 activation group (BuildActiveActorList) */
-  unsigned char rotX;  /* 0x44 euler x (8-bit angle) */
-  unsigned char rotY;  /* 0x45 euler y */
-  unsigned char rotZ;  /* 0x46 euler z (yaw) */
-  unsigned char otBias; /* 0x47 signed OT-bin bias: RasterizeSpritePrimQueue
-                        * bins at (MAC3 >> 6) - otBias, clamped >= 0. Default 4
-                        * (InitActorRenderDefaults), 0x20 HUD/screen actors,
-                        * 0x7F sprite records, 0xFE (-2) pushes it one bin pair deeper */
-  unsigned char mode;  /* 0x48 behaviour state; >= ACTOR_MODE_DORMANT dormant,
-                          ACTOR_MODE_END ends the pool */
+  unsigned char frameRate;     /* 0x41 progress per frame */
+  /* bit 1 done (g_nActorAnimDone), bit 0 new frame */
+  unsigned char animFlags; /* 0x42 */
+  unsigned char group;     /* 0x43 activation group (BuildActiveActorList) */
+  unsigned char rotX;      /* 0x44 euler x (8-bit angle) */
+  unsigned char rotY;      /* 0x45 euler y */
+  unsigned char rotZ;      /* 0x46 euler z (yaw) */
+  /* signed OT-bin bias: RasterizeSpritePrimQueue bins at (MAC3 >> 6) - otBias,
+   * clamped >= 0. Default 4 (InitActorRenderDefaults), 0x20 HUD/screen actors,
+   * 0x7F sprite records, 0xFE (-2) pushes it one bin pair deeper */
+  unsigned char otBias; /* 0x47 */
+  /* behaviour state; >= ACTOR_MODE_DORMANT dormant, ACTOR_MODE_END ends the
+   * pool */
+  unsigned char mode;    /* 0x48 */
   unsigned char subMode; /* 0x49 sub-state */
-  unsigned char gateChunk; /* 0x4A the world chunk gating the actor: it is
-                            * drawn only if RenderWorldChunks drew that chunk
-                            * this frame (g_abWorldChunkDrawn); 0xFF = always
-                            * drawn (BuildRenderEntityLists) */
-  unsigned char renderList; /* 0x4B signed; picks the BuildRenderEntityLists
-                             * list: > 0 the main mesh list (default 0x20,
-                             * BuildActorDrawList), < 0 (ACTOR_RENDER_SECONDARY)
-                             * g_apSecondaryDrawEntityList, 0 the sprite queue
-                             * g_apSpritePrimQueue */
+  /* the world chunk gating the actor: it is drawn only if RenderWorldChunks
+   * drew that chunk this frame (g_abWorldChunkDrawn); 0xFF = always drawn
+   * (BuildRenderEntityLists) */
+  unsigned char gateChunk; /* 0x4A */
+  /* signed; picks the BuildRenderEntityLists list: > 0 the main mesh list
+   * (default 0x20, BuildActorDrawList), < 0 (ACTOR_RENDER_SECONDARY)
+   * g_apSecondaryDrawEntityList, 0 the sprite queue g_apSpritePrimQueue */
+  unsigned char renderList; /* 0x4B */
   /* 0x4C..0x4F tint. Read as one word, 0x4C..0x4E pack three 6-bit levels
    * under a 0xA tag: 0xA << 20 | c2 << 12 | c1 << 6 | c0. StepActorScorchTint
    * builds it with 0x18 as neutral, which gives the 0xA18618 the overlays
@@ -71,30 +76,32 @@ typedef struct Actor {
    * EmitSecondaryActorPrimitives (which branches on a nonzero tintMode
    * byte), and RasterizeSpritePrimQueue reads it for sprite records. Main-list
    * actors (BuildActorDrawList / EmitActorDrawList) never read it. */
-  unsigned char tint0; /* 0x4C */
-  unsigned char tint1; /* 0x4D */
-  unsigned char tint2; /* 0x4E */
+  unsigned char tint0;    /* 0x4C */
+  unsigned char tint1;    /* 0x4D */
+  unsigned char tint2;    /* 0x4E */
   unsigned char tintMode; /* 0x4F */
-  unsigned char cullRadius; /* 0x50 view-space cull bound >> 8: BuildActorDrawList
-                            * loads it as a halfword with ->drawn and tests each
-                            * axis against (cullRadius << 8) + (drawn & 1) * 0x200,
-                            * so 0 hides the actor. The renderer gives bit 7 no
-                            * meaning of its own (ACTOR_CULL_ALWAYS_BIT). */
-  unsigned char drawn; /* 0x51 drawn last frame: always kept active */
+  /* view-space cull bound >> 8: BuildActorDrawList loads it as a halfword with
+   * ->drawn and tests each axis against (cullRadius << 8) + (drawn & 1) *
+   * 0x200, so 0 hides the actor. The renderer gives bit 7 no meaning of its own
+   * (ACTOR_CULL_ALWAYS_BIT). */
+  unsigned char cullRadius; /* 0x50 */
+  unsigned char drawn;      /* 0x51 drawn last frame: always kept active */
   unsigned char updateDist; /* 0x52 activation radius >> 10 */
-  unsigned char dropKind; /* 0x53 death-drop item id (& 0x7F, 1..0x7E fixed;
-                           * 0xFF = random gem roll) — SpawnActorDeathDrop,
-                           * IsActorInCheckpointKillSet */
-  unsigned char voiceRow; /* 0x54 voice row playing its sound (PlaySoundEffect pPlaying),
-                           * VOICE_ROW_NONE when silent */
-  unsigned char soundRange; /* 0x55 voice audible range >> 10 (TickActiveSoundVoices) */
-  unsigned char poolIndex; /* 0x56 id byte for actors outside the pool */
-  unsigned char scale; /* 0x57 draw scale, 0 = none: BuildActorDrawList packs it
-                        * into the draw word and EmitActorDrawList multiplies the
-                        * view-space translation by scale / 0x20 before
-                        * projecting, so the mesh draws at 0x20 / scale of its
-                        * size (overlay grow/shrink tweens drive it 0x20..0x60) */
-} Actor; /* 0x58 */
+  /* death-drop item id (& 0x7F, 1..0x7E fixed; 0xFF = random gem roll) —
+   * SpawnActorDeathDrop, IsActorInCheckpointKillSet */
+  unsigned char dropKind; /* 0x53 */
+  /* voice row playing its sound (PlaySoundEffect pPlaying), VOICE_ROW_NONE when
+   * silent */
+  unsigned char voiceRow; /* 0x54 */
+  /* voice audible range >> 10 (TickActiveSoundVoices) */
+  unsigned char soundRange; /* 0x55 */
+  unsigned char poolIndex;  /* 0x56 id byte for actors outside the pool */
+  /* draw scale, 0 = none: BuildActorDrawList packs it into the draw word and
+   * EmitActorDrawList multiplies the view-space translation by scale / 0x20
+   * before projecting, so the mesh draws at 0x20 / scale of its size (overlay
+   * grow/shrink tweens drive it 0x20..0x60) */
+  unsigned char scale; /* 0x57 */
+} Actor;               /* 0x58 */
 
 /* The state block SpawnNameLetterActors hangs off each letter of a floating
  * name (letters A..Z are ACTOR_TYPE_LETTER_A.., anything else
@@ -107,17 +114,20 @@ typedef struct NameLetterState {
 } NameLetterState;
 
 /* Actor.voiceRow while no voice row plays the actor's sound. */
-#define VOICE_ROW_NONE 0x7F /* also what a finished or dropped sound stamps into its pPlaying byte */
+/* also what a finished or dropped sound stamps into its pPlaying byte */
+#define VOICE_ROW_NONE 0x7F
 /* Actor.otBias values (see the field): */
-#define OT_BIAS_DEFAULT 4    /* InitActorRenderDefaults */
-#define OT_BIAS_SCREEN 0x20  /* HUD and other screen-space actors */
-#define OT_BIAS_SPRITE 0x7F  /* text / sprite records: drawn over everything */
-#define OT_BIAS_DEEPER 0xFE  /* -2: one bin pair behind its depth */
-#define ACTOR_SCALE_UNIT 0x20 /* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
+#define OT_BIAS_DEFAULT 4   /* InitActorRenderDefaults */
+#define OT_BIAS_SCREEN 0x20 /* HUD and other screen-space actors */
+#define OT_BIAS_SPRITE 0x7F /* text / sprite records: drawn over everything */
+#define OT_BIAS_DEEPER 0xFE /* -2: one bin pair behind its depth */
+/* ->scale drawing the mesh at its own size (0x40 = half, 0x14 = 1.6x) */
+#define ACTOR_SCALE_UNIT 0x20
 #define ACTOR_SCALE_HALF 0x40 /* ->scale drawing the mesh at half size */
 /* Actor.cullRadius from a view-space bound: stored >> 8. */
 #define CULL_RADIUS(dist) ((dist) >> 8)
-#define ACTOR_CULL_HIDDEN 0 /* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
+/* ->cullRadius: a zero bound fails the view cull, so the actor is hidden */
+#define ACTOR_CULL_HIDDEN 0
 /* ->cullRadius 0xFF: a bound every view-space point passes. Only these stamps
  * set bit 7 (level data and spawns stay at or below 0x7F): HUD counter digits
  * and icons, text sprites, the portal guide and a collected flight time bonus.
@@ -125,8 +135,10 @@ typedef struct NameLetterState {
  * it is dead (it spawns at 0x10 and nothing restamps it). */
 #define ACTOR_CULL_ALWAYS 0xFF
 #define ACTOR_CULL_ALWAYS_BIT 0x80
-#define ACTOR_CULL_MAX 0x7F /* ->cullRadius: the widest bound below ACTOR_CULL_ALWAYS_BIT */
-#define ACTOR_TINT_NEUTRAL 0xA18618 /* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
+/* ->cullRadius: the widest bound below ACTOR_CULL_ALWAYS_BIT */
+#define ACTOR_CULL_MAX 0x7F
+/* the 0x4C tint word at neutral levels (0x18 each, tag 0xA) */
+#define ACTOR_TINT_NEUTRAL 0xA18618
 /* Actor.tintMode presets, used with tint0..2 zeroed.
  * RasterizeSpritePrimQueue reads the preset word at 0x8006E3D8 + (tint word
  * >> 22). Its low three bytes, x16, go to the GTE back colour (R, G, B), so
@@ -143,30 +155,37 @@ typedef struct NameLetterState {
  * 0x000060 (glint 0xC), 0xE 0x206020, 0xF..0x11 the 0xA..0xC colours with
  * glint 0xC, 0x12..0x16 the 8..0xC colours with glint 0xA, 0x17 0x600040.
  * Named by the actors and text that pick them. */
-#define TINT_GEM_1 1      /* gems, one per value: HUD tally icons use type - 0x52 */
+/* gems, one per value: HUD tally icons use type - 0x52 */
+#define TINT_GEM_1 1
 #define TINT_GEM_2 2
 #define TINT_GEM_5 3
 #define TINT_GEM_10 4
 #define TINT_GEM_25 5
-#define TINT_WHITE 1        /* 0x606060: Sparx food; the 1-gem shares it */
-#define TINT_GOLD 2         /* 0x006060 (R, G): text glyphs, digits; the 2-gem shares it */
-#define TINT_RED 8          /* 0x000060 (R): flight results "NEW RECORD" and a record time */
-#define TINT_GREEN 9        /* 0x006000 (G) */
-#define TINT_BLUE 0xA       /* 0x600000 (B): the flight results' "X" */
-#define TINT_HUD 0xB        /* HUD sprites and text (BuildTextSprites default); same word as TINT_GOLD */
+#define TINT_WHITE 1 /* 0x606060: Sparx food; the 1-gem shares it */
+/* 0x006060 (R, G): text glyphs, digits; the 2-gem shares it */
+#define TINT_GOLD 2
+/* 0x000060 (R): flight results "NEW RECORD" and a record time */
+#define TINT_RED 8
+#define TINT_GREEN 9  /* 0x006000 (G) */
+#define TINT_BLUE 0xA /* 0x600000 (B): the flight results' "X" */
+/* HUD sprites and text (BuildTextSprites default); same word as TINT_GOLD */
+#define TINT_HUD 0xB
 /* Screen-text depths (BuildTextSprites): a word's first letter is drawn at
  * pos[2], the rest of the word lower by attr[1] and farther, at attr[2], so
  * smaller (small caps). */
-#define TEXT_DEPTH 0x1100       /* the large first letters */
-#define TEXT_SMALL_DEPTH 0x1400 /* the small-caps letters; also small text's pos[2] */
-#define TEXT_TINY_DEPTH 0x1600  /* small text's small-caps letters (attr[2]) */
-#define TEXT_TITLE_DEPTH 0xC00  /* headlines (BuildTextSpriteChain: PAUSED, TIME ATTACK) */
+#define TEXT_DEPTH 0x1100 /* the large first letters */
+/* the small-caps letters; also small text's pos[2] */
+#define TEXT_SMALL_DEPTH 0x1400
+#define TEXT_TINY_DEPTH 0x1600 /* small text's small-caps letters (attr[2]) */
+/* headlines (BuildTextSpriteChain: PAUSED, TIME ATTACK) */
+#define TEXT_TITLE_DEPTH 0xC00
 #define TINT_EXTRA_LIFE 0xC
 #define TINT_BOULDER_SPARK 0xD /* boulder debris 152/153 */
 #define TINT_STATUE_SHARD 0xE
 /* Actor.soundRange stores a positional voice's audible distance >> 10
- * (PlaySoundEffect drops, TickActiveSoundVoices fades, a voice beyond it);
- * 0 means SOUND_RANGE_DEFAULT. Most actors that set it use SOUND_RANGE(0x8000). */
+ * (PlaySoundEffect drops, TickActiveSoundVoices fades, a voice beyond it); 0
+ * means SOUND_RANGE_DEFAULT. Most actors that set it use
+ * SOUND_RANGE(0x8000). */
 #define SOUND_RANGE_SHIFT 10
 #define SOUND_RANGE_DEFAULT 0x4000
 #define SOUND_RANGE(dist) ((dist) >> SOUND_RANGE_SHIFT)
@@ -176,22 +195,26 @@ typedef struct NameLetterState {
 #define WORLD_MIN_COORD 0x400
 /* Actor.probeDist sentinels (DriveActorTrackedMove; other values are the
  * ground-probe distance / 4, 0 = the default 0x12C). */
-#define ACTOR_PROBE_LIFT_ONLY 0xFE /* probe with MOVE_LIFT alone (no slide, no floor follow) */
-#define ACTOR_PROBE_NONE 0xFF      /* probe distance 0 */
+/* probe with MOVE_LIFT alone (no slide, no floor follow) */
+#define ACTOR_PROBE_LIFT_ONLY 0xFE
+#define ACTOR_PROBE_NONE 0xFF /* probe distance 0 */
 /* Actor.updateDist from a distance: the activation radius is stored >> 10. */
 #define UPDATE_DIST(dist) ((dist) >> 10)
-#define ACTOR_UPDATE_ALWAYS 0xFF /* ->updateDist: read signed by BuildActiveActorList, so
-                                  * a negative radius keeps the actor updating anywhere */
-#define ACTOR_UPDATE_WHEN_DRAWN 0 /* ->updateDist: no activation radius, so it only
-                                  * updates while it was drawn last frame */
-#define GATE_CHUNK_ALWAYS 0xFF     /* ->gateChunk: no chunk gate, always drawn */
-#define DROP_GEM_ROLL 0xFF       /* ->dropKind: a random gem roll (and counts in the
-                                  * checkpoint kill set, IsActorInCheckpointKillSet) */
-#define DROP_ROLL_BIT 0x80       /* ->dropKind bit 7: no fixed drop. Only DROP_GEM_ROLL
-                                  * carries it: level data holds 0, 0x0E, 0x10, 0x22,
-                                  * 0x53..0x57 or 0xFF, and BuildLoadedLevelRuntime
-                                  * rewrites a respawned kill to 0xFF. A follower
-                                  * takes over a parent that is dormant or has it. */
+/* ->updateDist: read signed by BuildActiveActorList, so a negative radius keeps
+ * the actor updating anywhere */
+#define ACTOR_UPDATE_ALWAYS 0xFF
+/* ->updateDist: no activation radius, so it only updates while it was drawn
+ * last frame */
+#define ACTOR_UPDATE_WHEN_DRAWN 0
+#define GATE_CHUNK_ALWAYS 0xFF /* ->gateChunk: no chunk gate, always drawn */
+/* ->dropKind: a random gem roll (and counts in the checkpoint kill set,
+ * IsActorInCheckpointKillSet) */
+#define DROP_GEM_ROLL 0xFF
+/* ->dropKind bit 7: no fixed drop. Only DROP_GEM_ROLL carries it: level data
+ * holds 0, 0x0E, 0x10, 0x22, 0x53..0x57 or 0xFF, and BuildLoadedLevelRuntime
+ * rewrites a respawned kill to 0xFF. A follower takes over a parent that is
+ * dormant or has it. */
+#define DROP_ROLL_BIT 0x80
 
 /* Bosses and big actors take Spyro's 2D distance from ApproxDist2D, then
  * measure it exactly (VectorLength VEC_LEN_XY) once the estimate is under
@@ -206,46 +229,61 @@ typedef struct NameLetterState {
 #define KNOCK_BEND_FRAC 0x40
 
 /* Actor.flags hit bits that Spyro's attacks raise through
- * DispatchActorContactAtSphere (AdvanceSpyroPhysics, TickSpyroAttackEffects). */
+ * DispatchActorContactAtSphere (AdvanceSpyroPhysics,
+ * TickSpyroAttackEffects). */
 #define ACTOR_HIT_FLAME 0x10000  /* the flame breath */
 #define ACTOR_HIT_CHARGE 0x20000 /* a charge (SPYRO_ST_CHARGE) */
-#define ACTOR_HIT_BLAST 0x40000   /* another actor's blast or shot: a cracking boulder's
-                                  * burst (with FLAME), level 19's aimed bolt; boulders and
-                                  * roaming rams react to it */
-#define ACTOR_HIT_SUPER 0x80000  /* a supercharge; a superflame breath adds it to FLAME */
+/* another actor's blast or shot: a cracking boulder's burst (with FLAME), level
+ * 19's aimed bolt; boulders and roaming rams react to it */
+#define ACTOR_HIT_BLAST 0x40000
+/* a supercharge; a superflame breath adds it to FLAME */
+#define ACTOR_HIT_SUPER 0x80000
 /* Actor.flags bit 0: another actor reached it (a homing wisp or a waypoint
  * runner arriving at its target; levels 13-15); level 14's bolt caster,
  * chunk operator and runner spawner flinch on it. */
 #define ACTOR_NUDGED 0x1
 /* Any hit from Spyro's own attacks (flame, charge, super). */
-#define ACTOR_HIT_BY_SPYRO (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)
+#define ACTOR_HIT_BY_SPYRO                                                     \
+  (ACTOR_HIT_FLAME | ACTOR_HIT_CHARGE | ACTOR_HIT_SUPER)
 #define ACTOR_HIT_ANY (ACTOR_HIT_BY_SPYRO | ACTOR_HIT_BLAST)
 
 /* `flags` of the actor movers (MoveActorAlongHeading, MoveActorAlongAngle,
  * MoveActorByDelta, which reads only MOVE_LIFT, TryMoveActorForward), passed
  * through by SteerActorAroundPoint and PivotActorAlongPath. */
-#define MOVE_LIFT 0x01         /* probe the world MOVE_LIFT_HEIGHT + radius higher (undone after) */
-#define MOVE_LIFT_HEIGHT 0x12C /* MOVE_LIFT's probe lift above the actor, before its radius */
+/* probe the world MOVE_LIFT_HEIGHT + radius higher (undone after) */
+#define MOVE_LIFT 0x01
+/* MOVE_LIFT's probe lift above the actor, before its radius */
+#define MOVE_LIFT_HEIGHT 0x12C
 /* How far above a point the FindGroundHeightBelow probes start, so a point
  * resting on (or just under) a floor still finds it. */
 #define GROUND_PROBE_LIFT 0x400
 /* FindGroundHeightBelow depth that reaches any floor under the point. */
 #define GROUND_PROBE_FAR 0x10000
-#define MOVE_PASS_ACTORS 0x02  /* actors never block: the step is pushed out of them (CONTACT_PUSH_OUT) */
-#define MOVE_FOLLOW_FLOOR 0x04 /* ease Z toward the probed floor (snap when close) */
-#define MOVE_STEP_LIMIT 0x10   /* reject a step up or down past the step height */
-#define MOVE_SLIDE 0x20        /* world contact: slide to the resolved point, don't reject */
-#define MOVE_SLOPE_LIMIT 0x40  /* reject a near-vertical floor (MoveActorAlongHeading) */
-#define MOVE_STRAFE 0x08       /* SteerActorAroundPoint: face the target, move along the heading */
-#define MOVE_CHECK_Z 0x100     /* PivotActorAlongPath: arrival also needs Z within `thresh` */
-#define MOVE_PROBES_FLOOR (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLOPE_LIMIT)
+/* actors never block: the step is pushed out of them (CONTACT_PUSH_OUT) */
+#define MOVE_PASS_ACTORS 0x02
+/* ease Z toward the probed floor (snap when close) */
+#define MOVE_FOLLOW_FLOOR 0x04
+/* reject a step up or down past the step height */
+#define MOVE_STEP_LIMIT 0x10
+/* world contact: slide to the resolved point, don't reject */
+#define MOVE_SLIDE 0x20
+/* reject a near-vertical floor (MoveActorAlongHeading) */
+#define MOVE_SLOPE_LIMIT 0x40
+/* SteerActorAroundPoint: face the target, move along the heading */
+#define MOVE_STRAFE 0x08
+/* PivotActorAlongPath: arrival also needs Z within `thresh` */
+#define MOVE_CHECK_Z 0x100
+#define MOVE_PROBES_FLOOR                                                      \
+  (MOVE_FOLLOW_FLOOR | MOVE_STEP_LIMIT | MOVE_SLOPE_LIMIT)
 
 /* MoveActorAlongHeading / MoveActorAlongAngle / MoveActorByDelta results
  * (DriveActorTrackedMove passes them on, or MOVED_LANDED). */
 #define MOVED_OK 0        /* the step was committed */
 #define MOVED_HIT_ACTOR 1 /* an actor's contact sphere stopped it */
-#define MOVED_BLOCKED 2   /* world collision, step height or slope rejected it */
-#define MOVED_LANDED 3    /* DriveActorTrackedMove: the fall ended on the floor */
+/* world collision, step height or slope rejected it */
+#define MOVED_BLOCKED 2
+/* DriveActorTrackedMove: the fall ended on the floor */
+#define MOVED_LANDED 3
 
 /* PivotActorAlongPath / SteerActorAlongWaypoints result on reaching node n:
  * the flag is set and the low byte is the node. */
@@ -264,8 +302,9 @@ typedef struct NameLetterState {
 
 /* Actor.animFlags bits (TickActorAnims). */
 #define ACTOR_ANIM_NEW_FRAME 0x01 /* stepped onto a new frame this tick */
-#define ACTOR_ANIM_DONE 0x02      /* the animation finished (g_nActorAnimDone) */
-#define ACTOR_ANIM_EXTRA_STEP 0x04 /* the long-frame extra pass stepped again */
+#define ACTOR_ANIM_DONE 0x02 /* the animation finished (g_nActorAnimDone) */
+/* the long-frame extra pass stepped again */
+#define ACTOR_ANIM_EXTRA_STEP 0x04
 /* Actor.frameProgress: TickActorAnims adds frameRate every tick and steps a
  * frame when the sum reaches ANIM_STEP. ANIM_RATE_TICKS(n) is the rate that
  * steps every n ticks. A pose change usually seeds frameProgress with the
@@ -280,16 +319,17 @@ typedef struct NameLetterState {
 #define ANIM_TICK_HALF_RATE 1
 /* Actor.groundCode bit 31: the packed contact is valid. */
 #define ACTOR_GROUND_VALID 0x80000000
-/* Actor.killGroup: the group number, and bit 7, which latches the death drop. */
+/* Actor.killGroup: the group number, and bit 7, which latches the death
+ * drop. */
 #define ACTOR_KILL_GROUP_MASK 0x7F
 #define ACTOR_KILL_DROPPED 0x80
 /* Kill groups BuildLoadedLevelRuntime treats specially when it reloads a level
  * whose saved kill bitmap has the actor. Other groups >= 0x20 despawn if they
- * died before the last checkpoint and otherwise respawn as a gem roll; groups
- * < 0x20 respawn as long as one member survived the checkpoint. In level
- * data, gems, chests, seed pods, followers and dragon statues are NEVER_RESPAWN;
- * escorts, villagers and a few bosses ALWAYS_RESPAWN; 0x7F marks actors
- * outside the kill sets (props, ambient sounds, checkpoints, save hosts). */
+ * died before the last checkpoint and otherwise respawn as a gem roll; groups <
+ * 0x20 respawn as long as one member survived the checkpoint. In level data,
+ * gems, chests, seed pods, followers and dragon statues are NEVER_RESPAWN;
+ * escorts, villagers and a few bosses ALWAYS_RESPAWN; 0x7F marks actors outside
+ * the kill sets (props, ambient sounds, checkpoints, save hosts). */
 #define ACTOR_KILL_GROUP_NEVER_RESPAWN 0x7D  /* any saved kill despawns it */
 #define ACTOR_KILL_GROUP_ALWAYS_RESPAWN 0x7E /* always back, as a gem roll */
 /* Actor.renderList sign bit: draw through BuildSecondaryActorDrawList, which
@@ -312,7 +352,8 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
  * 2.7 does not mark it in-struct, so the scheduler and cse keep it ordered
  * against scalar global stores; a few matched functions need that order.
  * Use it only where `actor->field` was measured to change the output. */
-#define ACTOR_RAW(actor, type, field) (*(type *)((char *)(actor) + ACTOR_OFFSET(field)))
+#define ACTOR_RAW(actor, type, field)                                          \
+  (*(type *)((char *)(actor) + ACTOR_OFFSET(field)))
 
 /* Actor->type values: one global g_apActorMeshTable index space. Every type
  * handled by more than one level's UpdateActors runs the same body in each,
@@ -332,282 +373,590 @@ typedef char ActorSizeCheck[sizeof(Actor) == ACTOR_SIZE ? 1 : -1];
  * (Level 23's class 0 is CYCLER by elimination: its other three classes are
  * TARGET, BANKER and CHEST.) */
 enum ActorType {
-  ACTOR_TYPE_PORTAL_NAME = 1,          /* hub portal name text, shown while the camera faces the portal */
-  ACTOR_TYPE_LEVEL_EXIT = 9,       /* exit whirlwind: lifts Spyro back to the hub */
-  ACTOR_TYPE_PATH_PATROLLER = 10, /* walks its path, turning back at the ends unless it loops (PathState) */
+  /* hub portal name text, shown while the camera faces the portal */
+  ACTOR_TYPE_PORTAL_NAME = 1,
+  ACTOR_TYPE_LEVEL_EXIT = 9, /* exit whirlwind: lifts Spyro back to the hub */
+  /* walks its path, turning back at the ends unless it loops (PathState) */
+  ACTOR_TYPE_PATH_PATROLLER = 10,
   ACTOR_TYPE_TIMED_EMITTER = 11, /* particle emitter on a random timer */
-  ACTOR_TYPE_FOLLOWER = 13,        /* rides a parent actor, released in turn when it dies (FollowState) */
-  ACTOR_TYPE_EXTRA_LIFE = 14,      /* collected: g_nExtraLives + 1 */
-  ACTOR_TYPE_SPARX_FOOD = 15,      /* collected: g_nSparxFoodCount + 1 (20: a life) */
-  ACTOR_TYPE_BUTTERFLY = 16,       /* eaten by Sparx: g_nSparxHealth + 1 */
-  ACTOR_TYPE_AIMED_SHOT = 17, /* levels 5/17/23/34: leaves its parent's facing aimed at Spyro (speed 0xA0); despawns on timeout, a world hit or reaching Spyro (DriftState) */
+  /* rides a parent actor, released in turn when it dies (FollowState) */
+  ACTOR_TYPE_FOLLOWER = 13,
+  ACTOR_TYPE_EXTRA_LIFE = 14, /* collected: g_nExtraLives + 1 */
+  /* collected: g_nSparxFoodCount + 1 (20: a life) */
+  ACTOR_TYPE_SPARX_FOOD = 15,
+  ACTOR_TYPE_BUTTERFLY = 16, /* eaten by Sparx: g_nSparxHealth + 1 */
+  /* levels 5/17/23/34: leaves its parent's facing aimed at Spyro (speed 0xA0);
+   * despawns on timeout, a world hit or reaching Spyro (DriftState) */
+  ACTOR_TYPE_AIMED_SHOT = 17,
   ACTOR_TYPE_PRESSURE_SWITCH = 18, /* level 0: pressure switch (SwitchState) */
-  ACTOR_TYPE_PATROL_WARD = 23, /* level 3: patrol guard (WardState) */
-  ACTOR_TYPE_GUNNER = 28, /* level 20: wakes its partner, turns to it, guards and fires at Spyro (GunnerState) */
-  ACTOR_TYPE_LURKER_TETHER = 31, /* level 20: the tether ACTOR_TYPE_LURKER drags Spyro with; no UpdateActors arm */
-  ACTOR_TYPE_CARRIED_EGG = 32, /* level 19: rides attach point 0 of the bolt sentry that spawns it while the sentry stays in BSENTRY_THROW */
-  ACTOR_TYPE_EGG_THIEF = 33,       /* runs off with a dragon egg (34), drops it when hit (ThiefState) */
-  ACTOR_TYPE_DRAGON_EGG = 34,      /* recovered egg: rises, rolls the HUD egg tally */
-  ACTOR_TYPE_BOLT_GUARD = 35, /* level 19: scatters when hit, fires type 494 bolts (BoltGuardState) */
-  ACTOR_TYPE_PATH_WALKER = 36, /* waits for Spyro, then paces its path (PathState) */
-  ACTOR_TYPE_RIM_RIDER = 37, /* level 16: rides its parent's rim, drifts toward Spyro, spawns ACTOR_TYPE_RIM_RIDER_HELPER (RimState) */
-  ACTOR_TYPE_SPLIT_SHOT = 38, /* levels 12/15/16/27: launched at Spyro on its thrower's release frame; splits into four more of itself when it reaches him */
-  ACTOR_TYPE_RIM_RIDER_HELPER = 39, /* level 16: follows its owner facing the camera until released (HelperState) */
-  ACTOR_TYPE_BIG_CHARGING_RAM = 45, /* level 28: ACTOR_TYPE_CHARGING_RAM's big kind (shorter reach; only a charge hurts it) */
-  ACTOR_TYPE_CHARGING_RAM = 46, /* level 28: paces, charges when Spyro is close and not looking (ChargingRamState) */
-  ACTOR_TYPE_THROWN_ROCK = 47, /* level 28: carried and thrown at Spyro's feet by Jacques; smashes on landing (CarriedRockState) */
+  ACTOR_TYPE_PATROL_WARD = 23,     /* level 3: patrol guard (WardState) */
+  /* level 20: wakes its partner, turns to it, guards and fires at Spyro
+   * (GunnerState) */
+  ACTOR_TYPE_GUNNER = 28,
+  /* level 20: the tether ACTOR_TYPE_LURKER drags Spyro with; no UpdateActors
+   * arm */
+  ACTOR_TYPE_LURKER_TETHER = 31,
+  /* level 19: rides attach point 0 of the bolt sentry that spawns it while the
+   * sentry stays in BSENTRY_THROW */
+  ACTOR_TYPE_CARRIED_EGG = 32,
+  /* runs off with a dragon egg (34), drops it when hit (ThiefState) */
+  ACTOR_TYPE_EGG_THIEF = 33,
+  /* recovered egg: rises, rolls the HUD egg tally */
+  ACTOR_TYPE_DRAGON_EGG = 34,
+  /* level 19: scatters when hit, fires type 494 bolts (BoltGuardState) */
+  ACTOR_TYPE_BOLT_GUARD = 35,
+  /* waits for Spyro, then paces its path (PathState) */
+  ACTOR_TYPE_PATH_WALKER = 36,
+  /* level 16: rides its parent's rim, drifts toward Spyro, spawns
+   * ACTOR_TYPE_RIM_RIDER_HELPER (RimState) */
+  ACTOR_TYPE_RIM_RIDER = 37,
+  /* levels 12/15/16/27: launched at Spyro on its thrower's release frame;
+   * splits into four more of itself when it reaches him */
+  ACTOR_TYPE_SPLIT_SHOT = 38,
+  /* level 16: follows its owner facing the camera until released
+   * (HelperState) */
+  ACTOR_TYPE_RIM_RIDER_HELPER = 39,
+  /* level 28: ACTOR_TYPE_CHARGING_RAM's big kind (shorter reach; only a charge
+   * hurts it) */
+  ACTOR_TYPE_BIG_CHARGING_RAM = 45,
+  /* level 28: paces, charges when Spyro is close and not looking
+   * (ChargingRamState) */
+  ACTOR_TYPE_CHARGING_RAM = 46,
+  /* level 28: carried and thrown at Spyro's feet by Jacques; smashes on landing
+   * (CarriedRockState) */
+  ACTOR_TYPE_THROWN_ROCK = 47,
   ACTOR_TYPE_METALHEAD = 48, /* level 22 boss (MetalheadState) */
-  ACTOR_TYPE_EXIT_GATED_PROP = 49, /* level 0: sequenced prop gated on the exit vortices (AnimState) */
-  ACTOR_TYPE_POST_GRABBER = 50, /* level 25: seizes Spyro in front of it under a scripted camera, then walks back to its post */
-  ACTOR_TYPE_GRABBER_LOOKOUT = 51, /* level 25: bolts when struck; becomes ACTOR_TYPE_POST_GRABBER once its partner is roused */
-  ACTOR_TYPE_BOMB_LOBBER = 52, /* levels 25/26: hides until Spyro is in range, then lobs ACTOR_TYPE_LOBBED_BOMB at him */
-  ACTOR_TYPE_ALARM_SENTRY = 53, /* level 25: raises the alarm when it sees Spyro; becomes ACTOR_TYPE_ROUSED_SENTRY once its partner is roused */
-  ACTOR_TYPE_ROUSED_SENTRY = 54, /* level 25: backs away when struck; otherwise watches and fires */
-  ACTOR_TYPE_LOBBED_BOMB = 55, /* levels 25/26: bursts on landing, on a timer or against Spyro */
-  ACTOR_TYPE_FALLING_ROCK = 56, /* level 25: drops until it lands, hits Spyro or times out, then shatters */
-  ACTOR_TYPE_ROLLING_BOULDER = 57, /* levels 21/22: rolls to the floor and bursts into more of itself (state 1) (BoulderState) */
-  ACTOR_TYPE_HUD_LIVES_ICON = 58, /* HUD lives icon (slot HUD_SLOT_LIVES, InitHudCounters); the sparx-food butterflies ring it */
-  ACTOR_TYPE_SINKING_BLOCK = 61, /* level 26: struck, frees its partner and sinks into the floor */
-  ACTOR_TYPE_CHASING_PATH_GUARD = 62, /* level 26: patrols its path, turns on Spyro and chases; knocked away when hit */
-  ACTOR_TYPE_PLATFORM_POD = 65, /* level 22: raises four ACTOR_TYPE_BOBBING_PLATFORMs and lobs ACTOR_TYPE_POD_SHOTs (PlatformPodState) */
+  /* level 0: sequenced prop gated on the exit vortices (AnimState) */
+  ACTOR_TYPE_EXIT_GATED_PROP = 49,
+  /* level 25: seizes Spyro in front of it under a scripted camera, then walks
+   * back to its post */
+  ACTOR_TYPE_POST_GRABBER = 50,
+  /* level 25: bolts when struck; becomes ACTOR_TYPE_POST_GRABBER once its
+   * partner is roused */
+  ACTOR_TYPE_GRABBER_LOOKOUT = 51,
+  /* levels 25/26: hides until Spyro is in range, then lobs
+   * ACTOR_TYPE_LOBBED_BOMB at him */
+  ACTOR_TYPE_BOMB_LOBBER = 52,
+  /* level 25: raises the alarm when it sees Spyro; becomes
+   * ACTOR_TYPE_ROUSED_SENTRY once its partner is roused */
+  ACTOR_TYPE_ALARM_SENTRY = 53,
+  /* level 25: backs away when struck; otherwise watches and fires */
+  ACTOR_TYPE_ROUSED_SENTRY = 54,
+  /* levels 25/26: bursts on landing, on a timer or against Spyro */
+  ACTOR_TYPE_LOBBED_BOMB = 55,
+  /* level 25: drops until it lands, hits Spyro or times out, then shatters */
+  ACTOR_TYPE_FALLING_ROCK = 56,
+  /* levels 21/22: rolls to the floor and bursts into more of itself (state 1)
+   * (BoulderState) */
+  ACTOR_TYPE_ROLLING_BOULDER = 57,
+  /* HUD lives icon (slot HUD_SLOT_LIVES, InitHudCounters); the sparx-food
+   * butterflies ring it */
+  ACTOR_TYPE_HUD_LIVES_ICON = 58,
+  /* level 26: struck, frees its partner and sinks into the floor */
+  ACTOR_TYPE_SINKING_BLOCK = 61,
+  /* level 26: patrols its path, turns on Spyro and chases; knocked away when
+   * hit */
+  ACTOR_TYPE_CHASING_PATH_GUARD = 62,
+  /* level 22: raises four ACTOR_TYPE_BOBBING_PLATFORMs and lobs
+   * ACTOR_TYPE_POD_SHOTs (PlatformPodState) */
+  ACTOR_TYPE_PLATFORM_POD = 65,
   ACTOR_TYPE_TETHERED_GUARD = 66, /* level 15: tethered guard (TetherState) */
-  ACTOR_TYPE_SEED_POD_SHARD = 67,    /* 67..69: seed pod burst (67/68 bounce, 69 tumbles) */
-  ACTOR_TYPE_LOBBED_BOLT = 70, /* level 22: arcs along its heading, bursts into sparks on landing (LobbedBoltState) */
-  ACTOR_TYPE_GLYPH_BANG = 0x4B,   /* text glyph '!' (BuildTextSprites) */
-  ACTOR_TYPE_GLYPH_COMMA = 0x4C,  /* text glyph ','; BuildTextSprites also draws any other
-                                   * non-alphanumeric raised as an apostrophe, and floating
-                                   * names use it for their non-A..Z characters */
-  ACTOR_TYPE_COMET_SPARK = 77, /* level 24: dropped by ACTOR_TYPE_COMET; replays its animation subMode times, then is removed */
-  ACTOR_TYPE_RIDING_FLIGHT_TARGET = 78, /* flight levels 5/29: rides its host's attach point 0; flamed, pays out its reward, tallies, blasts (ACTOR_HIT_SUPER) and bursts into tumble shards (RiderState) */
-  ACTOR_TYPE_POD_SHOT = 82, /* level 22: flies until it hits the floor, a wall or times out (PodShotState) */
-  ACTOR_TYPE_GEM_1 = 0x53,         /* gems, by CollectPickupActor's value */
+  /* 67..69: seed pod burst (67/68 bounce, 69 tumbles) */
+  ACTOR_TYPE_SEED_POD_SHARD = 67,
+  /* level 22: arcs along its heading, bursts into sparks on landing
+   * (LobbedBoltState) */
+  ACTOR_TYPE_LOBBED_BOLT = 70,
+  ACTOR_TYPE_GLYPH_BANG = 0x4B, /* text glyph '!' (BuildTextSprites) */
+  /* text glyph ','; BuildTextSprites also draws any other non-alphanumeric
+   * raised as an apostrophe, and floating names use it for their non-A..Z
+   * characters */
+  ACTOR_TYPE_GLYPH_COMMA = 0x4C,
+  /* level 24: dropped by ACTOR_TYPE_COMET; replays its animation subMode times,
+   * then is removed */
+  ACTOR_TYPE_COMET_SPARK = 77,
+  /* flight levels 5/29: rides its host's attach point 0; flamed, pays out its
+   * reward, tallies, blasts (ACTOR_HIT_SUPER) and bursts into tumble shards
+   * (RiderState) */
+  ACTOR_TYPE_RIDING_FLIGHT_TARGET = 78,
+  /* level 22: flies until it hits the floor, a wall or times out
+   * (PodShotState) */
+  ACTOR_TYPE_POD_SHOT = 82,
+  ACTOR_TYPE_GEM_1 = 0x53, /* gems, by CollectPickupActor's value */
   ACTOR_TYPE_GEM_2 = 0x54,
   ACTOR_TYPE_GEM_5 = 0x55,
   ACTOR_TYPE_GEM_10 = 0x56,
   ACTOR_TYPE_GEM_25 = 0x57,
-  ACTOR_TYPE_FORMATION_ESCORT = 88, /* level 26: follows its leader on a ring, flies off when the leader breaks away */
-  ACTOR_TYPE_COMET_CANNON = 91, /* level 24: blasts Spyro in its sights, or lobs ACTOR_TYPE_COMET at its trigger's target (CometCannonState) */
-  ACTOR_TYPE_LUNGING_GUARD = 92, /* level 24: wakes its partner, paces, lunges; spins away when struck */
-  ACTOR_TYPE_GROUND_BOUNCE_SHARD = 93, /* levels 19/22: explosion shard with a ground bounce (TumbleState) */
-  ACTOR_TYPE_BOULDER_THROWER = 100, /* level 21: picks up and hurls ACTOR_TYPE_ROLLING_BOULDER, rides its partner, charges (BoulderThrowerState) */
-  ACTOR_TYPE_GATEKEEPER = 101, /* level 21: releases its run of keys as Spyro approaches (GatekeeperState) */
-  ACTOR_TYPE_BOULDER_THROWER_B = 102, /* level 22's ACTOR_TYPE_BOULDER_THROWER */
-  ACTOR_TYPE_COMET = 104, /* level 24: flies its arc with a fading trail, dropping ACTOR_TYPE_COMET_SPARK (CometState) */
-  ACTOR_TYPE_CARRIER = 109, /* level 14: flying carrier that follows Spyro and can be ridden (CarrierState) */
-  ACTOR_TYPE_SAVE_HOST = 110,      /* hovers near its anchor, opens the save menu (SaveHostState) */
-  ACTOR_TYPE_REARING_CRITTER = 113, /* level 1: idles, rears up at Spyro, spins away when knocked back (RearState) */
+  /* level 26: follows its leader on a ring, flies off when the leader breaks
+   * away */
+  ACTOR_TYPE_FORMATION_ESCORT = 88,
+  /* level 24: blasts Spyro in its sights, or lobs ACTOR_TYPE_COMET at its
+   * trigger's target (CometCannonState) */
+  ACTOR_TYPE_COMET_CANNON = 91,
+  /* level 24: wakes its partner, paces, lunges; spins away when struck */
+  ACTOR_TYPE_LUNGING_GUARD = 92,
+  /* levels 19/22: explosion shard with a ground bounce (TumbleState) */
+  ACTOR_TYPE_GROUND_BOUNCE_SHARD = 93,
+  /* level 21: picks up and hurls ACTOR_TYPE_ROLLING_BOULDER, rides its partner,
+   * charges (BoulderThrowerState) */
+  ACTOR_TYPE_BOULDER_THROWER = 100,
+  /* level 21: releases its run of keys as Spyro approaches (GatekeeperState) */
+  ACTOR_TYPE_GATEKEEPER = 101,
+  /* level 22's ACTOR_TYPE_BOULDER_THROWER */
+  ACTOR_TYPE_BOULDER_THROWER_B = 102,
+  /* level 24: flies its arc with a fading trail, dropping
+   * ACTOR_TYPE_COMET_SPARK (CometState) */
+  ACTOR_TYPE_COMET = 104,
+  /* level 14: flying carrier that follows Spyro and can be ridden
+   * (CarrierState) */
+  ACTOR_TYPE_CARRIER = 109,
+  /* hovers near its anchor, opens the save menu (SaveHostState) */
+  ACTOR_TYPE_SAVE_HOST = 110,
+  /* level 1: idles, rears up at Spyro, spins away when knocked back
+   * (RearState) */
+  ACTOR_TYPE_REARING_CRITTER = 113,
   ACTOR_TYPE_PATH_ENEMY = 114, /* level 0: path-following enemy (WalkerState) */
-  ACTOR_TYPE_GUARD_PAIR = 115, /* level 2: charges Spyro when near and level, cues its partner (GuardPairState) */
-  ACTOR_TYPE_SPARX = 0x78,         /* g_pSparxActor (SparxState) */
+  /* level 2: charges Spyro when near and level, cues its partner
+   * (GuardPairState) */
+  ACTOR_TYPE_GUARD_PAIR = 115,
+  ACTOR_TYPE_SPARX = 0x78, /* g_pSparxActor (SparxState) */
   ACTOR_TYPE_SENTRY = 121, /* level 1: sentry (SentryState) */
-  ACTOR_TYPE_LANTERN = 122, /* level 25: lit and snuffed by Spyro; its glow node follows */
-  ACTOR_TYPE_LANTERN_FLAME = 124, /* level 25: removed when its animation ends */
-  ACTOR_TYPE_SINGING_PATH_WALKER = 126, /* levels 24/28: walks its path, sings while it rests, can be carried and thrown by its rider (PathWalkerState) */
-  ACTOR_TYPE_CHARGE_REACT_PROP = 129, /* levels 2/25: a charge plays its reaction animation once */
-  ACTOR_TYPE_BIG_LUNGING_GUARD = 130, /* level 24: ACTOR_TYPE_LUNGING_GUARD plus two followers and a growl */
-  ACTOR_TYPE_BREAKABLE_WALL_PART = 132, /* level 27: one of ACTOR_TYPE_BREAKABLE_WALL's four parts */
-  ACTOR_TYPE_RUBBLE_SHARD = 133, /* level 27: explosion shard with a ground bounce (TumbleState); also 215 */
-  ACTOR_TYPE_ROCK_THROWER = 134, /* level 27: throws ACTOR_TYPE_FALLING_CHUNK rocks at Spyro (RockThrowerState) */
-  ACTOR_TYPE_FALLING_CHUNK = 135, /* level 27: rides the floor or falls; bursts into rubble (FallingChunkState) */
-  ACTOR_TYPE_BREAKABLE_WALL = 136, /* level 27: four parts; striking one blows the wall into rubble (BreakableWallState) */
-  ACTOR_TYPE_CHARGING_GUARD = 137, /* levels 18/20: turns on Spyro in range and charges; the camera pulls in after a charge */
-  ACTOR_TYPE_SUPERFLAME_GIVER_B = 142, /* level 27: second superflame giver (ACTOR_TYPE_SUPERFLAME_GIVER's body) */
-  ACTOR_TYPE_SHOCKWAVE = 143, /* level 33: set off where a trail bomb lands (ShockwaveState) */
-  ACTOR_TYPE_BURST_GUNNER = 145, /* level 32: fires bursts of type 156 shots (BurstGunnerState) */
-  ACTOR_TYPE_BREAKABLE_PROP = 146, /* level 6: a flame breaks it; a charge needs a second hit within half a second */
-  ACTOR_TYPE_SWEEP_GUNNER = 147, /* level 32: sweeps its aim between two yaw limits (SweepGunnerState) */
-  ACTOR_TYPE_LOB_GUNNER = 148, /* level 32: throws a held type 176 lob (LobGunnerState) */
-  ACTOR_TYPE_JACQUES = 150, /* level 28 boss: hops around his path ring throwing ACTOR_TYPE_THROWN_ROCK (JacquesState) */
-  ACTOR_TYPE_BOULDER_DEBRIS = 151,   /* 151..153: cracking boulder burst (151 tumbles, 152/153 spark) */
-  ACTOR_TYPE_HATCH = 154, /* level 31: opens when struck, releasing its occupant; recloses once Spyro is gone */
-  ACTOR_TYPE_FLYING_EMBER = 155, /* level 25: rides the floor trailing sparks; bursts on landing, Spyro or timeout */
+  /* level 25: lit and snuffed by Spyro; its glow node follows */
+  ACTOR_TYPE_LANTERN = 122,
+  /* level 25: removed when its animation ends */
+  ACTOR_TYPE_LANTERN_FLAME = 124,
+  /* levels 24/28: walks its path, sings while it rests, can be carried and
+   * thrown by its rider (PathWalkerState) */
+  ACTOR_TYPE_SINGING_PATH_WALKER = 126,
+  /* levels 2/25: a charge plays its reaction animation once */
+  ACTOR_TYPE_CHARGE_REACT_PROP = 129,
+  /* level 24: ACTOR_TYPE_LUNGING_GUARD plus two followers and a growl */
+  ACTOR_TYPE_BIG_LUNGING_GUARD = 130,
+  /* level 27: one of ACTOR_TYPE_BREAKABLE_WALL's four parts */
+  ACTOR_TYPE_BREAKABLE_WALL_PART = 132,
+  /* level 27: explosion shard with a ground bounce (TumbleState); also 215 */
+  ACTOR_TYPE_RUBBLE_SHARD = 133,
+  /* level 27: throws ACTOR_TYPE_FALLING_CHUNK rocks at Spyro
+   * (RockThrowerState) */
+  ACTOR_TYPE_ROCK_THROWER = 134,
+  /* level 27: rides the floor or falls; bursts into rubble
+   * (FallingChunkState) */
+  ACTOR_TYPE_FALLING_CHUNK = 135,
+  /* level 27: four parts; striking one blows the wall into rubble
+   * (BreakableWallState) */
+  ACTOR_TYPE_BREAKABLE_WALL = 136,
+  /* levels 18/20: turns on Spyro in range and charges; the camera pulls in
+   * after a charge */
+  ACTOR_TYPE_CHARGING_GUARD = 137,
+  /* level 27: second superflame giver (ACTOR_TYPE_SUPERFLAME_GIVER's body) */
+  ACTOR_TYPE_SUPERFLAME_GIVER_B = 142,
+  /* level 33: set off where a trail bomb lands (ShockwaveState) */
+  ACTOR_TYPE_SHOCKWAVE = 143,
+  /* level 32: fires bursts of type 156 shots (BurstGunnerState) */
+  ACTOR_TYPE_BURST_GUNNER = 145,
+  /* level 6: a flame breaks it; a charge needs a second hit within half a
+   * second */
+  ACTOR_TYPE_BREAKABLE_PROP = 146,
+  /* level 32: sweeps its aim between two yaw limits (SweepGunnerState) */
+  ACTOR_TYPE_SWEEP_GUNNER = 147,
+  /* level 32: throws a held type 176 lob (LobGunnerState) */
+  ACTOR_TYPE_LOB_GUNNER = 148,
+  /* level 28 boss: hops around his path ring throwing ACTOR_TYPE_THROWN_ROCK
+   * (JacquesState) */
+  ACTOR_TYPE_JACQUES = 150,
+  /* 151..153: cracking boulder burst (151 tumbles, 152/153 spark) */
+  ACTOR_TYPE_BOULDER_DEBRIS = 151,
+  /* level 31: opens when struck, releasing its occupant; recloses once Spyro is
+   * gone */
+  ACTOR_TYPE_HATCH = 154,
+  /* level 25: rides the floor trailing sparks; bursts on landing, Spyro or
+   * timeout */
+  ACTOR_TYPE_FLYING_EMBER = 155,
   ACTOR_TYPE_BURST_GUNNER_SHOT = 156, /* level 32: the burst gunner's shot */
-  ACTOR_TYPE_FLAME_CHUNK_TRIGGER = 157, /* level 2: flamed once, starts its world chunk animation (ModifyWorldChunkAnimFlags) */
-  ACTOR_TYPE_LANE_PATROLLER = 159, /* level 33: path patroller that turns back toward Spyro (LanePatrollerState) */
+  /* level 2: flamed once, starts its world chunk animation
+   * (ModifyWorldChunkAnimFlags) */
+  ACTOR_TYPE_FLAME_CHUNK_TRIGGER = 157,
+  /* level 33: path patroller that turns back toward Spyro
+   * (LanePatrollerState) */
+  ACTOR_TYPE_LANE_PATROLLER = 159,
   ACTOR_TYPE_WANDERING_CRITTER = 160, /* wanders; knocked away when hit */
-  ACTOR_TYPE_GNASTY_GNORC = 161, /* level 33 boss (GnastyState) */
-  ACTOR_TYPE_CYCLING_FLIGHT_TARGET = 162, /* level 23: rolls over four paths; flamed, pays out and tallies (CyclerState) */
-  ACTOR_TYPE_BOBBING_FLIGHT_TARGET = 163, /* level 29: flamed, pays out, tallies and throws off ACTOR_TYPE_BOBBER_SPINOFF (BobberState) */
-  ACTOR_TYPE_POST_GUARD = 165, /* level 2: steps out to the post nearer Spyro and hops at him with its partner (PostState) */
-  ACTOR_TYPE_PATH_CHARGER = 166, /* level 2: walks its path, charges Spyro down it (PatrolState) */
-  ACTOR_TYPE_TRAIL_BOMB_PUFF = 168, /* level 33: dropped by ACTOR_TYPE_TRAIL_BOMB; replays its animation subMode times, then is removed */
-  ACTOR_TYPE_TRAIL_BOMB = 169, /* level 33: Gnasty's rolling trail bomb (TrailBombState) */
+  ACTOR_TYPE_GNASTY_GNORC = 161,      /* level 33 boss (GnastyState) */
+  /* level 23: rolls over four paths; flamed, pays out and tallies
+   * (CyclerState) */
+  ACTOR_TYPE_CYCLING_FLIGHT_TARGET = 162,
+  /* level 29: flamed, pays out, tallies and throws off
+   * ACTOR_TYPE_BOBBER_SPINOFF (BobberState) */
+  ACTOR_TYPE_BOBBING_FLIGHT_TARGET = 163,
+  /* level 2: steps out to the post nearer Spyro and hops at him with its
+   * partner (PostState) */
+  ACTOR_TYPE_POST_GUARD = 165,
+  /* level 2: walks its path, charges Spyro down it (PatrolState) */
+  ACTOR_TYPE_PATH_CHARGER = 166,
+  /* level 33: dropped by ACTOR_TYPE_TRAIL_BOMB; replays its animation subMode
+   * times, then is removed */
+  ACTOR_TYPE_TRAIL_BOMB_PUFF = 168,
+  /* level 33: Gnasty's rolling trail bomb (TrailBombState) */
+  ACTOR_TYPE_TRAIL_BOMB = 169,
   ACTOR_TYPE_GATEKEEPER_B = 170, /* level 22's ACTOR_TYPE_GATEKEEPER */
-  ACTOR_TYPE_FLAME_CHUNK_SWITCH = 171, /* level 32: flamed, toggles its world chunk animation; re-arms after 0x50 frames (FlameChunkSwitchState) */
+  /* level 32: flamed, toggles its world chunk animation; re-arms after 0x50
+   * frames (FlameChunkSwitchState) */
+  ACTOR_TYPE_FLAME_CHUNK_SWITCH = 171,
   ACTOR_TYPE_KEY = 173,            /* the level key: g_nLevelKeyState = 1 */
   ACTOR_TYPE_LOCKED_CHEST = 174,   /* opened with the key, drops a reward */
   ACTOR_TYPE_LOB_GUNNER_LOB = 176, /* level 32: the lob gunner's lob */
-  ACTOR_TYPE_LOOT_THIEF = 177, /* level 34: treasure thief (LootThiefState) */
+  ACTOR_TYPE_LOOT_THIEF = 177,   /* level 34: treasure thief (LootThiefState) */
   ACTOR_TYPE_LOOT_CRITTER = 179, /* level 34: loot critter (CritterState) */
-  ACTOR_TYPE_LOOT_VORTEX = 181, /* levels 33/34 (LootVortexState) */
-  ACTOR_TYPE_BRAWLER_SPAWN = 183, /* level 7: spawned by ACTOR_TYPE_BRAWLER on frame 0x11; no level has an UpdateActors arm for it (BrawlerSpawnState) */
+  ACTOR_TYPE_LOOT_VORTEX = 181,  /* levels 33/34 (LootVortexState) */
+  /* level 7: spawned by ACTOR_TYPE_BRAWLER on frame 0x11; no level has an
+   * UpdateActors arm for it (BrawlerSpawnState) */
+  ACTOR_TYPE_BRAWLER_SPAWN = 183,
   ACTOR_TYPE_BRAWLER = 184, /* level 7: stationary brawler (BrawlerState) */
-  ACTOR_TYPE_VORTEX_TARGET = 185, /* levels 33/34: an inert marker a loot vortex is entered facing
-                                   * and flies toward (LootVortexState.target) */
-  ACTOR_TYPE_SHOOTER = 186, /* level 7: blinking sentry that fires type 197 (ShooterState) */
-  ACTOR_TYPE_HOME_TALKER = 187, /* 187..192: the homeworld talkers (levels 0/6/12/18/24/30); walking up facing one starts its actor cutscene */
-  ACTOR_TYPE_WANDERING_CRITTER_B = 193, /* levels 6/7: wanders; knocked away when hit (CritterKnockState) */
-  ACTOR_TYPE_WOOD_CHEST = 194,       /* breaks on the first hit into 0xFF..0x101 shards (BreakState) */
-  ACTOR_TYPE_WOBBLE_CHEST = 195,     /* shakes and recoils when hit, then breaks (WobbleState) */
-  ACTOR_TYPE_SHOOTER_SHOT = 197, /* level 7: the shooter's knock-back shot (ShooterShotState) */
-  ACTOR_TYPE_CHARGING_YAK = 198, /* level 9: grazes, lowers its horns and charges when Spyro comes near */
-  ACTOR_TYPE_MOUNT = 199, /* level 31: carries a rider; knocked away (dropping it) when struck */
-  ACTOR_TYPE_HATCH_CARRIER = 200, /* level 31: lifts ACTOR_TYPE_HATCH's occupant out and throws it */
-  ACTOR_TYPE_CARRIED_THROWER = 201, /* level 31: swings the floating barrel or mine it holds at Spyro (CarriedThrowerMode) */
-  ACTOR_TYPE_FLOATING_BARREL = 202, /* level 31: bobs on the water; struck, bursts with a push-back blast and sinks */
-  ACTOR_TYPE_FENCE_GUARD = 203, /* level 27: sent in by ACTOR_TYPE_FENCE_CAPTAIN (FenceGuardState) */
-  ACTOR_TYPE_FENCE_CAPTAIN = 204, /* level 27: wakes and recalls its fence guards (FenceCaptainState) */
-  ACTOR_TYPE_OVERHEAD_THROWER = 205, /* levels 9/10: spins a held gem overhead (level-data link, often none); charged, flings it at Spyro */
-  ACTOR_TYPE_BELL_A = 206, /* levels 7/8: rings when charged, spawning ACTOR_TYPE_BELL_RIPPLE (also 239/242) */
-  ACTOR_TYPE_FLOATING_MINE = 207, /* level 31: drifts like the barrel; charged, runs at the nearest target and bursts */
-  ACTOR_TYPE_HUB_PATH_GATES = 208, /* level 30: opens the hub's world-chunk paths to Twilight Harbor, Gnasty Gnorc and Gnasty's Loot as they unlock (PathGateState) */
-  ACTOR_TYPE_THROWN_SNOWBALL = 209, /* level 9: flies its arc; bursts on a timer, landing or reaching Spyro */
-  ACTOR_TYPE_BOBBING_PLATFORM = 210, /* level 22: spinning platform that bobs on a fixed period (BobbingPlatformState) */
-  ACTOR_TYPE_PATH_SNOWBALL_THROWER = 211, /* 211..212, level 9: walks its path and throws ACTOR_TYPE_THROWN_SNOWBALL at Spyro */
-  ACTOR_TYPE_CIRCLING_BIRD = 213, /* level 9: circles over Spyro, then flies back to its perch */
-  ACTOR_TYPE_SOLDIER = 214, /* level 6: patrols, guards or escorts by `kind`; gunners lob ACTOR_TYPE_FIREBALL (also 216) */
-  ACTOR_TYPE_RUBBLE_SHARD_B = 215, /* level 27: ACTOR_TYPE_RUBBLE_SHARD's twin */
+  /* levels 33/34: an inert marker a loot vortex is entered facing and flies
+   * toward (LootVortexState.target) */
+  ACTOR_TYPE_VORTEX_TARGET = 185,
+  /* level 7: blinking sentry that fires type 197 (ShooterState) */
+  ACTOR_TYPE_SHOOTER = 186,
+  /* 187..192: the homeworld talkers (levels 0/6/12/18/24/30); walking up facing
+   * one starts its actor cutscene */
+  ACTOR_TYPE_HOME_TALKER = 187,
+  /* levels 6/7: wanders; knocked away when hit (CritterKnockState) */
+  ACTOR_TYPE_WANDERING_CRITTER_B = 193,
+  /* breaks on the first hit into 0xFF..0x101 shards (BreakState) */
+  ACTOR_TYPE_WOOD_CHEST = 194,
+  /* shakes and recoils when hit, then breaks (WobbleState) */
+  ACTOR_TYPE_WOBBLE_CHEST = 195,
+  /* level 7: the shooter's knock-back shot (ShooterShotState) */
+  ACTOR_TYPE_SHOOTER_SHOT = 197,
+  /* level 9: grazes, lowers its horns and charges when Spyro comes near */
+  ACTOR_TYPE_CHARGING_YAK = 198,
+  /* level 31: carries a rider; knocked away (dropping it) when struck */
+  ACTOR_TYPE_MOUNT = 199,
+  /* level 31: lifts ACTOR_TYPE_HATCH's occupant out and throws it */
+  ACTOR_TYPE_HATCH_CARRIER = 200,
+  /* level 31: swings the floating barrel or mine it holds at Spyro
+   * (CarriedThrowerMode) */
+  ACTOR_TYPE_CARRIED_THROWER = 201,
+  /* level 31: bobs on the water; struck, bursts with a push-back blast and
+   * sinks */
+  ACTOR_TYPE_FLOATING_BARREL = 202,
+  /* level 27: sent in by ACTOR_TYPE_FENCE_CAPTAIN (FenceGuardState) */
+  ACTOR_TYPE_FENCE_GUARD = 203,
+  /* level 27: wakes and recalls its fence guards (FenceCaptainState) */
+  ACTOR_TYPE_FENCE_CAPTAIN = 204,
+  /* levels 9/10: spins a held gem overhead (level-data link, often none);
+   * charged, flings it at Spyro */
+  ACTOR_TYPE_OVERHEAD_THROWER = 205,
+  /* levels 7/8: rings when charged, spawning ACTOR_TYPE_BELL_RIPPLE (also
+   * 239/242) */
+  ACTOR_TYPE_BELL_A = 206,
+  /* level 31: drifts like the barrel; charged, runs at the nearest target and
+   * bursts */
+  ACTOR_TYPE_FLOATING_MINE = 207,
+  /* level 30: opens the hub's world-chunk paths to Twilight Harbor, Gnasty
+   * Gnorc and Gnasty's Loot as they unlock (PathGateState) */
+  ACTOR_TYPE_HUB_PATH_GATES = 208,
+  /* level 9: flies its arc; bursts on a timer, landing or reaching Spyro */
+  ACTOR_TYPE_THROWN_SNOWBALL = 209,
+  /* level 22: spinning platform that bobs on a fixed period
+   * (BobbingPlatformState) */
+  ACTOR_TYPE_BOBBING_PLATFORM = 210,
+  /* 211..212, level 9: walks its path and throws ACTOR_TYPE_THROWN_SNOWBALL at
+   * Spyro */
+  ACTOR_TYPE_PATH_SNOWBALL_THROWER = 211,
+  /* level 9: circles over Spyro, then flies back to its perch */
+  ACTOR_TYPE_CIRCLING_BIRD = 213,
+  /* level 6: patrols, guards or escorts by `kind`; gunners lob
+   * ACTOR_TYPE_FIREBALL (also 216) */
+  ACTOR_TYPE_SOLDIER = 214,
+  /* level 27: ACTOR_TYPE_RUBBLE_SHARD's twin */
+  ACTOR_TYPE_RUBBLE_SHARD_B = 215,
   ACTOR_TYPE_SOLDIER_B = 216, /* level 6: ACTOR_TYPE_SOLDIER's body */
-  ACTOR_TYPE_VAULT_TIMER = 217, /* level 34: counts the vault down on the HUD while Spyro rides the lift */
+  /* level 34: counts the vault down on the HUD while Spyro rides the lift */
+  ACTOR_TYPE_VAULT_TIMER = 217,
   ACTOR_TYPE_CATAPULT = 218, /* level 8: catapult (CatapultState) */
-  ACTOR_TYPE_CAMERA_FACING_PROP = 222, /* 222..224, level 1: turns toward the view once, on its first frame */
-  ACTOR_TYPE_FIREBALL_CANNON = 225, /* level 6: blasts Spyro in its sights, then lobs ACTOR_TYPE_FIREBALL */
-  ACTOR_TYPE_TWO_PATH_RUNNER = 226, /* level 8: two-path patroller (RunnerState) */
-  ACTOR_TYPE_SUPERFLAME_GIVER = 227, /* level 14: grants the superflame (SuperflameGiverState) */
-  ACTOR_TYPE_GUARD_LOOKOUT = 229, /* level 8: rouses its linked guard when Spyro comes in range; swipes up close (LookoutState) */
+  /* 222..224, level 1: turns toward the view once, on its first frame */
+  ACTOR_TYPE_CAMERA_FACING_PROP = 222,
+  /* level 6: blasts Spyro in its sights, then lobs ACTOR_TYPE_FIREBALL */
+  ACTOR_TYPE_FIREBALL_CANNON = 225,
+  /* level 8: two-path patroller (RunnerState) */
+  ACTOR_TYPE_TWO_PATH_RUNNER = 226,
+  /* level 14: grants the superflame (SuperflameGiverState) */
+  ACTOR_TYPE_SUPERFLAME_GIVER = 227,
+  /* level 8: rouses its linked guard when Spyro comes in range; swipes up close
+   * (LookoutState) */
+  ACTOR_TYPE_GUARD_LOOKOUT = 229,
   ACTOR_TYPE_SWOOPER = 230, /* swooping guard (SwoopState) */
-  ACTOR_TYPE_TOUGH_RAM = 231, /* level 9: ACTOR_TYPE_CHARGING_YAK that takes four hits, thrown up by each */
-  ACTOR_TYPE_BOBBER_SPINOFF = 232, /* level 29: spins off ACTOR_TYPE_BOBBING_FLIGHT_TARGET until it lands or times out (SpinRunState) */
-  ACTOR_TYPE_REBOUND_FX = 234, /* TRIGGER_REBOUND's impact: placed on Spyro's first contact point, facing the wall normal; removed when its animation ends */
-  ACTOR_TYPE_WANDERING_CRITTER_C = 236, /* levels 30/31/32: UpdateActorWander roamer; knocked away with a death drop when struck */
-  ACTOR_TYPE_FIREBALL = 237, /* level 6: flies under gravity, bursts on walls or Spyro, wakes its linked actor */
-  ACTOR_TYPE_ROAMING_CRITTER = 238, /* level 8: roams its patch; knocked away (stunned by a charge) when struck (RoamingCritterState) */
+  /* level 9: ACTOR_TYPE_CHARGING_YAK that takes four hits, thrown up by each */
+  ACTOR_TYPE_TOUGH_RAM = 231,
+  /* level 29: spins off ACTOR_TYPE_BOBBING_FLIGHT_TARGET until it lands or
+   * times out (SpinRunState) */
+  ACTOR_TYPE_BOBBER_SPINOFF = 232,
+  /* TRIGGER_REBOUND's impact: placed on Spyro's first contact point, facing the
+   * wall normal; removed when its animation ends */
+  ACTOR_TYPE_REBOUND_FX = 234,
+  /* levels 30/31/32: UpdateActorWander roamer; knocked away with a death drop
+   * when struck */
+  ACTOR_TYPE_WANDERING_CRITTER_C = 236,
+  /* level 6: flies under gravity, bursts on walls or Spyro, wakes its linked
+   * actor */
+  ACTOR_TYPE_FIREBALL = 237,
+  /* level 8: roams its patch; knocked away (stunned by a charge) when struck
+   * (RoamingCritterState) */
+  ACTOR_TYPE_ROAMING_CRITTER = 238,
   ACTOR_TYPE_BELL_B = 239, /* levels 7/8: ACTOR_TYPE_BELL_A's body */
-  ACTOR_TYPE_SUPERFLAME_GIVER_ALT = 241, /* level 27's superflame giver: wider reach, later grant frame */
-  ACTOR_TYPE_BELL_C = 242, /* levels 7/8: ACTOR_TYPE_BELL_A's body */
+  /* level 27's superflame giver: wider reach, later grant frame */
+  ACTOR_TYPE_SUPERFLAME_GIVER_ALT = 241,
+  ACTOR_TYPE_BELL_C = 242,         /* levels 7/8: ACTOR_TYPE_BELL_A's body */
   ACTOR_TYPE_DRAGON_STATUE = 0xFA, /* trapped dragon: counts the rescue */
   ACTOR_TYPE_STATUE_SHARD = 0xFB,  /* its burst shards (BurstShardState) */
-  ACTOR_TYPE_GUARD_CAPTAIN = 253, /* level 13: guard captain (CaptainState) */
-  ACTOR_TYPE_WOOD_CHEST_SHARD = 255, /* 255..257: wood chest burst (255/256 bounce, 257 tumbles) */
-  ACTOR_TYPE_GEM_DIGIT_0 = 0x104,  /* digit glyphs 0..9 (0x104..0x10D): floating gem values,
-                                    * HUD counters, text (ACTOR_TYPE_DIGIT_GLYPH) */
-  ACTOR_TYPE_VILLAGER = 270, /* levels 12/13 (VillagerState) */
-  ACTOR_TYPE_SHEPHERD = 271, /* levels 12/13 (ShepherdState) */
+  ACTOR_TYPE_GUARD_CAPTAIN = 253,  /* level 13: guard captain (CaptainState) */
+  /* 255..257: wood chest burst (255/256 bounce, 257 tumbles) */
+  ACTOR_TYPE_WOOD_CHEST_SHARD = 255,
+  /* digit glyphs 0..9 (0x104..0x10D): floating gem values, HUD counters, text
+   * (ACTOR_TYPE_DIGIT_GLYPH) */
+  ACTOR_TYPE_GEM_DIGIT_0 = 0x104,
+  ACTOR_TYPE_VILLAGER = 270,        /* levels 12/13 (VillagerState) */
+  ACTOR_TYPE_SHEPHERD = 271,        /* levels 12/13 (ShepherdState) */
   ACTOR_TYPE_GLYPH_PERCENT = 0x110, /* text glyph '%' (BuildTextSpriteChain) */
-  ACTOR_TYPE_GLYPH_SLASH = 0x115, /* text glyph '/' (BuildTextSpriteChain); spawned with the digits by the flight HUD */
+  /* text glyph '/' (BuildTextSpriteChain); spawned with the digits by the
+   * flight HUD */
+  ACTOR_TYPE_GLYPH_SLASH = 0x115,
   ACTOR_TYPE_GLYPH_QUESTION = 0x116, /* text glyph '?' (BuildTextSprites) */
-  ACTOR_TYPE_PATH_GUARD = 283, /* walks its waypoint ring, waits on its partner */
+  /* walks its waypoint ring, waits on its partner */
+  ACTOR_TYPE_PATH_GUARD = 283,
   ACTOR_TYPE_TETHER_KEEPER = 284, /* level 15: tether keeper (KeeperState) */
-  ACTOR_TYPE_SENTINEL = 285, /* level 15: sentinel (SentinelState) */
-  ACTOR_TYPE_AMBIENT_SOUND = 286,  /* plays random ambient voices, mode 2 along a path (AmbientSoundState) */
-  ACTOR_TYPE_BOUNCE_DEBRIS = 288, /* 288..289, levels 7/8: bouncing debris (BounceState) */
-  ACTOR_TYPE_PATH_RUNNER = 293, /* 293..294, level 21: runs its path ahead of Spyro, raises its goal flag on arrival */
+  ACTOR_TYPE_SENTINEL = 285,      /* level 15: sentinel (SentinelState) */
+  /* plays random ambient voices, mode 2 along a path (AmbientSoundState) */
+  ACTOR_TYPE_AMBIENT_SOUND = 286,
+  /* 288..289, levels 7/8: bouncing debris (BounceState) */
+  ACTOR_TYPE_BOUNCE_DEBRIS = 288,
+  /* 293..294, level 21: runs its path ahead of Spyro, raises its goal flag on
+   * arrival */
+  ACTOR_TYPE_PATH_RUNNER = 293,
   ACTOR_TYPE_HOMING_WISP = 295, /* homing wisp (WispState) */
-  ACTOR_TYPE_PARTNER_PLATFORM = 296, /* level 26: bobbing platform tied to a partner actor */
-  ACTOR_TYPE_PARTNER_BOUNCER = 298, /* level 26: rides its partner; thrown when the partner is charged */
-  ACTOR_TYPE_FLIGHT_CHEST = 299,     /* flight levels: flame or charge frees its reward */
-  ACTOR_TYPE_WHIRLWIND = 300,      /* lifts Spyro to its top (WhirlwindState, SPYRO_ST_LIFT) */
-  ACTOR_TYPE_BOLT_CASTER = 301, /* level 14: wakes in range and fires type 295 bolts (BoltCasterState) */
-  ACTOR_TYPE_CHUNK_OPERATOR = 302, /* level 14: drives its world chunk's animation (ChunkOperatorState) */
-  ACTOR_TYPE_RUNNER_SPAWNER = 303, /* level 14: spawns type 304 runners (RunnerSpawnerState) */
+  /* level 26: bobbing platform tied to a partner actor */
+  ACTOR_TYPE_PARTNER_PLATFORM = 296,
+  /* level 26: rides its partner; thrown when the partner is charged */
+  ACTOR_TYPE_PARTNER_BOUNCER = 298,
+  /* flight levels: flame or charge frees its reward */
+  ACTOR_TYPE_FLIGHT_CHEST = 299,
+  /* lifts Spyro to its top (WhirlwindState, SPYRO_ST_LIFT) */
+  ACTOR_TYPE_WHIRLWIND = 300,
+  /* level 14: wakes in range and fires type 295 bolts (BoltCasterState) */
+  ACTOR_TYPE_BOLT_CASTER = 301,
+  /* level 14: drives its world chunk's animation (ChunkOperatorState) */
+  ACTOR_TYPE_CHUNK_OPERATOR = 302,
+  /* level 14: spawns type 304 runners (RunnerSpawnerState) */
+  ACTOR_TYPE_RUNNER_SPAWNER = 303,
   ACTOR_TYPE_WAYPOINT_RUNNER = 304, /* level 14 (WaypointRunnerState) */
-  ACTOR_TYPE_FLEEING_WALKER = 305, /* level 14: walks one of three paths, flees Spyro (FleeingWalkerState) */
-  ACTOR_TYPE_BANKING_FLIGHT_TARGET = 308, /* flight levels 5/17/23: tweens its path banking into turns; flamed, pays out, tallies and runs off until it splashes down (RollerState) */
-  ACTOR_TYPE_SPARKLE_SHARD = 309,    /* one puff a frame; with 310/311 the burst of wobble, spin and
-                                      * locked chests and breakable rocks */
-  ACTOR_TYPE_WOOD_SHARD = 310,       /* 310..311: bounces and throws three sparks a frame */
-  ACTOR_TYPE_CRACKING_BOULDER = 312, /* shakes and smokes when hit, then bursts */
-  ACTOR_TYPE_ALARM_POST_GUARD = 314, /* level 4: patrols between posts, raises the alarm, hands off to its partner (GuardState) */
-  ACTOR_TYPE_SHEPHERD_THROW = 315, /* levels 12/13: the shepherd releases it on frame 0xE; once live it flies its heading under gravity until its timer runs out (CrookState / FallState) */
+  /* level 14: walks one of three paths, flees Spyro (FleeingWalkerState) */
+  ACTOR_TYPE_FLEEING_WALKER = 305,
+  /* flight levels 5/17/23: tweens its path banking into turns; flamed, pays
+   * out, tallies and runs off until it splashes down (RollerState) */
+  ACTOR_TYPE_BANKING_FLIGHT_TARGET = 308,
+  /* one puff a frame; with 310/311 the burst of wobble, spin and locked chests
+   * and breakable rocks */
+  ACTOR_TYPE_SPARKLE_SHARD = 309,
+  /* 310..311: bounces and throws three sparks a frame */
+  ACTOR_TYPE_WOOD_SHARD = 310,
+  /* shakes and smokes when hit, then bursts */
+  ACTOR_TYPE_CRACKING_BOULDER = 312,
+  /* level 4: patrols between posts, raises the alarm, hands off to its partner
+   * (GuardState) */
+  ACTOR_TYPE_ALARM_POST_GUARD = 314,
+  /* levels 12/13: the shepherd releases it on frame 0xE; once live it flies its
+   * heading under gravity until its timer runs out (CrookState / FallState) */
+  ACTOR_TYPE_SHEPHERD_THROW = 315,
   ACTOR_TYPE_GLYPH_PLUS = 0x13D, /* text glyph '+' (BuildTextSpriteChain) */
-  ACTOR_TYPE_FALLING_DEBRIS = 318, /* levels 13/14/15: tumbles along its velocity until its timer runs out or it leaves the screen */
+  /* levels 13/14/15: tumbles along its velocity until its timer runs out or it
+   * leaves the screen */
+  ACTOR_TYPE_FALLING_DEBRIS = 318,
   ACTOR_TYPE_GLYPH_CARET = 0x141, /* text glyph '^' (BuildTextSpriteChain) */
-  ACTOR_TYPE_RESPAWNER = 323,      /* puts dormant actors of one type back once Spyro is far (RespawnState) */
+  /* puts dormant actors of one type back once Spyro is far (RespawnState) */
+  ACTOR_TYPE_RESPAWNER = 323,
   ACTOR_TYPE_SORCERER = 326, /* level 13 (SorcererState) */
-  ACTOR_TYPE_GLYPH_PERIOD = 327, /* text glyph '.' (BuildTextSprites); also the flight clock separator: every clock slot spawns as one and the digit slots are re-typed to ACTOR_TYPE_GEM_DIGIT_0 + n */
-  ACTOR_TYPE_FLOOR_MARKER = 328, /* drops onto the floor triangle under it once, then sits there */
-  ACTOR_TYPE_SEED_POD = 329,         /* wobbles when struck, holds a floating prize above itself */
-  ACTOR_TYPE_CHECKPOINT = 331,     /* 331..333: sets the respawn anchor (SetSpawnAnchorFromActor) */
-  ACTOR_TYPE_LUNGER = 335, /* level 4: charges and leaps at Spyro, takes a few hits (LungeState) */
-  ACTOR_TYPE_ANIMATED_SCENERY = 336, /* level 0: re-randomised speed; plays its hit animation when damaged (also 342) */
+  /* text glyph '.' (BuildTextSprites); also the flight clock separator: every
+   * clock slot spawns as one and the digit slots are re-typed to
+   * ACTOR_TYPE_GEM_DIGIT_0 + n */
+  ACTOR_TYPE_GLYPH_PERIOD = 327,
+  /* drops onto the floor triangle under it once, then sits there */
+  ACTOR_TYPE_FLOOR_MARKER = 328,
+  /* wobbles when struck, holds a floating prize above itself */
+  ACTOR_TYPE_SEED_POD = 329,
+  /* 331..333: sets the respawn anchor (SetSpawnAnchorFromActor) */
+  ACTOR_TYPE_CHECKPOINT = 331,
+  /* level 4: charges and leaps at Spyro, takes a few hits (LungeState) */
+  ACTOR_TYPE_LUNGER = 335,
+  /* level 0: re-randomised speed; plays its hit animation when damaged (also
+   * 342) */
+  ACTOR_TYPE_ANIMATED_SCENERY = 336,
   ACTOR_TYPE_FLOCK_LEADER = 339, /* level 0: flock leader (FlockState) */
-  ACTOR_TYPE_FLIGHT_RING = 340, /* flight levels 11/17: spinning ring; flying through its plane tallies it (TargetState) */
-  ACTOR_TYPE_ANIMATED_SCENERY_B = 342, /* level 0: ACTOR_TYPE_ANIMATED_SCENERY's body */
-  ACTOR_TYPE_ATTACH_BEAD = 343, /* level 19: streams between its owner's attach points (AttachBeadState) */
-  ACTOR_TYPE_TIME_BONUS = 345,       /* flight time bonus 345..347: flies to the HUD clock */
-  ACTOR_TYPE_SPINNER = 349, /* level 4: idles, rears up at Spyro, spins away when knocked back (SpinnerState) */
+  /* flight levels 11/17: spinning ring; flying through its plane tallies it
+   * (TargetState) */
+  ACTOR_TYPE_FLIGHT_RING = 340,
+  /* level 0: ACTOR_TYPE_ANIMATED_SCENERY's body */
+  ACTOR_TYPE_ANIMATED_SCENERY_B = 342,
+  /* level 19: streams between its owner's attach points (AttachBeadState) */
+  ACTOR_TYPE_ATTACH_BEAD = 343,
+  /* flight time bonus 345..347: flies to the HUD clock */
+  ACTOR_TYPE_TIME_BONUS = 345,
+  /* level 4: idles, rears up at Spyro, spins away when knocked back
+   * (SpinnerState) */
+  ACTOR_TYPE_SPINNER = 349,
   ACTOR_TYPE_SEQUENCED_PROP = 350, /* level 0: sequenced prop (PropAnimState) */
-  ACTOR_TYPE_GEM_HOLDER = 351, /* levels 0/4/10/16: a hidden record with no update arm whose fixed
-                                * death drop is a gem; its owner releases it (SpawnActorDeathDrop);
-                                * state word 0 chains the next holder, -1 ends */
-  ACTOR_TYPE_FLIGHT_TARGET = 353,    /* breakable flight target: bursts into shards 374..386 when flown through */
-  ACTOR_TYPE_FLIGHT_HUD = 358,       /* flight-level HUD controller (clock digits, target tally) */
-  ACTOR_TYPE_TUMBLE_SHARD = 359, /* 359..361: falling, spinning burst shards of the riding target and level 23's cycler (TumbleState) */
-  ACTOR_TYPE_WRECK_EMBER = 362, /* flight levels 5/29: an ember from a wrecked path smoker/prop; rebounds off walls (EmberState) */
-  ACTOR_TYPE_HAZARD1_ENTER_FX = 363, /* g_anHazardEnterSpawnType[1]: one-shot effect at Spyro as he enters a kind-1 hazard */
-  ACTOR_TYPE_HAZARD1_DEATH_FX = 364, /* g_anHazardTimeoutSpawnType[1]: one-shot effect when the kind-1 hazard kills him */
-  ACTOR_TYPE_SHEMP_GUARD = 370, /* level 10: Doctor Shemp's guard (ShempGuardState) */
+  /* levels 0/4/10/16: a hidden record with no update arm whose fixed death drop
+   * is a gem; its owner releases it (SpawnActorDeathDrop); state word 0 chains
+   * the next holder, -1 ends */
+  ACTOR_TYPE_GEM_HOLDER = 351,
+  /* breakable flight target: bursts into shards 374..386 when flown through */
+  ACTOR_TYPE_FLIGHT_TARGET = 353,
+  /* flight-level HUD controller (clock digits, target tally) */
+  ACTOR_TYPE_FLIGHT_HUD = 358,
+  /* 359..361: falling, spinning burst shards of the riding target and level
+   * 23's cycler (TumbleState) */
+  ACTOR_TYPE_TUMBLE_SHARD = 359,
+  /* flight levels 5/29: an ember from a wrecked path smoker/prop; rebounds off
+   * walls (EmberState) */
+  ACTOR_TYPE_WRECK_EMBER = 362,
+  /* g_anHazardEnterSpawnType[1]: one-shot effect at Spyro as he enters a kind-1
+   * hazard */
+  ACTOR_TYPE_HAZARD1_ENTER_FX = 363,
+  /* g_anHazardTimeoutSpawnType[1]: one-shot effect when the kind-1 hazard kills
+   * him */
+  ACTOR_TYPE_HAZARD1_DEATH_FX = 364,
+  /* level 10: Doctor Shemp's guard (ShempGuardState) */
+  ACTOR_TYPE_SHEMP_GUARD = 370,
   ACTOR_TYPE_DOCTOR_SHEMP = 371, /* level 10 boss (ShempState) */
-  ACTOR_TYPE_SHEMP_LOOKOUT = 372, /* level 10: Doctor Shemp's lookout (LookoutState) */
-  ACTOR_TYPE_FLIGHT_TARGET_SHARD = 374, /* 374..386: a flight target's burst shards */
-  ACTOR_TYPE_TALLY_ICON_RING = 387,   /* flight HUD icon for ACTOR_TYPE_FLIGHT_RING */
-  ACTOR_TYPE_TALLY_ICON_TARGET = 388, /* flight HUD icon for ACTOR_TYPE_FLIGHT_TARGET */
-  ACTOR_TYPE_TALLY_ICON_CHEST = 389,  /* flight HUD icon for ACTOR_TYPE_FLIGHT_CHEST */
-  ACTOR_TYPE_SPIN_CHEST = 390,       /* each charge spins it faster; spun fast enough, or flamed, it bursts */
-  ACTOR_TYPE_PATCH_RIDER = 391, /* level 0: rides a collision triangle (PatchRideState) */
-  ACTOR_TYPE_SPIN_CHEST_LID = 392,   /* spins on ACTOR_TYPE_SPIN_CHEST; launched at the nearest enemy
-                                      * in front of Spyro when the chest bursts */
-  ACTOR_TYPE_TALLY_ICON_BANKER = 393, /* flight HUD icon for ACTOR_TYPE_BANKING_FLIGHT_TARGET */
-  ACTOR_TYPE_TALLY_ICON_BOBBER = 394, /* flight HUD icon for ACTOR_TYPE_BOBBING_FLIGHT_TARGET */
-  ACTOR_TYPE_LINKED_FOLLOWER = 395, /* level 3: follows its linked actor's mode; knocked away when hit (Follower) */
-  ACTOR_TYPE_TALLY_ICON_CYCLER = 396, /* flight HUD icon for ACTOR_TYPE_CYCLING_FLIGHT_TARGET */
-  ACTOR_TYPE_FLAME_FLIGHT_TARGET = 397, /* flight levels 11/29: flamed, tallies, pays out and becomes ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT */
-  ACTOR_TYPE_PORTAL_GUIDE = 398,   /* flies Spyro through a portal (PortalState) */
-  ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT = 399, /* the flame flight target after it paid out */
-  ACTOR_TYPE_SPLASH = 400, /* one-shot splash where an actor lands in water (spawned with SFX_SPLASH) */
-  ACTOR_TYPE_BREAKABLE_ROCK = 401,   /* shakes when struck; a charge shatters it */
-  ACTOR_TYPE_CANNON = 402, /* smokes while it builds up, fires, then flies its ball along a path */
-  ACTOR_TYPE_LURKER = 403, /* level 20: drags Spyro with a tether actor (LurkerState) */
+  /* level 10: Doctor Shemp's lookout (LookoutState) */
+  ACTOR_TYPE_SHEMP_LOOKOUT = 372,
+  /* 374..386: a flight target's burst shards */
+  ACTOR_TYPE_FLIGHT_TARGET_SHARD = 374,
+  /* flight HUD icon for ACTOR_TYPE_FLIGHT_RING */
+  ACTOR_TYPE_TALLY_ICON_RING = 387,
+  /* flight HUD icon for ACTOR_TYPE_FLIGHT_TARGET */
+  ACTOR_TYPE_TALLY_ICON_TARGET = 388,
+  /* flight HUD icon for ACTOR_TYPE_FLIGHT_CHEST */
+  ACTOR_TYPE_TALLY_ICON_CHEST = 389,
+  /* each charge spins it faster; spun fast enough, or flamed, it bursts */
+  ACTOR_TYPE_SPIN_CHEST = 390,
+  /* level 0: rides a collision triangle (PatchRideState) */
+  ACTOR_TYPE_PATCH_RIDER = 391,
+  /* spins on ACTOR_TYPE_SPIN_CHEST; launched at the nearest enemy in front of
+   * Spyro when the chest bursts */
+  ACTOR_TYPE_SPIN_CHEST_LID = 392,
+  /* flight HUD icon for ACTOR_TYPE_BANKING_FLIGHT_TARGET */
+  ACTOR_TYPE_TALLY_ICON_BANKER = 393,
+  /* flight HUD icon for ACTOR_TYPE_BOBBING_FLIGHT_TARGET */
+  ACTOR_TYPE_TALLY_ICON_BOBBER = 394,
+  /* level 3: follows its linked actor's mode; knocked away when hit
+   * (Follower) */
+  ACTOR_TYPE_LINKED_FOLLOWER = 395,
+  /* flight HUD icon for ACTOR_TYPE_CYCLING_FLIGHT_TARGET */
+  ACTOR_TYPE_TALLY_ICON_CYCLER = 396,
+  /* flight levels 11/29: flamed, tallies, pays out and becomes
+   * ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT */
+  ACTOR_TYPE_FLAME_FLIGHT_TARGET = 397,
+  /* flies Spyro through a portal (PortalState) */
+  ACTOR_TYPE_PORTAL_GUIDE = 398,
+  /* the flame flight target after it paid out */
+  ACTOR_TYPE_FLAME_FLIGHT_TARGET_SPENT = 399,
+  /* one-shot splash where an actor lands in water (spawned with SFX_SPLASH) */
+  ACTOR_TYPE_SPLASH = 400,
+  /* shakes when struck; a charge shatters it */
+  ACTOR_TYPE_BREAKABLE_ROCK = 401,
+  /* smokes while it builds up, fires, then flies its ball along a path */
+  ACTOR_TYPE_CANNON = 402,
+  /* level 20: drags Spyro with a tether actor (LurkerState) */
+  ACTOR_TYPE_LURKER = 403,
   ACTOR_TYPE_HAZARD0_DEATH_FX = 405, /* g_anHazardTimeoutSpawnType[0] */
-  ACTOR_TYPE_BLASTABLE_PATH_SMOKER = 407, /* flight levels 5/29: tweens its path puffing smoke from attach point 3; a blast (ACTOR_HIT_SUPER) wrecks it (SmokerState) */
-  ACTOR_TYPE_BLASTABLE_PATH_PROP = 408, /* flight levels 5/29: ACTOR_TYPE_BLASTABLE_PATH_SMOKER without the smoke */
-  ACTOR_TYPE_HOPPING_CRITTER = 412, /* level 2: wanders; knocked back when hit, then recovers (HopState) */
-  ACTOR_TYPE_GRAZING_CRITTER = 413, /* level 3: roams and bleats; bursts into fluff when struck (GrazerState) */
-  ACTOR_TYPE_FOLLOW_FACER = 414, /* level 33: turns toward the actor it follows */
-  ACTOR_TYPE_BALLOON = 416,        /* bobs about its rest height; only in balloonist levels */
-  ACTOR_TYPE_REWARD_BURST = 417, /* level 6: once triggered, plays its sound and throws up to four sets of sparks */
-  ACTOR_TYPE_LIFE_CHEST = 421,       /* shakes and pops its lid on a timer, spawning a 0x1A6 rider (LifeChestState) */
-  ACTOR_TYPE_LIFE_CHEST_RIDER = 422, /* shown while ACTOR_TYPE_LIFE_CHEST's lid is up, then despawned; no UpdateActors arm */
-  ACTOR_TYPE_LIFE_CHEST_SHARD = 423, /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
-  ACTOR_TYPE_LETTER_A = 0x1AA,     /* letter glyphs A..Z (0x1AA..0x1C3): floating names, text
-                                    * (ACTOR_TYPE_LETTER_GLYPH) */
-  ACTOR_TYPE_ROAMING_RAM_QUIET = 453, /* ACTOR_TYPE_ROAMING_RAM without the voice channel (level 21) */
-  ACTOR_TYPE_FALLING_SPARK = 454, /* 454..456, level 6: fall until they land, time out or leave the visible set */
-  ACTOR_TYPE_REBOUND_DEBRIS = 458, /* 458..459, levels 6/7/27/32: rebounds off walls and floors, spinning until its life runs out */
-  ACTOR_TYPE_WAR_DRUM = 461, /* levels 18/19: beats on a timer with its own voice; knocked away when hit (WarDrumState) */
-  ACTOR_TYPE_ROAMING_RAM = 466, /* wanders its waypoint ring away from Spyro, charges down its path (RoamingRamState) */
-  ACTOR_TYPE_BOLT_SENTRY = 467, /* level 19: bolt-throwing sentry with three guards (BoltSentryState) */
-  ACTOR_TYPE_HUD_GEM_ICON = 471, /* gem icon beside a gem count: HUD slot HUD_SLOT_GEMS, inventory screen, flight results */
-  ACTOR_TYPE_BELL_POST = 475, /* level 18: rung by a charge or flame; resets once its animation ends */
-  ACTOR_TYPE_GRABBER = 476, /* level 20: carries Spyro off and throws him (GrabberState) */
-  ACTOR_TYPE_HAZARD0_ENTER_FX = 477, /* g_anHazardEnterSpawnType[0]; both kind-0 effects snap to the ground under Spyro (or the parent) */
+  /* flight levels 5/29: tweens its path puffing smoke from attach point 3; a
+   * blast (ACTOR_HIT_SUPER) wrecks it (SmokerState) */
+  ACTOR_TYPE_BLASTABLE_PATH_SMOKER = 407,
+  /* flight levels 5/29: ACTOR_TYPE_BLASTABLE_PATH_SMOKER without the smoke */
+  ACTOR_TYPE_BLASTABLE_PATH_PROP = 408,
+  /* level 2: wanders; knocked back when hit, then recovers (HopState) */
+  ACTOR_TYPE_HOPPING_CRITTER = 412,
+  /* level 3: roams and bleats; bursts into fluff when struck (GrazerState) */
+  ACTOR_TYPE_GRAZING_CRITTER = 413,
+  /* level 33: turns toward the actor it follows */
+  ACTOR_TYPE_FOLLOW_FACER = 414,
+  /* bobs about its rest height; only in balloonist levels */
+  ACTOR_TYPE_BALLOON = 416,
+  /* level 6: once triggered, plays its sound and throws up to four sets of
+   * sparks */
+  ACTOR_TYPE_REWARD_BURST = 417,
+  /* shakes and pops its lid on a timer, spawning a 0x1A6 rider
+   * (LifeChestState) */
+  ACTOR_TYPE_LIFE_CHEST = 421,
+  /* shown while ACTOR_TYPE_LIFE_CHEST's lid is up, then despawned; no
+   * UpdateActors arm */
+  ACTOR_TYPE_LIFE_CHEST_RIDER = 422,
+  /* 423..425: life chest burst (423/424 bounce, 425 tumbles) */
+  ACTOR_TYPE_LIFE_CHEST_SHARD = 423,
+  /* letter glyphs A..Z (0x1AA..0x1C3): floating names, text
+   * (ACTOR_TYPE_LETTER_GLYPH) */
+  ACTOR_TYPE_LETTER_A = 0x1AA,
+  /* ACTOR_TYPE_ROAMING_RAM without the voice channel (level 21) */
+  ACTOR_TYPE_ROAMING_RAM_QUIET = 453,
+  /* 454..456, level 6: fall until they land, time out or leave the visible
+   * set */
+  ACTOR_TYPE_FALLING_SPARK = 454,
+  /* 458..459, levels 6/7/27/32: rebounds off walls and floors, spinning until
+   * its life runs out */
+  ACTOR_TYPE_REBOUND_DEBRIS = 458,
+  /* levels 18/19: beats on a timer with its own voice; knocked away when hit
+   * (WarDrumState) */
+  ACTOR_TYPE_WAR_DRUM = 461,
+  /* wanders its waypoint ring away from Spyro, charges down its path
+   * (RoamingRamState) */
+  ACTOR_TYPE_ROAMING_RAM = 466,
+  /* level 19: bolt-throwing sentry with three guards (BoltSentryState) */
+  ACTOR_TYPE_BOLT_SENTRY = 467,
+  /* gem icon beside a gem count: HUD slot HUD_SLOT_GEMS, inventory screen,
+   * flight results */
+  ACTOR_TYPE_HUD_GEM_ICON = 471,
+  /* level 18: rung by a charge or flame; resets once its animation ends */
+  ACTOR_TYPE_BELL_POST = 475,
+  /* level 20: carries Spyro off and throws him (GrabberState) */
+  ACTOR_TYPE_GRABBER = 476,
+  /* g_anHazardEnterSpawnType[0]; both kind-0 effects snap to the ground under
+   * Spyro (or the parent) */
+  ACTOR_TYPE_HAZARD0_ENTER_FX = 477,
   ACTOR_TYPE_FLIGHT_CHEST_SHARD = 478, /* 478..480: flight chest burst */
-  ACTOR_TYPE_SPARK_DEBRIS = 481, /* 481..483: tumbling debris shedding sparks, then a streak burst;
-                                  * thrown by flamed banking targets (5/17/23), struck blastable path
-                                  * props (5/29) and level 34's loot thieves (EmberState) */
-  ACTOR_TYPE_ONE_SHOT_PROP = 487, /* level 20: plays anim 1 -> 2 once set to mode 1, or anim 3 -> 4 when hit, then holds */
-  ACTOR_TYPE_TALLY_ICON_RIDER = 490,  /* flight HUD icon for ACTOR_TYPE_RIDING_FLIGHT_TARGET */
-  ACTOR_TYPE_TALLY_ICON_FLAME = 491,  /* flight HUD icon for ACTOR_TYPE_FLAME_FLIGHT_TARGET */
-  ACTOR_TYPE_BELL_RIPPLE = 493, /* levels 7/8: ripple a charged bell (206/239/242) spawns; removed when its animation ends */
-  ACTOR_TYPE_AIMED_BOLT = 494, /* level 19: bolt thrown by 35 and 467 (AimedBoltState) */
-  ACTOR_TYPE_BLOWHARD = 495, /* level 16 boss: patrols three paths, drops type 37 riders */
-  ACTOR_TYPE_HUMMING_BELL = 497, /* level 16: loops a voice while alive, rings out when struck */
-  ACTOR_TYPE_HUD_DRAGON_ICON = 506, /* dragon icon beside a dragons-rescued count: HUD slot HUD_SLOT_DRAGONS, inventory screen */
-  ACTOR_TYPE_SWAYING_DEBRIS = 502, /* level 3: bouncing debris that sways as it falls (BounceState) */
-  ACTOR_TYPE_HAZARD2_ENTER_FX = 507, /* g_anHazardEnterSpawnType[2]; level 32 also spawns it where a knocked actor lands on ground surface 1..2 */
+  /* 481..483: tumbling debris shedding sparks, then a streak burst; thrown by
+   * flamed banking targets (5/17/23), struck blastable path props (5/29) and
+   * level 34's loot thieves (EmberState) */
+  ACTOR_TYPE_SPARK_DEBRIS = 481,
+  /* level 20: plays anim 1 -> 2 once set to mode 1, or anim 3 -> 4 when hit,
+   * then holds */
+  ACTOR_TYPE_ONE_SHOT_PROP = 487,
+  /* flight HUD icon for ACTOR_TYPE_RIDING_FLIGHT_TARGET */
+  ACTOR_TYPE_TALLY_ICON_RIDER = 490,
+  /* flight HUD icon for ACTOR_TYPE_FLAME_FLIGHT_TARGET */
+  ACTOR_TYPE_TALLY_ICON_FLAME = 491,
+  /* levels 7/8: ripple a charged bell (206/239/242) spawns; removed when its
+   * animation ends */
+  ACTOR_TYPE_BELL_RIPPLE = 493,
+  /* level 19: bolt thrown by 35 and 467 (AimedBoltState) */
+  ACTOR_TYPE_AIMED_BOLT = 494,
+  /* level 16 boss: patrols three paths, drops type 37 riders */
+  ACTOR_TYPE_BLOWHARD = 495,
+  /* level 16: loops a voice while alive, rings out when struck */
+  ACTOR_TYPE_HUMMING_BELL = 497,
+  /* dragon icon beside a dragons-rescued count: HUD slot HUD_SLOT_DRAGONS,
+   * inventory screen */
+  ACTOR_TYPE_HUD_DRAGON_ICON = 506,
+  /* level 3: bouncing debris that sways as it falls (BounceState) */
+  ACTOR_TYPE_SWAYING_DEBRIS = 502,
+  /* g_anHazardEnterSpawnType[2]; level 32 also spawns it where a knocked actor
+   * lands on ground surface 1..2 */
+  ACTOR_TYPE_HAZARD2_ENTER_FX = 507,
   ACTOR_TYPE_HAZARD2_DEATH_FX = 508, /* g_anHazardTimeoutSpawnType[2] */
-  ACTOR_TYPE_RESCUED_DRAGON = 510, /* the freed dragon DragonRescue_Update puts in the statue's place (g_pDragonRescueStatueActor) */
-  ACTOR_TYPE_RESCUE_SPYRO = 511, /* Spyro's stand-in during the rescue cutscene (g_pDragonRescueSpyroMirrorActor) */
+  /* the freed dragon DragonRescue_Update puts in the statue's place
+   * (g_pDragonRescueStatueActor) */
+  ACTOR_TYPE_RESCUED_DRAGON = 510,
+  /* Spyro's stand-in during the rescue cutscene
+   * (g_pDragonRescueSpyroMirrorActor) */
+  ACTOR_TYPE_RESCUE_SPYRO = 511,
 };
 
 /* Lives cap at MAX_EXTRA_LIVES (an extra-life pickup is wasted there); every
@@ -626,14 +975,17 @@ enum ActorType {
 #define ACTOR_TYPE_LETTER_GLYPH(ch) ((ch) + (ACTOR_TYPE_LETTER_A - 'A'))
 
 /* RefreshActorDerivedState's mode bits. */
-#define ACTOR_REFRESH_COLLISION 1 /* ->collision from the current animation frame's record */
-#define ACTOR_REFRESH_GRID 2      /* relink ->gridCell from the X/Y position */
-#define ACTOR_REFRESH_MATRIX 4    /* ->mtx from the rotX/rotY/rotZ euler bytes */
+/* ->collision from the current animation frame's record */
+#define ACTOR_REFRESH_COLLISION 1
+#define ACTOR_REFRESH_GRID 2   /* relink ->gridCell from the X/Y position */
+#define ACTOR_REFRESH_MATRIX 4 /* ->mtx from the rotX/rotY/rotZ euler bytes */
 
 /* PlaySoundEffect's mode: the voice row's flag group. */
-#define SFX_MODE_FLAT 4     /* flat volume; no re-trigger while the owner plays it */
-#define SFX_MODE_3D 8       /* panned and attenuated from the owner's position; dropped
-                             * outside its audible range */
+/* flat volume; no re-trigger while the owner plays it */
+#define SFX_MODE_FLAT 4
+/* panned and attenuated from the owner's position; dropped outside its audible
+ * range */
+#define SFX_MODE_3D 8
 #define SFX_MODE_PANNED 0x10 /* pan supplied by the caller */
 #define SFX_MODE_MASK 0x1C   /* the mode group within a voice row's nFlags */
 /* GetSoundVoiceStatusByOwner's result for (owner, sample). */
@@ -643,8 +995,10 @@ enum ActorType {
 
 /* g_nSfxOverrideFlags: one-shot overrides the next PlaySoundEffect consumes
  * (and clears). */
-#define SFX_OVERRIDE_VOLUME 1 /* use g_nSfxOverrideVolL/R instead of the default volume */
-#define SFX_OVERRIDE_PITCH 2  /* use g_nSfxOverridePitch instead of the sample's pitch */
+/* use g_nSfxOverrideVolL/R instead of the default volume */
+#define SFX_OVERRIDE_VOLUME 1
+/* use g_nSfxOverridePitch instead of the sample's pitch */
+#define SFX_OVERRIDE_PITCH 2
 
 /* StopSoundVoicesByOwner's mode: which of the owner's voices to stop. */
 #define VOICE_STOP_ALL 1     /* every voice it owns */
@@ -653,13 +1007,15 @@ enum ActorType {
 /* SpawnActorDeathDrop's `kind`: how a thrown drop leaves its source. Rolled
  * extra lives, butterflies and Sparx ignore it. */
 enum DropThrow {
-  DROP_HOP = 0,             /* lands on the source with a low hop */
-  DROP_SCATTER = 1,         /* lands at a random point within 0x200 of the source */
-  DROP_AT_POINT = 2,        /* lands on the `alt` position */
-  DROP_TUMBLE_IF_NEAR = 3,  /* DROP_TUMBLE when Spyro is charging close by, else DROP_SCATTER */
-  DROP_TUMBLE = 4,          /* rides off the source with a random tumble (COLLECT_HOMING) */
-  DROP_IN_PLACE = 5,        /* appears on the source with no velocity */
-  DROP_HIGH_HOP = 6,        /* lands within 0x100 of the source with a high hop */
+  DROP_HOP = 0,      /* lands on the source with a low hop */
+  DROP_SCATTER = 1,  /* lands at a random point within 0x200 of the source */
+  DROP_AT_POINT = 2, /* lands on the `alt` position */
+  /* DROP_TUMBLE when Spyro is charging close by, else DROP_SCATTER */
+  DROP_TUMBLE_IF_NEAR = 3,
+  /* rides off the source with a random tumble (COLLECT_HOMING) */
+  DROP_TUMBLE = 4,
+  DROP_IN_PLACE = 5, /* appears on the source with no velocity */
+  DROP_HIGH_HOP = 6, /* lands within 0x100 of the source with a high hop */
 };
 /* SpawnActorDeathDrop. A rolled drop takes a percentage roll: under
  * DROP_LIFE_PERCENT an extra life, under DROP_BUTTERFLY_PERCENT a butterfly
@@ -690,44 +1046,47 @@ typedef struct PathData {
   unsigned char count; /* 0x00 */
   unsigned char cur;   /* 0x01 */
   char pad02[4];
-  short dir;           /* 0x06 +1 / -1 step direction. PivotActorAlongPath and
-                        * FollowActorWaypointPath step forward (wrap to 0) when it is -1;
-                        * the overlay walkers mostly add it to cur */
+  /* +1 / -1 step direction. PivotActorAlongPath and FollowActorWaypointPath
+   * step forward (wrap to 0) when it is -1; the overlay walkers mostly add it
+   * to cur */
+  short dir; /* 0x06 */
   struct {
     int x;
     int y;
     int z;
-    int speed; /* > 0 overrides the follow speed at this node; the path runner
-                * and Gnasty split it (PATH_NODE_SPEED / PATH_NODE_JUMP) */
-  } nodes[1];          /* 0x08 */
+    /* > 0 overrides the follow speed at this node; the path runner and Gnasty
+     * split it (PATH_NODE_SPEED / PATH_NODE_JUMP) */
+    int speed;
+  } nodes[1]; /* 0x08 */
 } PathData;
 
 /* UpdateActorWander's behaviour block (the head of the wandering classes'
  * state, e.g. level 32 type 236). Radii are stored >> 10. */
 typedef struct WanderBlock {
-  int homeX;                     /* 0x00 home point */
-  int homeY;                     /* 0x04 */
-  int pad08;                     /* 0x08 */
-  unsigned char speed;           /* 0x0C move speed (x1.5 / x2 at frame delta 3 / 4) */
-  unsigned char turnRate;        /* 0x0D */
-  unsigned char contact;         /* 0x0E actor-contact and wall radius of each step */
-  unsigned char repickMin;       /* 0x0F re-pick countdown range */
-  unsigned char repickMax;       /* 0x10 */
-  unsigned char jitterMin;       /* 0x11 heading jitter range */
-  unsigned char jitterMax;       /* 0x12 */
-  unsigned char leash;           /* 0x13 walk home once farther than this */
-  unsigned char weaveAmp;        /* 0x14 0 = no weave */
-  unsigned char weaveRate;       /* 0x15 */
-  unsigned char pad16;           /* 0x16 */
-  unsigned char repickTimer;     /* 0x17 frames to the next heading jitter */
-  unsigned char heading;         /* 0x18 8-bit angle */
-  unsigned char weaveDir;        /* 0x19 +1 / -1 */
-  unsigned char chaseRadius;     /* 0x1A 0 = only the fixed 0x44C range */
-  unsigned char chasing;         /* 0x1B */
-  unsigned char chaseCooldown;   /* 0x1C set after a wall bump or a walk home */
-  unsigned char contactCooldown; /* 0x1D steps skip the actor-contact test while set */
+  int homeX;              /* 0x00 home point */
+  int homeY;              /* 0x04 */
+  int pad08;              /* 0x08 */
+  unsigned char speed;    /* 0x0C move speed (x1.5 / x2 at frame delta 3 / 4) */
+  unsigned char turnRate; /* 0x0D */
+  unsigned char contact;  /* 0x0E actor-contact and wall radius of each step */
+  unsigned char repickMin;     /* 0x0F re-pick countdown range */
+  unsigned char repickMax;     /* 0x10 */
+  unsigned char jitterMin;     /* 0x11 heading jitter range */
+  unsigned char jitterMax;     /* 0x12 */
+  unsigned char leash;         /* 0x13 walk home once farther than this */
+  unsigned char weaveAmp;      /* 0x14 0 = no weave */
+  unsigned char weaveRate;     /* 0x15 */
+  unsigned char pad16;         /* 0x16 */
+  unsigned char repickTimer;   /* 0x17 frames to the next heading jitter */
+  unsigned char heading;       /* 0x18 8-bit angle */
+  unsigned char weaveDir;      /* 0x19 +1 / -1 */
+  unsigned char chaseRadius;   /* 0x1A 0 = only the fixed 0x44C range */
+  unsigned char chasing;       /* 0x1B */
+  unsigned char chaseCooldown; /* 0x1C set after a wall bump or a walk home */
+  /* steps skip the actor-contact test while set */
+  unsigned char contactCooldown; /* 0x1D */
   short weave;                   /* 0x1E current weave offset */
-} WanderBlock; /* 0x20 */
+} WanderBlock;                   /* 0x20 */
 
 #include "actor_modes.h"
 

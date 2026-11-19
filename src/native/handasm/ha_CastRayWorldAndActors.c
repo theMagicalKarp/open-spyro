@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster CastRayWorldAndActors: CastRayWorldAndActors (8004AE38), CastRayWorldAndActors_Tail (8004BDEC) */
+/* cluster CastRayWorldAndActors: CastRayWorldAndActors (8004AE38),
+ * CastRayWorldAndActors_Tail (8004BDEC) */
 void ha_CastRayWorldAndActors(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -2413,68 +2414,192 @@ L_8004BE3C:
   goto L_8004AF88;
 dispatch:
   switch (tgt) {
-  case 0x8004ae38u: bc = 0; goto L_8004AE38;
-  case 0x8004b528u: bc = 0; goto L_8004B528;
-  case 0x8004b52cu: bc = 0; goto L_8004B52C;
-  case 0x8004b530u: bc = 0; goto L_8004B530;
-  case 0x8004b534u: bc = 0; goto L_8004B534;
-  case 0x8004b538u: bc = 0; goto L_8004B538;
-  case 0x8004b53cu: bc = 0; goto L_8004B53C;
-  case 0x8004b540u: bc = 0; goto L_8004B540;
-  case 0x8004b544u: bc = 0; goto L_8004B544;
-  case 0x8004b548u: bc = 0; goto L_8004B548;
-  case 0x8004b54cu: bc = 0; goto L_8004B54C;
-  case 0x8004b590u: bc = 0; goto L_8004B590;
-  case 0x8004b594u: bc = 0; goto L_8004B594;
-  case 0x8004b598u: bc = 0; goto L_8004B598;
-  case 0x8004b59cu: bc = 0; goto L_8004B59C;
-  case 0x8004b5a0u: bc = 0; goto L_8004B5A0;
-  case 0x8004b5a4u: bc = 0; goto L_8004B5A4;
-  case 0x8004b5a8u: bc = 0; goto L_8004B5A8;
-  case 0x8004b5acu: bc = 0; goto L_8004B5AC;
-  case 0x8004b5b0u: bc = 0; goto L_8004B5B0;
-  case 0x8004b5b4u: bc = 0; goto L_8004B5B4;
-  case 0x8004b610u: bc = 0; goto L_8004B610;
-  case 0x8004b614u: bc = 0; goto L_8004B614;
-  case 0x8004b618u: bc = 0; goto L_8004B618;
-  case 0x8004b61cu: bc = 0; goto L_8004B61C;
-  case 0x8004b620u: bc = 0; goto L_8004B620;
-  case 0x8004b624u: bc = 0; goto L_8004B624;
-  case 0x8004b628u: bc = 0; goto L_8004B628;
-  case 0x8004b62cu: bc = 0; goto L_8004B62C;
-  case 0x8004b630u: bc = 0; goto L_8004B630;
-  case 0x8004b634u: bc = 0; goto L_8004B634;
-  case 0x8004bc60u: bc = 0; goto L_8004BC60;
-  case 0x8004bc64u: bc = 0; goto L_8004BC64;
-  case 0x8004bc68u: bc = 0; goto L_8004BC68;
-  case 0x8004bc6cu: bc = 0; goto L_8004BC6C;
-  case 0x8004bc70u: bc = 0; goto L_8004BC70;
-  case 0x8004bc74u: bc = 0; goto L_8004BC74;
-  case 0x8004bc78u: bc = 0; goto L_8004BC78;
-  case 0x8004bc7cu: bc = 0; goto L_8004BC7C;
-  case 0x8004bc80u: bc = 0; goto L_8004BC80;
-  case 0x8004bc84u: bc = 0; goto L_8004BC84;
-  case 0x8004bcc8u: bc = 0; goto L_8004BCC8;
-  case 0x8004bcccu: bc = 0; goto L_8004BCCC;
-  case 0x8004bcd0u: bc = 0; goto L_8004BCD0;
-  case 0x8004bcd4u: bc = 0; goto L_8004BCD4;
-  case 0x8004bcd8u: bc = 0; goto L_8004BCD8;
-  case 0x8004bcdcu: bc = 0; goto L_8004BCDC;
-  case 0x8004bce0u: bc = 0; goto L_8004BCE0;
-  case 0x8004bce4u: bc = 0; goto L_8004BCE4;
-  case 0x8004bce8u: bc = 0; goto L_8004BCE8;
-  case 0x8004bcecu: bc = 0; goto L_8004BCEC;
-  case 0x8004bd48u: bc = 0; goto L_8004BD48;
-  case 0x8004bd4cu: bc = 0; goto L_8004BD4C;
-  case 0x8004bd50u: bc = 0; goto L_8004BD50;
-  case 0x8004bd54u: bc = 0; goto L_8004BD54;
-  case 0x8004bd58u: bc = 0; goto L_8004BD58;
-  case 0x8004bd5cu: bc = 0; goto L_8004BD5C;
-  case 0x8004bd60u: bc = 0; goto L_8004BD60;
-  case 0x8004bd64u: bc = 0; goto L_8004BD64;
-  case 0x8004bd68u: bc = 0; goto L_8004BD68;
-  case 0x8004bd6cu: bc = 0; goto L_8004BD6C;
-  case 0x8004bdecu: bc = 0; goto L_8004BDEC;
+  case 0x8004ae38u:
+    bc = 0;
+    goto L_8004AE38;
+  case 0x8004b528u:
+    bc = 0;
+    goto L_8004B528;
+  case 0x8004b52cu:
+    bc = 0;
+    goto L_8004B52C;
+  case 0x8004b530u:
+    bc = 0;
+    goto L_8004B530;
+  case 0x8004b534u:
+    bc = 0;
+    goto L_8004B534;
+  case 0x8004b538u:
+    bc = 0;
+    goto L_8004B538;
+  case 0x8004b53cu:
+    bc = 0;
+    goto L_8004B53C;
+  case 0x8004b540u:
+    bc = 0;
+    goto L_8004B540;
+  case 0x8004b544u:
+    bc = 0;
+    goto L_8004B544;
+  case 0x8004b548u:
+    bc = 0;
+    goto L_8004B548;
+  case 0x8004b54cu:
+    bc = 0;
+    goto L_8004B54C;
+  case 0x8004b590u:
+    bc = 0;
+    goto L_8004B590;
+  case 0x8004b594u:
+    bc = 0;
+    goto L_8004B594;
+  case 0x8004b598u:
+    bc = 0;
+    goto L_8004B598;
+  case 0x8004b59cu:
+    bc = 0;
+    goto L_8004B59C;
+  case 0x8004b5a0u:
+    bc = 0;
+    goto L_8004B5A0;
+  case 0x8004b5a4u:
+    bc = 0;
+    goto L_8004B5A4;
+  case 0x8004b5a8u:
+    bc = 0;
+    goto L_8004B5A8;
+  case 0x8004b5acu:
+    bc = 0;
+    goto L_8004B5AC;
+  case 0x8004b5b0u:
+    bc = 0;
+    goto L_8004B5B0;
+  case 0x8004b5b4u:
+    bc = 0;
+    goto L_8004B5B4;
+  case 0x8004b610u:
+    bc = 0;
+    goto L_8004B610;
+  case 0x8004b614u:
+    bc = 0;
+    goto L_8004B614;
+  case 0x8004b618u:
+    bc = 0;
+    goto L_8004B618;
+  case 0x8004b61cu:
+    bc = 0;
+    goto L_8004B61C;
+  case 0x8004b620u:
+    bc = 0;
+    goto L_8004B620;
+  case 0x8004b624u:
+    bc = 0;
+    goto L_8004B624;
+  case 0x8004b628u:
+    bc = 0;
+    goto L_8004B628;
+  case 0x8004b62cu:
+    bc = 0;
+    goto L_8004B62C;
+  case 0x8004b630u:
+    bc = 0;
+    goto L_8004B630;
+  case 0x8004b634u:
+    bc = 0;
+    goto L_8004B634;
+  case 0x8004bc60u:
+    bc = 0;
+    goto L_8004BC60;
+  case 0x8004bc64u:
+    bc = 0;
+    goto L_8004BC64;
+  case 0x8004bc68u:
+    bc = 0;
+    goto L_8004BC68;
+  case 0x8004bc6cu:
+    bc = 0;
+    goto L_8004BC6C;
+  case 0x8004bc70u:
+    bc = 0;
+    goto L_8004BC70;
+  case 0x8004bc74u:
+    bc = 0;
+    goto L_8004BC74;
+  case 0x8004bc78u:
+    bc = 0;
+    goto L_8004BC78;
+  case 0x8004bc7cu:
+    bc = 0;
+    goto L_8004BC7C;
+  case 0x8004bc80u:
+    bc = 0;
+    goto L_8004BC80;
+  case 0x8004bc84u:
+    bc = 0;
+    goto L_8004BC84;
+  case 0x8004bcc8u:
+    bc = 0;
+    goto L_8004BCC8;
+  case 0x8004bcccu:
+    bc = 0;
+    goto L_8004BCCC;
+  case 0x8004bcd0u:
+    bc = 0;
+    goto L_8004BCD0;
+  case 0x8004bcd4u:
+    bc = 0;
+    goto L_8004BCD4;
+  case 0x8004bcd8u:
+    bc = 0;
+    goto L_8004BCD8;
+  case 0x8004bcdcu:
+    bc = 0;
+    goto L_8004BCDC;
+  case 0x8004bce0u:
+    bc = 0;
+    goto L_8004BCE0;
+  case 0x8004bce4u:
+    bc = 0;
+    goto L_8004BCE4;
+  case 0x8004bce8u:
+    bc = 0;
+    goto L_8004BCE8;
+  case 0x8004bcecu:
+    bc = 0;
+    goto L_8004BCEC;
+  case 0x8004bd48u:
+    bc = 0;
+    goto L_8004BD48;
+  case 0x8004bd4cu:
+    bc = 0;
+    goto L_8004BD4C;
+  case 0x8004bd50u:
+    bc = 0;
+    goto L_8004BD50;
+  case 0x8004bd54u:
+    bc = 0;
+    goto L_8004BD54;
+  case 0x8004bd58u:
+    bc = 0;
+    goto L_8004BD58;
+  case 0x8004bd5cu:
+    bc = 0;
+    goto L_8004BD5C;
+  case 0x8004bd60u:
+    bc = 0;
+    goto L_8004BD60;
+  case 0x8004bd64u:
+    bc = 0;
+    goto L_8004BD64;
+  case 0x8004bd68u:
+    bc = 0;
+    goto L_8004BD68;
+  case 0x8004bd6cu:
+    bc = 0;
+    goto L_8004BD6C;
+  case 0x8004bdecu:
+    bc = 0;
+    goto L_8004BDEC;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("CastRayWorldAndActors", tgt, entry_ra);

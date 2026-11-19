@@ -4,12 +4,13 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into ->type and the parent's pool index into ->poolIndex, then runs a per-type
- * init arm: every arm starts from InitActorRenderDefaults (InitActorRenderDefaults) and
- * ends by placing the new actor -- most copy the parent's position
- * (CopyVector) and either register it in the spatial grid
- * (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).  With no parent
- * the position falls back to Spyro's (g_anSpyroWorldPos).
+ * type into ->type and the parent's pool index into ->poolIndex, then runs a
+ * per-type init arm: every arm starts from InitActorRenderDefaults
+ * (InitActorRenderDefaults) and ends by placing the new actor -- most copy the
+ * parent's position (CopyVector) and either register it in the spatial grid
+ * (InsertActorIntoSpatialGrid) or hide its render record
+ * (HideActorRenderRecord).  With no parent the position falls back to Spyro's
+ * (g_anSpyroWorldPos).
  */
 
 #include "rot_billboard.h"
@@ -21,14 +22,14 @@
 #include "level_emit_particles.h"
 #include "emit_record.h"
 
-
 Actor *Level12_SpawnActor(int type, Actor *parent) {
   Actor *rec;
   int owner;
 
   rec = AllocActorRecordSlot();
   rec->type = type;
-  if (parent == 0 || (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
+  if (parent == 0 ||
+      (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
     owner = 0;
   }
   rec->poolIndex = owner;
@@ -104,7 +105,9 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
       rec->rotZ = parent->rotZ;
       rec->mode = SPLITSHOT_FRAGMENT;
       rec->frameProgress = 0;
-      rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FRAGMENT]->m_ProgressPerTick;
+      rec->frameRate = g_apActorMeshTable[rec->type]
+                           ->m_Animations[SPLITSHOT_FRAGMENT]
+                           ->m_ProgressPerTick;
       rec->anim = SPLITSHOT_FRAGMENT;
       rec->nextAnim = SPLITSHOT_FRAGMENT;
       *timer = 3;
@@ -113,8 +116,8 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
       rec->posY += LookupSine(ANGLE8_TO_12(parent->rotZ)) >> 2;
       rec->posZ += 0x12C;
       rec->rotZ = parent->rotZ;
-      turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos), g_nSpyroWorldPosZ - rec->posZ,
-                            ATAN_ANGLE8) -
+      turn = (ArcTan2(ApproxDist2D(pos, g_anSpyroWorldPos),
+                      g_nSpyroWorldPosZ - rec->posZ, ATAN_ANGLE8) -
               parent->rotY) &
              ANGLE8_MASK;
       if (turn > ANGLE8_HALF) {
@@ -130,7 +133,9 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
       *timer = 0x80;
       rec->mode = SPLITSHOT_FLY;
       rec->frameProgress = 0;
-      rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_FLY]->m_ProgressPerTick;
+      rec->frameRate = g_apActorMeshTable[rec->type]
+                           ->m_Animations[SPLITSHOT_FLY]
+                           ->m_ProgressPerTick;
       rec->anim = SPLITSHOT_FLY;
       rec->nextAnim = SPLITSHOT_FLY;
       g_pfnLevelEmitParticles(4, EMIT_DRIFT_SPARKLE, pos, 0x10);
@@ -142,7 +147,9 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
         rec->rotZ = parent->rotZ;
         rec->mode = SPLITSHOT_RAISE;
         rec->frameProgress = 0;
-        rec->frameRate = g_apActorMeshTable[rec->type]->m_Animations[SPLITSHOT_RAISE]->m_ProgressPerTick;
+        rec->frameRate = g_apActorMeshTable[rec->type]
+                             ->m_Animations[SPLITSHOT_RAISE]
+                             ->m_ProgressPerTick;
         rec->anim = SPLITSHOT_RAISE;
         rec->nextAnim = SPLITSHOT_RAISE;
       } else {
@@ -261,7 +268,8 @@ Actor *Level12_SpawnActor(int type, Actor *parent) {
     st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
-    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) < 3) {
+    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) <
+        3) {
       *(int *)&rec->tint0 = ACTOR_TINT_NEUTRAL;
       rec->renderList |= ACTOR_RENDER_SECONDARY;
     }

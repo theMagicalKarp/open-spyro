@@ -696,7 +696,9 @@ L_8005A458:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80059f8cu: bc = 0; goto L_80059F8C;
+  case 0x80059f8cu:
+    bc = 0;
+    goto L_80059F8C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("DrawActorDropShadows", tgt, entry_ra);

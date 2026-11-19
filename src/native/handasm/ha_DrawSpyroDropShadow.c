@@ -723,7 +723,9 @@ L_80059F84:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80059a48u: bc = 0; goto L_80059A48;
+  case 0x80059a48u:
+    bc = 0;
+    goto L_80059A48;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("DrawSpyroDropShadow", tgt, entry_ra);

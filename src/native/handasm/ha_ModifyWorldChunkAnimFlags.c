@@ -76,7 +76,9 @@ L_8002B3EC:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8002b390u: bc = 0; goto L_8002B390;
+  case 0x8002b390u:
+    bc = 0;
+    goto L_8002B390;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ModifyWorldChunkAnimFlags", tgt, entry_ra);

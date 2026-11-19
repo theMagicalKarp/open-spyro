@@ -6,15 +6,15 @@
  * Credits_OverlayEnd), loads the four credits VRAM strips through
  * CdReadSyncSectors, waits on the CD stream, relocates the loaded script
  * (g_pCreditsLineTable line table, 0xC stride) and arms the scroll header
- * g_pCreditsScrollHeader.  Then, every frame: advances the header cursor and the fade
- * level g_nScreenFadeLevel, walks the visible line window
- * [g_nCreditsFirstVisibleLine .. g_nCreditsLastVisibleLine], and for each newly revealed line lays its
- * text out into free glyph records -- one record per non-space character,
- * x advanced by 0xE (0x10 for digit runs, 3/4 of a space), ':' emitting two
- * dots, and the glyph index taken from the 0x30/0x41/0x61 ranges plus a
- * small punctuation table.  A second pass re-centres the finished line on
- * (x - 0x100) / 2 and seeds each glyph's per-frame drift/colour deltas, and
- * two more passes run the per-glyph state machine (1 = fly in, 3 = fall
+ * g_pCreditsScrollHeader.  Then, every frame: advances the header cursor and
+ * the fade level g_nScreenFadeLevel, walks the visible line window
+ * [g_nCreditsFirstVisibleLine .. g_nCreditsLastVisibleLine], and for each newly
+ * revealed line lays its text out into free glyph records -- one record per
+ * non-space character, x advanced by 0xE (0x10 for digit runs, 3/4 of a space),
+ * ':' emitting two dots, and the glyph index taken from the 0x30/0x41/0x61
+ * ranges plus a small punctuation table.  A second pass re-centres the finished
+ * line on (x - 0x100) / 2 and seeds each glyph's per-frame drift/colour deltas,
+ * and two more passes run the per-glyph state machine (1 = fly in, 3 = fall
  * out) and trim the pool tail.  Finally the 5-way g_nCreditsMode state machine
  * pages the next credits screen in through StartCdReadAsync / CopyWords.
  *
@@ -60,8 +60,8 @@
  *     is a `short gx`, g_nCdReadInFlight is volatile, and case 2's rect is
  *     written in [0..3] order.
  * 14. The CD-stream state block is one struct symbol (Cd85D8,
- *     g_pLoadStagingBuffer_s), so its block copy and field stores share a base and
- *     keep their original order without barriers.
+ *     g_pLoadStagingBuffer_s), so its block copy and field stores share a base
+ * and keep their original order without barriers.
  * 15. `g_nWorldTimAudioChunkOffset[3]` (an array reference, not a scalar) as
  *     a call argument puts its load after the fifth argument's chain.
  * 16. `e4 = g_pLevelArchiveBuffer` right after the call, `sz` loaded before the
@@ -78,10 +78,11 @@
  *     a3/t0/t1/t2.
  * 20. `register char *src asm("$5")` for the e4 re-read takes away its
  *     scheduling boost, so the C1C load goes first.
- * Also: g_pLevelDataBuffer has a second spelling (g_pLevelDataBuffer_blk) for the setup
- * block's shared base (A240); a `do { } while (0)` sits before the 20-byte
- * struct assignment (A232); and the trim loop re-reads g_pCreditsGlyphPool
- * instead of sharing `tab` so jump.c does not cross-jump its guard (B24).
+ * Also: g_pLevelDataBuffer has a second spelling (g_pLevelDataBuffer_blk) for
+ * the setup block's shared base (A240); a `do { } while (0)` sits before the
+ * 20-byte struct assignment (A232); and the trim loop re-reads
+ * g_pCreditsGlyphPool instead of sharing `tab` so jump.c does not cross-jump
+ * its guard (B24).
  */
 
 #include "sample_bank.h"
@@ -124,8 +125,8 @@ extern char *g_pLevelArchiveBuffer;
 extern volatile int g_nLevelArchiveByteSize;
 
 typedef struct {
-  char *loadStaging;             /* 0x800785D8 g_pLoadStagingBuffer */
-  char *levelData;               /* 0x800785DC g_pLevelDataBuffer */
+  char *loadStaging;              /* 0x800785D8 g_pLoadStagingBuffer */
+  char *levelData;                /* 0x800785DC g_pLevelDataBuffer */
   char *volatile worldUnpackHead; /* 0x800785E0 g_pWorldUnpackHead */
   char *volatile pathTableBuffer; /* 0x800785E4 g_pLevelArchiveBuffer */
   char padE8[0x18];
@@ -165,7 +166,7 @@ typedef struct CamTrack {
   CamKey key[1]; /* 0x0C one per two frames */
 } CamTrack;
 #define CAM_KEY_OFFSET(f) ((int)&((CamTrack *)0)->key[0].f)
-#define CAM_KEY(h, f) \
+#define CAM_KEY(h, f)                                                          \
   (*(int *)((char *)(h) + ((*(int *)h >> 1) * 3 << 3) + CAM_KEY_OFFSET(f)))
 
 void Credits_Update(void) {
@@ -187,24 +188,36 @@ void Credits_Update(void) {
       g_pLevelDataBuffer = g_pCreditsScratchBuf;
     }
     sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
-    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], 0x800, sector, CD_STALL_TIMEOUT_TICKS);
-    CopyWords(g_nWorldTimAudioChunkOffset, g_pLevelDataBuffer_blk[0], ARCHIVE_DESC_BYTES);
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], 0x800, sector,
+                      CD_STALL_TIMEOUT_TICKS);
+    CopyWords(g_nWorldTimAudioChunkOffset, g_pLevelDataBuffer_blk[0],
+              ARCHIVE_DESC_BYTES);
     CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], 0x60000,
-                  g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
+                      g_nWorldTimAudioChunkOffset[0] +
+                          g_anCreditsPageSectors[g_nCreditsPageIndex * 2],
+                      CD_STALL_TIMEOUT_TICKS);
     rect0[0] = 0x200;
     rect0[2] = 0x200;
     rect0[1] = 0;
     rect0[3] = 0x180;
     LoadImage(rect0, g_pLevelDataBuffer_blk[0]);
-    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], g_nWorldTimAudioChunkSize - 0x60000,
-                  g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2] + 0x60000, CD_STALL_TIMEOUT_TICKS);
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0],
+                      g_nWorldTimAudioChunkSize - 0x60000,
+                      g_nWorldTimAudioChunkOffset[0] +
+                          g_anCreditsPageSectors[g_nCreditsPageIndex * 2] +
+                          0x60000,
+                      CD_STALL_TIMEOUT_TICKS);
     SetSpuTransferStartAddr(0x1010);
     WriteSpuRam(g_pLevelDataBuffer_blk[0], 0x7EFF0);
     while (GetSpuTransferStatus(0) == 0) {
     }
-    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0], g_nWorldTimAudioChunkOffset[3],
-                  g_nWorldBundleChunkOffset + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
-    S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pLevelDataBuffer_blk[0], 1);
+    CdReadSyncSectors(g_nCdBaseLba[0], g_pLevelDataBuffer_blk[0],
+                      g_nWorldTimAudioChunkOffset[3],
+                      g_nWorldBundleChunkOffset +
+                          g_anCreditsPageSectors[g_nCreditsPageIndex * 2],
+                      CD_STALL_TIMEOUT_TICKS);
+    S.worldUnpackHead =
+        UnpackWorldDataChunks((int *)g_pLevelDataBuffer_blk[0], 1);
     {
       REG_PIN(char *, src, "$5");
       S.pathTableBuffer = S.worldUnpackHead;
@@ -214,35 +227,38 @@ void Credits_Update(void) {
       S.levelArchiveByteSize = g_nLevelArchiveChunkSize_n;
       g_nPortalCount = 0;
       CdReadSyncSectors(g_nCdBaseLba[0], src, S.levelArchiveByteSize,
-                    S.levelArchiveBaseLba + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
+                        S.levelArchiveBaseLba +
+                            g_anCreditsPageSectors[g_nCreditsPageIndex * 2],
+                        CD_STALL_TIMEOUT_TICKS);
     }
     {
-    char *e4 = g_pLevelArchiveBuffer;
-    g_pLevelSampleBankEntries = g_CutsceneSoundDef;
-    SAMPLE_RAW(g_pLevelSampleBankEntries, int, nSampleAddr) = 0x1010;
-    SAMPLE_RAW(g_pLevelSampleBankEntries, int, nLoopAddr) = -1;
-    SAMPLE_RAW(g_pLevelSampleBankEntries, short, nVolume) = 0x50;
-    SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitch) = 0x659;
-    SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchSpread) = 0;
-    SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchStep) = 0;
-    g_pCreditsScrollHeader = e4;
-    SAMPLE_RAW(g_pLevelSampleBankEntries, int, nPitchMode) = SAMPLE_PITCH_AROUND;
-    g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
-    g_nSfxOverrideVolL = SPU_VOLUME_MAX;
-    g_nSfxOverrideVolR = SPU_VOLUME_MAX;
-    PlaySoundEffect(0, 0, SFX_MODE_PANNED, 0);
+      char *e4 = g_pLevelArchiveBuffer;
+      g_pLevelSampleBankEntries = g_CutsceneSoundDef;
+      SAMPLE_RAW(g_pLevelSampleBankEntries, int, nSampleAddr) = 0x1010;
+      SAMPLE_RAW(g_pLevelSampleBankEntries, int, nLoopAddr) = -1;
+      SAMPLE_RAW(g_pLevelSampleBankEntries, short, nVolume) = 0x50;
+      SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitch) = 0x659;
+      SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchSpread) = 0;
+      SAMPLE_RAW(g_pLevelSampleBankEntries, short, nPitchStep) = 0;
+      g_pCreditsScrollHeader = e4;
+      SAMPLE_RAW(g_pLevelSampleBankEntries, int, nPitchMode) =
+          SAMPLE_PITCH_AROUND;
+      g_nSfxOverrideFlags = SFX_OVERRIDE_VOLUME;
+      g_nSfxOverrideVolL = SPU_VOLUME_MAX;
+      g_nSfxOverrideVolR = SPU_VOLUME_MAX;
+      PlaySoundEffect(0, 0, SFX_MODE_PANNED, 0);
     }
     {
       char *hdr;
       char *shift;
       hdr = g_pLevelArchiveBuffer + ((CamTrack *)g_pCreditsScrollHeader)->text;
       {
-      int sz;
-      g_pCreditsLoadBuf = hdr;
-      sz = CRED_TEXT(hdr, size);
-      shift = g_pCreditsLineTable + CRED_TEXT(hdr, base) - 0xC;
-      g_nCreditsLineCount = CRED_TEXT(hdr, count);
-      CopyWords(g_pCreditsLineTable, hdr + 0xC, sz - 0xC);
+        int sz;
+        g_pCreditsLoadBuf = hdr;
+        sz = CRED_TEXT(hdr, size);
+        shift = g_pCreditsLineTable + CRED_TEXT(hdr, base) - 0xC;
+        g_nCreditsLineCount = CRED_TEXT(hdr, count);
+        CopyWords(g_pCreditsLineTable, hdr + 0xC, sz - 0xC);
       }
       {
         int n = g_nCreditsLineCount;
@@ -281,7 +297,8 @@ void Credits_Update(void) {
         }
         {
           char *h = g_pCreditsScrollHeader;
-          g_anCameraPos = *(int *)((*(int *)h >> 1) * 0x18 + h + CAM_KEY_OFFSET(posX));
+          g_anCameraPos =
+              *(int *)((*(int *)h >> 1) * 0x18 + h + CAM_KEY_OFFSET(posX));
           g_nCameraPosY = CAM_KEY(h, posY);
           g_nCameraPosZ = CAM_KEY(h, posZ);
           g_nCameraEulerRoll = CAM_KEY(h, roll);
@@ -316,7 +333,9 @@ void Credits_Update(void) {
       }
     }
   }
-  if (g_nCreditsGlyphCount > 0 || (g_nCreditsLineCount > 0 && g_nCreditsFirstVisibleLine < g_nCreditsLineCount)) {
+  if (g_nCreditsGlyphCount > 0 ||
+      (g_nCreditsLineCount > 0 &&
+       g_nCreditsFirstVisibleLine < g_nCreditsLineCount)) {
     int last = g_nCreditsLastVisibleLine;
     int line;
     int upper;
@@ -329,7 +348,8 @@ void Credits_Update(void) {
         int cur = -1;
         if (TICK_DOWN(LINES[line].showTimer) != 0) {
           LINES[line].state = CRED_LINE_SCROLLED;
-          if (LINES[line].nextDelay == 0 && line == g_nCreditsFirstVisibleLine) {
+          if (LINES[line].nextDelay == 0 &&
+              line == g_nCreditsFirstVisibleLine) {
             g_nCreditsFirstVisibleLine = line + 1;
           }
         }
@@ -446,8 +466,7 @@ void Credits_Update(void) {
                   g->y = g->y - 6;
                 } else {
                   g->glyph = ACTOR_TYPE_GLYPH_COMMA;
-                  g->y =
-                      g->y - (st.adv * 2) / 3;
+                  g->y = g->y - (st.adv * 2) / 3;
                 }
               }
               if (upper != 0) {
@@ -474,7 +493,8 @@ void Credits_Update(void) {
             i = 0;
             if (g_nCreditsGlyphCount > 0) {
               do {
-                CredGlyph *g = (CredGlyph *)(i * 0x1C + (int)g_pCreditsGlyphPool);
+                CredGlyph *g =
+                    (CredGlyph *)(i * 0x1C + (int)g_pCreditsGlyphPool);
                 if (g->line == cur) {
                   short gx = g->x - mid;
                   int dx = -((gx - 0x100) * 3) / d;
@@ -487,12 +507,9 @@ void Credits_Update(void) {
                   POOL[i].dr = RandomSignedInRange(4, 0xF);
                   POOL[i].dg = RandomSignedInRange(4, 0xF);
                   POOL[i].db = RandomSignedInRange(4, 0xF);
-                  POOL[i].r =
-                      -(int)POOL[i].dr * d;
-                  POOL[i].g =
-                      -(int)POOL[i].dg * d;
-                  POOL[i].b =
-                      -(int)POOL[i].db * d;
+                  POOL[i].r = -(int)POOL[i].dr * d;
+                  POOL[i].g = -(int)POOL[i].dg * d;
+                  POOL[i].b = -(int)POOL[i].db * d;
                   POOL[i].timer = d;
                 }
                 i += 1;
@@ -522,15 +539,12 @@ void Credits_Update(void) {
         CredGlyph *g = (CredGlyph *)(i * 0x1C + (int)g_pCreditsGlyphPool);
         switch (g->state) {
         case CRED_GLYPH_FLY_IN:
-          g->x =
-              g->x + g->dx;
+          g->x = g->x + g->dx;
           g->r = g->r + g->dr;
-          g->z =
-              g->z + g->dz;
+          g->z = g->z + g->dz;
           POOL[i].g = POOL[i].g + POOL[i].dg;
           POOL[i].b = POOL[i].b + POOL[i].db;
-          if ((POOL[i].timer =
-                                  POOL[i].timer - 1) == 0) {
+          if ((POOL[i].timer = POOL[i].timer - 1) == 0) {
             POOL[i].state = CRED_GLYPH_SETTLED;
             POOL[i].dx = RandomSignedInRange(3, 0xB);
             POOL[i].dy = -RandomIntInRange(6, 0xA);
@@ -541,12 +555,9 @@ void Credits_Update(void) {
           }
           break;
         case CRED_GLYPH_FALL_OUT:
-          g->x =
-              g->x + g->dx;
-          g->y =
-              g->y + g->dy;
-          g->z =
-              g->z + g->dz;
+          g->x = g->x + g->dx;
+          g->y = g->y + g->dy;
+          g->z = g->z + g->dz;
           g->r = g->r + g->dr;
           g->dy = g->dy + 1;
           POOL[i].g = POOL[i].g + POOL[i].dg;
@@ -595,14 +606,18 @@ void Credits_Update(void) {
         switch (st) {
         case CREDITS_MODE_FETCH_HEADER: {
           int sector = g_anCreditsPageSectors[g_nCreditsPageIndex * 2];
-          StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x800, sector, CD_STALL_TIMEOUT_TICKS);
+          StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x800, sector,
+                           CD_STALL_TIMEOUT_TICKS);
           g_nCreditsMode = g_nCreditsMode + 1;
           break;
         }
         case CREDITS_MODE_FETCH_TEXTURES:
-          CopyWords(g_nWorldTimAudioChunkOffset, g_pCreditsLoadBuf, ARCHIVE_DESC_BYTES);
+          CopyWords(g_nWorldTimAudioChunkOffset, g_pCreditsLoadBuf,
+                    ARCHIVE_DESC_BYTES);
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, 0x20000,
-                        g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2], CD_STALL_TIMEOUT_TICKS);
+                           g_nWorldTimAudioChunkOffset[0] +
+                               g_anCreditsPageSectors[g_nCreditsPageIndex * 2],
+                           CD_STALL_TIMEOUT_TICKS);
           g_nCreditsMode = g_nCreditsMode + 1;
           break;
         case CREDITS_MODE_FETCH_SCENE: {
@@ -621,8 +636,10 @@ void Credits_Update(void) {
           }
           g_nCreditsLoadSpan = span;
           StartCdReadAsync(g_nCdBaseLba[0], g_pCreditsLoadBuf, span,
-                        g_nWorldTimAudioChunkOffset[0] + g_anCreditsPageSectors[g_nCreditsPageIndex * 2] + 0x20000,
-                        CD_STALL_TIMEOUT_TICKS);
+                           g_nWorldTimAudioChunkOffset[0] +
+                               g_anCreditsPageSectors[g_nCreditsPageIndex * 2] +
+                               0x20000,
+                           CD_STALL_TIMEOUT_TICKS);
           g_nCreditsMode = g_nCreditsMode + 1;
           break;
         }
@@ -645,13 +662,16 @@ void Credits_Update(void) {
           rect[3] = 0x80;
           MoveImage(rect, 0x200, 0);
           DrawSync(0);
-          CopyWords(g_pCreditsScratchBuf, g_pCreditsLoadBuf + 0x40000, g_nCreditsLoadSpan - 0x40000);
-          g_pCreditsLoadBuf = g_pCreditsScratchBuf + g_nCreditsLoadSpan - 0x40000;
-          S.worldUnpackHead = UnpackWorldDataChunks((int *)g_pLevelDataBuffer, 1);
+          CopyWords(g_pCreditsScratchBuf, g_pCreditsLoadBuf + 0x40000,
+                    g_nCreditsLoadSpan - 0x40000);
+          g_pCreditsLoadBuf =
+              g_pCreditsScratchBuf + g_nCreditsLoadSpan - 0x40000;
+          S.worldUnpackHead =
+              UnpackWorldDataChunks((int *)g_pLevelDataBuffer, 1);
           {
-          char *dc = S.levelData;
-          S.blk = g_nLevelSkyChunkCount;
-          g_pLevelArchiveBuffer = dc + g_nWorldBundleChunkSize;
+            char *dc = S.levelData;
+            S.blk = g_nLevelSkyChunkCount;
+            g_pLevelArchiveBuffer = dc + g_nWorldBundleChunkSize;
           }
           g_pCreditsScrollHeader = g_pLevelArchiveBuffer;
           g_nLevelArchiveByteSize = g_nLevelArchiveChunkSize;

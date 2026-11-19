@@ -4,12 +4,13 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into ->type and the parent's pool index into ->poolIndex, then runs a per-type
- * init arm: every arm starts from InitActorRenderDefaults (InitActorRenderDefaults) and
- * ends by placing the new actor -- most copy the parent's position
- * (CopyVector) and either register it in the spatial grid
- * (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).  With no parent
- * the position falls back to Spyro's (g_anSpyroWorldPos).
+ * type into ->type and the parent's pool index into ->poolIndex, then runs a
+ * per-type init arm: every arm starts from InitActorRenderDefaults
+ * (InitActorRenderDefaults) and ends by placing the new actor -- most copy the
+ * parent's position (CopyVector) and either register it in the spatial grid
+ * (InsertActorIntoSpatialGrid) or hide its render record
+ * (HideActorRenderRecord).  With no parent the position falls back to Spyro's
+ * (g_anSpyroWorldPos).
  */
 
 #include "rot_billboard.h"
@@ -19,7 +20,7 @@
 #include "actor.h"
 
 extern volatile int g_anSpyroWorldPos[];
-extern volatile int g_nSpyroWorldPosY;     /* g_anSpyroWorldPos[1] */
+extern volatile int g_nSpyroWorldPosY; /* g_anSpyroWorldPos[1] */
 
 Actor *Level13_SpawnActor(int type, Actor *parent) {
   Actor *rec;
@@ -27,7 +28,8 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
 
   rec = AllocActorRecordSlot();
   rec->type = type;
-  if (parent == 0 || (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
+  if (parent == 0 ||
+      (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
     owner = 0;
   }
   rec->poolIndex = owner;
@@ -210,7 +212,8 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
     st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
-    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) < 3) {
+    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) <
+        3) {
       *(int *)&rec->tint0 = ACTOR_TINT_NEUTRAL;
       rec->renderList |= ACTOR_RENDER_SECONDARY;
     }
@@ -303,7 +306,9 @@ Actor *Level13_SpawnActor(int type, Actor *parent) {
     rec->rotZ = parent->rotZ + turn;
     dist = ApproxDist2D(&rec->posX, (int *)g_anSpyroWorldPos);
     dz = rec->posZ - 0x164;
-    turn = (ArcTan2(dist, g_nSpyroGroundHeightZ - dz, ATAN_ANGLE8) - parent->rotY) & ANGLE8_MASK;
+    turn = (ArcTan2(dist, g_nSpyroGroundHeightZ - dz, ATAN_ANGLE8) -
+            parent->rotY) &
+           ANGLE8_MASK;
     if (turn > ANGLE8_HALF) {
       turn -= ANGLE8_TURN;
     }

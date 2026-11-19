@@ -66,7 +66,9 @@ L_8002B43C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8002b3f4u: bc = 0; goto L_8002B3F4;
+  case 0x8002b3f4u:
+    bc = 0;
+    goto L_8002B3F4;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("GetWorldChunkAnimState", tgt, entry_ra);

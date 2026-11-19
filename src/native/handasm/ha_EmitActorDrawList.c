@@ -1878,7 +1878,10 @@ L_800203A8:
   /* 800203C4 8FC10000 (delay) */
   at = HA_LW(fp + 0u);
   if (bc) {
-    { bc = 0; goto L_800203E0; }
+    {
+      bc = 0;
+      goto L_800203E0;
+    }
   }
   /* 800203C8 08007FFE */
   /* 800203CC 00000000 (delay) */
@@ -2678,7 +2681,9 @@ L_800208AC:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8001f798u: bc = 0; goto L_8001F798;
+  case 0x8001f798u:
+    bc = 0;
+    goto L_8001F798;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("EmitActorDrawList", tgt, entry_ra);

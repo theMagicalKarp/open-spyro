@@ -202,7 +202,9 @@ L_800526A0:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80052568u: bc = 0; goto L_80052568;
+  case 0x80052568u:
+    bc = 0;
+    goto L_80052568;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("DespawnActorRecord", tgt, entry_ra);

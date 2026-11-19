@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster EncodeHitNormalToActorGroundCode: EncodeHitNormalToActorGroundCode (800533D0) */
+/* cluster EncodeHitNormalToActorGroundCode: EncodeHitNormalToActorGroundCode
+ * (800533D0) */
 void ha_EncodeHitNormalToActorGroundCode(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -258,7 +259,9 @@ L_80053568:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800533d0u: bc = 0; goto L_800533D0;
+  case 0x800533d0u:
+    bc = 0;
+    goto L_800533D0;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("EncodeHitNormalToActorGroundCode", tgt, entry_ra);

@@ -30,13 +30,14 @@ void Titlescreen_EmitSpriteQuad(int nX, int nY, int nSprite, int nColorId) {
   ((unsigned int *)p)[1] = g_adwTitleSelectColors[nColorId];
 
   /* setXY4(p, nX, nY, w + nX, nY, nX, h + nY, w + nX, h + nY) */
-  p->x0 = nX, p->y0 = nY,
-  p->x1 = g_aTitlescreenSprites[nSprite].nW + nX, p->y1 = nY,
-  p->x2 = nX, p->y2 = g_aTitlescreenSprites[nSprite].nH + nY,
-  p->x3 = g_aTitlescreenSprites[nSprite].nW + nX, p->y3 = g_aTitlescreenSprites[nSprite].nH + nY;
+  p->x0 = nX, p->y0 = nY, p->x1 = g_aTitlescreenSprites[nSprite].nW + nX,
+  p->y1 = nY, p->x2 = nX, p->y2 = g_aTitlescreenSprites[nSprite].nH + nY,
+  p->x3 = g_aTitlescreenSprites[nSprite].nW + nX,
+  p->y3 = g_aTitlescreenSprites[nSprite].nH + nY;
 
   /* setUVWH2(p, u, v, w, h): u3=u1, v3=v2 reuse the computed corners */
-  p->u0 = g_aTitlescreenSprites[nSprite].nU, p->v0 = g_aTitlescreenSprites[nSprite].nV,
+  p->u0 = g_aTitlescreenSprites[nSprite].nU,
+  p->v0 = g_aTitlescreenSprites[nSprite].nV,
   p->u1 = p->u0 + g_aTitlescreenSprites[nSprite].nW, p->v1 = p->v0,
   p->u2 = p->u0, p->v2 = p->v0 + g_aTitlescreenSprites[nSprite].nH,
   p->u3 = p->u1, p->v3 = p->v2;

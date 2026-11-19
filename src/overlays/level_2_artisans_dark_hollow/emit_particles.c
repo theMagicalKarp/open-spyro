@@ -18,9 +18,10 @@
  *
  * The stone-hill variant: the town-square arm set plus 0x6, the actor-tracking
  * smoke plume (record class 3, which keeps a pointer to the actor's position
- * at +0x18 so the particle follows it).  `effectArg >> 24` is written inline at its
- * three 0xC-arm use sites so it stays a compiler temp and loop.c hoists it out
- * of the loop (scan_loop case 2); a named local would pin it inside the arm.
+ * at +0x18 so the particle follows it).  `effectArg >> 24` is written inline at
+ * its three 0xC-arm use sites so it stays a compiler temp and loop.c hoists it
+ * out of the loop (scan_loop case 2); a named local would pin it inside the
+ * arm.
  *
  * Word-identical (bar branch displacements) to the five-overlay family
  * Level1_EmitParticles, Level2_EmitParticles,
@@ -246,7 +247,8 @@ void Level2_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
+      rec->u.spark.vel[0] =
+          ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -258,9 +260,11 @@ void Level2_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (src->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &src->posX);
-      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
+      } else if (src->type == ACTOR_TYPE_KEY ||
+                 src->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          RotateVectorByMatrix(src->mtx,
+                               &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &src->posX);
         } else {
           rec->cls = EMIT_CLASS_FADED_QUAD;
@@ -508,7 +512,8 @@ void Level2_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      rec->u.line.a[1] =
+          rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
       u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[1] = 0x40;

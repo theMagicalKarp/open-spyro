@@ -28,7 +28,9 @@ L_800529CC:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800529ccu: bc = 0; goto L_800529CC;
+  case 0x800529ccu:
+    bc = 0;
+    goto L_800529CC;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("HideActorRenderRecord", tgt, entry_ra);

@@ -8,44 +8,48 @@
 
 #define TOTAL_LEVEL_COUNT 36
 #define WORLD_COUNT 6
-#define EGG_LEVEL_COUNT 18     /* worlds 0-2 hold the eggs */
+#define EGG_LEVEL_COUNT 18 /* worlds 0-2 hold the eggs */
 #define FLIGHT_LEVEL_COUNT 5
-#define FLIGHT_BONUS_SLOTS 5   /* four target classes and the all-clear */
+#define FLIGHT_BONUS_SLOTS 5 /* four target classes and the all-clear */
 /* ApplySaveGameBuffer: a loaded game has at least this many lives. */
 #define SAVE_MIN_LIVES 4
 
 typedef struct {
-  int clearTimes[FLIGHT_LEVEL_COUNT];     /* 0x00 g_anFlightClearTimes: per flight level */
-  unsigned char bonusPaid[FLIGHT_LEVEL_COUNT][FLIGHT_BONUS_SLOTS]; /* 0x14 g_abFlightBonusPaid */
-} SaveGameFlight;                         /* 0x30 */
+  /* g_anFlightClearTimes: per flight level */
+  int clearTimes[FLIGHT_LEVEL_COUNT]; /* 0x00 */
+  /* g_abFlightBonusPaid */
+  unsigned char bonusPaid[FLIGHT_LEVEL_COUNT][FLIGHT_BONUS_SLOTS]; /* 0x14 */
+} SaveGameFlight;                                                  /* 0x30 */
 
 typedef struct {
-  unsigned char levelId;                  /* 0x00 g_nActiveLevelId */
-  unsigned char sfxVolume;                /* 0x01 */
-  unsigned char musicVolume;              /* 0x02 */
-  unsigned char vibration;                /* 0x03 */
-  int cameraOptions;                      /* 0x04 g_dwActiveCameraOptions */
-  unsigned char monoMix;                  /* 0x08 */
-  unsigned char escapeRunCount;           /* 0x09 g_anLevelEscapeRunCount */
-  unsigned char escapeRunCountLane1;      /* 0x0A g_nLevelEscapeRunCountLane1 */
-  unsigned char extraLives;               /* 0x0B */
-  int pad0C;                              /* 0x0C never written (FillWord zeroes it) */
-  SaveGameFlight flight;                  /* 0x10 */
-  unsigned char levelVisited[TOTAL_LEVEL_COUNT];    /* 0x40 */
-  unsigned char levelExited[TOTAL_LEVEL_COUNT]; /* 0x64 */
-  unsigned char levelDragons[TOTAL_LEVEL_COUNT];    /* 0x88 */
-  short levelGems[TOTAL_LEVEL_COUNT];               /* 0xAC */
-  unsigned char levelEggs[EGG_LEVEL_COUNT]; /* 0xF4 worlds 0-2 only; the
-                                           * serializers walk all 36 and the
-                                           * balloonist bytes overwrite the tail */
-  unsigned char balloonistState[WORLD_COUNT]; /* 0x106 */
+  unsigned char levelId;             /* 0x00 g_nActiveLevelId */
+  unsigned char sfxVolume;           /* 0x01 */
+  unsigned char musicVolume;         /* 0x02 */
+  unsigned char vibration;           /* 0x03 */
+  int cameraOptions;                 /* 0x04 g_dwActiveCameraOptions */
+  unsigned char monoMix;             /* 0x08 */
+  unsigned char escapeRunCount;      /* 0x09 g_anLevelEscapeRunCount */
+  unsigned char escapeRunCountLane1; /* 0x0A g_nLevelEscapeRunCountLane1 */
+  unsigned char extraLives;          /* 0x0B */
+  int pad0C;             /* 0x0C never written (FillWord zeroes it) */
+  SaveGameFlight flight; /* 0x10 */
+  unsigned char levelVisited[TOTAL_LEVEL_COUNT]; /* 0x40 */
+  unsigned char levelExited[TOTAL_LEVEL_COUNT];  /* 0x64 */
+  unsigned char levelDragons[TOTAL_LEVEL_COUNT]; /* 0x88 */
+  short levelGems[TOTAL_LEVEL_COUNT];            /* 0xAC */
+  /* worlds 0-2 only; the serializers walk all 36 and the balloonist bytes
+   * overwrite the tail */
+  unsigned char levelEggs[EGG_LEVEL_COUNT];          /* 0xF4 */
+  unsigned char balloonistState[WORLD_COUNT];        /* 0x106 */
   unsigned char killBitmaps[TOTAL_LEVEL_COUNT * 32]; /* 0x10C */
-  int checksum;                           /* 0x58C */
+  int checksum;                                      /* 0x58C */
   char pad[0x70];
-} SaveGameBuffer;                         /* 0x600 */
+} SaveGameBuffer; /* 0x600 */
 
 #define SAVE_IMAGE_BYTES 0x600
-typedef char SaveGameBufferSizeCheck[sizeof(SaveGameBuffer) == SAVE_IMAGE_BYTES ? 1 : -1];
+typedef char SaveGameBufferSizeCheck[sizeof(SaveGameBuffer) == SAVE_IMAGE_BYTES
+                                         ? 1
+                                         : -1];
 
 /* Byte offset of a SaveGameBuffer field, and that field read through a byte
  * pointer `p` offset from the image base (the serializers walk the image

@@ -96,7 +96,9 @@ L_80017328:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8001729cu: bc = 0; goto L_8001729C;
+  case 0x8001729cu:
+    bc = 0;
+    goto L_8001729C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("RefineSqrtEstimate", tgt, entry_ra);

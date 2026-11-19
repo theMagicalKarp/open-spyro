@@ -48,29 +48,25 @@ typedef ushort u_short;
 #include "gamestate.h"
 
 /* --- structs (from Ghidra / psyq SDK) --- */
-typedef struct CVECTOR
-{
+typedef struct CVECTOR {
   u_char r;  /* +0x0 */
   u_char g;  /* +0x1 */
   u_char b;  /* +0x2 */
   u_char cd; /* +0x3 */
 } CVECTOR;
 
-typedef struct DIRENTRY
-{
+typedef struct DIRENTRY {
   unsigned char _opaque;
 } DIRENTRY;
 
-typedef struct RECT
-{
+typedef struct RECT {
   short x; /* +0x0 */
   short y; /* +0x2 */
   short w; /* +0x4 */
   short h; /* +0x6 */
 } RECT;
 
-typedef struct DISPENV
-{
+typedef struct DISPENV {
   RECT disp;      /* +0x0 */
   RECT screen;    /* +0x8 */
   u_char isinter; /* +0x10 */
@@ -79,14 +75,12 @@ typedef struct DISPENV
   u_char pad1;    /* +0x13 */
 } DISPENV;
 
-typedef struct DR_ENV
-{
+typedef struct DR_ENV {
   u_long tag;      /* +0x0 */
   u_long code[15]; /* +0x4 */
 } DR_ENV;
 
-typedef struct DRAWENV
-{
+typedef struct DRAWENV {
   RECT clip;     /* +0x0 */
   short ofs[2];  /* +0x8 */
   RECT tw;       /* +0xc */
@@ -100,20 +94,17 @@ typedef struct DRAWENV
   DR_ENV dr_env; /* +0x1c */
 } DRAWENV;
 
-typedef struct DR_MOVE
-{
+typedef struct DR_MOVE {
   u_long tag;     /* +0x0 */
   u_long code[5]; /* +0x4 */
 } DR_MOVE;
 
-typedef struct DVECTOR
-{
+typedef struct DVECTOR {
   short vx; /* +0x0 */
   short vy; /* +0x2 */
 } DVECTOR;
 
-typedef struct LINE_F3
-{
+typedef struct LINE_F3 {
   u_long tag;  /* +0x0 */
   u_char r0;   /* +0x4 */
   u_char g0;   /* +0x5 */
@@ -128,8 +119,7 @@ typedef struct LINE_F3
   u_long pad;  /* +0x14 */
 } LINE_F3;
 
-typedef struct LINE_F4
-{
+typedef struct LINE_F4 {
   u_long tag;  /* +0x0 */
   u_char r0;   /* +0x4 */
   u_char g0;   /* +0x5 */
@@ -146,30 +136,26 @@ typedef struct LINE_F4
   u_long pad;  /* +0x18 */
 } LINE_F4;
 
-typedef struct MATRIX
-{
+typedef struct MATRIX {
   short m[3][3]; /* +0x0 */
   long t[3];     /* +0x14 */
 } MATRIX;
 
-typedef struct SVECTOR
-{
+typedef struct SVECTOR {
   short vx;  /* +0x0 */
   short vy;  /* +0x2 */
   short vz;  /* +0x4 */
   short pad; /* +0x6 */
 } SVECTOR;
 
-typedef struct VECTOR
-{
+typedef struct VECTOR {
   long vx;  /* +0x0 */
   long vy;  /* +0x4 */
   long vz;  /* +0x8 */
   long pad; /* +0xc */
 } VECTOR;
 
-typedef struct VERTC
-{
+typedef struct VERTC {
   short vx;    /* +0x0 */
   short vy;    /* +0x2 */
   short vz;    /* +0x4 */
@@ -178,13 +164,11 @@ typedef struct VERTC
   CVECTOR col; /* +0x8 */
 } VERTC;
 
-typedef struct __sigset_t
-{
+typedef struct __sigset_t {
   ulong __val[32]; /* +0x0 */
 } __sigset_t;
 
-typedef struct __jmp_buf_tag
-{
+typedef struct __jmp_buf_tag {
   __jmp_buf __jmpbuf;      /* +0x0 */
   int __mask_was_saved;    /* +0x18 */
   __sigset_t __saved_mask; /* +0x1c */

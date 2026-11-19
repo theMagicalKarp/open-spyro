@@ -2,11 +2,11 @@
  * overlay, 0xdf8 bytes).
  *
  * The emit-list ADVANCE pass -- the sibling of Level29_SpawnActor (which
- * pushes records).  Walks the 0x20-byte record stream at g_pEmitListBase and ages
- * one record per iteration: integrates its position, fades its colour, ticks
- * its life counter and, when the record has expired (or its visible byte has
- * been cleared (culled)), hands it back with FreeEmitListRecord().  The walk stops at the
- * terminator record, whose class byte at +0x01 is 0xFF.
+ * pushes records).  Walks the 0x20-byte record stream at g_pEmitListBase and
+ * ages one record per iteration: integrates its position, fades its colour,
+ * ticks its life counter and, when the record has expired (or its visible byte
+ * has been cleared (culled)), hands it back with FreeEmitListRecord().  The
+ * walk stops at the terminator record, whose class byte at +0x01 is 0xFF.
  *
  * Only `rec` is a real induction variable.  `pos` and `vel` are separate
  * pointers because the arms pass them to AddSVector() as values, so
@@ -94,9 +94,10 @@ void Level29_AdvanceEmitList(int step) {
 
     case EMIT_SPYRO_HURT_SPARKLE:
       /* A hurt sparkle: circles Spyro (0x40 a tick) while his post-hit
-       * invulnerability runs; freed early if he is hidden or a hazard kills him. */
-      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) || g_nSpyroDrawSuppressed != 0 ||
-          g_nSpyroInvulnFrames[0] <= 0) {
+       * invulnerability runs; freed early if he is hidden or a hazard kills
+       * him. */
+      if ((g_nSpyroState == SPYRO_ST_HAZARD && g_nSparxHealth < SPARX_GONE) ||
+          g_nSpyroDrawSuppressed != 0 || g_nSpyroInvulnFrames[0] <= 0) {
         FreeEmitListRecord(rec);
       } else {
         CopyVector(v, SPYRO_POS_VIA_INVULN);
@@ -105,7 +106,9 @@ void Level29_AdvanceEmitList(int step) {
         v[2] += 0x100;
         VectorToSVectorShr2(POS, v);
         ORBIT_ANGLE = ORBIT_ANGLE_U + 0x40;
-        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) & ANGLE12_MASK)) / 170;
+        SIZE = abs(LookupCosine((ORBIT_ANGLE - g_nCameraEulerYaw) &
+                                ANGLE12_MASK)) /
+               170;
       }
       break;
 

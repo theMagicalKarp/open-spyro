@@ -116,7 +116,9 @@ L_8005369C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80053608u: bc = 0; goto L_80053608;
+  case 0x80053608u:
+    bc = 0;
+    goto L_80053608;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("FreeEmitListRecord", tgt, entry_ra);

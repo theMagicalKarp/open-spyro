@@ -7,14 +7,15 @@
 #define OPEN_SPYRO_ACTOR_CUTSCENE_H
 
 enum ActorCutsceneSubstate {
-  ACS_APPROACH = 0,    /* swing the camera round to the balloonist */
-  ACS_DIALOGUE = 1,    /* dialogue pages / world roster menu */
-  ACS_BOARD = 2,       /* fly Spyro to the balloon */
-  ACS_LIFT_OFF = 3,    /* raise the balloon, then start the level stream */
-  ACS_STREAM_WAIT = 4, /* camera orbits the new level's entry while it streams */
-  ACS_CRUISE = 5,      /* camera along the flight path */
-  ACS_DESCEND = 6,     /* lower the balloon */
-  ACS_LAND = 7,        /* Spyro steps out; back to gameplay */
+  ACS_APPROACH = 0, /* swing the camera round to the balloonist */
+  ACS_DIALOGUE = 1, /* dialogue pages / world roster menu */
+  ACS_BOARD = 2,    /* fly Spyro to the balloon */
+  ACS_LIFT_OFF = 3, /* raise the balloon, then start the level stream */
+  /* camera orbits the new level's entry while it streams */
+  ACS_STREAM_WAIT = 4,
+  ACS_CRUISE = 5,  /* camera along the flight path */
+  ACS_DESCEND = 6, /* lower the balloon */
+  ACS_LAND = 7,    /* Spyro steps out; back to gameplay */
 };
 
 /* g_abWorldBalloonistState[world]: a homeworld balloonist's progress. */
@@ -46,28 +47,35 @@ enum BalloonistState {
 #define BALLOONIST_PAGE(world, step) ((world) * BPAGES_PER_WORLD + (step))
 
 enum BalloonistPageStep {
-  BPAGE_LOCKED_FIRST = 0,   /* requirement not met, first talk: then LOCKED_FIRST_2 */
-  BPAGE_LOCKED_FIRST_2 = 1, /* then exits (world 0 while world 1 is locked) or ROSTER */
-  BPAGE_LOCKED_AGAIN = 2,   /* requirement not met, talked before: same; world 2's
-                             * page instead picks an egg-thief hint (BPAGE_HINT_*) */
-  BPAGE_UNLOCK_FIRST = 3,   /* requirement met on the first talk: then UNLOCK_OFFER */
-  BPAGE_UNLOCK_AGAIN = 4,   /* requirement met after talking before: then UNLOCK_OFFER */
-  BPAGE_UNLOCK_OFFER = 5,   /* then BPAGE_CONFIRM_NEXT */
+  /* requirement not met, first talk: then LOCKED_FIRST_2 */
+  BPAGE_LOCKED_FIRST = 0,
+  /* then exits (world 0 while world 1 is locked) or ROSTER */
+  BPAGE_LOCKED_FIRST_2 = 1,
+  /* requirement not met, talked before: same; world 2's page instead picks an
+   * egg-thief hint (BPAGE_HINT_*) */
+  BPAGE_LOCKED_AGAIN = 2,
+  /* requirement met on the first talk: then UNLOCK_OFFER */
+  BPAGE_UNLOCK_FIRST = 3,
+  /* requirement met after talking before: then UNLOCK_OFFER */
+  BPAGE_UNLOCK_AGAIN = 4,
+  BPAGE_UNLOCK_OFFER = 5, /* then BPAGE_CONFIRM_NEXT */
   BPAGES_PER_WORLD = 6,
 };
 
 enum BalloonistPage {
-  BPAGE_ROSTER = 0x1E,       /* pick an open world (g_nActorCutsceneMenuCursor) and board */
+  /* pick an open world (g_nActorCutsceneMenuCursor) and board */
+  BPAGE_ROSTER = 0x1E,
   BPAGE_CONFIRM_NEXT = 0x1F, /* yes/no: fly to the next world (no exits) */
-  BPAGE_CONFIRM_HINT = 0x20, /* yes/no: fly to the hinted level (no goes back to ROSTER) */
+  /* yes/no: fly to the hinted level (no goes back to ROSTER) */
+  BPAGE_CONFIRM_HINT = 0x20,
   /* Egg-thief hints, each for a level whose g_anLevelEggsRecovered is still
    * short. The first three then offer the trip (CONFIRM_HINT, landing card
    * variant page - 0x1B); the rest return to ROSTER. */
   BPAGE_HINT_STONE_HILL = 0x21,
   BPAGE_HINT_DRY_CANYON = 0x22,
   BPAGE_HINT_CLIFF_TOWN = 0x23,
-  BPAGE_HINT_MC_HOME = 0x24,       /* level 12 (Magic Crafters home), under 2 eggs */
-  BPAGE_HINT_WIZARD_PEAK = 0x25,   /* then WIZARD_PEAK_2 */
+  BPAGE_HINT_MC_HOME = 0x24, /* level 12 (Magic Crafters home), under 2 eggs */
+  BPAGE_HINT_WIZARD_PEAK = 0x25, /* then WIZARD_PEAK_2 */
   BPAGE_HINT_WIZARD_PEAK_2 = 0x26,
 };
 

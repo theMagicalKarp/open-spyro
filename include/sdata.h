@@ -10,8 +10,7 @@
    emitted. Per-TU on purpose: several of these globals are also accessed via
    lui/%lo from other functions. */
 #if !defined(M2CTX) && !defined(PERMUTER)
-#define SDATA(sym, size) \
-    __asm__(".sdata\n.size " #sym "," #size "\n.text")
+#define SDATA(sym, size) __asm__(".sdata\n.size " #sym "," #size "\n.text")
 #else
 #define SDATA(sym, size)
 #endif

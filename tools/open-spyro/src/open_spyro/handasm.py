@@ -33,8 +33,10 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import struct
 import subprocess
+import sys
 import tempfile
 from collections import defaultdict
 from dataclasses import dataclass, field
@@ -782,6 +784,17 @@ HEADER = """\
 """
 
 
+def clang_format(files: list[Path]) -> None:
+    """Formats FILES in place with the repo's .clang-format (`make lint-c`
+    checks the generated files too), using the pinned clang-format from this
+    project's venv."""
+    exe = Path(sys.executable).with_name("clang-format")
+    tool = str(exe) if exe.exists() else shutil.which("clang-format")
+    if tool is None:
+        raise SystemExit("handasm: clang-format not found (uv sync --group dev)")
+    subprocess.run([tool, "-i", *map(str, files)], check=True)
+
+
 def run(out_dir: Path | None = None) -> None:
     root = repo_root()
     out = out_dir or root / OUT_DIR
@@ -848,6 +861,7 @@ def run(out_dir: Path | None = None) -> None:
         (out / f"ha_{cl.name}.c").write_text(text)
     index.append("#endif")
     (out / "handasm_index.h").write_text("\n".join(index) + "\n")
+    clang_format(sorted(out.glob("*.[ch]")))
     hazards = [w for w in ctx.warnings if "handled" in w]
     other = [w for w in ctx.warnings if "handled" not in w]
     for w in other:

@@ -28,7 +28,8 @@ extern uint32_t ha_mips_sp;
 
 void ha_enter(HaRegs *R);
 void ha_leave(HaRegs *R);
-_Noreturn void ha_bad_jump(const char *cluster, uint32_t target, uint32_t entry_ra);
+_Noreturn void ha_bad_jump(const char *cluster, uint32_t target,
+                           uint32_t entry_ra);
 
 /* GTE register access with the hardware's side effects (SXYP push, IRGB/ORGB,
  * LZCS/LZCR); everything else goes straight to PsyZ. */
@@ -107,12 +108,14 @@ void ha_swr(uint32_t addr, uint32_t rt);
 #define HA_LOCALS()                                                            \
   uint32_t at, v0, v1, a0, a1, a2, a3, t0, t1, t2, t3, t4, t5, t6, t7, s0, s1, \
       s2, s3, s4, s5, s6, s7, t8, t9, k0, k1, gp, sp, fp, ra, hi, lo
-#define HA_REGS_(X)                                                            \
-  X(1, at) X(2, v0) X(3, v1) X(4, a0) X(5, a1) X(6, a2) X(7, a3) X(8, t0)      \
-  X(9, t1) X(10, t2) X(11, t3) X(12, t4) X(13, t5) X(14, t6) X(15, t7)         \
-  X(16, s0) X(17, s1) X(18, s2) X(19, s3) X(20, s4) X(21, s5) X(22, s6)        \
-  X(23, s7) X(24, t8) X(25, t9) X(26, k0) X(27, k1) X(28, gp) X(29, sp)        \
-  X(30, fp) X(31, ra)
+/* clang-format off */
+#define HA_REGS_(X)                                                     \
+  X(1, at) X(2, v0) X(3, v1) X(4, a0) X(5, a1) X(6, a2) X(7, a3)        \
+  X(8, t0) X(9, t1) X(10, t2) X(11, t3) X(12, t4) X(13, t5) X(14, t6)   \
+  X(15, t7) X(16, s0) X(17, s1) X(18, s2) X(19, s3) X(20, s4) X(21, s5) \
+  X(22, s6) X(23, s7) X(24, t8) X(25, t9) X(26, k0) X(27, k1) X(28, gp) \
+  X(29, sp) X(30, fp) X(31, ra)
+/* clang-format on */
 #define HA_LOAD1_(n, reg) reg = R->r[n];
 #define HA_STORE1_(n, reg) R->r[n] = reg;
 #define HA_RELOAD()                                                            \

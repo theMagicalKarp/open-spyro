@@ -42,7 +42,9 @@ L_80017C84:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017c84u: bc = 0; goto L_80017C84;
+  case 0x80017c84u:
+    bc = 0;
+    goto L_80017C84;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("AddSVector", tgt, entry_ra);

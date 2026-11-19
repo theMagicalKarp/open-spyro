@@ -20,45 +20,53 @@ extern void ComputeCameraToTargetAngle(int *target);
 #endif
 extern int g_anRotBillboardOffsetsRand[][3];
 extern Actor *g_pLockedChestReward;
-extern int g_anSpuVoiceRowPitch[][7];                        /* g_aSpuVoiceRows[i].nPitch (rows are 7 words) */
-extern int g_anSpuVoiceRowPitchStep[][7];                    /* g_aSpuVoiceRows[i].nPitchStep */
+/* g_aSpuVoiceRows[i].nPitch (rows are 7 words) */
+extern int g_anSpuVoiceRowPitch[][7];
+extern int g_anSpuVoiceRowPitchStep[][7]; /* g_aSpuVoiceRows[i].nPitchStep */
 extern int g_nActorCutsceneDialogPage;
-extern Actor g_aHudIconActorRecords[];                      /* the four HUD class icons */
-extern int g_anCollisionResolvedPos;                         /* collision contact point */
+extern Actor g_aHudIconActorRecords[]; /* the four HUD class icons */
+extern int g_anCollisionResolvedPos;   /* collision contact point */
 extern short g_anCosineLut[];
-extern int g_anFlightTargetTally[];                          /* tally collected, per class */
-extern int g_anLevelDragonsRescued[];                        /* per-g_nLevelIndex completion counters */
+extern int g_anFlightTargetTally[]; /* tally collected, per class */
+/* per-g_nLevelIndex completion counters */
+extern int g_anLevelDragonsRescued[];
 extern int g_anLevelEggsRecovered[];
 extern short g_anSineLut[];
-extern int g_anSpyroMotionVec;                               /* look-at offset */
-extern int g_anSpyroWorldPos;                                /* Spyro, as a plain symbol (the loop's spy carrier) */
-extern int g_anFlightClearTimes[];                       /* per flight level first-clear time */
-extern Actor *g_apActiveActorList[];                   /* live actor list, 0-terminated */
-extern int g_dwPadPressed;                                   /* pad buttons pressed; 0x40 skips the egg */
+extern int g_anSpyroMotionVec; /* look-at offset */
+/* Spyro, as a plain symbol (the loop's spy carrier) */
+extern int g_anSpyroWorldPos;
+extern int g_anFlightClearTimes[];   /* per flight level first-clear time */
+extern Actor *g_apActiveActorList[]; /* live actor list, 0-terminated */
+extern int g_dwPadPressed; /* pad buttons pressed; 0x40 skips the egg */
 extern short g_nCameraEulerPitch;
 extern int g_nSpyroSwingEulerTargetY[];
-extern int g_nCollisionResolvedZ;                            /* ..z */
+extern int g_nCollisionResolvedZ; /* ..z */
 extern int g_nSpyroWorldPosY;
-extern Actor *g_pActorListBase;                              /* level actor pool */
-extern Actor *g_pActorPoolDynBase;                           /* end of the level actor pool */
+extern Actor *g_pActorListBase;    /* level actor pool */
+extern Actor *g_pActorPoolDynBase; /* end of the level actor pool */
 extern void (*g_pfnLevelBeginActorCutscene)(Actor *actor);
 /* pos: a world vec3, or the Actor * for actor-anchored types; effectArg: a
- * colour / radius / life word, or a velocity pointer cast to int (EmitEffect). */
-extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos, int effectArg);
-extern void (*g_pfnLevelEndFlightRun)(void);           /* LevelN_FlightEndHook: crash, hazard, fall, time-out */
+ * colour / radius / life word, or a velocity pointer cast to int
+ * (EmitEffect). */
+extern void (*g_pfnLevelEmitParticles)(int count, int type, void *pos,
+                                       int effectArg);
+/* LevelN_FlightEndHook: crash, hazard, fall, time-out */
+extern void (*g_pfnLevelEndFlightRun)(void);
 extern Actor *(*g_pfnLevelSpawnActor)(int type, Actor *parent);
-extern Actor *g_pSparxActor;                     /* Sparx, or null when absent */
-extern unsigned char *g_pLevelSampleBankEntries;             /* sound definitions, 20 bytes each */
-extern unsigned char *g_pLevelSampleBankHeader;              /* sound id table */
+extern Actor *g_pSparxActor; /* Sparx, or null when absent */
+/* sound definitions, 20 bytes each */
+extern unsigned char *g_pLevelSampleBankEntries;
+extern unsigned char *g_pLevelSampleBankHeader; /* sound id table */
 /* Sample-bank entry pitch (u16 at +0xA of the 0x14-byte entry; full layout
  * in PlaySoundEffect.c SAMPLEENTRY). Kept as byte arithmetic on purpose: it
  * is the access form every cloned call site was matched with. */
-#define SAMPLE_PITCH(id) \
+#define SAMPLE_PITCH(id)                                                       \
   (*(unsigned short *)(g_pLevelSampleBankEntries + (id) * 20 + 0xA))
 extern Actor *g_pScriptedCameraActor;
-extern int *g_pSpyroRequestCameraAnchor;                     /* SPY.pCamAnchor, absolute form */
-extern unsigned char **g_pTriggerRegionTable;                /* surface records, indexed by the above */
-extern int RandomIntInRange(int lo, int hi);                 /* random in [lo, hi] */
+extern int *g_pSpyroRequestCameraAnchor; /* SPY.pCamAnchor, absolute form */
+/* surface records, indexed by the above */
+extern unsigned char **g_pTriggerRegionTable;
+extern int RandomIntInRange(int lo, int hi); /* random in [lo, hi] */
 extern int RandomSignedInRange(int lo, int hi);
 extern int StepAndLerpAngle8(int to, int from, int maxStep, int frac);
 extern int TickCountdownByFrameDelta(void *pValue, int width);
@@ -72,8 +80,10 @@ extern int TickCountdownByFrameDelta(void *pValue, int width);
 extern void VectorToSVectorShr2(short *dst, int *src);
 
 /* World chunk-animation flags (byte [1] of a chunk-anim entry; each step
- * entry's low two bits are copied into it on arrival, TickWorldChunkAnimations). */
-#define CHUNK_ANIM_BRANCH 0x01 /* follow the step's next_b successor, not next_a */
+ * entry's low two bits are copied into it on arrival,
+ * TickWorldChunkAnimations). */
+/* follow the step's next_b successor, not next_a */
+#define CHUNK_ANIM_BRANCH 0x01
 #define CHUNK_ANIM_HALTED 0x02 /* stopped: the tick skips the entry */
 /* ModifyWorldChunkAnimFlags andMask keeping every flag but `bits`. */
 #define CHUNK_ANIM_KEEP(bits) (0xFF & ~(bits))
@@ -85,37 +95,52 @@ extern void VectorToSVectorShr2(short *dst, int *src);
 /* Hoisted: declared identically (bar parameter names) in every includer. */
 extern int CastRayWorldAndActors(int *start, int *end);
 extern int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
-extern int g_anSparxHealthBlock[]; /* == g_nSparxHealth (SPY.sparxHealth): 3 gold .. 1 green, 0 Sparx gone, -1 the fatal hit was taken */
+/* == g_nSparxHealth (SPY.sparxHealth): 3 gold .. 1 green, 0 Sparx gone, -1 the
+ * fatal hit was taken */
+extern int g_anSparxHealthBlock[];
 extern int GetWorldChunkAnimState(int id); /* flags | step << 8 | delay << 16 */
 extern void ModifyWorldChunkAnimFlags(int id, int andMask, int orMask);
 extern int PickupGroupHasLiveActor(int group);
 extern int PlaneDistanceAbs(int *pos, void *st);
 extern void SetWorldChunkAnimStep(int id, int step, int fire);
 extern int WrapAddAngle8(int a, int b);
-extern int g_anActorShardOffsets[];  /* shard offset vectors, 3 ints each */
-extern int g_anMotionTrailSliceCounts[];       /* trail lengths */
-extern signed char g_bSpyroRequestYaw; /* g_abSpyroRequestEuler[2]: requested yaw */
+extern int g_anActorShardOffsets[];      /* shard offset vectors, 3 ints each */
+extern int g_anMotionTrailSliceCounts[]; /* trail lengths */
+/* g_abSpyroRequestEuler[2]: requested yaw */
+extern signed char g_bSpyroRequestYaw;
 
-/* Engine helpers every actor family calls; parameter names follow the main definitions. */
+/* Engine helpers every actor family calls; parameter names follow the main
+ * definitions. */
 #ifndef CONTACT_STOP_AT_SOLID
-#define CONTACT_STOP_AT_SOLID 0 /* stop at the first solid shape; returns the last actor touched */
-#define CONTACT_PUSH_OUT      1 /* push pos out of the first solid shape (written back); returns that actor */
-#define CONTACT_ALL           2 /* keep testing past solid shapes */
+/* stop at the first solid shape; returns the last actor touched */
+#define CONTACT_STOP_AT_SOLID 0
+/* push pos out of the first solid shape (written back); returns that actor */
+#define CONTACT_PUSH_OUT 1
+#define CONTACT_ALL 2 /* keep testing past solid shapes */
 #endif
-extern Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *events, int hitBits, Actor *self, int mode);
+extern Actor *DispatchActorContactAtSphere(int *pos, int radius,
+                                           unsigned int *events, int hitBits,
+                                           Actor *self, int mode);
 extern void GetActorAttachPoint(Actor *actor, int slot, int *dst);
 #ifndef STEER_NO_BLOCK
 #define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
-#define STEER_BLOCKED 0x100 /* returned: the heading is within 5 of a blocked one */
+/* returned: the heading is within 5 of a blocked one */
+#define STEER_BLOCKED 0x100
 #endif
-extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int contactRadius, int wallRadius, int flags);
-extern int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);
+extern int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
+                                 int deadzone, int speed, int turnStep,
+                                 int turnThreshold, int blockA, int blockB,
+                                 int contactRadius, int wallRadius, int flags);
+extern int SteerActorTowardPoint(Actor *actor, int *target, int speed,
+                                 int yawLim, int pitchLim, int radius);
 extern void SVectorToVectorShl2(int *dst, short *src);
 #ifndef YAW_HOLD_IN_BAND
 #define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
-#define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */
+/* inside the band: keep stepping onto the target */
+#define YAW_STEP_IN_BAND 1
 #endif
-extern int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag);
+extern int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold,
+                                     int flag);
 extern int g_anCameraPos[];
 
 #endif /* OPEN_SPYRO_LEVEL_ACTORS_H */

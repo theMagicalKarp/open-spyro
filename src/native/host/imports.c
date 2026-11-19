@@ -30,7 +30,8 @@ void MyPadInit(int mode);
 
 #define PTR(addr) psx_ptr(native_memory(), (addr))
 
-/* --- env: GPU backend ------------------------------------------------------ */
+/* --- env: GPU backend ------------------------------------------------------
+ */
 
 void w2c_env_Draw_Reset(struct w2c_env *e) {
   (void)e;
@@ -85,8 +86,7 @@ void w2c_env_Draw_SetMask(struct w2c_env *e, u32 a, u32 b) {
   (void)e;
   Draw_SetMask((int)a, (int)b);
 }
-void w2c_env_Draw_ClearImage(struct w2c_env *e, u32 rect, u32 r, u32 g,
-                             u32 b) {
+void w2c_env_Draw_ClearImage(struct w2c_env *e, u32 rect, u32 r, u32 g, u32 b) {
   (void)e;
   Draw_ClearImage((RECT *)PTR(rect), (u_char)r, (u_char)g, (u_char)b);
 }
@@ -131,7 +131,8 @@ u32 w2c_env_Draw_PushPrim(struct w2c_env *e, u32 packets, u32 max_len) {
   return (u32)Draw_PushPrim(wide, n);
 }
 
-/* --- env: frame pacing and input -------------------------------------------- */
+/* --- env: frame pacing and input --------------------------------------------
+ */
 
 u32 w2c_env_Psyz_VideoVSync(struct w2c_env *e, u32 mode) {
   (void)e;
@@ -157,7 +158,8 @@ void w2c_env_MyPadInit(struct w2c_env *e, u32 mode) {
   MyPadInit((int)mode);
 }
 
-/* --- host: libc services ----------------------------------------------------- */
+/* --- host: libc services -----------------------------------------------------
+ */
 
 #define MAX_FILES 32
 static FILE *files[MAX_FILES];

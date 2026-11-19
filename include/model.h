@@ -7,38 +7,39 @@
 #include "port.h"
 
 typedef struct AnimationHeader {
-  short m_NumFrames;              /* 0x00 */
-  unsigned short m_NumColors;     /* 0x02 */
-  unsigned char m_IsSpyroAnimation; /* 0x04 nonzero: one-word frame records with
-                                     * a >> 1 vertex offset (RelocateActorMeshHeader) */
+  short m_NumFrames;          /* 0x00 */
+  unsigned short m_NumColors; /* 0x02 */
+  /* nonzero: one-word frame records with a >> 1 vertex offset
+   * (RelocateActorMeshHeader) */
+  unsigned char m_IsSpyroAnimation; /* 0x04 */
   unsigned char m_Scale;
   unsigned char m_ShortEncodeShift;
   unsigned char m_Radius;
-  unsigned char m_VertCountHigh;  /* 0x08 */
+  unsigned char m_VertCountHigh; /* 0x08 */
   unsigned char m_VertCountLow;
   unsigned char m_Padding2;
   unsigned char m_DepthScale;
   unsigned char m_ProgressPerTick; /* 0x0C -- the byte TYPE_DESC reads */
   unsigned char m_Padding3;
   unsigned short m_Padding4;
-  void *m_AnimationVertices;      /* 0x10 */
+  void *m_AnimationVertices; /* 0x10 */
   void *m_Faces;
   void *m_Colors;
   void *m_LpFaces;
-  void *m_LpColors;               /* 0x20 */
-  unsigned int m_FrameWords[1];   /* 0x24 frame records. Spyro's anims: one
-                                   * word per frame, byte 3 the frame's sfx
-                                   * id (0xFF = none, TickSpyroGameplayFrame).
-                                   * Actor anims: two words per frame, byte 3
-                                   * a signed Model.m_Sounds index (< 0 none,
-                                   * TickActorAnims) */
+  void *m_LpColors;             /* 0x20 */
+  unsigned int m_FrameWords[1]; /* 0x24 frame records. Spyro's anims: one
+                                 * word per frame, byte 3 the frame's sfx
+                                 * id (0xFF = none, TickSpyroGameplayFrame).
+                                 * Actor anims: two words per frame, byte 3
+                                 * a signed Model.m_Sounds index (< 0 none,
+                                 * TickActorAnims) */
 } AnimationHeader;
 
 typedef struct Model {
-  int m_NumAnimations;            /* 0x00 */
-  unsigned char m_Sounds[16];     /* 0x04 */
-  void *m_CollisionModels[8];     /* 0x14 */
-  void *m_Data;                   /* 0x34 */
+  int m_NumAnimations;              /* 0x00 */
+  unsigned char m_Sounds[16];       /* 0x04 */
+  void *m_CollisionModels[8];       /* 0x14 */
+  void *m_Data;                     /* 0x34 */
   AnimationHeader *m_Animations[1]; /* 0x38 */
 } Model;
 
@@ -53,7 +54,7 @@ typedef struct Model {
 /* A Model / AnimationHeader field read as a plain byte-offset reference from
  * any pointer or int (the ACTOR_RAW form, for the same reasons). */
 #define MODEL_RAW(m, type, field) (*(type *)((char *)(m) + MODEL_OFFSET(field)))
-#define ANIM_HEADER_RAW(a, type, field) \
+#define ANIM_HEADER_RAW(a, type, field)                                        \
   (*(type *)((char *)(a) + ANIM_HEADER_OFFSET(field)))
 
 #endif /* OPEN_SPYRO_MODEL_H */

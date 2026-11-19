@@ -1,14 +1,14 @@
-/* Level30_BeginActorCutscene (0x8007AE10, level_30_gnastys_world_gnorc_gnexus overlay).
+/* Level30_BeginActorCutscene (0x8007AE10, level_30_gnastys_world_gnorc_gnexus
+ * overlay).
  *
  * Begin the level's gem/dragon cutscene focused on `actor`: enter gamestate
- * 0xC, clear the cutscene timers (g_nActorCutsceneSubstate..F0), record the focus actor
- * (g_pActorCutsceneActor) and its path end (g_pActorCutsceneRecord = pool slot `count`),
- * then aim the cutscene camera: yaw from the XY delta between the camera
- * anchor (g_anCameraPos..) and the actor position (arctan via ArcTan2),
- * pitch/roll from the transformed offset (SubtractVector + VectorLength),
- * plus fixed zoom (0x52E), phase from the actor's yaw byte (rotZ), and
- * height from its +0x14 Z.
- * Identical body in ten level overlays.
+ * 0xC, clear the cutscene timers (g_nActorCutsceneSubstate..F0), record the
+ * focus actor (g_pActorCutsceneActor) and its path end (g_pActorCutsceneRecord
+ * = pool slot `count`), then aim the cutscene camera: yaw from the XY delta
+ * between the camera anchor (g_anCameraPos..) and the actor position (arctan
+ * via ArcTan2), pitch/roll from the transformed offset (SubtractVector +
+ * VectorLength), plus fixed zoom (0x52E), phase from the actor's yaw byte
+ * (rotZ), and height from its +0x14 Z. Identical body in ten level overlays.
  */
 
 #include "vecmath.h"
@@ -40,8 +40,9 @@ void Level30_BeginActorCutscene(Actor *actor) {
   g_nCinematicActive = 1;
   g_nSkipGamestateDraw = 1;
   g_pActorCutsceneRecord = &g_pActorListBase[count];
-  g_nActorCutsceneCamYawStart = ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
-                             g_nCameraPosY - ACTOR_RAW(actor, int, posY), ATAN_ANGLE12);
+  g_nActorCutsceneCamYawStart =
+      ArcTan2(pos[0] - ACTOR_RAW(actor, int, posX),
+              g_nCameraPosY - ACTOR_RAW(actor, int, posY), ATAN_ANGLE12);
   SubtractVector(vec, pos, &actor->posX);
   g_nActorCutsceneCamRadiusStart = VectorLength(vec, VEC_LEN_XY);
   g_nActorCutsceneCamHeightStart = g_nCameraPosZ;

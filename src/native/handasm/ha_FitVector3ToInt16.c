@@ -87,7 +87,9 @@ L_800171EC:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017188u: bc = 0; goto L_80017188;
+  case 0x80017188u:
+    bc = 0;
+    goto L_80017188;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("FitVector3ToInt16", tgt, entry_ra);

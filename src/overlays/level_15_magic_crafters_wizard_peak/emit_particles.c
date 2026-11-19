@@ -1,5 +1,5 @@
-/* Level15_EmitParticles (0x80089450, level_15_magic_crafters_wizard_peak overlay,
- * 0x1450 bytes).
+/* Level15_EmitParticles (0x80089450, level_15_magic_crafters_wizard_peak
+ * overlay, 0x1450 bytes).
  *
  * Push `count` particle records of effect `type` onto the emit list (the
  * 0x20-byte record stream that RasterizeEmitList walks each frame).
@@ -21,10 +21,10 @@
  * static puff that zeroes the velocity and jitters +-0x1F); arm 0x41 lifted
  * from Level16_EmitParticles.
  *
- * Arm 0x15's `texIndex = 0` had to move BELOW `depthBias` -- the donor order puts the
- * texIndex store above the fx store and the arm's last three stores come out
- * rotated.  Same fix as level_16; treat it as a per-variant check, not a donor
- * invariant.
+ * Arm 0x15's `texIndex = 0` had to move BELOW `depthBias` -- the donor order
+ * puts the texIndex store above the fx store and the arm's last three stores
+ * come out rotated.  Same fix as level_16; treat it as a per-variant check, not
+ * a donor invariant.
  */
 
 #include "vecmath.h"
@@ -260,9 +260,15 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->visible = 1;
       VectorToSVectorShr2(rec->u.spark.pos, pos);
       if (effectArg != 0) {
-        rec->u.spark.pos[0] = rec->u.spark.pos[0] + ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
-        rec->u.spark.pos[1] = rec->u.spark.pos[1] + ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
-        rec->u.spark.pos[2] = rec->u.spark.pos[2] + ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x30)) >> 8);
+        rec->u.spark.pos[0] =
+            rec->u.spark.pos[0] +
+            ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
+        rec->u.spark.pos[1] =
+            rec->u.spark.pos[1] +
+            ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x7F)) >> 8);
+        rec->u.spark.pos[2] =
+            rec->u.spark.pos[2] +
+            ((effectArg * ((int)(GetRandomU32() & 0xFE) - 0x30)) >> 8);
       }
       rec->u.spark.size = rec->phase * 4;
       rec->u.spark.spin = GetRandomU32();
@@ -324,7 +330,8 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
+      rec->u.spark.vel[0] =
+          ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -336,9 +343,11 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (src->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &src->posX);
-      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
+      } else if (src->type == ACTOR_TYPE_KEY ||
+                 src->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          RotateVectorByMatrix(src->mtx,
+                               &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &src->posX);
         } else {
           rec->cls = EMIT_CLASS_FADED_QUAD;
@@ -616,7 +625,8 @@ void Level15_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      rec->u.line.a[1] =
+          rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
       u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[1] = 0x40;

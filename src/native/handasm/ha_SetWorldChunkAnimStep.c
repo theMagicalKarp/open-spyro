@@ -80,7 +80,9 @@ L_8002B4A4:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8002b444u: bc = 0; goto L_8002B444;
+  case 0x8002b444u:
+    bc = 0;
+    goto L_8002B444;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("SetWorldChunkAnimStep", tgt, entry_ra);

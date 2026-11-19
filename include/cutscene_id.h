@@ -1,5 +1,6 @@
-/* cutscene_id.h — g_nCutsceneId, the cutscene bundle TickCutsceneBundleLoadStream
- * streams in and Cutscene_Update plays (BeginCutscene). */
+/* cutscene_id.h — g_nCutsceneId, the cutscene bundle
+ * TickCutsceneBundleLoadStream streams in and Cutscene_Update plays
+ * (BeginCutscene). */
 
 #ifndef OPEN_SPYRO_CUTSCENE_ID_H
 #define OPEN_SPYRO_CUTSCENE_ID_H

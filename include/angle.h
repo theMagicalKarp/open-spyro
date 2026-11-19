@@ -19,8 +19,10 @@
 #define ANGLE8_MASK 0xFF
 /* The short way round from angle b to angle a turns the angle up (a - b,
  * wrapped, is 0..HALF); the eased turns add or subtract by it. */
-#define ANGLE12_SHORT_WAY_UP(a, b) ((((a) - (b)) & ANGLE12_MASK) < ANGLE12_HALF + 1)
-#define ANGLE8_SHORT_WAY_UP(a, b) ((((a) - (b)) & ANGLE8_MASK) < ANGLE8_HALF + 1)
+#define ANGLE12_SHORT_WAY_UP(a, b)                                             \
+  ((((a) - (b)) & ANGLE12_MASK) < ANGLE12_HALF + 1)
+#define ANGLE8_SHORT_WAY_UP(a, b)                                              \
+  ((((a) - (b)) & ANGLE8_MASK) < ANGLE8_HALF + 1)
 
 /* Between the 8-bit angles of actor rot bytes / headings and the 12-bit
  * angles of the camera, Spyro's body eulers and the sine LUT. */

@@ -26,7 +26,7 @@
  * or its first letter.
  *
  * The persistent settings have dotted keys (disc, memcard.port1/port2,
- * debug.fast, debug.log_level; the settings table below). They can come
+ * debug.fast, debug.log_level; the settings table in config.c). They can come
  * from TOML config files: config.toml in the user's data directory if it
  * exists, or each --config PATH in order (later files override earlier
  * ones; each must exist); --no-config reads none. Relative paths in a file
@@ -45,6 +45,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "config.h"
 #include "native_host.h"
 #include "tomlc17.h"
 
@@ -58,9 +59,7 @@ static struct w2c_host host;
 static w2c_spyro instance;
 static int frame_limit;
 static int frames_run;
-static int log_level = 1; /* info */
 static const char *screenshot_path;
-static const char *disc_path;
 static int run_stub;
 
 enum { MAX_SCRIPT = 64 };
@@ -74,11 +73,11 @@ static struct {
   int frame, level;
 } warps[MAX_SCRIPT];
 static int n_warps;
-static int run_fast;
-static const char *card_paths[2];
+static NativeSettings cfg = {.log_level = 1 /* info */};
 static char default_card[1024];
 
-/* --- import-module context accessors (wasm2c calls these at instantiate) --- */
+/* --- import-module context accessors (wasm2c calls these at instantiate) ---
+ */
 
 wasm_rt_memory_t *w2c_env_memory(struct w2c_env *e) { return &e->memory; }
 wasm_rt_funcref_table_t *
@@ -87,19 +86,17 @@ w2c_env_0x5F_indirect_function_table(struct w2c_env *e) {
 }
 u32 *w2c_env_0x5F_memory_base(struct w2c_env *e) { return &e->memory_base; }
 u32 *w2c_env_0x5F_table_base(struct w2c_env *e) { return &e->table_base; }
-u32 *w2c_env_0x5F_stack_pointer(struct w2c_env *e) {
-  return &e->stack_pointer;
-}
+u32 *w2c_env_0x5F_stack_pointer(struct w2c_env *e) { return &e->stack_pointer; }
 
 wasm_rt_memory_t *native_memory(void) { return &env.memory; }
 w2c_spyro *native_instance(void) { return &instance; }
-int native_log_level(void) { return log_level; }
-int native_fast(void) { return run_fast; }
+int native_log_level(void) { return cfg.log_level; }
+int native_fast(void) { return cfg.fast; }
 
 /* Port A defaults to card1.mcd in the per-user data directory
    (~/Library/Application Support/open-spyro/spyro/); "none" removes it. */
 const char *native_card_path(int port) {
-  const char *p = card_paths[port];
+  const char *p = cfg.card[port];
 
   if (port == 0 && p == NULL) {
     char *dir = SDL_GetPrefPath("open-spyro", "spyro");
@@ -109,7 +106,7 @@ const char *native_card_path(int port) {
     }
     snprintf(default_card, sizeof(default_card), "%scard1.mcd", dir);
     SDL_free(dir);
-    p = card_paths[0] = default_card;
+    p = cfg.card[0] = default_card;
   }
   return p == NULL || strcmp(p, "none") == 0 ? NULL : p;
 }
@@ -140,37 +137,6 @@ int native_frame_hook(void) {
     }
   }
   return frame_limit != 0 && frames_run >= frame_limit;
-}
-
-/* Pad bits in PsyZ's order (sdl3_common.h keyb_p1): bit i of the pressed
-   mask; the report holds them active-low. */
-static const char *const button_names[16] = {
-    "l2",     "r2", "l1", "r1",    "triangle", "circle", "cross", "square",
-    "select", "l3", "r3", "start", "up",       "right",  "down",  "left"};
-
-static unsigned parse_buttons(const char *s) {
-  unsigned mask = 0;
-
-  while (*s != '\0' && *s != ':') {
-    size_t n = strcspn(s, "+:");
-    int i;
-
-    for (i = 0; i < 16; i++) {
-      if (strlen(button_names[i]) == n && strncmp(s, button_names[i], n) == 0) {
-        break;
-      }
-    }
-    if (i == 16) {
-      fprintf(stderr, "native: unknown button '%.*s'\n", (int)n, s);
-      exit(2);
-    }
-    mask |= 1u << i;
-    s += n;
-    if (*s == '+') {
-      s++;
-    }
-  }
-  return mask;
 }
 
 static unsigned scripted_buttons(void) {
@@ -271,8 +237,8 @@ void Psyz_PadsSet(int port, const char *src, int len) {
 }
 
 int Psyz_PadsSetKind(int port, int channel, int kind) {
-  return (int)w2c_spyro_native_pads_set_kind(&instance, (u32)port,
-                                             (u32)channel, (u32)kind);
+  return (int)w2c_spyro_native_pads_set_kind(&instance, (u32)port, (u32)channel,
+                                             (u32)kind);
 }
 
 /* The backend's 24-bit display path (AllocRgb24Region) reads VRAM back
@@ -298,235 +264,27 @@ static void usage(void) {
   exit(2);
 }
 
-/* debug|info|warn|error (or its first letter) -> log_level; -1 if neither. */
-static int parse_log_level(const char *s) {
-  static const char *const names[] = {"debug", "info", "warn", "error"};
-
-  for (int i = 0; i < 4; i++) {
-    if (strcmp(s, names[i]) == 0 || (s[0] == names[i][0] && s[1] == '\0')) {
-      return i;
-    }
-  }
-  return -1;
-}
-
-/* --- settings: the config file and --set --- */
-
-/* Every persistent setting, by its dotted config key. A config file sets
-   them by key ([memcard] port1 = ... is memcard.port1), --set KEY=VALUE from
-   the command line, and the short flags (--fast, --memcard, ...) are aliases
-   for --set. */
-enum setting_kind { SET_PATH, SET_BOOL, SET_LOG_LEVEL };
-static const struct setting {
-  const char *key;
-  enum setting_kind kind;
-  void *target;
-} settings[] = {
-    {"disc", SET_PATH, &disc_path},
-    {"memcard.port1", SET_PATH, &card_paths[0]},
-    {"memcard.port2", SET_PATH, &card_paths[1]},
-    {"debug.fast", SET_BOOL, &run_fast},
-    {"debug.log_level", SET_LOG_LEVEL, &log_level},
-};
-
-/* Keys the first config format had at the top level: reported with the new
-   key instead of as unknown. */
-static const struct {
-  const char *old, *key;
-} renamed_keys[] = {
-    {"fast", "debug.fast"},
-    {"log_level", "debug.log_level"},
-    {"memcard", "memcard.port1"},
-    {"memcard2", "memcard.port2"},
-};
-
-enum { MAX_CONFIGS = 8 };
-/* Kept for the whole run: the settings point at their strings. */
-static toml_result_t configs[MAX_CONFIGS];
-static int n_configs;
-static const char *config_file; /* the file being read */
-static const char *disc_file;   /* the file that set disc, if one did */
-
-static const struct setting *find_setting(const char *key) {
-  for (size_t i = 0; i < sizeof(settings) / sizeof(settings[0]); i++) {
-    if (strcmp(settings[i].key, key) == 0) {
-      return &settings[i];
-    }
-  }
-  return NULL;
-}
-
-static const char *setting_want(const struct setting *s) {
-  switch (s->kind) {
-  case SET_PATH:
-    return "a string";
-  case SET_BOOL:
-    return "true or false";
-  case SET_LOG_LEVEL:
-    return "\"debug\", \"info\", \"warn\" or \"error\"";
-  }
-  return "";
-}
-
-/* Stores VALUE (a string) in S; 0 if it is not a valid value. */
-static int set_setting(const struct setting *s, const char *value) {
-  switch (s->kind) {
-  case SET_PATH:
-    *(const char **)s->target = value;
-    return 1;
-  case SET_BOOL:
-    if (strcmp(value, "true") != 0 && strcmp(value, "false") != 0) {
-      return 0;
-    }
-    *(int *)s->target = value[0] == 't';
-    return 1;
-  case SET_LOG_LEVEL: {
-    int level = parse_log_level(value);
-
-    if (level < 0) {
-      return 0;
-    }
-    *(int *)s->target = level;
-    return 1;
-  }
-  }
-  return 0;
-}
-
-/* --set KEY=VALUE, and the short flags through it: a bad key or value ends
-   the run. */
+/* --set and the short flags: a bad key or value ends the run. */
 static void set_from_flag(const char *flag, const char *key,
                           const char *value) {
-  const struct setting *s = find_setting(key);
-
-  if (s == NULL) {
-    fprintf(stderr, "native: %s: unknown setting %s\n", flag, key);
+  if (config_set(&cfg, flag, key, value) != 0) {
     exit(2);
-  }
-  if (!set_setting(s, value)) {
-    fprintf(stderr, "native: %s: %s must be %s\n", flag, key,
-            setting_want(s));
-    exit(2);
-  }
-  if (s->target == &disc_path) {
-    disc_file = NULL;
   }
 }
 
-/* A relative path is relative to the config file's directory. */
-static const char *config_path(const char *s) {
-  const char *slash = strrchr(config_file, '/');
-  int dir = slash ? (int)(slash - config_file) + 1 : 0;
-  char *p;
+/* config.toml in the user's data directory, when it exists. */
+static void load_default_config(void) {
+  static char path[1024];
+  char *dir = SDL_GetPrefPath("open-spyro", "spyro");
 
-  if (s[0] == '/' || dir == 0 || strcmp(s, "none") == 0) {
-    return s;
-  }
-  p = malloc(dir + strlen(s) + 1);
-  if (p == NULL) {
-    return s;
-  }
-  memcpy(p, config_file, dir);
-  strcpy(p + dir, s);
-  return p;
-}
-
-static void config_value(const char *key, toml_datum_t v) {
-  const struct setting *s = find_setting(key);
-  const char *value = NULL;
-
-  if (s == NULL) {
-    for (size_t i = 0; i < sizeof(renamed_keys) / sizeof(renamed_keys[0]);
-         i++) {
-      if (strcmp(renamed_keys[i].old, key) == 0) {
-        fprintf(stderr, "native: %s:%d: %s is now %s (ignored)\n",
-                config_file, v.lineno, key, renamed_keys[i].key);
-        return;
-      }
-    }
-    fprintf(stderr, "native: %s:%d: unknown key %s (ignored)\n", config_file,
-            v.lineno, key);
+  if (dir == NULL) {
     return;
   }
-  if (s->kind == SET_BOOL && v.type == TOML_BOOLEAN) {
-    value = v.u.boolean ? "true" : "false";
-  } else if (s->kind != SET_BOOL && v.type == TOML_STRING) {
-    value = s->kind == SET_PATH ? config_path(v.u.s) : v.u.s;
-  }
-  if (value == NULL || !set_setting(s, value)) {
-    fprintf(stderr, "native: %s:%d: %s must be %s\n", config_file, v.lineno,
-            key, setting_want(s));
+  snprintf(path, sizeof(path), "%sconfig.toml", dir);
+  SDL_free(dir);
+  if (config_load_file(&cfg, path, 1) != 0) {
     exit(2);
   }
-  if (s->target == &disc_path) {
-    disc_file = config_file;
-  }
-}
-
-/* Applies every value in TABLE, PREFIX naming the table ("" at the top). */
-static void config_table(const char *prefix, toml_datum_t table) {
-  for (int i = 0; i < table.u.tab.size; i++) {
-    char key[256];
-    toml_datum_t v = table.u.tab.value[i];
-
-    snprintf(key, sizeof(key), "%s%s%s", prefix, prefix[0] ? "." : "",
-             table.u.tab.key[i]);
-    if (v.type == TOML_TABLE) {
-      config_table(key, v);
-    } else {
-      config_value(key, v);
-    }
-  }
-}
-
-/* Reads PATH, or the default config.toml in the user's data directory when
-   PATH is NULL (where a missing file is no config). */
-static void load_config(const char *path) {
-  static char default_config[1024];
-  toml_result_t *config;
-  FILE *f;
-
-  if (path == NULL) {
-    char *dir = SDL_GetPrefPath("open-spyro", "spyro");
-
-    if (dir == NULL) {
-      return;
-    }
-    snprintf(default_config, sizeof(default_config), "%sconfig.toml", dir);
-    SDL_free(dir);
-    path = default_config;
-    if ((f = fopen(path, "rb")) == NULL) {
-      return;
-    }
-  } else if ((f = fopen(path, "rb")) == NULL) {
-    fprintf(stderr, "native: cannot read config %s\n", path);
-    exit(2);
-  }
-  config_file = path;
-  config = &configs[n_configs++];
-  *config = toml_parse_file_named(f, path);
-  fclose(f);
-  if (!config->ok) {
-    fprintf(stderr, "native: %s: %s\n", path, config->errmsg);
-    exit(2);
-  }
-  config_table("", config->toptab);
-}
-
-/* The flags other than --config that take the next argument as a value. */
-static int takes_value(const char *arg) {
-  static const char *const flags[] = {
-      "--frames", "--set",      "--disc",     "--screenshot",
-      "--shot",   "--press",    "--warp",     "--memcard",
-      "--memcard2", "--wav",    "--log-level",
-  };
-
-  for (size_t i = 0; i < sizeof(flags) / sizeof(flags[0]); i++) {
-    if (strcmp(arg, flags[i]) == 0) {
-      return 1;
-    }
-  }
-  return 0;
 }
 
 int main(int argc, char **argv) {
@@ -536,29 +294,19 @@ int main(int argc, char **argv) {
   setvbuf(stdout, NULL, _IOLBF, 0);
   /* The config files first, in order, so the flags below override them. */
   {
-    const char *paths[MAX_CONFIGS];
-    int n = 0, none = 0;
+    const char *paths[CONFIG_MAX_FILES];
+    int n, none;
 
-    for (int i = 1; i < argc; i++) {
-      if (strcmp(argv[i], "--config") == 0 && i + 1 < argc) {
-        if (n == MAX_CONFIGS) {
-          usage();
-        }
-        paths[n++] = argv[++i];
-      } else if (strcmp(argv[i], "--no-config") == 0) {
-        none = 1;
-      } else if (takes_value(argv[i]) && i + 1 < argc) {
-        i++; /* a value, even one that reads --config */
-      }
-    }
-    if (none && n > 0) {
+    if (config_scan_args(argc, argv, paths, &n, &none) != 0) {
       usage();
     }
     if (n == 0 && !none) {
-      load_config(NULL);
+      load_default_config();
     }
     for (int i = 0; i < n; i++) {
-      load_config(paths[i]);
+      if (config_load_file(&cfg, paths[i], 0) != 0) {
+        exit(2);
+      }
     }
   }
   for (int i = 1; i < argc; i++) {
@@ -586,25 +334,23 @@ int main(int argc, char **argv) {
       shot_frames[n_shots++] = atoi(argv[++i]);
     } else if (strcmp(argv[i], "--press") == 0 && i + 1 < argc &&
                n_presses < MAX_SCRIPT) {
-      const char *a = argv[++i], *b = strchr(a, ':'), *c;
-
-      if (b == NULL) {
+      switch (config_parse_press(argv[++i], &presses[n_presses].frame,
+                                 &presses[n_presses].buttons,
+                                 &presses[n_presses].hold)) {
+      case 0:
+        break;
+      case 1:
         usage();
+      default:
+        exit(2);
       }
-      c = strchr(b + 1, ':');
-      presses[n_presses].frame = atoi(a);
-      presses[n_presses].buttons = parse_buttons(b + 1);
-      presses[n_presses].hold = c ? atoi(c + 1) : 4;
       n_presses++;
     } else if (strcmp(argv[i], "--warp") == 0 && i + 1 < argc &&
                n_warps < MAX_SCRIPT) {
-      const char *a = argv[++i], *b = strchr(a, ':');
-
-      if (b == NULL || atoi(a) <= 0) {
+      if (config_parse_warp(argv[++i], &warps[n_warps].frame,
+                            &warps[n_warps].level) != 0) {
         usage();
       }
-      warps[n_warps].frame = atoi(a);
-      warps[n_warps].level = atoi(b + 1);
       n_warps++;
     } else if (strcmp(argv[i], "--fast") == 0) {
       set_from_flag("--fast", "debug.fast", "true");
@@ -624,19 +370,19 @@ int main(int argc, char **argv) {
     }
   }
 
-  if ((!run_stub && disc_path == NULL) ||
+  if ((!run_stub && cfg.disc == NULL) ||
       (n_shots > 0 && screenshot_path == NULL)) {
     usage();
   }
   if (!run_stub) {
-    FILE *f = fopen(disc_path, "rb");
+    FILE *f = fopen(cfg.disc, "rb");
 
     if (f == NULL) {
-      if (disc_file != NULL) {
+      if (cfg.disc_file != NULL) {
         fprintf(stderr, "native: %s: cannot read disc image %s\n",
-                disc_file, disc_path);
+                cfg.disc_file, cfg.disc);
       } else {
-        fprintf(stderr, "native: cannot read disc image %s\n", disc_path);
+        fprintf(stderr, "native: cannot read disc image %s\n", cfg.disc);
       }
       return 2;
     }
@@ -646,8 +392,8 @@ int main(int argc, char **argv) {
   if (psx_memory_init(&env.memory) != 0) {
     return 1;
   }
-  table_size = NATIVE_TABLE_BASE +
-               wasm2c_spyro_min_env_0x5F_indirect_function_table;
+  table_size =
+      NATIVE_TABLE_BASE + wasm2c_spyro_min_env_0x5F_indirect_function_table;
   if (table_size < NATIVE_TABLE_SIZE) {
     table_size = NATIVE_TABLE_SIZE;
   }
@@ -658,7 +404,7 @@ int main(int argc, char **argv) {
 
   /* GOT.mem imports resolve to PS1 addresses (spyro_w_got.c) and need no
      context. */
-  if (run_fast) {
+  if (cfg.fast) {
     /* Applied when the backend configures VSync at init. */
     Psyz_VideoSetVsyncMode(PSYZ_VSYNC_LIMITLESS);
   }
@@ -671,11 +417,11 @@ int main(int argc, char **argv) {
   } else {
     u32 arg = w2c_spyro_native_arg_buffer(&instance);
 
-    if (strlen(disc_path) >= 1024) {
+    if (strlen(cfg.disc) >= 1024) {
       fprintf(stderr, "native: disc path too long\n");
       return 2;
     }
-    strcpy(psx_ptr(&env.memory, arg), disc_path);
+    strcpy(psx_ptr(&env.memory, arg), cfg.disc);
     ret = (int)w2c_spyro_native_main(&instance);
   }
   native_quit(ret);

@@ -24,8 +24,8 @@ extern void ComputeCameraOrbitOffset(int *out);
 
 extern int g_anCdReadInFlightBlock[]; /* held-base view of g_nCdReadInFlight */
 
-extern int
-    g_anWorldTimAudioChunkOffsetBlock[]; /* alias, held across the reads */
+/* alias, held across the reads */
+extern int g_anWorldTimAudioChunkOffsetBlock[];
 
 extern int g_anActorMeshOffsetBlock[]; /* [-16] is g_nWorldDataExtChunkOffset */
 /* Its 0x40 actor-mesh offsets are followed by their g_apActorMeshTable
@@ -71,10 +71,10 @@ extern unsigned char g_bSpyroAnimLayer1FramePrev;
 
 extern unsigned char g_bSpyroAnimLayer1Frame;
 
-extern unsigned char g_abSpyroAnimLayer1SubstepBlock[]; /* array alias for
-   the substep accumulator at 0x80078a7d, see config/symbol_addrs.txt --
-   forces the held base register, matching the original's single `a1` reuse
-   across the load + both stores. */
+/* array alias for the substep accumulator at 0x80078a7d, see
+ * config/symbol_addrs.txt -- forces the held base register, matching the
+ * original's single `a1` reuse across the load + both stores. */
+extern unsigned char g_abSpyroAnimLayer1SubstepBlock[];
 
 extern void IntegrateSpyroMotionForSubstep(int substep);
 
@@ -100,8 +100,9 @@ extern short g_nSfxOverrideVolL;
 
 extern short g_nSfxOverrideVolR;
 
-extern int g_nCdAudioVolume;       /* CD-DA music volume */
-extern int g_nCdAudioVolume_blk[]; /* incomplete-array alias of g_nCdAudioVolume */
+extern int g_nCdAudioVolume; /* CD-DA music volume */
+/* incomplete-array alias of g_nCdAudioVolume */
+extern int g_nCdAudioVolume_blk[];
 
 extern void InitLightVectorConstants(void);
 
@@ -129,9 +130,9 @@ extern int g_bSpyroJumpHoldForced;
 
 extern void BeginStoryIntro(void);
 
-extern int g_nLevelLoadChunkSize;            /* level-load chunk size */
+extern int g_nLevelLoadChunkSize; /* level-load chunk size */
 
-extern int g_nLevelLoadByteOffset;            /* level-load byte offset */
+extern int g_nLevelLoadByteOffset; /* level-load byte offset */
 
 extern void BuildActorDrawList(void);
 
@@ -143,14 +144,15 @@ extern void RasterizeSpyroModel(void);
 
 extern void ResetSpyroLinearMotion(void);
 
-extern int g_anSparxHealthBlock[];     /* g_nSparxHealth */
+extern int g_anSparxHealthBlock[]; /* g_nSparxHealth */
 
 extern void EnqueuePendingSpritePrims(void);
 
 extern void UpdateHudCounters(void);
 
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's
+ * signature */
 extern void *PutDrawEnv(void *env);
 #else
 extern void PutDrawEnv(void *env);
@@ -180,14 +182,14 @@ extern void TickSpyroAnimLayer2(void);
 
 extern void BeginCutscene(void);
 
-extern short
-    g_nCdDaVolumeCurrent;  /* live CD-DA volume (fade ramp current value) */
+/* live CD-DA volume (fade ramp current value) */
+extern short g_nCdDaVolumeCurrent;
 
 extern short g_anCameraEulerYawBlock[];
 
 extern int g_nActorFrameDelta;
 
-extern short g_nSpuCommonCdVolumeR;           /* SpuCommonAttr CD volume R */
+extern short g_nSpuCommonCdVolumeR; /* SpuCommonAttr CD volume R */
 
 extern void LoadCameraTargetAnglesFromMode(void);
 
@@ -225,19 +227,22 @@ extern void InstallSpyroAnimStream(void *stream);
 extern void RotateLightVectorXZ(int steps);
 extern void SetSpuCommonAttr(unsigned char *attr);
 extern void SnapCameraToTarget(void);
-extern int g_abTitlescreenOverlayEnd;          /* first free byte past the titlescreen overlay */
+/* first free byte past the titlescreen overlay */
+extern int g_abTitlescreenOverlayEnd;
 extern unsigned int g_adwSpyroRequestMaskBlock[];
 extern int g_anCameraViewMtx[]; /* camera view matrix (worldToCam at -0x14) */
-extern int g_anDragonRescueAuraStarBlock[]; /* 0x80076248 aura-star state block */
+/* aura-star state block */
+extern int g_anDragonRescueAuraStarBlock[]; /* 0x80076248 */
 extern int g_anSaveMenuBlock[];
 extern int g_anSpawnAnchorBlock[];
 extern int g_anSpyroStateBlock[];
-extern int *g_apCameraAnchorBlock[]; /* alias of g_pCameraAnchorPos */
-extern void *g_apLoadStagingBufferBlock[];  /* alias of g_pLoadStagingBuffer */
-extern void *g_apRenderScratchPrimTopBlock[]; /* held-base alias of g_pRenderScratchPrimTop;
-                                              * [-2] is g_pRenderScratchRegionBase */
+extern int *g_apCameraAnchorBlock[];       /* alias of g_pCameraAnchorPos */
+extern void *g_apLoadStagingBufferBlock[]; /* alias of g_pLoadStagingBuffer */
+/* held-base alias of g_pRenderScratchPrimTop; [-2] is
+ * g_pRenderScratchRegionBase */
+extern void *g_apRenderScratchPrimTopBlock[];
 extern struct Actor *g_apActiveActorListBlock[];
-extern char g_szContinue[];       /* "CONTINUE"    */
+extern char g_szContinue[];               /* "CONTINUE"    */
 extern unsigned char g_szReturningHome[]; /* "RETURNING HOME..." */
 
 /* Declared identically by two or more main files; hoisted here. */
@@ -291,7 +296,8 @@ extern void *g_apMainDrawEntityListBlock[];
 extern void (*g_pfnActorCutsceneSubstateDraw)(void);
 extern void BuildSecondaryActorDrawList(void);
 extern void ClearPadHistoryRing(void);
-extern void ComputeVoicePanAndFalloff(short *out, int vol, unsigned char pan, unsigned int range, short *base);
+extern void ComputeVoicePanAndFalloff(short *out, int vol, unsigned char pan,
+                                      unsigned int range, short *base);
 extern void DrawActorDropShadows(void);
 extern void DrawSpyroDropShadow(void);
 extern void EmitSecondaryActorPrimitives(void);
@@ -301,11 +307,13 @@ extern void SetSpuKeyMask(int on, unsigned int voices);
 extern void TriggerRespawnOrGameOver(void);
 extern void srand(unsigned int seed);
 
-/* Declared identically (by type) in two or more including files; hoisted here. */
+/* Declared identically (by type) in two or more including files; hoisted
+ * here. */
 extern void AddVector(int *dst, int *a, int *b);
 #ifndef ATAN_ANGLE8
-#define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
-#define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#define ATAN_ANGLE8 0 /* ArcTan2: 8-bit angle, 0..0xFF per turn */
+/* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#define ATAN_ANGLE12 1
 #endif
 extern int ArcTan2(int x, int y, int scale);
 extern int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);

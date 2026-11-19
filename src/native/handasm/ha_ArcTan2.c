@@ -285,7 +285,9 @@ L_80016C50:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80016ab4u: bc = 0; goto L_80016AB4;
+  case 0x80016ab4u:
+    bc = 0;
+    goto L_80016AB4;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ArcTan2", tgt, entry_ra);

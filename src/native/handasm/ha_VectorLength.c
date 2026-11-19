@@ -68,7 +68,10 @@ L_80017210:
   bc = ((int32_t)a2 < 0);
   /* 8001725C 00000000 (delay) */
   if (bc) {
-    { bc = 0; goto L_80017268; }
+    {
+      bc = 0;
+      goto L_80017268;
+    }
   }
   /* 80017260 00C13804 */
   a3 = at << (a2 & 31);
@@ -108,8 +111,12 @@ L_80017294:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800171fcu: bc = 0; goto L_800171FC;
-  case 0x80017294u: bc = 0; goto L_80017294;
+  case 0x800171fcu:
+    bc = 0;
+    goto L_800171FC;
+  case 0x80017294u:
+    bc = 0;
+    goto L_80017294;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("VectorLength", tgt, entry_ra);

@@ -21,12 +21,15 @@
 #include "wasm-rt.h"
 
 #define PSX_RAM_BASE 0x80000000u
-#define PSX_RAM_SIZE 0x00200000u /* retail main RAM, the KUSEG-mirrored part */
-#define PSX_RAM_RESERVE 0x00800000u /* 8 MiB: DEMO_RECORD_BUFFER is dev-kit RAM */
+/* retail main RAM, the KUSEG-mirrored part */
+#define PSX_RAM_SIZE 0x00200000u
+/* 8 MiB: DEMO_RECORD_BUFFER is dev-kit RAM */
+#define PSX_RAM_RESERVE 0x00800000u
 #define PSX_SCRATCHPAD 0x1F800000u
 #define NATIVE_MODULE_BASE 0x01000000u
 #define NATIVE_STACK_TOP 0x02000000u
-#define NATIVE_TABLE_BASE 1u /* table slot 0 stays null: a NULL fn pointer traps */
+/* table slot 0 stays null: a NULL fn pointer traps */
+#define NATIVE_TABLE_BASE 1u
 #define NATIVE_TABLE_SIZE 0x10000u
 
 /* Allocate the linear memory and map the KUSEG mirror. Returns 0 on success. */

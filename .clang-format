@@ -230,8 +230,10 @@ RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Leave
 ShortNamespaceLines: 1
 SkipMacroDefinitionBody: false
+# Off: include order is load-bearing in the C here (headers depend on what
+# earlier ones declare), so the formatter must never reorder it.
 SortIncludes:
-  Enabled: true
+  Enabled: false
   IgnoreCase: false
 SortJavaStaticImport: Before
 SortUsingDeclarations: LexicographicNumeric

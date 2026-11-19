@@ -17,8 +17,8 @@
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
  * The loot variant: the town-square arm set plus 0x4A (the ember dust mote,
- * class 0, velocity out of effectArg at fx 0x40) and without 0x18, the ribbon arm
- * the rest of the family parks on.
+ * class 0, velocity out of effectArg at fx 0x40) and without 0x18, the ribbon
+ * arm the rest of the family parks on.
  *
  * Two arm shapes this level needed that the donor levels did not:
  * the 0x1A arm writes `effectArg * 8` to r/g/b as three separate expressions (a
@@ -157,7 +157,8 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
+      rec->u.spark.vel[0] =
+          ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -169,7 +170,8 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (src->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &src->posX);
-      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
+      } else if (src->type == ACTOR_TYPE_KEY ||
+                 src->type == ACTOR_TYPE_LOOT_VORTEX) {
         hi = effectArg >> 24;
         if (hi < 6) {
           RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[hi * 3], v1);
@@ -490,7 +492,8 @@ void Level34_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      rec->u.line.a[1] =
+          rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
       u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[1] = 0x40;

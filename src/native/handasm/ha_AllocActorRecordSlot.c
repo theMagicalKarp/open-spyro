@@ -111,7 +111,9 @@ L_80052558:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800524c4u: bc = 0; goto L_800524C4;
+  case 0x800524c4u:
+    bc = 0;
+    goto L_800524C4;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("AllocActorRecordSlot", tgt, entry_ra);

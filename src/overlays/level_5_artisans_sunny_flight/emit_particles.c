@@ -16,11 +16,11 @@
  * actor's own matrix.  `effectArg` is per-effect: a velocity vector for 0/1, a
  * packed RGB for 0xC, a scale for 0x1A/0x1B, and a flag for 0x21/0x42.
  *
- * `effectArg >> 24` is written inline at its three use sites rather than hoisted
- * into a named local: loop.c emits the invariant it lifts out of the loop in
- * SCAN order, so the shift has to be scanned after the 0x80 / 0xFF colour
- * constants that the case-0 / case-9 arms hoist.  A user variable can only
- * become a movable when its set is unconditional (scan_loop case 1), which
+ * `effectArg >> 24` is written inline at its three use sites rather than
+ * hoisted into a named local: loop.c emits the invariant it lifts out of the
+ * loop in SCAN order, so the shift has to be scanned after the 0x80 / 0xFF
+ * colour constants that the case-0 / case-9 arms hoist.  A user variable can
+ * only become a movable when its set is unconditional (scan_loop case 1), which
  * would put it at the top of the body; a compiler temp qualifies under case 2
  * anywhere in the loop.
  *
@@ -159,7 +159,8 @@ void Level5_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
+      rec->u.spark.vel[0] =
+          ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -171,9 +172,11 @@ void Level5_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (src->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &src->posX);
-      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
+      } else if (src->type == ACTOR_TYPE_KEY ||
+                 src->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          RotateVectorByMatrix(src->mtx,
+                               &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &src->posX);
         } else {
           rec->cls = EMIT_CLASS_FADED_QUAD;
@@ -415,7 +418,8 @@ void Level5_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      rec->u.line.a[1] =
+          rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
       u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[1] = 0x40;

@@ -26,7 +26,7 @@ typedef struct BurstShardState {
   unsigned char spinX; /* 0x10 per-tick ->rotX/rotY/rotZ deltas */
   unsigned char spinY;
   unsigned char spinZ;
-  unsigned char life;  /* 0x13 ticks left */
+  unsigned char life; /* 0x13 ticks left */
 } BurstShardState;
 
 /* Falling debris (burst / chest / wood / sparkle shards, popped gem digits):
@@ -35,7 +35,8 @@ typedef struct BurstShardState {
 #define DEBRIS_MAX_FALL 0x80
 /* ...and bounces off the world as a sphere of this radius. */
 #define DEBRIS_RADIUS 0x100
-/* A popped gem digit at or below this height fell out of the world: despawned. */
+/* A popped gem digit at or below this height fell out of the world:
+ * despawned. */
 #define DEBRIS_FLOOR_Z 1023
 
 /* Sparx (type 0x78, case 120 in the UpdateActors clones; g_pSparxActor):
@@ -43,11 +44,11 @@ typedef struct BurstShardState {
  * butterfly to eat (g_nSparxHealth + 1) or a pickup to fetch. SpawnActor
  * zeroes it all. */
 typedef struct SparxState {
-  int timer;             /* 0x00 hover re-aim / chase countdown */
-  short drift[3];        /* 0x04 hover offset from Spyro, x/y/z */
+  int timer;      /* 0x00 hover re-aim / chase countdown */
+  short drift[3]; /* 0x04 hover offset from Spyro, x/y/z */
   char pad0A[0x2];
-  struct FxNode *glow;   /* 0x0C sparkle node, shown at full health */
-  struct Actor *target;  /* 0x10 butterfly or pickup being chased */
+  struct FxNode *glow;  /* 0x0C sparkle node, shown at full health */
+  struct Actor *target; /* 0x10 butterfly or pickup being chased */
 } SparxState;
 
 /* SparxState.glow's FxNode.size grows to this at full health. */
@@ -62,27 +63,28 @@ typedef struct SparxState {
  * orbit and speech fields (BeginDragonRescue rewrites them for the Gnorc
  * Gnexus statue once level 0x21 is exited). */
 typedef struct DragonStatueState {
-  int camPos[3];    /* 0x00 camera position the rescue sweep ends at */
-  int camEuler[3];  /* 0x0C camera roll / pitch / yaw (12-bit) it ends at */
-  int cutsceneId;   /* 0x18 rescue cutscene id; == reward (-1) when the
-                     * statue has none and counts the rescue directly */
-  int facing;       /* 0x1C respawn heading when there is no partner */
-  int partner;      /* 0x20 actor index of its checkpoint (level data), -1 =
-                     * none: CHECKPT_HELD while the statue stands, anim 1
-                     * during the rescue, CHECKPT_ARMED after; its yaw is the
-                     * respawn heading */
-  int reward;       /* 0x24 script id handed to StubRewardHook, -1 for none */
-  int orbitYaw;     /* 0x28 Spyro's orbit target yaw around the statue */
-  int orbitRadius;  /* 0x2C and radius */
-  int dragonYaw;    /* 0x30 12-bit yaw the freed dragon turns to (>> 4) */
-  int noSkip;       /* 0x34 nonzero: X does not cut the speech short */
-  int dragonName;   /* 0x38 g_apDragonNames index (DrawDragonRescuedBanner) */
-  int speechRate;   /* 0x3C speech sample rate in Hz (pitch = rate * 1024 / 11025) */
-  int speechFrame;  /* 0x40 rescue frame the speech starts on */
-  int phase;        /* 0x44 idle shake clock (STATUE_SETTLE_TICK ..) */
-  int rotX;         /* 0x48 rest pose */
-  int rotY;         /* 0x4C */
-  int restZ;        /* 0x50 */
+  int camPos[3];   /* 0x00 camera position the rescue sweep ends at */
+  int camEuler[3]; /* 0x0C camera roll / pitch / yaw (12-bit) it ends at */
+  int cutsceneId;  /* 0x18 rescue cutscene id; == reward (-1) when the
+                    * statue has none and counts the rescue directly */
+  int facing;      /* 0x1C respawn heading when there is no partner */
+  int partner;     /* 0x20 actor index of its checkpoint (level data), -1 =
+                    * none: CHECKPT_HELD while the statue stands, anim 1
+                    * during the rescue, CHECKPT_ARMED after; its yaw is the
+                    * respawn heading */
+  int reward;      /* 0x24 script id handed to StubRewardHook, -1 for none */
+  int orbitYaw;    /* 0x28 Spyro's orbit target yaw around the statue */
+  int orbitRadius; /* 0x2C and radius */
+  int dragonYaw;   /* 0x30 12-bit yaw the freed dragon turns to (>> 4) */
+  int noSkip;      /* 0x34 nonzero: X does not cut the speech short */
+  int dragonName;  /* 0x38 g_apDragonNames index (DrawDragonRescuedBanner) */
+  /* speech sample rate in Hz (pitch = rate * 1024 / 11025) */
+  int speechRate;  /* 0x3C */
+  int speechFrame; /* 0x40 rescue frame the speech starts on */
+  int phase;       /* 0x44 idle shake clock (STATUE_SETTLE_TICK ..) */
+  int rotX;        /* 0x48 rest pose */
+  int rotY;        /* 0x4C */
+  int restZ;       /* 0x50 */
 } DragonStatueState;
 
 /* Type 16 (ACTOR_TYPE_BUTTERFLY): flutters about its spawn point, turning
@@ -93,10 +95,10 @@ typedef struct DragonStatueState {
  * frame, after that only while drawn. Sparx eating it (BUTTERFLY_CIRCLE)
  * makes it circle Spyro on the side circleDir picks. */
 typedef struct ButterflyState {
-  int circleDir;              /* 0x00 +1 / -1, from the side of Spyro it is on */
-  int home[3];                /* 0x04 spawn point it flutters near */
-  unsigned char vz;           /* 0x10 climb step, a signed byte */
-  unsigned char heading;      /* 0x11 */
+  int circleDir;         /* 0x00 +1 / -1, from the side of Spyro it is on */
+  int home[3];           /* 0x04 spawn point it flutters near */
+  unsigned char vz;      /* 0x10 climb step, a signed byte */
+  unsigned char heading; /* 0x11 */
   unsigned char headingTimer; /* 0x12 frames to the next heading change */
   unsigned char climbTimer;   /* 0x13 frames to the next climb change */
   short offscreenTimer;       /* 0x14 frames it still flutters undrawn */
@@ -109,11 +111,13 @@ typedef struct ButterflyState {
  * the anchor it calls BeginSaveMenuFromWorld (the save menu pans this actor
  * around Spyro); it leaves when Spyro moves away. */
 typedef struct SaveHostState {
-  int armer;       /* 0x00 actor index of the dragon whose rescue (dormant, mode >= 0x80)
-                    arms the host; save-menu option 1 replays that rescue */
-  int anchor;      /* 0x04 actor index of the checkpoint (ACTOR_TYPE_CHECKPOINT..+2,
-                    level data) the host hovers around and Spyro stands at; the
-                    host reappears after a prompt once Spyro re-arms it */
+  /* actor index of the dragon whose rescue (dormant, mode >= 0x80) arms the
+   * host; save-menu option 1 replays that rescue */
+  int armer; /* 0x00 */
+  /* actor index of the checkpoint (ACTOR_TYPE_CHECKPOINT..+2, level data) the
+   * host hovers around and Spyro stands at; the host reappears after a prompt
+   * once Spyro re-arms it */
+  int anchor;      /* 0x04 */
   int timer;       /* 0x08 pop-in delay, then the bob phase */
   int baseZ;       /* 0x0C bob centre height */
   int wanderTo[3]; /* 0x10 next hover point near the anchor */
@@ -128,19 +132,23 @@ typedef struct SaveHostState {
  * owner-gated one stays off until its linked actor (key picked up, dragon
  * freed, gem taken) says so. */
 typedef struct WhirlwindState {
-  int spanZ; /* 0x00 height; Spyro is lifted to posZ + spanZ */
+  int spanZ;  /* 0x00 height; Spyro is lifted to posZ + spanZ */
   int radius; /* 0x04 horizontal radius */
-  int flags; /* 0x08 WHIRL_F_* */
-  int timer; /* 0x0C wake / idle countdown */
-  int idx;   /* 0x10 owner: index into the actor pool at g_pActorListBase */
+  int flags;  /* 0x08 WHIRL_F_* */
+  int timer;  /* 0x0C wake / idle countdown */
+  int idx;    /* 0x10 owner: index into the actor pool at g_pActorListBase */
 } WhirlwindState;
 
 /* WhirlwindState.flags. */
-#define WHIRL_F_TARGET_CAM 0x01 /* lift with the target camera (else the front spring camera) */
-#define WHIRL_F_IDLE 0x02       /* idle: wakes WHIRL_WAKE_DELAY frames after Spyro comes near */
-#define WHIRL_F_WOKEN 0x04      /* woken: idles again WHIRL_IDLE_DELAY frames after a lift */
-#define WHIRL_F_GATED 0x08      /* waits on its owner (`idx`: a key's subMode, a statue or gem gone) */
-#define WHIRL_F_MARK 0x10       /* also sets ->subMode to 1 while active */
+/* lift with the target camera (else the front spring camera) */
+#define WHIRL_F_TARGET_CAM 0x01
+/* idle: wakes WHIRL_WAKE_DELAY frames after Spyro comes near */
+#define WHIRL_F_IDLE 0x02
+/* woken: idles again WHIRL_IDLE_DELAY frames after a lift */
+#define WHIRL_F_WOKEN 0x04
+/* waits on its owner (`idx`: a key's subMode, a statue or gem gone) */
+#define WHIRL_F_GATED 0x08
+#define WHIRL_F_MARK 0x10 /* also sets ->subMode to 1 while active */
 
 /* Whirlwind ranges to Spyro (2D / height): an idle one wakes within WAKE /
  * WAKE_DZ; one gated on a key that was taken stays shut until Spyro is
@@ -160,21 +168,22 @@ typedef struct WhirlwindState {
  * 0xB4) rewinds `path` and spawns one waypoint runner (304), handing it the
  * path and `value`; killable. */
 typedef struct RunnerSpawnerState {
-  struct PathData *path; /* 0x00 the runners' waypoint path; cur reset to 0 per spawn */
+  /* the runners' waypoint path; cur reset to 0 per spawn */
+  struct PathData *path; /* 0x00 */
   int flags;             /* 0x04 bit 0: a runner is out */
   int wait;              /* 0x08 */
   int timer;             /* 0x0C */
-  int value;             /* 0x10 copied to the spawn's WaypointRunnerState.target */
+  int value; /* 0x10 copied to the spawn's WaypointRunnerState.target */
 } RunnerSpawnerState;
 
 /* Level 14 type 304 (ACTOR_TYPE_WAYPOINT_RUNNER): walks its spawner's `path`
  * until it reaches Spyro, the path end, or its `target` actor (which it
  * flags), then clears the spawner's flags bit 0 and leaves. */
 typedef struct WaypointRunnerState {
-  struct PathData *path;  /* 0x00 inherited from the spawner */
-  struct Actor *spawner;  /* 0x04 the RunnerSpawnerState owner */
-  int smoothVel[3];       /* 0x08 WalkActorAlongWaypoints' smoothed velocity */
-  short target;           /* 0x14 pool index, < 0 = none */
+  struct PathData *path; /* 0x00 inherited from the spawner */
+  struct Actor *spawner; /* 0x04 the RunnerSpawnerState owner */
+  int smoothVel[3];      /* 0x08 WalkActorAlongWaypoints' smoothed velocity */
+  short target;          /* 0x14 pool index, < 0 = none */
 } WaypointRunnerState;
 
 /* Level 19 type 343 (ACTOR_TYPE_ATTACH_BEAD): a bead that streams from its
@@ -190,7 +199,7 @@ typedef struct AttachBeadState {
  * flight target and runs until it gets away or times out. */
 typedef struct SpinRunState {
   int heading;   /* 0x00 */
-  int zSpeed;      /* 0x04 */
+  int zSpeed;    /* 0x04 */
   int moveSpeed; /* 0x08 */
   int timer;     /* 0x0C */
 } SpinRunState;
@@ -243,19 +252,20 @@ enum BounceMotion {
 /* Level 19 type 35 (ACTOR_TYPE_BOLT_GUARD): scatters when hit and fires type
  * 494 bolts. SpawnActor aims its ground-bounce shards along `knockHeading`. */
 typedef struct BoltGuardState {
-  int mode;    /* 0x00 enum BoltGuardCue */
-  int timer;   /* 0x04 */
-  int timer2;  /* 0x08 */
+  int mode;         /* 0x00 enum BoltGuardCue */
+  int timer;        /* 0x04 */
+  int timer2;       /* 0x08 */
   int knockHeading; /* 0x0C knock-back heading (12-bit), set when it is hit */
-  int speed;   /* 0x10 */
-  int zSpeed;    /* 0x14 vertical speed (DriveActorTrackedMove) */
-  int pad18;     /* 0x18 */
+  int speed;        /* 0x10 */
+  int zSpeed;       /* 0x14 vertical speed (DriveActorTrackedMove) */
+  int pad18;        /* 0x18 */
   struct PathData *path; /* 0x1C */
-  int range;   /* 0x20 in 1024s */
-  int countdown;     /* 0x24 */
-  int link;    /* 0x28 actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
-  short spinX; /* 0x2C */
-  short spinY; /* 0x2E */
+  int range;             /* 0x20 in 1024s */
+  int countdown;         /* 0x24 */
+  /* actor index, -1 for none; initially (level data) ACTOR_TYPE_ROAMING_RAM */
+  int link;       /* 0x28 */
+  short spinX;    /* 0x2C */
+  short spinY;    /* 0x2E */
   TriggerBox box; /* 0x30 */
 } BoltGuardState;
 
@@ -264,15 +274,17 @@ typedef struct BoltGuardState {
 typedef struct SmokerState {
   struct PathData *path; /* 0x00 */
   int legStep;           /* 0x04 */
-  int legVec[3];        /* 0x08 previous leg vector (TweenActorAlongPath); a wreck ember starts from it */
-  int timer;           /* 0x14 */
+  /* previous leg vector (TweenActorAlongPath); a wreck ember starts from it */
+  int legVec[3]; /* 0x08 */
+  int timer;     /* 0x14 */
 } SmokerState;
 
 /* Tumbling fragments: SpawnActor's chest/object shards (types 0x43..0x45,
  * 0xFF..0x101, 0x135..0x137 and per-level ranges) and UpdateActors' falling
  * debris shards thrown by a break (255/256, 310/311, 257, 309, 425, level 27's
- * rubble). Integrate until life, visibility or the floor runs out. Other updaters view some of these types as ChestShardState (byte
- * spins) or EmberState. */
+ * rubble). Integrate until life, visibility or the floor runs out. Other
+ * updaters view some of these types as ChestShardState (byte spins) or
+ * EmberState. */
 typedef struct TumbleState {
   short vel[3];  /* 0x00 */
   short spin[3]; /* 0x06 per-frame delta for ->rotX/rotY/rotZ */
@@ -284,15 +296,16 @@ typedef struct TumbleState {
  * doubles as the pickup origin once Sparx has fetched the item. SpawnActor
  * pops a dropped one out at PICKUP_DROP_POP_VZ. */
 typedef struct PickupState {
-  int vel[3];          /* 0x00 */
-  short groundTri;         /* 0x0C collision triangle it rests on (UnpackWorldCollisionTri) */
+  int vel[3]; /* 0x00 */
+  /* collision triangle it rests on (UnpackWorldCollisionTri) */
+  short groundTri;        /* 0x0C */
   unsigned char restMode; /* 0x0E CollectRestMode while COLLECT_REST */
-  unsigned char timer; /* 0x0F sparkle timer */
-  unsigned char bounces; /* 0x10 bounces left (PICKUP_DROP_BOUNCES at spawn) */
-  unsigned char pitch; /* 0x11 ground-normal tilt */
-  unsigned char yaw;   /* 0x12 */
-  unsigned char roll;  /* 0x13 */
-  unsigned char sparkle; /* 0x14 g_aRotBillboards handle, 0xFF = none */
+  unsigned char timer;    /* 0x0F sparkle timer */
+  unsigned char bounces;  /* 0x10 bounces left (PICKUP_DROP_BOUNCES at spawn) */
+  unsigned char pitch;    /* 0x11 ground-normal tilt */
+  unsigned char yaw;      /* 0x12 */
+  unsigned char roll;     /* 0x13 */
+  unsigned char sparkle;  /* 0x14 g_aRotBillboards handle, 0xFF = none */
 } PickupState;
 
 /* A dropped pickup (gem, extra life, Sparx food) pops up at POP_VZ and bounces
@@ -304,15 +317,19 @@ typedef struct PickupState {
 /* A tethered guard (level 15); the level 13-15 homing orb (AdvanceEmitList)
  * frees a bound one it reaches. */
 typedef struct TetherState {
-  int timer;   /* 0x00 TCMD_FREED: frames the bound pose still plays (a homing orb sets TGUARD_ORB_FREE_FRAMES) */
+  /* TCMD_FREED: frames the bound pose still plays (a homing orb sets
+   * TGUARD_ORB_FREE_FRAMES) */
+  int timer;        /* 0x00 */
   int knockSpeed;   /* 0x04 knockback speed */
   int knockHeading; /* 0x08 knockback heading */
-  int link;    /* 0x0C walker to follow (index into g_pActorListBase), or -1;
-                * a sentinel powering a chain of guards reads it as the next
-                * guard (ending the chain when that isn't a tethered guard) */
-  int owner;   /* 0x10 actor whose loss frees this one; level data: ACTOR_TYPE_SENTINEL */
-  int mode;    /* 0x14 TetherCommand */
-  int stop;    /* 0x18 node of the sentinel's path where it powers this guard */
+  /* walker to follow (index into g_pActorListBase), or -1; a sentinel powering
+   * a chain of guards reads it as the next guard (ending the chain when that
+   * isn't a tethered guard) */
+  int link; /* 0x0C */
+  /* actor whose loss frees this one; level data: ACTOR_TYPE_SENTINEL */
+  int owner; /* 0x10 */
+  int mode;  /* 0x14 TetherCommand */
+  int stop;  /* 0x18 node of the sentinel's path where it powers this guard */
 } TetherState;
 
 /* Frames a guard freed by the homing orb keeps playing its bound pose. */
@@ -321,7 +338,8 @@ typedef struct TetherState {
 /* ACTOR_TYPE_GEM_HOLDER (levels 0/4/10/16): a hidden gem drop whose owner
  * (a flock, Blowhard) releases its chain one holder at a time. */
 typedef struct GemHolderState {
-  int next; /* 0x00 next holder in the chain (pool index), -1 ends; level data */
+  /* next holder in the chain (pool index), -1 ends; level data */
+  int next; /* 0x00 */
 } GemHolderState;
 
 #endif /* OPEN_SPYRO_ACTOR_STATES_H */

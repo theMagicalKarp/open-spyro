@@ -4,28 +4,31 @@
  * Spawn one actor ("moby") of type `type`, parented to `parent`.
  *
  * Allocates a pool record (AllocActorRecordSlot), stamps the
- * type into ->type and the parent's pool index into ->poolIndex (the 0x58-byte-record
- * pointer difference, clamped away when it is not a real pool slot), then runs
- * a per-type init arm. Every arm starts from InitActorRenderDefaults
- * (InitActorRenderDefaults) and ends by placing the new actor: most copy the
- * parent's position (CopyVector) and either register it in the
- * spatial grid (InsertActorIntoSpatialGrid) or hide its render record (HideActorRenderRecord).
+ * type into ->type and the parent's pool index into ->poolIndex (the
+ * 0x58-byte-record pointer difference, clamped away when it is not a real pool
+ * slot), then runs a per-type init arm. Every arm starts from
+ * InitActorRenderDefaults (InitActorRenderDefaults) and ends by placing the new
+ * actor: most copy the parent's position (CopyVector) and either register it in
+ * the spatial grid (InsertActorIntoSpatialGrid) or hide its render record
+ * (HideActorRenderRecord).
  *
  * The interesting arms:
- *  - 0xE / 0x53..0x57 (collectible drops: life statue, life orb, gems): fill the pickup state block,
- *    take a ground probe (FindGroundHeightBelow) 0x400 above the spawn point, encode
- *    the cached direction (EncodeHitNormalToActorGroundCode) and select the per-type
- *    tintMode preset (0xE: 0xC, 0x53..0x57: 1..5).
+ *  - 0xE / 0x53..0x57 (collectible drops: life statue, life orb, gems): fill
+ * the pickup state block, take a ground probe (FindGroundHeightBelow) 0x400
+ * above the spawn point, encode the cached direction
+ * (EncodeHitNormalToActorGroundCode) and select the per-type tintMode preset
+ * (0xE: 0xC, 0x53..0x57: 1..5).
  *  - 0x43..0x45 / 0xFF..0x101 / 0x135..0x137 (debris bursts):
  *    give the fragment a random unit velocity built from a random yaw
  *    (0xFFF) and pitch (0x7FF) through LookupCosine/LookupSine, add a sixth
- *    of Spyro's velocity (g_anSpyroVelocity..54) when the parent is flagged 0x20000,
- *    nudge the spawn point along it, and randomise the tumble rates. The
+ *    of Spyro's velocity (g_anSpyroVelocity..54) when the parent is flagged
+ * 0x20000, nudge the spawn point along it, and randomise the tumble rates. The
  *    0x135..0x137 sub-range additionally gets the 0xA18618 tint and the
  *    ACTOR_RENDER_SECONDARY renderList bit.
- *  - 0xFB (dragon-statue burst shard, ticked by TickStatueBurstShard): pick one of eight launch directions from
- *    the g_anLaunchDirTable/g_anLaunchDirTableZ table, rotate it into the parent's orientation
- *    (RotateVectorByMatrix), jitter each component by
+ *  - 0xFB (dragon-statue burst shard, ticked by TickStatueBurstShard): pick one
+ * of eight launch directions from the g_anLaunchDirTable/g_anLaunchDirTableZ
+ * table, rotate it into the parent's orientation (RotateVectorByMatrix), jitter
+ * each component by
  *    +-0x3F, offset the spawn point along it (AddVector) and
  *    seed the shard's velocity (RShiftVector3) with a further
  *    +-0x7F of jitter plus randomised spin rates and life.
@@ -48,7 +51,8 @@ Actor *Level20_SpawnActor(int type, Actor *parent) {
 
   rec = AllocActorRecordSlot();
   rec->type = type;
-  if (parent == 0 || (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
+  if (parent == 0 ||
+      (unsigned int)(owner = parent - g_pActorListBase) >= 0x100) {
     owner = 0;
   }
   rec->poolIndex = owner;
@@ -219,7 +223,8 @@ Actor *Level20_SpawnActor(int type, Actor *parent) {
     st->spin[2] = GetRandomU32() & 0xF;
     st->floorZ = parent->posZ - 0x40;
     st->life = 0x40 - (GetRandomU32() & 0xF);
-    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) < 3) {
+    if ((unsigned int)((unsigned short)rec->type - ACTOR_TYPE_SPARKLE_SHARD) <
+        3) {
       *(int *)&rec->tint0 = ACTOR_TINT_NEUTRAL;
       rec->renderList |= ACTOR_RENDER_SECONDARY;
     }

@@ -12,11 +12,10 @@
 /* Local prototypes, not funcs.h: its caller-side MoveActorByDelta splits the
    DeltaVec into three ints and conflicts with the definition below. */
 #ifndef CONTACT_STOP_AT_SOLID
-#define CONTACT_STOP_AT_SOLID                                                  \
-  0 /* stop at the first solid shape; returns the last actor touched */
-#define CONTACT_PUSH_OUT                                                       \
-  1 /* push pos out of the first solid shape (written back); returns that      \
-       actor */
+/* stop at the first solid shape; returns the last actor touched */
+#define CONTACT_STOP_AT_SOLID 0
+/* push pos out of the first solid shape (written back); returns that actor */
+#define CONTACT_PUSH_OUT 1
 #define CONTACT_ALL 2 /* keep testing past solid shapes */
 #endif
 extern Actor *DispatchActorContactAtSphere(int *pos, int radius,

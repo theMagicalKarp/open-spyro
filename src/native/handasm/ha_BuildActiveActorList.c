@@ -115,7 +115,10 @@ L_8005207C:
   /* 80052090 000338C2 (delay) */
   a3 = v1 >> 3;
   if (bc) {
-    { bc = 0; goto L_8005210C; }
+    {
+      bc = 0;
+      goto L_8005210C;
+    }
   }
   /* 80052094 00E70018 */
   HA_MULT(a3, a3);
@@ -312,7 +315,9 @@ L_800521B8:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80051fecu: bc = 0; goto L_80051FEC;
+  case 0x80051fecu:
+    bc = 0;
+    goto L_80051FEC;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("BuildActiveActorList", tgt, entry_ra);

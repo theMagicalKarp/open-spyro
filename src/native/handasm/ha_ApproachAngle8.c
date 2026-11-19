@@ -64,7 +64,9 @@ L_80017A30:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800179f0u: bc = 0; goto L_800179F0;
+  case 0x800179f0u:
+    bc = 0;
+    goto L_800179F0;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ApproachAngle8", tgt, entry_ra);

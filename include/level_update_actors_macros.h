@@ -39,7 +39,7 @@
 #define PATH_Z(p, i) (*(int *)((unsigned char *)(p) + ((i) << 4) + 0x10))
 
 /* Progress-per-tick byte of animation `anim` in the actor's model. */
-#define TYPE_DESC(a, id)                                                     \
+#define TYPE_DESC(a, id)                                                       \
   (g_apActorMeshTable[(a)->type]->m_Animations[(id)]->m_ProgressPerTick)
 
 #define AS_I32(sym) (((I32 *)&(sym))->v)
@@ -58,11 +58,11 @@
  * (0x3E/0x3F), frame progress (0x40) and progress per frame (0x41).
  *
  * ANIM_RESET restarts `anim` from frame 0 at the model's own speed. */
-#define ANIM_RESET(a, id)                                                    \
-  (a)->frameProgress = 0;                                                              \
-  (a)->frameRate = TYPE_DESC(a, id);                                             \
-  (a)->anim = (id);                                                         \
-  (a)->nextAnim = (id);                                                         \
+#define ANIM_RESET(a, id)                                                      \
+  (a)->frameProgress = 0;                                                      \
+  (a)->frameRate = TYPE_DESC(a, id);                                           \
+  (a)->anim = (id);                                                            \
+  (a)->nextAnim = (id);                                                        \
   (a)->frame = 0;                                                              \
   (a)->nextFrame = 1;
 
@@ -71,21 +71,21 @@
 
 /* An animation change that also clears the finished flag. */
 #define ANIM_GO(a, n)                                                          \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
+  if ((a)->nextAnim != (n)) {                                                  \
+    g_nActorAnimDone = 0;                                                      \
     ANIM_ADVANCE(a, n);                                                        \
   }
 
 #define ANIM_SET(a, n)                                                         \
-  if ((a)->anim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
+  if ((a)->anim != (n)) {                                                      \
+    g_nActorAnimDone = 0;                                                      \
     ANIM_RESET(a, n);                                                          \
   }
 
 /* ENTER_POSE with the already-there test first. */
 #define ENTER_POSE4(a, n)                                                      \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim == (n)) {                                                     \
+  (a)->mode = (n);                                                             \
+  if ((a)->nextAnim == (n)) {                                                  \
     continue;                                                                  \
   }                                                                            \
   ANIM_ADVANCE(a, n);                                                          \
@@ -93,14 +93,14 @@
 
 /* An animation change at half speed, keyed on the current animation. */
 #define ANIM_BLEND(a, n)                                                       \
-  if ((a)->anim != (n)) {                                                     \
-    (a)->frameProgress = ANIM_RATE_TICKS(8);                                                            \
-    (a)->frameRate = ANIM_RATE_TICKS(8);                                                            \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    OnActorAnimQueued(a);                                                          \
+  if ((a)->anim != (n)) {                                                      \
+    (a)->frameProgress = ANIM_RATE_TICKS(8);                                   \
+    (a)->frameRate = ANIM_RATE_TICKS(8);                                       \
+    (a)->anim = (a)->nextAnim;                                                 \
+    (a)->nextAnim = (n);                                                       \
+    (a)->frame = (a)->nextFrame;                                               \
+    (a)->nextFrame = 0;                                                        \
+    OnActorAnimQueued(a);                                                      \
   }
 
 /* ENTER_POSE with an empty loop at the head of the change: cse starts a new
@@ -108,17 +108,17 @@
  * (merged again after loop.c). Keeps the constant's lifetime short enough
  * that loop.c does not hoist it (see case 115). */
 #define ENTER_POSE_B(a, n)                                                     \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim != (n)) {                                                     \
+  (a)->mode = (n);                                                             \
+  if ((a)->nextAnim != (n)) {                                                  \
     do {                                                                       \
     } while (0);                                                               \
-    (a)->frameProgress = sixteen;                                                      \
-    (a)->frameRate = sixteen;                                                      \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    OnActorAnimQueued(a);                                                          \
+    (a)->frameProgress = sixteen;                                              \
+    (a)->frameRate = sixteen;                                                  \
+    (a)->anim = (a)->nextAnim;                                                 \
+    (a)->nextAnim = (n);                                                       \
+    (a)->frame = (a)->nextFrame;                                               \
+    (a)->nextFrame = 0;                                                        \
+    OnActorAnimQueued(a);                                                      \
   }                                                                            \
   continue
 
@@ -144,65 +144,67 @@
 /* One masked word test of the animation bytes: `anim` is `id` and
  * `nextFrame` is `nf` (bytes 0 and 3), or `nextAnim` is `id` and
  * `nextFrame` is `nf` (bytes 1 and 3). */
-#define ANIM_AT_FRAME(a, id, nf) ((ANIM_WORD(a) & 0xFF0000FF) == (((nf) << 24) | (id)))
-#define NEXT_ANIM_AT_FRAME(a, id, nf) ((ANIM_WORD(a) & 0xFF00FF00) == (((nf) << 24) | ((id) << 8)))
+#define ANIM_AT_FRAME(a, id, nf)                                               \
+  ((ANIM_WORD(a) & 0xFF0000FF) == (((nf) << 24) | (id)))
+#define NEXT_ANIM_AT_FRAME(a, id, nf)                                          \
+  ((ANIM_WORD(a) & 0xFF00FF00) == (((nf) << 24) | ((id) << 8)))
 
 /* Spyro's facing delta to an actor. */
 #define SPY_FACING(a)                                                          \
-  AbsAngleDelta8(spy->bodyRotZ, ArcTan2((a)->posX - spy->posX,            \
-                                             (a)->posY - spy->posY, ATAN_ANGLE8))
+  AbsAngleDelta8(spy->bodyRotZ, ArcTan2((a)->posX - spy->posX,                 \
+                                        (a)->posY - spy->posY, ATAN_ANGLE8))
 
 /* An actor's height above Spyro. */
 #define SPY_DZ(a) ((a)->posZ - (a)->floorOffset - SPY.posZ)
 
 /* Advance to animation `n` with frame progress 8 (a slower blend). */
 #define ANIM_GO8(a, n)                                                         \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    (a)->frameProgress = ANIM_RATE_TICKS(8);                                                            \
-    (a)->frameRate = ANIM_RATE_TICKS(8);                                                            \
-    (a)->anim = (a)->nextAnim;                                                   \
-    (a)->nextAnim = (n);                                                          \
-    (a)->frame = (a)->nextFrame;                                                   \
-    (a)->nextFrame = 0;                                                            \
-    OnActorAnimQueued(a);                                                          \
+  if ((a)->nextAnim != (n)) {                                                  \
+    g_nActorAnimDone = 0;                                                      \
+    (a)->frameProgress = ANIM_RATE_TICKS(8);                                   \
+    (a)->frameRate = ANIM_RATE_TICKS(8);                                       \
+    (a)->anim = (a)->nextAnim;                                                 \
+    (a)->nextAnim = (n);                                                       \
+    (a)->frame = (a)->nextFrame;                                               \
+    (a)->nextFrame = 0;                                                        \
+    OnActorAnimQueued(a);                                                      \
   }
 
 /* Re-time the current animation once its frames are within 3 of each
  * other. */
 #define ANIM_RETIME(a)                                                         \
-  if (ABS2((a)->nextFrame - (a)->frame) < 3) {                                     \
-    (a)->frameRate = TYPE_DESC(a, (a)->anim);                                     \
+  if (ABS2((a)->nextFrame - (a)->frame) < 3) {                                 \
+    (a)->frameRate = TYPE_DESC(a, (a)->anim);                                  \
   }
 
 /* Jump the queued animation to frame `f` of animation `n`. */
 #define ANIM_JUMP(a, n, f)                                                     \
-  g_nActorAnimDone = 0;                                                              \
-  (a)->frameProgress = sixteen;                                                        \
-  (a)->frameRate = sixteen;                                                        \
-  (a)->anim = (a)->nextAnim;                                                     \
-  (a)->nextAnim = (n);                                                            \
-  (a)->frame = (a)->nextFrame;                                                     \
-  (a)->nextFrame = (f);                                                            \
+  g_nActorAnimDone = 0;                                                        \
+  (a)->frameProgress = sixteen;                                                \
+  (a)->frameRate = sixteen;                                                    \
+  (a)->anim = (a)->nextAnim;                                                   \
+  (a)->nextAnim = (n);                                                         \
+  (a)->frame = (a)->nextFrame;                                                 \
+  (a)->nextFrame = (f);                                                        \
   OnActorAnimQueued(a)
 
 /* Set the state byte and queue animation `n` without promoting the current
  * one, then move on to the next actor. */
 #define ANIM_QUEUE(a, n)                                                       \
-  (a)->mode = (n);                                                            \
-  if ((a)->nextAnim != (n)) {                                                     \
-    (a)->frameProgress = sixteen;                                                      \
-    (a)->frameRate = sixteen;                                                      \
-    (a)->nextAnim = (n);                                                          \
-    (a)->nextFrame = 0;                                                            \
-    OnActorAnimQueued(a);                                                          \
+  (a)->mode = (n);                                                             \
+  if ((a)->nextAnim != (n)) {                                                  \
+    (a)->frameProgress = sixteen;                                              \
+    (a)->frameRate = sixteen;                                                  \
+    (a)->nextAnim = (n);                                                       \
+    (a)->nextFrame = 0;                                                        \
+    OnActorAnimQueued(a);                                                      \
   }                                                                            \
   continue
 
 /* Clear the partner's "held" bit. */
 #define L25_UNLINK(st)                                                         \
   if ((st)->link >= 0) {                                                       \
-    g_pActorListBase[(st)->link].subMode &= 0xFB;                                      \
+    g_pActorListBase[(st)->link].subMode &= 0xFB;                              \
   }
 
 /* Give up the shared slot. */
@@ -218,23 +220,24 @@
 
 /* Back to the idle state, restarting animation 0. */
 #define RESET_IDLE(a)                                                          \
-  (a)->mode = 0;                                                              \
+  (a)->mode = 0;                                                               \
   ANIM_RESET(a, 0);                                                            \
   continue
 
 /* Burst a barrel: splash, release its rider, and remove it. */
 #define BARREL_BURST(a, st)                                                    \
   {                                                                            \
-    Actor *sp_ = g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, a);                                         \
+    Actor *sp_ = g_pfnLevelSpawnActor(ACTOR_TYPE_SPLASH, a);                   \
     Actor *w_;                                                                 \
                                                                                \
-    StopSoundVoicesByOwner(a, VOICE_STOP_ALL);                                                       \
-    PlaySoundEffect(g_apActorMeshTable[(a)->type]->m_Sounds[3], sp_, SFX_MODE_3D, &sp_->voiceRow);    \
+    StopSoundVoicesByOwner(a, VOICE_STOP_ALL);                                 \
+    PlaySoundEffect(g_apActorMeshTable[(a)->type]->m_Sounds[3], sp_,           \
+                    SFX_MODE_3D, &sp_->voiceRow);                              \
     w_ = (st)->rider;                                                          \
-    if (w_ != 0 && w_->type == ACTOR_TYPE_HATCH && w_->mode == HATCH_OPEN) {                   \
-      w_->subMode = 1;                                                           \
+    if (w_ != 0 && w_->type == ACTOR_TYPE_HATCH && w_->mode == HATCH_OPEN) {   \
+      w_->subMode = 1;                                                         \
     }                                                                          \
-    DespawnActorRecord(a);                                                          \
+    DespawnActorRecord(a);                                                     \
     continue;                                                                  \
   }
 
@@ -266,13 +269,13 @@ enum PathNodeJump {
 
 /* An animation change that keeps the current animation (no 3C/3E promotion). */
 #define ANIM_THEN(a, n)                                                        \
-  if ((a)->nextAnim != (n)) {                                                     \
-    g_nActorAnimDone = 0;                                                            \
-    (a)->frameProgress = sixteen;                                                      \
-    (a)->frameRate = sixteen;                                                      \
-    (a)->nextAnim = (n);                                                          \
-    (a)->nextFrame = 0;                                                            \
-    OnActorAnimQueued(a);                                                          \
+  if ((a)->nextAnim != (n)) {                                                  \
+    g_nActorAnimDone = 0;                                                      \
+    (a)->frameProgress = sixteen;                                              \
+    (a)->frameRate = sixteen;                                                  \
+    (a)->nextAnim = (n);                                                       \
+    (a)->nextFrame = 0;                                                        \
+    OnActorAnimQueued(a);                                                      \
   }
 
 #endif /* OPEN_SPYRO_LEVEL_UPDATE_ACTORS_MACROS_H */

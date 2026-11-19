@@ -36,7 +36,9 @@ L_80017940:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017928u: bc = 0; goto L_80017928;
+  case 0x80017928u:
+    bc = 0;
+    goto L_80017928;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("AbsAngleDelta12", tgt, entry_ra);

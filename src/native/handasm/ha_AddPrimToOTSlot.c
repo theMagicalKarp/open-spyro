@@ -50,7 +50,9 @@ L_800168D4:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800168a0u: bc = 0; goto L_800168A0;
+  case 0x800168a0u:
+    bc = 0;
+    goto L_800168A0;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("AddPrimToOTSlot", tgt, entry_ra);

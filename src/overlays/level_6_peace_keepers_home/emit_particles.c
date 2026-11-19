@@ -163,7 +163,8 @@ void Level6_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
+      rec->u.spark.vel[0] =
+          ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -175,9 +176,11 @@ void Level6_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (src->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &src->posX);
-      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
+      } else if (src->type == ACTOR_TYPE_KEY ||
+                 src->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          RotateVectorByMatrix(src->mtx,
+                               &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &src->posX);
         } else {
           rec->cls = EMIT_CLASS_FADED_QUAD;
@@ -229,10 +232,13 @@ void Level6_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.vel[1] = (GetRandomU32() & 0x3E) - 0x1F;
       rec->u.spark.vel[2] = (GetRandomU32() & 0x3E) - 0x1F;
       rec->u.spark.toggle = (GetRandomU32() & 8) - 4;
-      rec->u.spark.pos[0] = rec->u.spark.pos[0] + (unsigned short)rec->u.spark.vel[0] * 8;
-      rec->u.spark.pos[1] = rec->u.spark.pos[1] + (unsigned short)rec->u.spark.vel[1] * 8;
+      rec->u.spark.pos[0] =
+          rec->u.spark.pos[0] + (unsigned short)rec->u.spark.vel[0] * 8;
+      rec->u.spark.pos[1] =
+          rec->u.spark.pos[1] + (unsigned short)rec->u.spark.vel[1] * 8;
       rec->u.spark.size = 0x80;
-      rec->u.spark.pos[2] = rec->u.spark.pos[2] + (unsigned short)rec->u.spark.vel[2] * 4;
+      rec->u.spark.pos[2] =
+          rec->u.spark.pos[2] + (unsigned short)rec->u.spark.vel[2] * 4;
       rec->u.spark.spin = GetRandomU32();
       rec->u.spark.r = 0x60;
       rec->u.spark.g = 0x60;
@@ -434,7 +440,8 @@ void Level6_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      rec->u.line.a[1] =
+          rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
       u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[1] = 0x40;
@@ -562,6 +569,6 @@ void Level6_EmitParticles(int count, int type, int *pos, int effectArg) {
  *    if/else-assigned pair is what keeps the donor arm unchanged.
  *
  * The rest was free: the frame (0xA0 vs level_3's 0xB0) falls out of the two
- * deleted arms' hoisted `effectArg & 0xF` spill slots, so the five stack vectors
- * stay declared exactly as in the donor.
+ * deleted arms' hoisted `effectArg & 0xF` spill slots, so the five stack
+ * vectors stay declared exactly as in the donor.
  */

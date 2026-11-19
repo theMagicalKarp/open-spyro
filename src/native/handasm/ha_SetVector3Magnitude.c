@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster SetVector3Magnitude: SetVector3Magnitude (80017330), ZeroRecordField08 (80017420) */
+/* cluster SetVector3Magnitude: SetVector3Magnitude (80017330),
+ * ZeroRecordField08 (80017420) */
 void ha_SetVector3Magnitude(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -65,7 +66,10 @@ L_80017330:
   bc = ((int32_t)t3 < 0);
   /* 80017394 00000000 (delay) */
   if (bc) {
-    { bc = 0; goto L_800173A0; }
+    {
+      bc = 0;
+      goto L_800173A0;
+    }
   }
   /* 80017398 01666004 */
   t4 = a2 << (t3 & 31);
@@ -147,8 +151,12 @@ L_80017420:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017330u: bc = 0; goto L_80017330;
-  case 0x80017420u: bc = 0; goto L_80017420;
+  case 0x80017330u:
+    bc = 0;
+    goto L_80017330;
+  case 0x80017420u:
+    bc = 0;
+    goto L_80017420;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("SetVector3Magnitude", tgt, entry_ra);

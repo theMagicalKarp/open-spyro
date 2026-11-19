@@ -21,141 +21,465 @@ struct TriggerBox;
 
 int main(void);
 
-/* 0x800122a8: Stage-1 graphics bring-up, first call from Initialize. ResetGraph(0), then fills the two 0x84-stride frame-DB structs: DRAWENVs g_FrameDrawEnv0/1 (clip y=8 / y=0xf8, ofs y forced 0 / 0xf0, dtd=1, isbg=1) via InitDefaultDrawEnv and DISPENVs g_FrameDispEnv0/1 (disp y=0xf0 / y=0 — each shows the half the OTHER DB draws) via InitDefaultDispEnv; clears full 512x512 VRAM, display on. (Old plate had DRAWENV/DISPENV roles swapped.) */
+/* 0x800122a8: Stage-1 graphics bring-up, first call from Initialize.
+ * ResetGraph(0), then fills the two 0x84-stride frame-DB structs: DRAWENVs
+ * g_FrameDrawEnv0/1 (clip y=8 / y=0xf8, ofs y forced 0 / 0xf0, dtd=1, isbg=1)
+ * via InitDefaultDrawEnv and DISPENVs g_FrameDispEnv0/1 (disp y=0xf0 / y=0 —
+ * each shows the half the OTHER DB draws) via InitDefaultDispEnv; clears full
+ * 512x512 VRAM, display on. (Old plate had DRAWENV/DISPENV roles swapped.) */
 void InitGraphicsHardware(void);
 
-/* 0x800123c8: Pad subsystem init. PadInitDirect with the two raw report buffers g_abPadRawReport (port 1) / g_abPad2RawReport (port 2), seeds both pads' calibration blocks (ResetPadStickCalibrationDefaults + FinalizePadCalibration on the g_dwPadPressed block and its stash copy g_dwPadStash (MovePadInputState swaps whole blocks, so both need valid calibration)), zeros the rumble timers, sets g_nPadSetMainModePending, PadStartCom, one priming PollPadAndDistributeInput call, then registers PollPadAndDistributeInput as the per-VBlank callback via InstallVSyncCallback. */
+/* 0x800123c8: Pad subsystem init. PadInitDirect with the two raw report buffers
+ * g_abPadRawReport (port 1) / g_abPad2RawReport (port 2), seeds both pads'
+ * calibration blocks (ResetPadStickCalibrationDefaults + FinalizePadCalibration
+ * on the g_dwPadPressed block and its stash copy g_dwPadStash
+ * (MovePadInputState swaps whole blocks, so both need valid calibration)),
+ * zeros the rumble timers, sets g_nPadSetMainModePending, PadStartCom, one
+ * priming PollPadAndDistributeInput call, then registers
+ * PollPadAndDistributeInput as the per-VBlank callback via
+ * InstallVSyncCallback. */
 void InitPadSystem(void);
 
 /* 0x80012460: Possible UT_ROFF.OBJ/SsUtReverbOff */
 void SpuInit(void);
 
-/* 0x80012480: CD subsystem init. CdInit + CdControl(CdlSetmode, 0x80 = double-speed/data) + CdReadCallback(CdReadCompleteCallback). Initializes g_dwMusicStreamStatus to 0x40 and seeds the 4-byte CD-DA mixer at g_bCdMixLeftToLeft (Lvol=0x7f, Rvol=0x7f) before pushing it via CdMix. */
+/* 0x80012480: CD subsystem init. CdInit + CdControl(CdlSetmode, 0x80 =
+ * double-speed/data) + CdReadCallback(CdReadCompleteCallback). Initializes
+ * g_dwMusicStreamStatus to 0x40 and seeds the 4-byte CD-DA mixer at
+ * g_bCdMixLeftToLeft (Lvol=0x7f, Rvol=0x7f) before pushing it via CdMix. */
 void InitCdSystem(void);
 
-/* 0x8001250c: Loads the boot-time asset directory from CD. Sets g_nCdBaseLba=0x25; CdReadSyncSectors(0x25, g_pSharedLoadBuffer, 0x800, 0, 600) reads one sector into the shared CD buffer; CopyWords copies 0x330 bytes into g_anAssetDirectory — the asset directory whose fields (d0/d4/e0/e4/e8) Initialize then uses for the subsequent four CD loads (title art / world data / textures / CLUT). */
+/* 0x8001250c: Loads the boot-time asset directory from CD. Sets
+ * g_nCdBaseLba=0x25; CdReadSyncSectors(0x25, g_pSharedLoadBuffer, 0x800, 0,
+ * 600) reads one sector into the shared CD buffer; CopyWords copies 0x330 bytes
+ * into g_anAssetDirectory — the asset directory whose fields (d0/d4/e0/e4/e8)
+ * Initialize then uses for the subsequent four CD loads (title art / world data
+ * / textures / CLUT). */
 void LoadAssetDirectoryFromCd(void);
 
-/* 0x8001256c: Builds the 48-entry CD-audio track range table g_anMusicTrackLbaTable (6 banks x 8 tracks). Each entry is a {u32 start_lba, u32 end_lba} pair: start = g_anCdAudioBankBaseLba[bank], end = start + g_anCdAudioTrackLengths[bank*8+track]. Sets g_dwMusicStreamStatus = 0x40. Read by the CDDA/XA streaming state machine to seek tracks via CdIntToPos + CdlSetloc + CdlReadN. */
+/* 0x8001256c: Builds the 48-entry CD-audio track range table
+ * g_anMusicTrackLbaTable (6 banks x 8 tracks). Each entry is a {u32 start_lba,
+ * u32 end_lba} pair: start = g_anCdAudioBankBaseLba[bank], end = start +
+ * g_anCdAudioTrackLengths[bank*8+track]. Sets g_dwMusicStreamStatus = 0x40.
+ * Read by the CDDA/XA streaming state machine to seek tracks via CdIntToPos +
+ * CdlSetloc + CdlReadN. */
 int BuildAudioTrackTable(void);
 
-/* 0x80012604: Per-game-session zero-fill. Clears 0x12 dwords at g_anLevelEggsRecovered + 0x24 dwords each at g_anLevelDragonsRescued/g_anLevelGemsCollected + 0x24 bytes each at g_abLevelVisitedFlag/g_abLevelExited + 6-byte sentinel at g_abWorldBalloonistState..d5 (d0=2) + 6x5-byte struct array at g_anFlightClearTimes/g_abFlightBonusPaid. Sets g_nSparxHealth=3, g_nExtraLives=4, plus ~10 misc state flags. Called only from InitNewGameState. */
+/* 0x80012604: Per-game-session zero-fill. Clears 0x12 dwords at
+ * g_anLevelEggsRecovered + 0x24 dwords each at
+ * g_anLevelDragonsRescued/g_anLevelGemsCollected + 0x24 bytes each at
+ * g_abLevelVisitedFlag/g_abLevelExited + 6-byte sentinel at
+ * g_abWorldBalloonistState..d5 (d0=2) + 6x5-byte struct array at
+ * g_anFlightClearTimes/g_abFlightBonusPaid. Sets g_nSparxHealth=3,
+ * g_nExtraLives=4, plus ~10 misc state flags. Called only from
+ * InitNewGameState. */
 void ResetLevelState(void);
 
-/* 0x8001277c: Fresh-game state initializer. Sets g_nActiveLevelId=10 (the Artisans hub, where a new game starts) / g_nOptionVibrationEnabled=1 / g_dwActiveCameraOptions=CAM_OPT_PASSIVE, then calls ResetLevelState. Called from StoryIntro_Update (StoryIntro), Titlescreen_Update and DispatchSpecialCutscene — runs once at the start of a new game. */
+/* 0x8001277c: Fresh-game state initializer. Sets g_nActiveLevelId=10 (the
+ * Artisans hub, where a new game starts) / g_nOptionVibrationEnabled=1 /
+ * g_dwActiveCameraOptions=CAM_OPT_PASSIVE, then calls ResetLevelState. Called
+ * from StoryIntro_Update (StoryIntro), Titlescreen_Update and
+ * DispatchSpecialCutscene — runs once at the start of a new game. */
 void InitNewGameState(void);
 
-/* 0x800127c0: Boot bring-up and title sequence: GPU / SPU / pad / sound / CD / GTE init, both load buffers, then four 8-frame fades (AddBiasToColorRuns) of the title and splash art around the boot CD loads, and the hand-off to the story intro. */
+/* 0x800127c0: Boot bring-up and title sequence: GPU / SPU / pad / sound / CD /
+ * GTE init, both load buffers, then four 8-frame fades (AddBiasToColorRuns) of
+ * the title and splash art around the boot CD loads, and the hand-off to the
+ * story intro. */
 void Initialize(void);
 
-/* 0x80012cf0: Sets up the per-level SPU sample-bank header pointers and rebases the per-sample SPU-RAM offset of each entry by adding the SPU RAM start address (0x1010). header=header base; g_pLevelSampleBankHeader = header, g_pLevelSampleBankEntries = header+0x104 (entry array), entry count at header+0x100, entry size 0x14. When relocate!=0, walks entries[count-1..0] adding 0x1010 to entry[i].first_int (the sample's SPU RAM byte offset). Called by UnpackWorldDataChunks (initial level load — relocate=1) and the level-transition state machine TickLevelTransitionStream (re-init path). */
+/* 0x80012cf0: Sets up the per-level SPU sample-bank header pointers and rebases
+ * the per-sample SPU-RAM offset of each entry by adding the SPU RAM start
+ * address (0x1010). header=header base; g_pLevelSampleBankHeader = header,
+ * g_pLevelSampleBankEntries = header+0x104 (entry array), entry count at
+ * header+0x100, entry size 0x14. When relocate!=0, walks entries[count-1..0]
+ * adding 0x1010 to entry[i].first_int (the sample's SPU RAM byte offset).
+ * Called by UnpackWorldDataChunks (initial level load — relocate=1) and the
+ * level-transition state machine TickLevelTransitionStream (re-init path). */
 void RelocateLevelSampleBank(int *header, int relocate);
 
-/* 0x80012d58: Top-level world-data chunk unpacker — walks the loaded world bundle as a chain of length-prefixed sections (each section starts with a 4-byte byte_size that doubles as the link to the next section) and populates the engine's per-section globals + patches all relative file-offsets to absolute pointers. Sections in order: (1) the world textures: g_nWorldTextureCount 0x10-byte LOD UV records at g_pWorldTextureLodRecords, then the 0xA8-byte detail records at g_pWorldTextureDetailRecords; (2) flag==0 only — g_pVisZoneChunkLists + g_nVisZoneCount = section1 entry list + g_pLevelSkyZoneLists (+ g_nLevelSkyZoneListCount) = the per-zone sky chunk lists; (3) g_pTriggerRegionTable + g_anTriggerRegionCount = section2; (4) g_pWorldCollisionHeader = section3 base + +3..+6 absolute-resolves; (5) the level sky: g_abLevelSkyBgColor[0..2] background colour, g_nLevelSkyChunkCount / g_pLevelSkyChunkArray chunk pointers; (6) flag==0 only — g_nPortalCount = portal count, then per portal a 32-byte+variable layout populating &g_apPortals[i]; (7) the emit texture records, each published at g_apEmitTextureTable[its effect id]; finally g_nLevelSampleBankCount = sample-count and a tail call to RelocateLevelSampleBank(&sample-count word + 1, 1). Returns ptr to the next-section after consumption. flag=0 = full unpack (initial load); flag!=0 = re-unpack a subset (level transition). Callers: TickCutsceneBundleLoadStream (state machine — initial) + TickLevelTransitionStream (state machine — transition) + Credits_Update. */
+/* 0x80012d58: Top-level world-data chunk unpacker — walks the loaded world
+ * bundle as a chain of length-prefixed sections (each section starts with a
+ * 4-byte byte_size that doubles as the link to the next section) and populates
+ * the engine's per-section globals + patches all relative file-offsets to
+ * absolute pointers. Sections in order: (1) the world textures:
+ * g_nWorldTextureCount 0x10-byte LOD UV records at g_pWorldTextureLodRecords,
+ * then the 0xA8-byte detail records at g_pWorldTextureDetailRecords; (2)
+ * flag==0 only — g_pVisZoneChunkLists + g_nVisZoneCount = section1 entry list +
+ * g_pLevelSkyZoneLists (+ g_nLevelSkyZoneListCount) = the per-zone sky chunk
+ * lists; (3) g_pTriggerRegionTable + g_anTriggerRegionCount = section2; (4)
+ * g_pWorldCollisionHeader = section3 base + +3..+6 absolute-resolves; (5) the
+ * level sky: g_abLevelSkyBgColor[0..2] background colour, g_nLevelSkyChunkCount
+ * / g_pLevelSkyChunkArray chunk pointers; (6) flag==0 only — g_nPortalCount =
+ * portal count, then per portal a 32-byte+variable layout populating
+ * &g_apPortals[i]; (7) the emit texture records, each published at
+ * g_apEmitTextureTable[its effect id]; finally g_nLevelSampleBankCount =
+ * sample-count and a tail call to RelocateLevelSampleBank(&sample-count word +
+ * 1, 1). Returns ptr to the next-section after consumption. flag=0 = full
+ * unpack (initial load); flag!=0 = re-unpack a subset (level transition).
+ * Callers: TickCutsceneBundleLoadStream (state machine — initial) +
+ * TickLevelTransitionStream (state machine — transition) + Credits_Update. */
 void *UnpackWorldDataChunks(int *p, int reduced);
 
-/* 0x80013230: Installs a streamed set of Spyro animations into Spyro's model (g_apActorMeshTable[0]). Clears the model's 46 m_Animations slots (SPYRO_ANIMID_COUNT) that still point below g_pWorkAreaTop or hold -1, then walks (index, byte size, AnimationHeader...) records until the index is negative: each header goes into m_Animations[index], its m_Faces / m_Colors are rebased by the model's m_Data, and m_AnimationVertices plus every one-word frame record's packed 21-bit (>> 1) vertex offset are rebased to the vertex block past the frame records. Formerly misnamed RelocateMobActorTable. Callers: TickDragonRescueAssetStream and TickLevelTransitionStream, at the stream offset g_anActorMeshOffsetList inside the world data-ext chunk. */
+/* 0x80013230: Installs a streamed set of Spyro animations into Spyro's model
+ * (g_apActorMeshTable[0]). Clears the model's 46 m_Animations slots
+ * (SPYRO_ANIMID_COUNT) that still point below g_pWorkAreaTop or hold -1, then
+ * walks (index, byte size, AnimationHeader...) records until the index is
+ * negative: each header goes into m_Animations[index], its m_Faces / m_Colors
+ * are rebased by the model's m_Data, and m_AnimationVertices plus every
+ * one-word frame record's packed 21-bit (>> 1) vertex offset are rebased to the
+ * vertex block past the frame records. Formerly misnamed RelocateMobActorTable.
+ * Callers: TickDragonRescueAssetStream and TickLevelTransitionStream, at the
+ * stream offset g_anActorMeshOffsetList inside the world data-ext chunk. */
 void InstallSpyroAnimStream(void *stream);
 
-/* 0x800133e0: Relocates a freshly loaded actor Model in place (on disc every pointer is relative to the model base). A negative count word marks a stub: words 1..3 are rebased and the base returned with its top bit cleared. Otherwise the 8 m_CollisionModels slots and m_Data are rebased, then each present m_Animations header: m_Faces / m_Colors (and m_LpFaces / m_LpColors when set) move by m_Data, and the frame records are rebased, one word per frame with the >> 1 21-bit offset for m_IsSpyroAnimation headers, two words per frame (vertex offset + a 16-bit link) otherwise. Returns the model. Callers: the CD streaming state machines (TickCutsceneBundleLoadStream / TickDragonRescueAssetStream / TickLevelTransitionStream) + LoadActorMeshTables. */
+/* 0x800133e0: Relocates a freshly loaded actor Model in place (on disc every
+ * pointer is relative to the model base). A negative count word marks a stub:
+ * words 1..3 are rebased and the base returned with its top bit cleared.
+ * Otherwise the 8 m_CollisionModels slots and m_Data are rebased, then each
+ * present m_Animations header: m_Faces / m_Colors (and m_LpFaces / m_LpColors
+ * when set) move by m_Data, and the frame records are rebased, one word per
+ * frame with the >> 1 21-bit offset for m_IsSpyroAnimation headers, two words
+ * per frame (vertex offset + a 16-bit link) otherwise. Returns the model.
+ * Callers: the CD streaming state machines (TickCutsceneBundleLoadStream /
+ * TickDragonRescueAssetStream / TickLevelTransitionStream) +
+ * LoadActorMeshTables. */
 void *RelocateActorMeshHeader(int *table);
 
-/* 0x8001364c: Post-CD-stream level finalization driver — the "level-loader meat". Builds per-level runtime state from the freshly streamed bundle in g_pLevelArchiveBuffer. Callers: LoadAndStartLevelFromCd + TickLevelTransitionStream (case 0xd). fullSetup = full-setup flag (0 skips chunk-anim reset + overlay-hook/HUD init). Steps: (1) stop sounds, reset frame counters, g_nPortalDistanceFogEnabled for levels 0x28/0x2a. (2) spawn select: g_nSpawnAnchorValid latch ? keep g_anLevelSpawnPos/Yaw(>>4) : read path-table head; GS_GAME_OVER (levels 0x28..0x3b) uses the continue tables via g_nGameOverLevelIndex; g_nPortalTransitionActive keeps Spyro in place (exit nudge from g_anLevelSpawnNudgeZTable + sine radial). (3) ResetSpyroEntity. (4) flight branch (level%10==5): g_nFlightLevelActive=1, ChangeSpyroState(SPYRO_ST_FLY), zero pitch/turn accums. Level 0x40 also seeds g_nGnastyLootFallRefZCap. (5) camera: fill g_anCameraActiveTargetParams from g_anCameraParamFollowBehind ([2]=0x600), retarget g_pCameraTargetParams, ResetCameraStateToTarget. (6) gamestate=0, clear letterbox. (7) rebase 7 world chunk-anim subtables. (8) actor table: g_pActorListBase + pool setup (g_pActorPoolFreeHead/ DynBase, aux pool, capacity=(top-base)/0x70). (9) pickup table rebase. (10) g_pActorSpatialGridBase + relocation list. (11) attract demo (g_nDemoMode != 0): srand(1234), Spyro placed from g_anDemoStartPose[g_nDemoIndex*4], g_nDemoActive=1, g_pDemoPadCursor = the bundle's recorded pad stream (playback, mode 1) or a zero-filled buffer at 0x80600000 (record, mode 2). (12/13) two actor passes applying g_anLevelKillBitmapTable[level*8] vs g_anCheckpointKillBitmap: a saved kill despawns or respawns as a gem roll by kill group (ACTOR_KILL_GROUP_*). (14) restore the live kill bitmap from the checkpoint one. (15) zero g_anLevelTriggerStateSlots. (16) reset emit list (base/cursor/terminator/sentinel). (17) ResetWorldParticleTables. (18) full setup + non-flight: g_pSparxActor = (*g_pfnLevelSpawnActor)(ACTOR_TYPE_SPARX,0), InitHudCounters(1). (19) HandleMusicCommand(g_nCurrentMusicTrack,1). */
+/* 0x8001364c: Post-CD-stream level finalization driver — the "level-loader
+ * meat". Builds per-level runtime state from the freshly streamed bundle in
+ * g_pLevelArchiveBuffer. Callers: LoadAndStartLevelFromCd +
+ * TickLevelTransitionStream (case 0xd). fullSetup = full-setup flag (0 skips
+ * chunk-anim reset + overlay-hook/HUD init). Steps: (1) stop sounds, reset
+ * frame counters, g_nPortalDistanceFogEnabled for levels 0x28/0x2a. (2) spawn
+ * select: g_nSpawnAnchorValid latch ? keep g_anLevelSpawnPos/Yaw(>>4) : read
+ * path-table head; GS_GAME_OVER (levels 0x28..0x3b) uses the continue tables
+ * via g_nGameOverLevelIndex; g_nPortalTransitionActive keeps Spyro in place
+ * (exit nudge from g_anLevelSpawnNudgeZTable + sine radial). (3)
+ * ResetSpyroEntity. (4) flight branch (level%10==5): g_nFlightLevelActive=1,
+ * ChangeSpyroState(SPYRO_ST_FLY), zero pitch/turn accums. Level 0x40 also seeds
+ * g_nGnastyLootFallRefZCap. (5) camera: fill g_anCameraActiveTargetParams from
+ * g_anCameraParamFollowBehind ([2]=0x600), retarget g_pCameraTargetParams,
+ * ResetCameraStateToTarget. (6) gamestate=0, clear letterbox. (7) rebase 7
+ * world chunk-anim subtables. (8) actor table: g_pActorListBase + pool setup
+ * (g_pActorPoolFreeHead/ DynBase, aux pool, capacity=(top-base)/0x70). (9)
+ * pickup table rebase. (10) g_pActorSpatialGridBase + relocation list. (11)
+ * attract demo (g_nDemoMode != 0): srand(1234), Spyro placed from
+ * g_anDemoStartPose[g_nDemoIndex*4], g_nDemoActive=1, g_pDemoPadCursor = the
+ * bundle's recorded pad stream (playback, mode 1) or a zero-filled buffer at
+ * 0x80600000 (record, mode 2). (12/13) two actor passes applying
+ * g_anLevelKillBitmapTable[level*8] vs g_anCheckpointKillBitmap: a saved kill
+ * despawns or respawns as a gem roll by kill group (ACTOR_KILL_GROUP_*). (14)
+ * restore the live kill bitmap from the checkpoint one. (15) zero
+ * g_anLevelTriggerStateSlots. (16) reset emit list
+ * (base/cursor/terminator/sentinel). (17) ResetWorldParticleTables. (18) full
+ * setup + non-flight: g_pSparxActor =
+ * (*g_pfnLevelSpawnActor)(ACTOR_TYPE_SPARX,0), InitHudCounters(1). (19)
+ * HandleMusicCommand(g_nCurrentMusicTrack,1). */
 void BuildLoadedLevelRuntime(int fullSetup);
 
-/* 0x800144c8: Synchronous level load + start, from RespawnOrGameOver_Update at the respawn fade's load point: StopAllSoundExceptMask(0); CdReadSyncSectors the level's archive (g_nLevelArchiveBaseLba + the g_nLevelArchiveOffset entry for g_nLevelIndex, 0x10-byte stride) into g_pLevelArchiveBuffer; BuildLoadedLevelRuntime(1); RestartSpyroAnimWithState(SPYRO_ST_FLY on flight levels, else SPYRO_ST_IDLE); and Sparx back to full health (g_nSparxHealth = 3). */
+/* 0x800144c8: Synchronous level load + start, from RespawnOrGameOver_Update at
+ * the respawn fade's load point: StopAllSoundExceptMask(0); CdReadSyncSectors
+ * the level's archive (g_nLevelArchiveBaseLba + the g_nLevelArchiveOffset entry
+ * for g_nLevelIndex, 0x10-byte stride) into g_pLevelArchiveBuffer;
+ * BuildLoadedLevelRuntime(1); RestartSpyroAnimWithState(SPYRO_ST_FLY on flight
+ * levels, else SPYRO_ST_IDLE); and Sparx back to full health (g_nSparxHealth =
+ * 3). */
 void LoadAndStartLevelFromCd(void);
 
-/* 0x80014564: Multi-stage CD-streaming state machine for the cutscene bundle g_nCutsceneId selects (title backdrop, opening story, endings). Ticked from Initialize (boot), PauseMenu_Update, Cutscene_Update, StoryIntro_Update, TickDemoPlayback. State variable: g_nCdStreamState (0..10). Each tick: ticks RestartStalledCdRead, gates on (g_nCdReadInFlight==0 in-flight clear && CdSync==2 && g_dwMusicStreamStatus bit 0x40 callback-ready). When gate open, executes one stage and advances state. World ID at g_nCutsceneId indexes per-world LBA table &g_nCutsceneArchiveOffset (8-byte stride) and per-world chunk-size table &g_nCutsceneHeaderChunkSize (4-byte stride). Stages: (0) StartCdReadAsync 0x800-byte header into g_pLoadStagingBuffer at world's base LBA; (1) CopyWords 0x1d0 bytes of header to scratch &g_nWorldTimAudioChunkOffset, kick read of full chunk into g_pLoadStagingBuffer; (2) LoadImage (DMA→VRAM) of TIMs at framebuf (512,0) height (chunk_size>>10); (3) kick read of (g_nWorldTimAudioChunkSize - 0x80000) bytes at +0x80000 offset; (4) SetSpuTransferStartAddr(0x1010) + WriteSpuRam 0x7eff0 audio bytes + GetSpuTransferStatus busy-wait, then kick read into g_pLevelDataBuffer; (5) UnpackWorldDataChunks(g_pLevelDataBuffer, 1) — param 1 = transition subset; copy the level sky header (g_nLevelSkyChunkCount..) to the active sky (g_nSkyChunkCount.., g_dwWorldFogColor); world==1 branches to state 6 (extra 0x60000 chunk), else state 8 directly; kick next read; (7) read remaining 0x60000 bytes; (8) walk actor-mesh count list at &g_anActorMeshOffsetList, call RelocateActorMeshHeader on each, stash result ptrs at &g_apActorMeshTable_1+; kick read of the cutscene path table chunk; (9) walk path table at g_pLevelArchiveBuffer — set g_pPathTableHead head, rebase +0x10/+0x14 ptrs by base, call InitActorRenderDefaults on each actor at g_pActorListBase (0x58-byte stride), stamp ->cullRadius = 0x20 and ->type = actor id, terminator 0xff at end; (10) done — function becomes no-op until state is reset by caller. */
+/* 0x80014564: Multi-stage CD-streaming state machine for the cutscene bundle
+ * g_nCutsceneId selects (title backdrop, opening story, endings). Ticked from
+ * Initialize (boot), PauseMenu_Update, Cutscene_Update, StoryIntro_Update,
+ * TickDemoPlayback. State variable: g_nCdStreamState (0..10). Each tick: ticks
+ * RestartStalledCdRead, gates on (g_nCdReadInFlight==0 in-flight clear &&
+ * CdSync==2 && g_dwMusicStreamStatus bit 0x40 callback-ready). When gate open,
+ * executes one stage and advances state. World ID at g_nCutsceneId indexes
+ * per-world LBA table &g_nCutsceneArchiveOffset (8-byte stride) and per-world
+ * chunk-size table &g_nCutsceneHeaderChunkSize (4-byte stride). Stages: (0)
+ * StartCdReadAsync 0x800-byte header into g_pLoadStagingBuffer at world's base
+ * LBA; (1) CopyWords 0x1d0 bytes of header to scratch
+ * &g_nWorldTimAudioChunkOffset, kick read of full chunk into
+ * g_pLoadStagingBuffer; (2) LoadImage (DMA→VRAM) of TIMs at framebuf (512,0)
+ * height (chunk_size>>10); (3) kick read of (g_nWorldTimAudioChunkSize -
+ * 0x80000) bytes at +0x80000 offset; (4) SetSpuTransferStartAddr(0x1010) +
+ * WriteSpuRam 0x7eff0 audio bytes + GetSpuTransferStatus busy-wait, then kick
+ * read into g_pLevelDataBuffer; (5) UnpackWorldDataChunks(g_pLevelDataBuffer,
+ * 1) — param 1 = transition subset; copy the level sky header
+ * (g_nLevelSkyChunkCount..) to the active sky (g_nSkyChunkCount..,
+ * g_dwWorldFogColor); world==1 branches to state 6 (extra 0x60000 chunk), else
+ * state 8 directly; kick next read; (7) read remaining 0x60000 bytes; (8) walk
+ * actor-mesh count list at &g_anActorMeshOffsetList, call
+ * RelocateActorMeshHeader on each, stash result ptrs at &g_apActorMeshTable_1+;
+ * kick read of the cutscene path table chunk; (9) walk path table at
+ * g_pLevelArchiveBuffer — set g_pPathTableHead head, rebase +0x10/+0x14 ptrs by
+ * base, call InitActorRenderDefaults on each actor at g_pActorListBase
+ * (0x58-byte stride), stamp ->cullRadius = 0x20 and ->type = actor id,
+ * terminator 0xff at end; (10) done — function becomes no-op until state is
+ * reset by caller. */
 void TickCutsceneBundleLoadStream(void);
 
-/* 0x80014b70: Dragon-rescue cutscene asset CD-streaming state machine — ticked from DragonRescue_Update (GS_DRAGON_RESCUE). Streams dragon model + voice-clip + cutscene music in, plays the cutscene, then restores the world. State variable g_nDragonRescueStreamState (0..5). Each tick: ticks RestartStalledCdRead, gates on (g_nCdReadInFlight==0 in-flight clear && CdSync==2 && g_dwMusicStreamStatus bit 0x40 callback-ready). Dragon ID at g_nDragonRescueTypeSnapshot indexes per-dragon descriptor table &g_nDragonAssetOffset (8-byte stride: LBA_offset + size). Cases: (0) StartCdReadAsync of dragon header sized g_nDragonRescueReadByteCount from per-dragon LBA + per-level offset (&g_nLevelArchiveOffset)[g_nLevelIndex*0x10] = base LBA; if available RAM < requested, truncate to 0x800-aligned + set g_nDragonRescueSplitFlag=1 split-flag for SPU spillover path. (1) Copy 0x24 bytes of header to scratch &g_abDragonRescueAssetHeader; non-split path: relocate dragon model + actor-mesh via RelocateActorMeshHeader, save ptrs to g_pDragonRescueStatueModelData / g_pDragonRescueMirrorModelData; split path: SPU-upload first chunk, slide remaining bytes down, kick read of remainder. (2) Wait for substate>=2 then multi-chunk SPU upload loop (0x8000 byte chunks) via g_nDragonRescueSpuChunkIndex sub-counter — ReadSpuRam swap, WriteSpuRam, repeat until g_nDragonRescueAudioSampleSize bytes uploaded; on completion advance state. (3) Wait for substate>=6 (mid-cutscene), kick read for music-swap chunk. (4) WriteSpuRam to upload music data, then kick read of restore-world chunk sized g_nWorldDataExtChunkSize. (5) Restore world: InstallSpyroAnimStream, zero any g_apActorMeshTable[i] slot whose ptr is below working-pool base g_pWorkAreaTop (2-pass: clear stale slots, then walk g_anActorMeshOffsetList and its model-slot shorts (ACTOR_MESH_INDEX_LIST, 0x80076d50) to repopulate via RelocateActorMeshHeader up to 0x40 entries). Final state increment after default branch makes g_nDragonRescueStreamState stop advancing. */
+/* 0x80014b70: Dragon-rescue cutscene asset CD-streaming state machine — ticked
+ * from DragonRescue_Update (GS_DRAGON_RESCUE). Streams dragon model +
+ * voice-clip + cutscene music in, plays the cutscene, then restores the world.
+ * State variable g_nDragonRescueStreamState (0..5). Each tick: ticks
+ * RestartStalledCdRead, gates on (g_nCdReadInFlight==0 in-flight clear &&
+ * CdSync==2 && g_dwMusicStreamStatus bit 0x40 callback-ready). Dragon ID at
+ * g_nDragonRescueTypeSnapshot indexes per-dragon descriptor table
+ * &g_nDragonAssetOffset (8-byte stride: LBA_offset + size). Cases: (0)
+ * StartCdReadAsync of dragon header sized g_nDragonRescueReadByteCount from
+ * per-dragon LBA + per-level offset
+ * (&g_nLevelArchiveOffset)[g_nLevelIndex*0x10] = base LBA; if available RAM <
+ * requested, truncate to 0x800-aligned + set g_nDragonRescueSplitFlag=1
+ * split-flag for SPU spillover path. (1) Copy 0x24 bytes of header to scratch
+ * &g_abDragonRescueAssetHeader; non-split path: relocate dragon model +
+ * actor-mesh via RelocateActorMeshHeader, save ptrs to
+ * g_pDragonRescueStatueModelData / g_pDragonRescueMirrorModelData; split path:
+ * SPU-upload first chunk, slide remaining bytes down, kick read of remainder.
+ * (2) Wait for substate>=2 then multi-chunk SPU upload loop (0x8000 byte
+ * chunks) via g_nDragonRescueSpuChunkIndex sub-counter — ReadSpuRam swap,
+ * WriteSpuRam, repeat until g_nDragonRescueAudioSampleSize bytes uploaded; on
+ * completion advance state. (3) Wait for substate>=6 (mid-cutscene), kick read
+ * for music-swap chunk. (4) WriteSpuRam to upload music data, then kick read of
+ * restore-world chunk sized g_nWorldDataExtChunkSize. (5) Restore world:
+ * InstallSpyroAnimStream, zero any g_apActorMeshTable[i] slot whose ptr is
+ * below working-pool base g_pWorkAreaTop (2-pass: clear stale slots, then walk
+ * g_anActorMeshOffsetList and its model-slot shorts (ACTOR_MESH_INDEX_LIST,
+ * 0x80076d50) to repopulate via RelocateActorMeshHeader up to 0x40 entries).
+ * Final state increment after default branch makes g_nDragonRescueStreamState
+ * stop advancing. */
 void TickDragonRescueAssetStream(void);
 
-/* 0x80015370: Level-transition CD-streaming + spawn state machine — drives "switch to a new level" end-to-end. Ticked from LevelLoad_Update, ActorCutscene_Update, StoryIntro_Update, CreditsSequence_Update, RespawnOrGameOver_Update and the hubs' Level<N>_BalloonistCutscene_Update. Shares state variable g_nCdStreamState with TickCutsceneBundleLoadStream (mutually exclusive driver). Final state = -1 (done). Gate at top: when state >= 2, gates on (CD in-flight clear && CdSync==2 && callback-ready bit 0x40); states 0/1 run unconditionally as the preserve/init entry. Level intro idx g_nLevelIndex indexes per-level descriptor table &g_nLevelArchiveOffset stride 0x10 = base LBA + chunk descriptors. Cases: (0) preserve path (keeps a sky on screen across the load) — StopAllSoundExceptMask, if g_nEnteredPortalIdx<0 then save the current sky (from &g_pSkyChunkArray[-3], copied below g_pRenderScratchRegionBase), else the entered portal's destination sky (Portal.pSky); CopyWords + rebase its chunk pointers; CopyWords sample bank to (pool-end - sample_size) + RelocateLevelSampleBank; jump to state 2. (1) fresh init — StopAllSoundExceptMask, zero the active sky, advance state. (2) g_nNextLevelId → g_nActiveLevelId, ApplyPerLevelGlobalsTable per-level hooks, recompute g_nLevelIndex = (g_nNextLevelId/10-1)*6 + g_nNextLevelId%10; if full!=0 kick read of level intro splash. (3) read 0x800 header into g_pLevelDataBuffer. (4) copy 0x1d0 bytes of header to scratch &g_nWorldTimAudioChunkOffset, kick 0x80000-byte first chunk read. (5) two LoadImage(TIM) calls iterating g_nEnteredPortalIdx 0..1 (two texture pages 512×256 stacked at +256 Y), then kick remaining-chunk read. (6) SPU upload kickoff (SetSpuTransferStartAddr 0x1010 + WriteSpuRam 0x7eff0). (7) wait for SPU transfer complete. (8) kick read of next chunk sized g_nWorldBundleChunkSize. (9) UnpackWorldDataChunks(g_pLevelDataBuffer, 0) — param 0 = full unpack; if g_nSkyChunkCount set and not in gamestate 5/0xc: when g_nReturnPortalLevelId==0 copy the new level's sky header (g_nLevelSkyChunkCount..) to the active sky, else walk g_apPortals[0..g_nPortalCount) for the portal whose levelId is g_nReturnPortalLevelId and show its sky (the level just left); kick read of chunk size g_nWorldDataExtChunkSize. (10) InstallSpyroAnimStream if full!=0, zero g_apActorMeshTable slots below pool base g_pWorkAreaTop, walk &g_anActorMeshOffsetList actor-mesh count list calling RelocateActorMeshHeader up to 0x40 entries into &g_apActorMeshTable indexed by the ACTOR_MESH_INDEX_LIST shorts (from 0x80076d52), set g_pLevelArchiveBuffer = end-of-data, snapshot path-table sector LBA. (b) kick read of path-table chunk. (c) wait for the flight to line up: skipped without g_nPortalTransitionActive, holds while g_nTransitionSkyPitchTilt is non-zero; if normal-transition (g_nReturnPortalLevelId==0) wait until abs((g_bSpyroPersistentEulerZ - g_bSpyroRequestYaw) & 0xff) < 0x10 (camera yaw matches target), else wait until abs((g_nSpyroBodyYaw + g_nCameraYaw) & 0xfff) < 0x80 (tighter scripted alignment). (d) finalize — set music track + audio params from per-level tables (&g_nLevelMusicTrack, &g_anLevelGemsCollected), FillWord 0x68 bytes of &g_nSpawnAnchorValid, call BuildLoadedLevelRuntime level-loader-meat to finish per-actor init, then branch on (g_nPortalTransitionActive, g_nFlightLevelActive, g_nReturnPortalLevelId) to position Spyro (ChangeSpyroState: SPYRO_ST_GLIDE for a portal arrival — at the return portal when g_nReturnPortalLevelId is set — SPYRO_ST_IDLE for a plain load outside GS_ACTOR_CUTSCENE) and set up camera (ComputeCameraToTargetAngle + ComputeCameraOrbitOffset + UpdateCameraEulerAngles + spring camera offsets) — case 0xd is THE per-level Spyro spawn + camera point: when g_pCameraTargetParams is g_anCameraParamTransitionGlideIn, Spyro starts 0x1600 lower and behind the spawn in SPYRO_SUB_GLIDE_ENTER, the camera mode comes from g_abSpyroStateCameraModeTable[g_nSpyroState] and the gamestate goes to GS_GAMEPLAY; otherwise ActivateScriptedCameraView frames the arrival and the gamestate goes to GS_ARRIVAL_CAMERA; state = -1 (done), clears 11 transition flags. */
+/* 0x80015370: Level-transition CD-streaming + spawn state machine — drives
+ * "switch to a new level" end-to-end. Ticked from LevelLoad_Update,
+ * ActorCutscene_Update, StoryIntro_Update, CreditsSequence_Update,
+ * RespawnOrGameOver_Update and the hubs' Level<N>_BalloonistCutscene_Update.
+ * Shares state variable g_nCdStreamState with TickCutsceneBundleLoadStream
+ * (mutually exclusive driver). Final state = -1 (done). Gate at top: when state
+ * >= 2, gates on (CD in-flight clear && CdSync==2 && callback-ready bit 0x40);
+ * states 0/1 run unconditionally as the preserve/init entry. Level intro idx
+ * g_nLevelIndex indexes per-level descriptor table &g_nLevelArchiveOffset
+ * stride 0x10 = base LBA + chunk descriptors. Cases: (0) preserve path (keeps a
+ * sky on screen across the load) — StopAllSoundExceptMask, if
+ * g_nEnteredPortalIdx<0 then save the current sky (from &g_pSkyChunkArray[-3],
+ * copied below g_pRenderScratchRegionBase), else the entered portal's
+ * destination sky (Portal.pSky); CopyWords + rebase its chunk pointers;
+ * CopyWords sample bank to (pool-end - sample_size) + RelocateLevelSampleBank;
+ * jump to state 2. (1) fresh init — StopAllSoundExceptMask, zero the active
+ * sky, advance state. (2) g_nNextLevelId → g_nActiveLevelId,
+ * ApplyPerLevelGlobalsTable per-level hooks, recompute g_nLevelIndex =
+ * (g_nNextLevelId/10-1)*6 + g_nNextLevelId%10; if full!=0 kick read of level
+ * intro splash. (3) read 0x800 header into g_pLevelDataBuffer. (4) copy 0x1d0
+ * bytes of header to scratch &g_nWorldTimAudioChunkOffset, kick 0x80000-byte
+ * first chunk read. (5) two LoadImage(TIM) calls iterating g_nEnteredPortalIdx
+ * 0..1 (two texture pages 512×256 stacked at +256 Y), then kick remaining-chunk
+ * read. (6) SPU upload kickoff (SetSpuTransferStartAddr 0x1010 + WriteSpuRam
+ * 0x7eff0). (7) wait for SPU transfer complete. (8) kick read of next chunk
+ * sized g_nWorldBundleChunkSize. (9) UnpackWorldDataChunks(g_pLevelDataBuffer,
+ * 0) — param 0 = full unpack; if g_nSkyChunkCount set and not in gamestate
+ * 5/0xc: when g_nReturnPortalLevelId==0 copy the new level's sky header
+ * (g_nLevelSkyChunkCount..) to the active sky, else walk
+ * g_apPortals[0..g_nPortalCount) for the portal whose levelId is
+ * g_nReturnPortalLevelId and show its sky (the level just left); kick read of
+ * chunk size g_nWorldDataExtChunkSize. (10) InstallSpyroAnimStream if full!=0,
+ * zero g_apActorMeshTable slots below pool base g_pWorkAreaTop, walk
+ * &g_anActorMeshOffsetList actor-mesh count list calling
+ * RelocateActorMeshHeader up to 0x40 entries into &g_apActorMeshTable indexed
+ * by the ACTOR_MESH_INDEX_LIST shorts (from 0x80076d52), set
+ * g_pLevelArchiveBuffer = end-of-data, snapshot path-table sector LBA. (b) kick
+ * read of path-table chunk. (c) wait for the flight to line up: skipped without
+ * g_nPortalTransitionActive, holds while g_nTransitionSkyPitchTilt is non-zero;
+ * if normal-transition (g_nReturnPortalLevelId==0) wait until
+ * abs((g_bSpyroPersistentEulerZ - g_bSpyroRequestYaw) & 0xff) < 0x10 (camera
+ * yaw matches target), else wait until abs((g_nSpyroBodyYaw + g_nCameraYaw) &
+ * 0xfff) < 0x80 (tighter scripted alignment). (d) finalize — set music track +
+ * audio params from per-level tables (&g_nLevelMusicTrack,
+ * &g_anLevelGemsCollected), FillWord 0x68 bytes of &g_nSpawnAnchorValid, call
+ * BuildLoadedLevelRuntime level-loader-meat to finish per-actor init, then
+ * branch on (g_nPortalTransitionActive, g_nFlightLevelActive,
+ * g_nReturnPortalLevelId) to position Spyro (ChangeSpyroState: SPYRO_ST_GLIDE
+ * for a portal arrival — at the return portal when g_nReturnPortalLevelId is
+ * set — SPYRO_ST_IDLE for a plain load outside GS_ACTOR_CUTSCENE) and set up
+ * camera (ComputeCameraToTargetAngle + ComputeCameraOrbitOffset +
+ * UpdateCameraEulerAngles + spring camera offsets) — case 0xd is THE per-level
+ * Spyro spawn + camera point: when g_pCameraTargetParams is
+ * g_anCameraParamTransitionGlideIn, Spyro starts 0x1600 lower and behind the
+ * spawn in SPYRO_SUB_GLIDE_ENTER, the camera mode comes from
+ * g_abSpyroStateCameraModeTable[g_nSpyroState] and the gamestate goes to
+ * GS_GAMEPLAY; otherwise ActivateScriptedCameraView frames the arrival and the
+ * gamestate goes to GS_ARRIVAL_CAMERA; state = -1 (done), clears 11 transition
+ * flags. */
 void TickLevelTransitionStream(int full);
 
-/* 0x800163e4: CD read stall-recovery hook called from inside CdReadSyncSectors / the CD streaming state-machine wait loops every spin. If a read armed a stall timeout (g_nCdStallTimeoutTicks != 0) and the vblank watchdog g_nCdStallWatchdogTicks passed it, re-init the CDROM (CdInit), re-register the CdReadCompleteCallback read callback, reset g_dwMusicStreamStatus=0x40 / g_nLastCdMusicCommand / g_nPendingMusicCommand=0, busy-wait for CdSync()==2, clear g_nCdStallWatchdogTicks, then re-issue the original CdRead(sectors=g_nCdReadSectorCount, dst=g_pCdReadDstBuffer, mode=0x80). No-op when no stall is in flight. Used by all four CD wait paths (TickCutsceneBundleLoadStream / TickDragonRescueAssetStream / TickLevelTransitionStream level/cutscene bundle state machines + the inline CdReadSyncSectors wait loop). */
+/* 0x800163e4: CD read stall-recovery hook called from inside CdReadSyncSectors
+ * / the CD streaming state-machine wait loops every spin. If a read armed a
+ * stall timeout (g_nCdStallTimeoutTicks != 0) and the vblank watchdog
+ * g_nCdStallWatchdogTicks passed it, re-init the CDROM (CdInit), re-register
+ * the CdReadCompleteCallback read callback, reset g_dwMusicStreamStatus=0x40 /
+ * g_nLastCdMusicCommand / g_nPendingMusicCommand=0, busy-wait for CdSync()==2,
+ * clear g_nCdStallWatchdogTicks, then re-issue the original
+ * CdRead(sectors=g_nCdReadSectorCount, dst=g_pCdReadDstBuffer, mode=0x80).
+ * No-op when no stall is in flight. Used by all four CD wait paths
+ * (TickCutsceneBundleLoadStream / TickDragonRescueAssetStream /
+ * TickLevelTransitionStream level/cutscene bundle state machines + the inline
+ * CdReadSyncSectors wait loop). */
 void RestartStalledCdRead(void);
 
-/* 0x80016500: Synchronous blocking CD sector read. Two-phase: (1) busy-wait until any previous read is idle (g_nCdReadInFlight==0 && CdSync()==2 && g_dwMusicStreamStatus bit 0x40 set), servicing RestartStalledCdRead + TickActiveSoundVoices + TickCdMusicStream (the CD music stream) each spin so sound and music don't stall during the wait; (2) inline-issue the same CdControl(0xe,2x) + CdIntToPos + CdRead(count, dst, 0x80) body as StartCdReadAsync, then busy-wait again until completion (RestartStalledCdRead-only ticking — sound and music frozen during the actual read). Public sync-load API used by Initialize (boot), LoadAssetDirectoryFromCd, PauseMenu_Update, BeginCreditsSequence, RespawnOrGameOver_Update, LoadAndStartLevelFromCd, TickDemoPlayback, LoadActorMeshTables. Parameters: lbaBase=base sector LBA, dst=dst RAM ptr, size=byte count, offset=byte offset (sectors via >>11), marker=stall-recovery marker stashed at g_nCdStallTimeoutTicks. */
-void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset, int stallTicks);
+/* 0x80016500: Synchronous blocking CD sector read. Two-phase: (1) busy-wait
+ * until any previous read is idle (g_nCdReadInFlight==0 && CdSync()==2 &&
+ * g_dwMusicStreamStatus bit 0x40 set), servicing RestartStalledCdRead +
+ * TickActiveSoundVoices + TickCdMusicStream (the CD music stream) each spin so
+ * sound and music don't stall during the wait; (2) inline-issue the same
+ * CdControl(0xe,2x) + CdIntToPos + CdRead(count, dst, 0x80) body as
+ * StartCdReadAsync, then busy-wait again until completion
+ * (RestartStalledCdRead-only ticking — sound and music frozen during the actual
+ * read). Public sync-load API used by Initialize (boot),
+ * LoadAssetDirectoryFromCd, PauseMenu_Update, BeginCreditsSequence,
+ * RespawnOrGameOver_Update, LoadAndStartLevelFromCd, TickDemoPlayback,
+ * LoadActorMeshTables. Parameters: lbaBase=base sector LBA, dst=dst RAM ptr,
+ * size=byte count, offset=byte offset (sectors via >>11), marker=stall-recovery
+ * marker stashed at g_nCdStallTimeoutTicks. */
+void CdReadSyncSectors(int lbaBase, void *dst, int size, int offset,
+                       int stallTicks);
 
-/* 0x80016698: Fires an async CD sector read without waiting. Sets CDROM speed to 2x via CdControl(0xe,&{0x80}), positions the head via CdIntToPos(LBA = lbaBase + offset>>11), then issues CdRead(nsectors = (size+0x7ff)>>11, dst = dst, mode=0x80). Stashes dst at g_pCdReadDstBuffer, sector-count at g_nCdReadSectorCount, the stall timeout (CD_STALL_TIMEOUT_TICKS at every call site) at g_nCdStallTimeoutTicks (RestartStalledCdRead retries past it), and sets g_nCdReadInFlight=1 as the in-flight flag. Callers poll g_nCdReadInFlight / CdSync themselves. Used by the CD streaming state machines (TickCutsceneBundleLoadStream / TickDragonRescueAssetStream / TickLevelTransitionStream) + TickDemoPlayback (death-replay reload). */
-void StartCdReadAsync(int lbaBase, void *dst, int size, int offset, int stallTicks);
+/* 0x80016698: Fires an async CD sector read without waiting. Sets CDROM speed
+ * to 2x via CdControl(0xe,&{0x80}), positions the head via CdIntToPos(LBA =
+ * lbaBase + offset>>11), then issues CdRead(nsectors = (size+0x7ff)>>11, dst =
+ * dst, mode=0x80). Stashes dst at g_pCdReadDstBuffer, sector-count at
+ * g_nCdReadSectorCount, the stall timeout (CD_STALL_TIMEOUT_TICKS at every call
+ * site) at g_nCdStallTimeoutTicks (RestartStalledCdRead retries past it), and
+ * sets g_nCdReadInFlight=1 as the in-flight flag. Callers poll
+ * g_nCdReadInFlight / CdSync themselves. Used by the CD streaming state
+ * machines (TickCutsceneBundleLoadStream / TickDragonRescueAssetStream /
+ * TickLevelTransitionStream) + TickDemoPlayback (death-replay reload). */
+void StartCdReadAsync(int lbaBase, void *dst, int size, int offset,
+                      int stallTicks);
 
-/* 0x80016784: Walks the per-depth OT slot table at g_pOtDepthBinArrayBase backward from index `depth_max` down to 0, splicing each slot's primitive head into the previous slot's tail via 24-bit OT next-addr tags, and returns the head of the finalized chain. The chain is terminated at 0x8006bbe0 (0xbbe0 written as the term tag). Called as `DrawOTag(LinkOTPrimitives(0x800))` from every Gamestate*_Draw. */
+/* 0x80016784: Walks the per-depth OT slot table at g_pOtDepthBinArrayBase
+ * backward from index `depth_max` down to 0, splicing each slot's primitive
+ * head into the previous slot's tail via 24-bit OT next-addr tags, and returns
+ * the head of the finalized chain. The chain is terminated at 0x8006bbe0
+ * (0xbbe0 written as the term tag). Called as
+ * `DrawOTag(LinkOTPrimitives(0x800))` from every Gamestate*_Draw. */
 void *LinkOTPrimitives(int depth_max);
 
-/* 0x800168a0: Appends primitive `prim` to OT depth slot `slot` (g_pOtDepthBinArrayBase[slot*8]). Same head/tail-link logic as AddPrimToOT but takes an explicit slot index instead of using the active slot at g_pOtActiveDepthSlot. */
+/* 0x800168a0: Appends primitive `prim` to OT depth slot `slot`
+ * (g_pOtDepthBinArrayBase[slot*8]). Same head/tail-link logic as AddPrimToOT
+ * but takes an explicit slot index instead of using the active slot at
+ * g_pOtActiveDepthSlot. */
 void AddPrimToOTSlot(void *prim, int slot);
 
-/* 0x800168dc: Appends a primitive to the active OT depth slot (g_pOtActiveDepthSlot). If the slot already has a tail prim, patches its 24-bit next-addr tag to point at `prim`; else stores `prim` as the slot's head. PsyQ-style `addPrim` for this engine's per-depth OT slot table. */
+/* 0x800168dc: Appends a primitive to the active OT depth slot
+ * (g_pOtActiveDepthSlot). If the slot already has a tail prim, patches its
+ * 24-bit next-addr tag to point at `prim`; else stores `prim` as the slot's
+ * head. PsyQ-style `addPrim` for this engine's per-depth OT slot table. */
 void AddPrimToOT(unsigned int prim);
 
-/* 0x80016914 (hand-written): Stores `value` to every word of [dst, dst + byte_count); byte_count is a non-zero multiple of 4 (the loop runs at least once). */
+/* 0x80016914 (hand-written): Stores `value` to every word of [dst, dst +
+ * byte_count); byte_count is a non-zero multiple of 4 (the loop runs at least
+ * once). */
 void FillWord(void *dst, unsigned int value, int byte_count);
 
-/* 0x80016930: Unrolled memset that writes a 32-bit value to byte_count bytes in 16-byte (4-word) chunks. byte_count must be a multiple of 16. SetupFrameOT uses it to zero the first 0x1c00 bytes of the frame scratch arena at g_apMainDrawEntityList. */
+/* 0x80016930: Unrolled memset that writes a 32-bit value to byte_count bytes in
+ * 16-byte (4-word) chunks. byte_count must be a multiple of 16. SetupFrameOT
+ * uses it to zero the first 0x1c00 bytes of the frame scratch arena at
+ * g_apMainDrawEntityList. */
 void FillBlock16(void *dst, int value, int count);
 
-/* 0x80016958 (hand-written): Copies byte_count bytes (a non-zero multiple of 4) word by word; reads the source four words at a time, so it may read up to 12 bytes past its end. */
+/* 0x80016958 (hand-written): Copies byte_count bytes (a non-zero multiple of 4)
+ * word by word; reads the source four words at a time, so it may read up to 12
+ * bytes past its end. */
 void CopyWords(void *dst, void *src, int byte_count);
 
-/* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg). Smaller, lower-precision sibling of ArcTan2 — uses the byte LUT g_abArcTanOctantLut (one octant). Arguments are (x, y): angle 0 lies along +x and 0x40 along +y. */
+/* 0x800169ac: 2-arg arctan returning 8-bit angle (0..0xff = 0..360deg).
+ * Smaller, lower-precision sibling of ArcTan2 — uses the byte LUT
+ * g_abArcTanOctantLut (one octant). Arguments are (x, y): angle 0 lies along +x
+ * and 0x40 along +y. */
 int ArcTan2_8bit(int x, int y);
 
 #ifndef ATAN_ANGLE8
-#define ATAN_ANGLE8 0  /* ArcTan2: 8-bit angle, 0..0xFF per turn */
-#define ATAN_ANGLE12 1 /* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#define ATAN_ANGLE8 0 /* ArcTan2: 8-bit angle, 0..0xFF per turn */
+/* ArcTan2: 12-bit angle, 0..0xFFF per turn (interpolated) */
+#define ATAN_ANGLE12 1
 #endif
-/* 0x80016ab4: Angle of the vector (x, y) (0 along +x) in the scale ATAN_ANGLE8 (0..0xFF) or ATAN_ANGLE12 (0..0xFFF, GTE-normalized LUT with one division of interpolation). */
+/* 0x80016ab4: Angle of the vector (x, y) (0 along +x) in the scale ATAN_ANGLE8
+ * (0..0xFF) or ATAN_ANGLE12 (0..0xFFF, GTE-normalized LUT with one division of
+ * interpolation). */
 int ArcTan2(int x, int y, int scale);
 
-/* 0x80016c58 / 0x80016cb0: sine / cosine of a 12-bit angle (1.12 result), linearly interpolated between the 256 LUT entries (angle >> 4, 4-bit fraction). */
+/* 0x80016c58 / 0x80016cb0: sine / cosine of a 12-bit angle (1.12 result),
+ * linearly interpolated between the 256 LUT entries (angle >> 4, 4-bit
+ * fraction). */
 int LookupSine(int angle);
 
-/* 0x80016cb0 (hand-written): cosine of a 12-bit angle (0x1000 per turn) from g_anCosineLut (one entry per 0x10), linearly interpolated between entries; 0x1000 = 1.0. */
+/* 0x80016cb0 (hand-written): cosine of a 12-bit angle (0x1000 per turn) from
+ * g_anCosineLut (one entry per 0x10), linearly interpolated between entries;
+ * 0x1000 = 1.0. */
 int LookupCosine(int angle);
 
-/* 0x80016d08: Wraps GTE LZCS/LZCR. Returns 0 if input is 0, otherwise returns (0x1f - leading_zeros), i.e. the bit position of the most-significant set bit. Used by lighting/depth normalization in DrawPortalsAndSky. */
+/* 0x80016d08: Wraps GTE LZCS/LZCR. Returns 0 if input is 0, otherwise returns
+ * (0x1f - leading_zeros), i.e. the bit position of the most-significant set
+ * bit. Used by lighting/depth normalization in DrawPortalsAndSky. */
 int CountLeadingZeros(int x);
 
-/* 0x80016d2c: Composes Euler rotation (packed yaw/pitch/roll in *euler, low to high byte) onto the base 3x3 rotation matrix in base (or identity if base is NULL). Uses GTE rtv0 with the sine LUT at g_anCosineLut and cosine LUT at g_anSineLut to multiply axis-by-axis. Writes the composed matrix (5 packed words: the 3x3 shorts of a MATRIX) to mtx. */
+/* 0x80016d2c: Composes Euler rotation (packed yaw/pitch/roll in *euler, low to
+ * high byte) onto the base 3x3 rotation matrix in base (or identity if base is
+ * NULL). Uses GTE rtv0 with the sine LUT at g_anCosineLut and cosine LUT at
+ * g_anSineLut to multiply axis-by-axis. Writes the composed matrix (5 packed
+ * words: the 3x3 shorts of a MATRIX) to mtx. */
 void ApplyEulerRotation(unsigned char *euler, int *mtx, int *base);
 
-/* 0x80017048: Rotates the 3-vector at src by the 3x3 rotation matrix at mtx using GTE rtir. The Y and Z components are negated on both input and output (PSX screen-up coord convention). Result written to dst. */
+/* 0x80017048: Rotates the 3-vector at src by the 3x3 rotation matrix at mtx
+ * using GTE rtir. The Y and Z components are negated on both input and output
+ * (PSX screen-up coord convention). Result written to dst. */
 void RotateVectorByMatrix(int *mtx, int *src, int *dst);
 
-/* 0x800170c0: Rotate a 3-vector using the GTE's *currently-loaded* rotation matrix (no matrix load). Y/Z sign-flipped on input/output. Sibling of RotateVectorByMatrix which loads its own matrix. */
+/* 0x800170c0: Rotate a 3-vector using the GTE's *currently-loaded* rotation
+ * matrix (no matrix load). Y/Z sign-flipped on input/output. Sibling of
+ * RotateVectorByMatrix which loads its own matrix. */
 void ApplyActiveGteRotation(int *dst, int *src);
 
-/* 0x80017110: Rotate a 3-vector by the camera rotation matrix at g_anCameraViewMtx (5 packed 32-bit slots = 9 GTE short matrix entries). Y/Z sign-flipped on input/output (PSX up-coord convention). Output written to dst. */
+/* 0x80017110: Rotate a 3-vector by the camera rotation matrix at
+ * g_anCameraViewMtx (5 packed 32-bit slots = 9 GTE short matrix entries). Y/Z
+ * sign-flipped on input/output (PSX up-coord convention). Output written to
+ * dst. */
 void WorldToCameraRotate(int *src, int *dst);
 
 #ifndef VEC_LEN_XY
 #define VEC_LEN_XY 0  /* VectorLength: X/Y only (Z ignored) */
 #define VEC_LEN_XYZ 1 /* VectorLength: all three components */
 #endif
-/* 0x800171fc (hand-written): integer length of `vec` (X/Y only with VEC_LEN_XY): squares via the GTE, then a leading-zero normalised g_anSqrtLUT square root. */
+/* 0x800171fc (hand-written): integer length of `vec` (X/Y only with
+ * VEC_LEN_XY): squares via the GTE, then a leading-zero normalised g_anSqrtLUT
+ * square root. */
 int VectorLength(int *vec, int withZ);
 
-/* 0x8001729c: One Newton-Raphson refinement step for sqrt(x^2+y^2[+z^2]). Loads vec into IR1/IR2/IR3 (Z skipped when mode==0), squares via gte_sqr0_b, uses GTE LZCS/LZCR to derive a half-bit-length shift, then returns refined estimate. Skips refinement when len^2 fits in <=12 bits. */
+/* 0x8001729c: One Newton-Raphson refinement step for sqrt(x^2+y^2[+z^2]). Loads
+ * vec into IR1/IR2/IR3 (Z skipped when mode==0), squares via gte_sqr0_b, uses
+ * GTE LZCS/LZCR to derive a half-bit-length shift, then returns refined
+ * estimate. Skips refinement when len^2 fits in <=12 bits. */
 int RefineSqrtEstimate(int *v, int len, int mode);
 
-/* 0x80017330: Set the magnitude of an int[3] vector to magnitude by normalizing then scaling. Uses same GTE-sqrt + g_anSqrtLUT path as IntegerSqrt. Zero-vector input clears to (0,0,0). */
+/* 0x80017330: Set the magnitude of an int[3] vector to magnitude by normalizing
+ * then scaling. Uses same GTE-sqrt + g_anSqrtLUT path as IntegerSqrt.
+ * Zero-vector input clears to (0,0,0). */
 void SetVector3Magnitude(int *vec, int magnitude);
 
-/* 0x800175b8: In-place scale vector by ratio ratio/len using GTE gpl0. Computes (ratio << 12)/len then multiplies each component by it with 12-bit fixed-point. Heavily used by Spyro physics/movement. */
+/* 0x800175b8: In-place scale vector by ratio ratio/len using GTE gpl0. Computes
+ * (ratio << 12)/len then multiplies each component by it with 12-bit
+ * fixed-point. Heavily used by Spyro physics/movement. */
 void ScaleVector3ByRatio(int *vec, int den, int num);
 
-/* 0x80017614: In-place scale of int[3] vector by IR0 fixed-point factor (gte_gpl0 with MAC=0), then arithmetic right-shift each component by shift. Used in physics for velocity damping. */
+/* 0x80017614: In-place scale of int[3] vector by IR0 fixed-point factor
+ * (gte_gpl0 with MAC=0), then arithmetic right-shift each component by shift.
+ * Used in physics for velocity damping. */
 void ScaleVector3Shifted(int *vec, int num, int shift);
 
-/* 0x800176a0: In-place left-shift of an int[3] vector by n bits. Sibling of RShiftVector3. */
+/* 0x800176a0: In-place left-shift of an int[3] vector by n bits. Sibling of
+ * RShiftVector3. */
 void LShiftVector3(int *vec, int shift);
 
-/* 0x800176c8: Arithmetic right-shifts each of the 3 signed ints at *v by (n & 0x1f). Used for fixed-point precision conversion in the actor draw path. */
+/* 0x800176c8: Arithmetic right-shifts each of the 3 signed ints at *v by (n &
+ * 0x1f). Used for fixed-point precision conversion in the actor draw path. */
 void RShiftVector3(int *vec, int shift);
 
 /* 0x800176f0 (hand-written): vec[0..2] = 0. */
@@ -164,730 +488,2319 @@ void ZeroVector(int *vec);
 /* 0x80017700 (hand-written): dst[0..2] = src[0..2]. */
 void CopyVector(int *dst, int *src);
 
-/* 0x80017758 (hand-written): dst = a + b, per component (dst may alias either). */
+/* 0x80017758 (hand-written): dst = a + b, per component (dst may alias
+ * either). */
 void AddVector(int *dst, int *a, int *b);
 
-/* 0x8001778c (hand-written): dst = a - b, per component (dst may alias either). */
+/* 0x8001778c (hand-written): dst = a - b, per component (dst may alias
+ * either). */
 void SubtractVector(int *dst, int *a, int *b);
 
-/* 0x800177c0: Scale VECTOR by IR0 fixed-point factor (gte_gpl0 with MAC=0); store saturated IR1/IR2/IR3 packed via stlvnl0 into long*. Sibling of LerpVectorGTE but single-input + saturated short output. */
+/* 0x800177c0: Scale VECTOR by IR0 fixed-point factor (gte_gpl0 with MAC=0);
+ * store saturated IR1/IR2/IR3 packed via stlvnl0 into long*. Sibling of
+ * LerpVectorGTE but single-input + saturated short output. */
 void ScaleVector3Sat(int *dst, int *src, int scale);
 
-/* 0x80017894: Linear interpolation between two VECTOR points using GTE gpl0. t is the 0x1000-fixed blend ratio (0=b, 0x1000=a). Output written to dst. */
+/* 0x80017894: Linear interpolation between two VECTOR points using GTE gpl0. t
+ * is the 0x1000-fixed blend ratio (0=b, 0x1000=a). Output written to dst. */
 void LerpVectorGTE(int *dst, int *a, int *b, int t);
 
-/* 0x80017908: Absolute shortest delta between two 8-bit angles. Returns |(a-b) wrapped to [-0x80, 0x80)| in [0, 0x80]. */
+/* 0x80017908: Absolute shortest delta between two 8-bit angles. Returns |(a-b)
+ * wrapped to [-0x80, 0x80)| in [0, 0x80]. */
 int AbsAngleDelta8(int a, int b);
 
-/* 0x80017928: Absolute shortest delta between two 12-bit angles (0x1000 = 360deg). Returns |(a-b) wrapped to [-0x800, 0x800)| in [0, 0x800]. */
+/* 0x80017928: Absolute shortest delta between two 12-bit angles (0x1000 =
+ * 360deg). Returns |(a-b) wrapped to [-0x800, 0x800)| in [0, 0x800]. */
 int AbsAngleDelta12(int a, int b);
 
-/* 0x80017948: Signed shortest delta between two 8-bit angles. Returns (a-b) wrapped to [-0x80, 0x80). */
+/* 0x80017948: Signed shortest delta between two 8-bit angles. Returns (a-b)
+ * wrapped to [-0x80, 0x80). */
 int SignedAngleDelta8(int a, int b);
 
-/* 0x8001796c: Signed shortest delta between two 12-bit angles (0x1000 = 360deg). Returns (a-b) wrapped to [-0x800, 0x800). */
+/* 0x8001796c: Signed shortest delta between two 12-bit angles (0x1000 =
+ * 360deg). Returns (a-b) wrapped to [-0x800, 0x800). */
 int SignedAngleDelta12(int a, int b);
 
-/* 0x80017990: Octagonal 2D distance approximation: max(|dx|,|dy|) + 3/8 * min(|dx|,|dy|). Faster than sqrt for collision broad-phase checks. */
+/* 0x80017990: Octagonal 2D distance approximation: max(|dx|,|dy|) + 3/8 *
+ * min(|dx|,|dy|). Faster than sqrt for collision broad-phase checks. */
 int ApproxDist2D(int *a, int *b);
 
-/* 0x800179f0: Step 8-bit angle cur toward target target by step step, with deadzone lim. Returns target unchanged if within deadzone. */
+/* 0x800179f0: Step 8-bit angle cur toward target target by step step, with
+ * deadzone lim. Returns target unchanged if within deadzone. */
 int ApproachAngle8(int target, int cur, int step, int lim);
 
-/* 0x80017a38 (hand-written): Integer square root: LZCS normalises n (by an even shift) to a mantissa in 0x40..0xFF that indexes g_anSqrtLUT (sqrt in 1.12 fixed point), shifted back by half the exponent and >> 12, so it returns approx sqrt(n) as a plain integer (0 for 0). Callers pass sums of squared 1.12 components and get a 1.12 length. */
+/* 0x80017a38 (hand-written): Integer square root: LZCS normalises n (by an even
+ * shift) to a mantissa in 0x40..0xFF that indexes g_anSqrtLUT (sqrt in 1.12
+ * fixed point), shifted back by half the exponent and >> 12, so it returns
+ * approx sqrt(n) as a plain integer (0 for 0). Callers pass sums of squared
+ * 1.12 components and get a 1.12 length. */
 int IntegerSqrt(int n);
 
-/* 0x80017aa4: Projects a world-space point to screen XY + depth via the GTE rotation matrix at g_anWorldToCameraRotMtx / base at g_anCameraPos — unscaled variant of ProjectWorldPointGTE (no input right-shift or output left-shift). Writes screen.x, screen.y, MAC3 to out[0..2]. All known callers live in the camera band. */
+/* 0x80017aa4: Projects a world-space point to screen XY + depth via the GTE
+ * rotation matrix at g_anWorldToCameraRotMtx / base at g_anCameraPos — unscaled
+ * variant of ProjectWorldPointGTE (no input right-shift or output left-shift).
+ * Writes screen.x, screen.y, MAC3 to out[0..2]. All known callers live in the
+ * camera band. */
 void ProjectWorldPointGTEUnscaled(int *out, int *pos);
 
-/* 0x80017b48: Projects a world-space point to screen XY + depth via the GTE rotation matrix at g_anWorldToCameraRotMtx and base point at g_anCameraPos. src = source world point; shift = right-shift on input (precision selector); writes screen.x, screen.y, MAC3<<shift to dst[0..2]. */
+/* 0x80017b48: Projects a world-space point to screen XY + depth via the GTE
+ * rotation matrix at g_anWorldToCameraRotMtx and base point at g_anCameraPos.
+ * src = source world point; shift = right-shift on input (precision selector);
+ * writes screen.x, screen.y, MAC3<<shift to dst[0..2]. */
 void ProjectWorldPointGTE(int *dst, int *src, unsigned int shift);
 
-/* 0x80017c4c: Sign-extend a short[3] vector (SVECTOR) into an int[3] (VECTOR). PSX SDK-style helper. */
+/* 0x80017c4c: Sign-extend a short[3] vector (SVECTOR) into an int[3] (VECTOR).
+ * PSX SDK-style helper. */
 void SVectorToVector(int *dst, short *src);
 
-/* 0x80017c68: Truncate an int[3] vector (VECTOR) into a short[3] (SVECTOR). PSX SDK-style helper. */
+/* 0x80017c68: Truncate an int[3] vector (VECTOR) into a short[3] (SVECTOR). PSX
+ * SDK-style helper. */
 void VectorToSVector(short *dst, int *src);
 
-/* 0x80017cb8: Unpacks a packed collision-triangle from the world's triangle table at *(g_pWorldCollisionHeader+0x10) into a 9-int output buffer (3 vertices × 3 coords). Table entry size = 12 bytes (3 uint32 packed coord-triplets). Per axis (X, Y, Z): low 14 bits = vertex 0's coord (shifted left 4 to recover world units). Then v1 = v0 + signed-9-bit delta (X/Y) or unsigned-8-bit delta (Z); v2 same scheme with deltas at bits 23..31 (X/Y) or 24..31 (Z). All outputs scaled by 16. Output layout: [v0.X, v0.Y, v0.Z, v1.X, v1.Y, v1.Z, v2.X, v2.Y, v2.Z]. The asymmetric encoding (Z always-positive deltas) reflects that these are upward-facing collision triangles (floor + slope geometry). Callers: ProbeSpyroGroundContact + AverageSpyroPlatformMotion (the collision query fetches a candidate triangle's vertices for ray test). */
+/* 0x80017cb8: Unpacks a packed collision-triangle from the world's triangle
+ * table at *(g_pWorldCollisionHeader+0x10) into a 9-int output buffer (3
+ * vertices × 3 coords). Table entry size = 12 bytes (3 uint32 packed
+ * coord-triplets). Per axis (X, Y, Z): low 14 bits = vertex 0's coord (shifted
+ * left 4 to recover world units). Then v1 = v0 + signed-9-bit delta (X/Y) or
+ * unsigned-8-bit delta (Z); v2 same scheme with deltas at bits 23..31 (X/Y) or
+ * 24..31 (Z). All outputs scaled by 16. Output layout: [v0.X, v0.Y, v0.Z, v1.X,
+ * v1.Y, v1.Z, v2.X, v2.Y, v2.Z]. The asymmetric encoding (Z always-positive
+ * deltas) reflects that these are upward-facing collision triangles (floor +
+ * slope geometry). Callers: ProbeSpyroGroundContact +
+ * AverageSpyroPlatformMotion (the collision query fetches a candidate
+ * triangle's vertices for ray test). */
 void UnpackWorldCollisionTri(int chunk, int *verts);
 
-/* 0x80017e54: GTE depth-cue color computation. Interpolates the input RGB (base, packed 24-bit) toward a far color (color, packed as three 12-bit channels: R=bits 0-7, G=bits 4-15 masked, B=bits 12-23 masked) by IR0 factor (t, 0..0x1000). Returns the depth-cued RGB color in the low 32 bits, with the far-blue channel echoed in bits 32-39 (probably an artifact of the caller's unpack pattern at ActorCutscene_Draw where it stores all three output bytes into the backdrop color slots). Implementation: gte_ldRGB + gte_ldIR0 + gte_ldfcdir + gte_dpcs + gte_stRGB2. */
-unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color, int t);
+/* 0x80017e54: GTE depth-cue color computation. Interpolates the input RGB
+ * (base, packed 24-bit) toward a far color (color, packed as three 12-bit
+ * channels: R=bits 0-7, G=bits 4-15 masked, B=bits 12-23 masked) by IR0 factor
+ * (t, 0..0x1000). Returns the depth-cued RGB color in the low 32 bits, with the
+ * far-blue channel echoed in bits 32-39 (probably an artifact of the caller's
+ * unpack pattern at ActorCutscene_Draw where it stores all three output bytes
+ * into the backdrop color slots). Implementation: gte_ldRGB + gte_ldIR0 +
+ * gte_ldfcdir + gte_dpcs + gte_stRGB2. */
+unsigned int ComputeDepthCuedColor(unsigned int base, unsigned int color,
+                                   int t);
 
-/* 0x80017e98: Convert a buffer of RGB15 pixels (two per 32-bit word) to packed 8-bit luminance bytes. Luma = (4*R + G*(1/16+1/32) + B/1024) >> 3. count = end-offset in bytes. */
+/* 0x80017e98: Convert a buffer of RGB15 pixels (two per 32-bit word) to packed
+ * 8-bit luminance bytes. Luma = (4*R + G*(1/16+1/32) + B/1024) >> 3. count =
+ * end-offset in bytes. */
 void ConvertRGB15ToLuma8(void *buf, int count);
 
-/* 0x80017f24 (hand-written): Expands a sparse run list of 24-bit image words into dst with every byte biased: each run is a header word (bits 0..16 = word offset into dst, bits 17..30 = word count; negative = end) followed by its words, and each byte gets bias added, clamped at 0 (callers pass bias <= 0, so it only fades toward black). Initialize's boot fades: the title art is the EXE's initial contents of the OT area (&g_apMainDrawEntityList), the splash art a CD-loaded run list; dst is the 0x300 x 0xF0 frame uploaded with LoadImage after each step. */
+/* 0x80017f24 (hand-written): Expands a sparse run list of 24-bit image words
+ * into dst with every byte biased: each run is a header word (bits 0..16 = word
+ * offset into dst, bits 17..30 = word count; negative = end) followed by its
+ * words, and each byte gets bias added, clamped at 0 (callers pass bias <= 0,
+ * so it only fades toward black). Initialize's boot fades: the title art is the
+ * EXE's initial contents of the OT area (&g_apMainDrawEntityList), the splash
+ * art a CD-loaded run list; dst is the 0x300 x 0xF0 frame uploaded with
+ * LoadImage after each step. */
 void AddBiasToColorRuns(void *runs, void *dst, int bias);
 
-/* 0x80017fe4: Emits a glyph-sprite chain for a string: per non-space byte allocates a 0x58-byte slot at g_pSpriteRecordWriteCursor (queue tail, grows down), maps '0'-'9' and 'A'-'Z' (+ a few specials: '/', '?', '%', '^', '+') to font tile indices, copies the cursor position from pPen and advances *pPen by nAdvance between glyphs. Sibling of BuildTextSprites. */
-void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance, int nPalette);
+/* 0x80017fe4: Emits a glyph-sprite chain for a string: per non-space byte
+ * allocates a 0x58-byte slot at g_pSpriteRecordWriteCursor (queue tail, grows
+ * down), maps '0'-'9' and 'A'-'Z' (+ a few specials: '/', '?', '%', '^', '+')
+ * to font tile indices, copies the cursor position from pPen and advances *pPen
+ * by nAdvance between glyphs. Sibling of BuildTextSprites. */
+void *BuildTextSpriteChain(unsigned char *pszText, int *pPen, int nAdvance,
+                           int nPalette);
 
-/* 0x800181ac: Queues one glyph sprite record per non-space character of `text` at g_pSpriteRecordWriteCursor, advancing the pen from *pos by the glyph width attr[0] (after digits / '!' / '?' by `spacing`, spaces by 3/4 width). Spyro's small caps: a word's first letter (and any digit, '!', '?' or letter after a digit) is drawn at pos's depth (TEXT_DEPTH); the rest of the word attr[1] lower and at depth attr[2] (TEXT_SMALL_DEPTH), so smaller. Returns the cursor. */
+/* 0x800181ac: Queues one glyph sprite record per non-space character of `text`
+ * at g_pSpriteRecordWriteCursor, advancing the pen from *pos by the glyph width
+ * attr[0] (after digits / '!' / '?' by `spacing`, spaces by 3/4 width). Spyro's
+ * small caps: a word's first letter (and any digit, '!', '?' or letter after a
+ * digit) is drawn at pos's depth (TEXT_DEPTH); the rest of the word attr[1]
+ * lower and at depth attr[2] (TEXT_SMALL_DEPTH), so smaller. Returns the
+ * cursor. */
 void *BuildTextSprites(char *text, int *pos, int *attr, int spacing, int flags);
 
-/* 0x8001844c: Emits a 2-point gradient line (LineG2) into the OT. Each endpoint's RGB is tinted by the angular distance between its screen-relative angle (vs (256,120)) and a reference angle in g_nLightSweepAngle — radial-light effect for menu borders. Called by PauseMenu_Draw, DrawShadedMenuBox, and the hub balloonist / flight results draws. */
+/* 0x8001844c: Emits a 2-point gradient line (LineG2) into the OT. Each
+ * endpoint's RGB is tinted by the angular distance between its screen-relative
+ * angle (vs (256,120)) and a reference angle in g_nLightSweepAngle —
+ * radial-light effect for menu borders. Called by PauseMenu_Draw,
+ * DrawShadedMenuBox, and the hub balloonist / flight results draws. */
 void EmitRadialShadedLine(int x0, int y0, int x1, int y1);
 
-/* 0x80018534: Pushes a sprite16 onto the front of the sprite queue (g_pSpriteRecordWriteCursor bumps down 0x58 bytes). Gated by (frame & 0x1f) < 0x10 so the sprite blinks for half of every 32-frame cycle; tile < 2 selects tile U=0 vs U=0x80. Used as a selection marker in PauseMenu_Draw. */
+/* 0x80018534: Pushes a sprite16 onto the front of the sprite queue
+ * (g_pSpriteRecordWriteCursor bumps down 0x58 bytes). Gated by (frame & 0x1f) <
+ * 0x10 so the sprite blinks for half of every 32-frame cycle; tile < 2 selects
+ * tile U=0 vs U=0x80. Used as a selection marker in PauseMenu_Draw. */
 void EnqueueBlinkingMarkerSprite(int *pos, int frame, int tile);
 
-/* 0x8001860c: Draws a menu rectangle: semi-transparent POLY_F4 fill at (left,top)..(right,bottom) plus four EmitRadialShadedLine borders. Called by SaveLoadMenu_Draw and the hub balloonist draws. */
+/* 0x8001860c: Draws a menu rectangle: semi-transparent POLY_F4 fill at
+ * (left,top)..(right,bottom) plus four EmitRadialShadedLine borders. Called by
+ * SaveLoadMenu_Draw and the hub balloonist draws. */
 void DrawShadedMenuBox(int left, int right, int top, int bottom);
 
-/* 0x80018728: Draws the dragon-rescue cutscene banner: "RESCUED" (g_szUiRescued) + the freed dragon's name (g_apDragonNames[DragonStatueState.dragonName of g_pDragonRescueSourceActor->state]) as two right-aligned BuildTextSpriteChain labels (anchors x=176/x=336), each glyph rocked by setting its rotZ (the sprite roll angle) from the cosine LUT off g_nDragonRescueSecondaryTimer. Called by DragonRescue_Draw. (formerly misnamed DrawWorldMapLevelLabel.) */
+/* 0x80018728: Draws the dragon-rescue cutscene banner: "RESCUED"
+ * (g_szUiRescued) + the freed dragon's name
+ * (g_apDragonNames[DragonStatueState.dragonName of
+ * g_pDragonRescueSourceActor->state]) as two right-aligned BuildTextSpriteChain
+ * labels (anchors x=176/x=336), each glyph rocked by setting its rotZ (the
+ * sprite roll angle) from the cosine LUT off g_nDragonRescueSecondaryTimer.
+ * Called by DragonRescue_Draw. (formerly misnamed DrawWorldMapLevelLabel.) */
 void DrawDragonRescuedBanner(void);
 
-/* 0x80018880: Refills the null-terminated sprite/HUD primitive request queue at g_apSpritePrimQueue by carving the remainder of the primitive buffer (g_pSpriteRecordWriteCursor up to g_pSpriteRecordBufferTop) into 0x58 (88-byte) chunks and appending each as a queue entry. Called near end of GamestateDraw before DrawSync. */
+/* 0x80018880: Refills the null-terminated sprite/HUD primitive request queue at
+ * g_apSpritePrimQueue by carving the remainder of the primitive buffer
+ * (g_pSpriteRecordWriteCursor up to g_pSpriteRecordBufferTop) into 0x58
+ * (88-byte) chunks and appending each as a queue entry. Called near end of
+ * GamestateDraw before DrawSync. */
 void EnqueuePendingSpritePrims(void);
 
-/* 0x80018908: Builds the "DEMO MODE" text overlay via BuildTextSprites, then rocks each glyph (its rotZ roll angle) on the cosine LUT indexed by g_nVblankTickCount. Hands the resulting 0x58-byte sprite records into the request queue via EnqueuePendingSpritePrims. */
+/* 0x80018908: Builds the "DEMO MODE" text overlay via BuildTextSprites, then
+ * rocks each glyph (its rotZ roll angle) on the cosine LUT indexed by
+ * g_nVblankTickCount. Hands the resulting 0x58-byte sprite records into the
+ * request queue via EnqueuePendingSpritePrims. */
 void DrawDemoModeOverlay(void);
 
-/* 0x800189f0: Emits semi-transparent POLY_G4 ribbon segments between consecutive history points of each active "trail" (Spyro flight/glide/charge wake). g_apMotionTrailSlices holds per-trail point arrays; g_anMotionTrailSliceCounts holds per-trail point counts; g_nMotionTrailRibbonCount is the active trail count. Perpendicular width is divided by the point's depth word ([5]) and colored on a falloff curve from head to tail. Resets g_nMotionTrailRibbonCount to 0 on exit. */
+/* 0x800189f0: Emits semi-transparent POLY_G4 ribbon segments between
+ * consecutive history points of each active "trail" (Spyro flight/glide/charge
+ * wake). g_apMotionTrailSlices holds per-trail point arrays;
+ * g_anMotionTrailSliceCounts holds per-trail point counts;
+ * g_nMotionTrailRibbonCount is the active trail count. Perpendicular width is
+ * divided by the point's depth word ([5]) and colored on a falloff curve from
+ * head to tail. Resets g_nMotionTrailRibbonCount to 0 on exit. */
 void DrawMotionTrailRibbons(void);
 
-/* 0x80018f30: Draws two stacked black POLY_F4 cinematic bars (top y=0..h, bottom y=240-h..240) where h = g_nLetterboxBarHeight animates 0..0x16 driven by g_nCinematicActive. The "letterbox close" / "open" animation seen during cutscenes and gameplay-blocked transitions. Submits both bars via AddPrimToOT. */
+/* 0x80018f30: Draws two stacked black POLY_F4 cinematic bars (top y=0..h,
+ * bottom y=240-h..240) where h = g_nLetterboxBarHeight animates 0..0x16 driven
+ * by g_nCinematicActive. The "letterbox close" / "open" animation seen during
+ * cutscenes and gameplay-blocked transitions. Submits both bars via
+ * AddPrimToOT. */
 void DrawCinematicLetterbox(void);
 
-/* 0x800190d4: Submits a semi-transparent fullscreen POLY_F4 (rect (0,8)-(512,232)) of color (r,g,b) into the active OT depth slot. Allocates from the primitive buffer at g_pPrimBufferWriteCursor; chains via AddPrimToOT. Used for fade/tint overlays (the g_nScreenFadeLevel fade, the dragon-rescue flash, the scripted-cutscene fade). */
+/* 0x800190d4: Submits a semi-transparent fullscreen POLY_F4 (rect
+ * (0,8)-(512,232)) of color (r,g,b) into the active OT depth slot. Allocates
+ * from the primitive buffer at g_pPrimBufferWriteCursor; chains via
+ * AddPrimToOT. Used for fade/tint overlays (the g_nScreenFadeLevel fade, the
+ * dragon-rescue flash, the scripted-cutscene fade). */
 void DrawFullscreenTint(int abr, int r, int g, int b);
 
-/* 0x8001919c: Emits a textured POLY_FT4 quad: rect (x,y,w,h)=rect[0..3] shorts, UV+CLUT=uv[0..1], RGB color=rgb[0..2] or default 0x80,0x80,0x80. Calls AddPrimToOT and advances g_pPrimBufferWriteCursor by 0x28 bytes. */
+/* 0x8001919c: Emits a textured POLY_FT4 quad: rect (x,y,w,h)=rect[0..3] shorts,
+ * UV+CLUT=uv[0..1], RGB color=rgb[0..2] or default 0x80,0x80,0x80. Calls
+ * AddPrimToOT and advances g_pPrimBufferWriteCursor by 0x28 bytes. */
 void EmitTexturedQuad(short *rect, unsigned int *uv, unsigned int *rgb);
 
-/* 0x80019300: Queues the in-level HUD (formerly EnqueueLoadingScreenSprites). Outside flight levels it appends to g_apSpritePrimQueue whichever HUD counters are showing: the gem-counter icons and the rolling gem digits (sprintf + BuildTextSpriteChain, each digit rocking on its rotZ), the three dragon records, the three life records and the level-egg record. Always (flight levels too) it draws the Sparx-food butterflies (swept cosine shade) and the egg icons (cycling nine UV pairs) as textured quads. Called from GamestateDraw and the pause/inventory draw. */
+/* 0x80019300: Queues the in-level HUD (formerly EnqueueLoadingScreenSprites).
+ * Outside flight levels it appends to g_apSpritePrimQueue whichever HUD
+ * counters are showing: the gem-counter icons and the rolling gem digits
+ * (sprintf + BuildTextSpriteChain, each digit rocking on its rotZ), the three
+ * dragon records, the three life records and the level-egg record. Always
+ * (flight levels too) it draws the Sparx-food butterflies (swept cosine shade)
+ * and the egg icons (cycling nine UV pairs) as textured quads. Called from
+ * GamestateDraw and the pause/inventory draw. */
 void EnqueueHudSprites(void);
 
-/* 0x80019698: Mid-frame scene composer — sequences the actor/sprite/effect passes of one frame: BuildActorDrawList, FillWord(&g_apMainDrawEntityList,0,0x900) scratch clear, EmitActorDrawList, BuildSecondaryActorDrawList + EmitSecondaryActorPrimitives, RasterizeSpritePrimQueue, DrawActorDropShadows; unless g_nSpyroDrawSuppressed: RasterizeSpyroModel (Spyro) + DrawSpyroDropShadow; if g_bSpyroFlameActive: DrawSpyroFlameTrails. Returns DrawWorldParticleEmitters() chained out. */
+/* 0x80019698: Mid-frame scene composer — sequences the actor/sprite/effect
+ * passes of one frame: BuildActorDrawList,
+ * FillWord(&g_apMainDrawEntityList,0,0x900) scratch clear, EmitActorDrawList,
+ * BuildSecondaryActorDrawList + EmitSecondaryActorPrimitives,
+ * RasterizeSpritePrimQueue, DrawActorDropShadows; unless
+ * g_nSpyroDrawSuppressed: RasterizeSpyroModel (Spyro) + DrawSpyroDropShadow; if
+ * g_bSpyroFlameActive: DrawSpyroFlameTrails. Returns
+ * DrawWorldParticleEmitters() chained out. */
 void ComposeFrameScene(void);
 
-/* 0x8001973c: Renders the level-entry/exit overlay used by Gamestate01/09 (level transition). Builds the primary banner ("RETURNING HOME...", "ENTERING %s...", or "CONFRONTING %s..." for boss levels — level 4 of the first five worlds and LEVEL_GNASTY_GNORC) from g_apLevelNameStrings indexed by world/level. From phase 0x40 (post-level results) also emits "TREASURE FOUND" / "TOTAL TREASURE" with the count animated via g_szFmtPercentD: found = g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry, interpolated over the gem fly-in (duration 2*(g_nGemTallyIconCount+1) clamped 0x40), plus one gem icon per alive g_pGemTallyParticleRecords record with sprite U from g_abGemTallyIconUvTable. All slide/fade animation is driven by g_nLevelTransitionPhase; panel hold ends at g_nGemTallyHoldEndPhase. Clears g_apSpritePrimQueue[0], then EnqueuePendingSpritePrims + RasterizeSpritePrimQueue to flush directly. */
+/* 0x8001973c: Renders the level-entry/exit overlay used by Gamestate01/09
+ * (level transition). Builds the primary banner ("RETURNING HOME...", "ENTERING
+ * %s...", or "CONFRONTING %s..." for boss levels — level 4 of the first five
+ * worlds and LEVEL_GNASTY_GNORC) from g_apLevelNameStrings indexed by
+ * world/level. From phase 0x40 (post-level results) also emits "TREASURE FOUND"
+ * / "TOTAL TREASURE" with the count animated via g_szFmtPercentD: found =
+ * g_anLevelGemsCollected[g_nPrevLevelIndex] - g_nLevelGemsAtEntry, interpolated
+ * over the gem fly-in (duration 2*(g_nGemTallyIconCount+1) clamped 0x40), plus
+ * one gem icon per alive g_pGemTallyParticleRecords record with sprite U from
+ * g_abGemTallyIconUvTable. All slide/fade animation is driven by
+ * g_nLevelTransitionPhase; panel hold ends at g_nGemTallyHoldEndPhase. Clears
+ * g_apSpritePrimQueue[0], then EnqueuePendingSpritePrims +
+ * RasterizeSpritePrimQueue to flush directly. */
 void DrawLevelTransitionOverlay(void);
 
-/* 0x8001a050: Draws GS_LEVEL_LOAD (the portal flight: Spyro alone against the destination's sky while the level streams) and GS_ARRIVAL_CAMERA: clears OT, draws the transition tally overlay when active, Spyro, then the sky (EmitSkyMesh) when g_nSkyChunkCount != 0, with the background RGB from g_dwWorldFogColor as the clear colour. While g_nTransitionSkyPitchTilt (the entered portal's sky tilt, -2/frame) is non-zero the sky is drawn through a view matrix tilted by it, so it eases level from the portal's view. Then VSync/frame submit. */
+/* 0x8001a050: Draws GS_LEVEL_LOAD (the portal flight: Spyro alone against the
+ * destination's sky while the level streams) and GS_ARRIVAL_CAMERA: clears OT,
+ * draws the transition tally overlay when active, Spyro, then the sky
+ * (EmitSkyMesh) when g_nSkyChunkCount != 0, with the background RGB from
+ * g_dwWorldFogColor as the clear colour. While g_nTransitionSkyPitchTilt (the
+ * entered portal's sky tilt, -2/frame) is non-zero the sky is drawn through a
+ * view matrix tilted by it, so it eases level from the portal's view. Then
+ * VSync/frame submit. */
 void LevelTransition_Draw(void);
 
-/* 0x8001a40c: Draw for GS_PAUSE_MENU, GS_INVENTORY (inventory sub-menu) and GS_UNUSED_6 (never entered). g_nMenuDrawFrames==0 (entry frame): renders one full gameplay scene (BuildRenderEntityLists/ComposeFrameScene/RasterizeEmitList/DrawPortalsAndSky), then builds the frozen backdrop — StoreImage's the frame, ConvertRGB15ToLuma8 packs 4 strips to 8bpp luma in g_pRenderScratchRegionBase, reloads them at VRAM x=0x200 and loads g_anMenuBackdropGrayClut to (0x200,0xe0) (clut id 0x3820). Later frames: draws 4 textured quads of the gray backdrop + menu UI. State 2: PAUSED box (substate 0 = CONTINUE/OPTIONS/INVENTORY/QUIT-or-EXIT-LEVEL, 1 = options incl. DualShock-gated VIBRATION, 2 = QUIT GAME? YES/NO); cursor glyphs wave via g_anSineLut. State 3: inventory — header gem/dragon/egg tallies + per-level rows of the g_nSubMenuCursor world (only rows with g_abLevelVisitedFlag set), scroll arrows gated by the +/-6 virtual bases of g_abLevelVisitedFlag. State 6: backdrop + overlay-enqueued sprites only. Ends with sprite-queue rasterize, 2-vblank pacing (g_nVsyncFramePaceAnchor), increments g_nMenuDrawFrames. */
+/* 0x8001a40c: Draw for GS_PAUSE_MENU, GS_INVENTORY (inventory sub-menu) and
+ * GS_UNUSED_6 (never entered). g_nMenuDrawFrames==0 (entry frame): renders one
+ * full gameplay scene
+ * (BuildRenderEntityLists/ComposeFrameScene/RasterizeEmitList/DrawPortalsAndSky),
+ * then builds the frozen backdrop — StoreImage's the frame, ConvertRGB15ToLuma8
+ * packs 4 strips to 8bpp luma in g_pRenderScratchRegionBase, reloads them at
+ * VRAM x=0x200 and loads g_anMenuBackdropGrayClut to (0x200,0xe0) (clut id
+ * 0x3820). Later frames: draws 4 textured quads of the gray backdrop + menu UI.
+ * State 2: PAUSED box (substate 0 =
+ * CONTINUE/OPTIONS/INVENTORY/QUIT-or-EXIT-LEVEL, 1 = options incl.
+ * DualShock-gated VIBRATION, 2 = QUIT GAME? YES/NO); cursor glyphs wave via
+ * g_anSineLut. State 3: inventory — header gem/dragon/egg tallies + per-level
+ * rows of the g_nSubMenuCursor world (only rows with g_abLevelVisitedFlag set),
+ * scroll arrows gated by the +/-6 virtual bases of g_abLevelVisitedFlag. State
+ * 6: backdrop + overlay-enqueued sprites only. Ends with sprite-queue
+ * rasterize, 2-vblank pacing (g_nVsyncFramePaceAnchor), increments
+ * g_nMenuDrawFrames. */
 void PauseMenu_Draw(void);
 
-/* 0x8001c694: Draws GS_MENU_TRANSITION (pause -> world-map transition, set by BeginPauseToMenuTransition). g_nMenuDrawFrames==0 phase: re-darkens the frozen gray backdrop by re-loading g_anMenuBackdropGrayClut SHIFTED — rect {x=0x200+g_nMenuTickFrames, y=0xe0, w=0x20-idleFrames} maps ramp[0..w] onto CLUT entries idle..31, so the bright end dims as the 0..32 idle counter runs — then draws the 4 backdrop quads (clut id 0x3820) into OT slot 0x3ff. ==1 phase: fog cross-fade — g_nFadeProgress=(0x20-idle)*0x80 through ComputeDepthCuedColor into the back DRAWENV r0/g0/b0 + EmitSkyMeshFogged. Both phases: OT clear, RasterizeSpyroModel (Spyro), DrawOTag, 2-vblank pacing via g_nVsyncFramePaceAnchor. */
+/* 0x8001c694: Draws GS_MENU_TRANSITION (pause -> world-map transition, set by
+ * BeginPauseToMenuTransition). g_nMenuDrawFrames==0 phase: re-darkens the
+ * frozen gray backdrop by re-loading g_anMenuBackdropGrayClut SHIFTED — rect
+ * {x=0x200+g_nMenuTickFrames, y=0xe0, w=0x20-idleFrames} maps ramp[0..w] onto
+ * CLUT entries idle..31, so the bright end dims as the 0..32 idle counter runs
+ * — then draws the 4 backdrop quads (clut id 0x3820) into OT slot 0x3ff. ==1
+ * phase: fog cross-fade — g_nFadeProgress=(0x20-idle)*0x80 through
+ * ComputeDepthCuedColor into the back DRAWENV r0/g0/b0 + EmitSkyMeshFogged.
+ * Both phases: OT clear, RasterizeSpyroModel (Spyro), DrawOTag, 2-vblank pacing
+ * via g_nVsyncFramePaceAnchor. */
 void MenuTransition_Draw(void);
 
-/* 0x8001ca38: Draw routine for g_nGamestate == GS_RESPAWN or GS_GAME_OVER. Two phases gated by g_nRespawnOrGameOverMode: mode 0: normal in-level frame. On frame 0 calls the full game render chain (BuildRenderEntityLists / ComposeFrameScene / RasterizeEmitList / DrawPortalsAndSky / SetupFrameOT); subsequent frames flash a fade color via DrawFullscreenTint. mode 1: game-over sequence. After frame 0x3c, builds the "GAMEOVER" letter sprites (s_GAMEOVER_8006f304 / g_anGameOverLetterPosXY layout table), and after frame 0x1a5 also renders "PRESS START". g_nRespawnOrGameOverFrame is the per-mode frame counter that drives both fade timing and the GAMEOVER reveal animation. Tail is the standard PutDispEnv/PutDrawEnv/DrawOTag frame submit. */
+/* 0x8001ca38: Draw routine for g_nGamestate == GS_RESPAWN or GS_GAME_OVER. Two
+ * phases gated by g_nRespawnOrGameOverMode: mode 0: normal in-level frame. On
+ * frame 0 calls the full game render chain (BuildRenderEntityLists /
+ * ComposeFrameScene / RasterizeEmitList / DrawPortalsAndSky / SetupFrameOT);
+ * subsequent frames flash a fade color via DrawFullscreenTint. mode 1:
+ * game-over sequence. After frame 0x3c, builds the "GAMEOVER" letter sprites
+ * (s_GAMEOVER_8006f304 / g_anGameOverLetterPosXY layout table), and after frame
+ * 0x1a5 also renders "PRESS START". g_nRespawnOrGameOverFrame is the per-mode
+ * frame counter that drives both fade timing and the GAMEOVER reveal animation.
+ * Tail is the standard PutDispEnv/PutDrawEnv/DrawOTag frame submit. */
 void RespawnOrGameOver_Draw(void);
 
-/* 0x8001cfdc: Draws GS_DRAGON_RESCUE: the dragon-rescue overlay. Has 8 substates (0..7) driven by g_nDragonRescueSubstate: 0: full render chain (normal gameplay frame, fade-only effect). 1-4: composite render with partial OT buffers and dragon-statue sprites. 5-7: cutscene-only render with timed model placement. Uses g_nDragonRescueTimer for animation timing. */
+/* 0x8001cfdc: Draws GS_DRAGON_RESCUE: the dragon-rescue overlay. Has 8
+ * substates (0..7) driven by g_nDragonRescueSubstate: 0: full render chain
+ * (normal gameplay frame, fade-only effect). 1-4: composite render with partial
+ * OT buffers and dragon-statue sprites. 5-7: cutscene-only render with timed
+ * model placement. Uses g_nDragonRescueTimer for animation timing. */
 void DragonRescue_Draw(void);
 
-/* 0x8001d718: Draws GS_SAVE_MENU: SAVE / LOAD MENU. g_nSaveMenuMode == 1 enables UI render (else skip straight to gameplay underlay). g_nSaveMenuSubstate is the menu substate: 0: main menu (SAVE GAME / REPLAY DRAGON / CONTINUE) 1: 'NO SAVE FILE' (insert memory card) 2: 'SAVING...' 3: 'NO MEMORY CARD' 4: 'NO SAVE FILE' 5: 'SAVE ERROR' 6: 'SAVE FAILED' (RETRY/ABORT) 7: 'GAME SAVED' g_nSaveMenuCursor is the menu cursor index. g_nSaveSlotSelected selects SLOT 1 vs SLOT 2. g_nSaveMenuXOffset is an x-coordinate offset for menu placement. */
+/* 0x8001d718: Draws GS_SAVE_MENU: SAVE / LOAD MENU. g_nSaveMenuMode == 1
+ * enables UI render (else skip straight to gameplay underlay).
+ * g_nSaveMenuSubstate is the menu substate: 0: main menu (SAVE GAME / REPLAY
+ * DRAGON / CONTINUE) 1: 'NO SAVE FILE' (insert memory card) 2: 'SAVING...' 3:
+ * 'NO MEMORY CARD' 4: 'NO SAVE FILE' 5: 'SAVE ERROR' 6: 'SAVE FAILED'
+ * (RETRY/ABORT) 7: 'GAME SAVED' g_nSaveMenuCursor is the menu cursor index.
+ * g_nSaveSlotSelected selects SLOT 1 vs SLOT 2. g_nSaveMenuXOffset is an
+ * x-coordinate offset for menu placement. */
 void SaveLoadMenu_Draw(void);
 
-/* 0x8001e24c: Draw routine for g_nGamestate == GS_ACTOR_CUTSCENE (level-transition state). Renders the "ENTERING %s WORLD" / "ENTERING %s" title-card overlay using BuildTextSprites, then submits the frame. Active only when the 0xC substate g_nActorCutsceneSubstate is 4 or 5; otherwise dispatches to the function pointer at g_pfnActorCutsceneSubstateDraw. World/level names are looked up by g_nNextLevelId: world = id / 10 -> g_apWorldNames[world]; the level card reads g_apWorldNames[world * 6 + id % 10 + 2], i.e. g_apLevelNameStrings[(world - 1) * 6 + id % 10]. Tail (DrawSync/VSync/PutDispEnv/PutDrawEnv/DrawOTag) is the standard frame-submit sequence shared by every Gamestate*_Draw routine. */
+/* 0x8001e24c: Draw routine for g_nGamestate == GS_ACTOR_CUTSCENE
+ * (level-transition state). Renders the "ENTERING %s WORLD" / "ENTERING %s"
+ * title-card overlay using BuildTextSprites, then submits the frame. Active
+ * only when the 0xC substate g_nActorCutsceneSubstate is 4 or 5; otherwise
+ * dispatches to the function pointer at g_pfnActorCutsceneSubstateDraw.
+ * World/level names are looked up by g_nNextLevelId: world = id / 10 ->
+ * g_apWorldNames[world]; the level card reads g_apWorldNames[world * 6 + id %
+ * 10 + 2], i.e. g_apLevelNameStrings[(world - 1) * 6 + id % 10]. Tail
+ * (DrawSync/VSync/PutDispEnv/PutDrawEnv/DrawOTag) is the standard frame-submit
+ * sequence shared by every Gamestate*_Draw routine. */
 void ActorCutscene_Draw(void);
 
-/* 0x8001e6b8: Draws GS_TITLE when g_nTitleMode == TITLE_MODE_STORY_INTRO: 'story intro' splash that fades in/out one of three messages (selected by g_nTitleExitPath): 0: 'IN THE WORLD OF DRAGONS...' 1: 'THE ADVENTURE BEGINS...' / 'THE ADVENTURE CONTINUES...' (g_abLevelVisitedFlag picks variant) 2: 'ENTERING DEMO MODE...' g_nStoryIntroTimer is the per-message frame counter (used for fade alpha; animation starts when the value crosses the message-specific threshold). */
+/* 0x8001e6b8: Draws GS_TITLE when g_nTitleMode == TITLE_MODE_STORY_INTRO:
+ * 'story intro' splash that fades in/out one of three messages (selected by
+ * g_nTitleExitPath): 0: 'IN THE WORLD OF DRAGONS...' 1: 'THE ADVENTURE
+ * BEGINS...' / 'THE ADVENTURE CONTINUES...' (g_abLevelVisitedFlag picks
+ * variant) 2: 'ENTERING DEMO MODE...' g_nStoryIntroTimer is the per-message
+ * frame counter (used for fade alpha; animation starts when the value crosses
+ * the message-specific threshold). */
 void StoryIntro_Draw(void);
 
-/* 0x8001e9c8: Draws GS_CUTSCENE: the scripted in-engine cutscene. Sets the clear color from the world fog color, draws the cutscene actors, RenderWorldChunks(-1) for the whole cutscene set, then EmitSkyMesh(-1, camera view). Uses g_nScreenFadeLevel for the closing fade-to-black. */
+/* 0x8001e9c8: Draws GS_CUTSCENE: the scripted in-engine cutscene. Sets the
+ * clear color from the world fog color, draws the cutscene actors,
+ * RenderWorldChunks(-1) for the whole cutscene set, then EmitSkyMesh(-1, camera
+ * view). Uses g_nScreenFadeLevel for the closing fade-to-black. */
 void Cutscene_Draw(void);
 
-/* 0x8001eb80: Draws GS_CREDITS when g_nCreditsMode >= 99: post-credits 'RETURNING HOME...' message with animated text wave. Clears bg, builds text sprites for the message, then animates per-character brightness by stepping a 4-byte stride into g_anCosineLut (sin/intensity LUT) indexed by g_nReturningHomePhase (animation phase counter). */
+/* 0x8001eb80: Draws GS_CREDITS when g_nCreditsMode >= 99: post-credits
+ * 'RETURNING HOME...' message with animated text wave. Clears bg, builds text
+ * sprites for the message, then animates per-character brightness by stepping a
+ * 4-byte stride into g_anCosineLut (sin/intensity LUT) indexed by
+ * g_nReturningHomePhase (animation phase counter). */
 void ReturningHome_Draw(void);
 
-/* 0x8001ed5c: Per-frame draw dispatcher (partner of GamestateUpdate). Flips g_pActiveFrameDrawEnv between the two frame DBs, reloads g_pPrimBufferWriteCursor / g_pOtDepthBinArrayBase / g_pOtActiveDepthSlot from the FrameDB tail (primBufferBase / otDepthBinBase / otMergedChainSlot), clears g_nPrimBufferOverflowFlag, then for GS_GAMEPLAY runs the full scene pipeline (BuildRenderEntityLists -> ComposeFrameScene -> SetupFrameOT -> DrawPortalsAndSky -> RasterizeEmitList + overlays), paces to >=2 vblanks via g_nVsyncFramePaceAnchor, PutDispEnv/PutDrawEnv, DrawOTag. Other states branch to per-state Draw functions; state 7 calls g_pfnFlightResultsDraw. Writes g_dwWorldFogColor into both DRAWENVs' r0/g0/b0 each gameplay frame. */
+/* 0x8001ed5c: Per-frame draw dispatcher (partner of GamestateUpdate). Flips
+ * g_pActiveFrameDrawEnv between the two frame DBs, reloads
+ * g_pPrimBufferWriteCursor / g_pOtDepthBinArrayBase / g_pOtActiveDepthSlot from
+ * the FrameDB tail (primBufferBase / otDepthBinBase / otMergedChainSlot),
+ * clears g_nPrimBufferOverflowFlag, then for GS_GAMEPLAY runs the full scene
+ * pipeline (BuildRenderEntityLists -> ComposeFrameScene -> SetupFrameOT ->
+ * DrawPortalsAndSky -> RasterizeEmitList + overlays), paces to >=2 vblanks via
+ * g_nVsyncFramePaceAnchor, PutDispEnv/PutDrawEnv, DrawOTag. Other states branch
+ * to per-state Draw functions; state 7 calls g_pfnFlightResultsDraw. Writes
+ * g_dwWorldFogColor into both DRAWENVs' r0/g0/b0 each gameplay frame. */
 void GamestateDraw(void);
 
-/* 0x8001f158: First half of the actor render pipeline. Walks the main draw list at g_apMainDrawEntityList (NULL-terminated actor pointers from BuildRenderEntityLists), frustum/depth-culls each record using the camera position (g_anCameraPos) and bounding radius from the actor record, then writes per-visible-actor display records (14 ints each) to the draw list at g_anActorDrawList. Each record stores actor pointer, mesh ptr, texture-page ptr, world-to-screen rotation submatrix (lazily wobbled via the optional roll/pitch/yaw fields in g_anWorldToCameraRotMtx..e0), and clip-space position. Terminated by 0. Actors nearer than depth 0x1200 whose ->groundCode has bit 31 set are also queued (actor, model-frame shadow size byte) on the shadow list at g_apMainDrawEntityList + 0x2800 for DrawActorDropShadows, which takes the list end from g_anActorShadowTexWords[2]. */
+/* 0x8001f158: First half of the actor render pipeline. Walks the main draw list
+ * at g_apMainDrawEntityList (NULL-terminated actor pointers from
+ * BuildRenderEntityLists), frustum/depth-culls each record using the camera
+ * position (g_anCameraPos) and bounding radius from the actor record, then
+ * writes per-visible-actor display records (14 ints each) to the draw list at
+ * g_anActorDrawList. Each record stores actor pointer, mesh ptr, texture-page
+ * ptr, world-to-screen rotation submatrix (lazily wobbled via the optional
+ * roll/pitch/yaw fields in g_anWorldToCameraRotMtx..e0), and clip-space
+ * position. Terminated by 0. Actors nearer than depth 0x1200 whose ->groundCode
+ * has bit 31 set are also queued (actor, model-frame shadow size byte) on the
+ * shadow list at g_apMainDrawEntityList + 0x2800 for DrawActorDropShadows,
+ * which takes the list end from g_anActorShadowTexWords[2]. */
 void BuildActorDrawList(void);
 
-/* 0x8001f798: Second half of the actor render pipeline. Walks BuildActorDrawList's output at g_anActorDrawList and, for each visible actor, runs the GTE per-vertex transform + lighting pass (rtps/intpl/nclip), emits POLY_F3/POLY_G3/POLY_FT4/POLY_GT4 primitives into the OT depth bins at g_apMainDrawEntityList, and writes per-actor scratch (depth-cued colors at g_anActorDepthCuedVtxColor). Reads per-frame fog params at g_dwWorldFogColor and ambient/background colors via gte_ldRFC/gte_ldGFC/gte_ldBFC. Submits via per-bin insertion (not AddPrimToOT) for correct depth sort. */
+/* 0x8001f798: Second half of the actor render pipeline. Walks
+ * BuildActorDrawList's output at g_anActorDrawList and, for each visible actor,
+ * runs the GTE per-vertex transform + lighting pass (rtps/intpl/nclip), emits
+ * POLY_F3/POLY_G3/POLY_FT4/POLY_GT4 primitives into the OT depth bins at
+ * g_apMainDrawEntityList, and writes per-actor scratch (depth-cued colors at
+ * g_anActorDepthCuedVtxColor). Reads per-frame fog params at g_dwWorldFogColor
+ * and ambient/background colors via gte_ldRFC/gte_ldGFC/gte_ldBFC. Submits via
+ * per-bin insertion (not AddPrimToOT) for correct depth sort. */
 void EmitActorDrawList(void);
 
-/* 0x800208fc: Sibling of BuildActorDrawList. Walks the actor pointer table at g_apSecondaryDrawEntityList (terminated by NULL) — a different source than BuildActorDrawList's g_apMainDrawEntityList — performs frustum culling against bounds in g_anCameraPos, then composes each actor's per-axis Euler rotation (packed in *(actor + 0x44)) onto the camera matrix g_anWorldToCameraRotMtx..de0 via GTE rtv0 + sine/cosine LUTs. Appends 0x38-byte entries (transform + matrix + back-pointer) to the visible-actor list at g_anActorDrawList. Writes the terminator 0 at the end. */
+/* 0x800208fc: Sibling of BuildActorDrawList. Walks the actor pointer table at
+ * g_apSecondaryDrawEntityList (terminated by NULL) — a different source than
+ * BuildActorDrawList's g_apMainDrawEntityList — performs frustum culling
+ * against bounds in g_anCameraPos, then composes each actor's per-axis Euler
+ * rotation (packed in *(actor + 0x44)) onto the camera matrix
+ * g_anWorldToCameraRotMtx..de0 via GTE rtv0 + sine/cosine LUTs. Appends
+ * 0x38-byte entries (transform + matrix + back-pointer) to the visible-actor
+ * list at g_anActorDrawList. Writes the terminator 0 at the end. */
 void BuildSecondaryActorDrawList(void);
 
-/* 0x80020f34: Sibling of EmitActorDrawList. Walks the visible-actor list at g_anActorDrawList (filled by BuildActorDrawList + BuildSecondaryActorDrawList). For each entry, loads the per-actor 3x3 matrix and translation into the GTE, sets background depth via gte_ldbkdir for per-vertex lighting, and emits transformed mesh primitives to the scratch buffer at g_anOtPrimSaveList / the active prim buffer at g_pPrimBufferWriteCursor. Restores g_pPrimBufferWriteCursor on completion. Per vertex it also derives a byte pair from the rotated normal for the texture lookup: an 8-bit atan2 heading (octant + g_abArcTanOctantLut) and an asin pitch (g_abArcSinLut). */
+/* 0x80020f34: Sibling of EmitActorDrawList. Walks the visible-actor list at
+ * g_anActorDrawList (filled by BuildActorDrawList +
+ * BuildSecondaryActorDrawList). For each entry, loads the per-actor 3x3 matrix
+ * and translation into the GTE, sets background depth via gte_ldbkdir for
+ * per-vertex lighting, and emits transformed mesh primitives to the scratch
+ * buffer at g_anOtPrimSaveList / the active prim buffer at
+ * g_pPrimBufferWriteCursor. Restores g_pPrimBufferWriteCursor on completion.
+ * Per vertex it also derives a byte pair from the rotated normal for the
+ * texture lookup: an 8-bit atan2 heading (octant + g_abArcTanOctantLut) and an
+ * asin pitch (g_abArcSinLut). */
 void EmitSecondaryActorPrimitives(void);
 
-/* 0x80022a2c: Walks the sprite/HUD request queue at g_apSpritePrimQueue (refilled by EnqueuePendingSpritePrims) and rasterizes each request. For each actor record: builds its rotation from the record's rotX / rotY / rotZ bytes (sine-LUT matrices, each skipped when 0; otBias is the top byte of the same word), runs the per-vertex GTE transform with optional Z-bias depth cueing, emits POLY_F3/POLY_F4/POLY_G4 primitives into the OT depth bins, and updates the per-bin head/tail pointers (g_apMainDrawEntityList / g_pMainDrawEntityList1) directly for depth-sorted insertion. Inserts a TPAGE/DRAWMODE command before the first run of primitives in a frame. */
+/* 0x80022a2c: Walks the sprite/HUD request queue at g_apSpritePrimQueue
+ * (refilled by EnqueuePendingSpritePrims) and rasterizes each request. For each
+ * actor record: builds its rotation from the record's rotX / rotY / rotZ bytes
+ * (sine-LUT matrices, each skipped when 0; otBias is the top byte of the same
+ * word), runs the per-vertex GTE transform with optional Z-bias depth cueing,
+ * emits POLY_F3/POLY_F4/POLY_G4 primitives into the OT depth bins, and updates
+ * the per-bin head/tail pointers (g_apMainDrawEntityList /
+ * g_pMainDrawEntityList1) directly for depth-sorted insertion. Inserts a
+ * TPAGE/DRAWMODE command before the first run of primitives in a frame. */
 void RasterizeSpritePrimQueue(void);
 
-/* 0x80023ac4: Rasterizes Spyro's model (hand-written; formerly RasterizePairedActor). Its base register is the Spyro block (g_anSpyroWorldPos); the mesh and frame records come from g_apActorMeshTable indexed by Spyro's previous and current anim bytes (g_bSpyroAnimPrev / Current and their frames), optionally intpl-blending the two frames' vertices when g_bSpyroSubFrameTimer and the two layer substep bytes are set, runs the GTE transform/lighting pass with shared camera matrix (g_anWorldToCameraRotMtx..e0) and color refs (g_abSpyroPersistentEuler, g_abSpyroSwingByteEuler and the word after it), and emits POLY_GT4 / POLY_G4 / sprite primitives into the OT depth bins, staging projected vertices in the frame scratch arena (g_apMainDrawEntityList + 0x900 / + 0x1900 / + 0x1D00). Largest single rasterizer in the binary; investigate further before depending on field interpretations. */
+/* 0x80023ac4: Rasterizes Spyro's model (hand-written; formerly
+ * RasterizePairedActor). Its base register is the Spyro block
+ * (g_anSpyroWorldPos); the mesh and frame records come from g_apActorMeshTable
+ * indexed by Spyro's previous and current anim bytes (g_bSpyroAnimPrev /
+ * Current and their frames), optionally intpl-blending the two frames' vertices
+ * when g_bSpyroSubFrameTimer and the two layer substep bytes are set, runs the
+ * GTE transform/lighting pass with shared camera matrix
+ * (g_anWorldToCameraRotMtx..e0) and color refs (g_abSpyroPersistentEuler,
+ * g_abSpyroSwingByteEuler and the word after it), and emits POLY_GT4 / POLY_G4
+ * / sprite primitives into the OT depth bins, staging projected vertices in the
+ * frame scratch arena (g_apMainDrawEntityList + 0x900 / + 0x1900 / + 0x1D00).
+ * Largest single rasterizer in the binary; investigate further before depending
+ * on field interpretations. */
 void RasterizeSpyroModel(void);
 
-/* 0x800242b8: continuation of RasterizeSpyroModel (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of the same routine: RasterizeSpyroModel falls straight into it. No callers. */
+/* 0x800242b8: continuation of RasterizeSpyroModel (hand-written asm). Splat
+ * starts a symbol at this address, but the code there is the rest of the same
+ * routine: RasterizeSpyroModel falls straight into it. No callers. */
 void RasterizeSpyroModel_Tail(void);
 
-/* 0x800258f0: World chunk renderer. Loads the camera GTE rotation matrix from g_anCameraViewMtx..df4, then iterates a chunk pointer table: if zone >= 0 it walks that visibility zone's chunk list at g_pVisZoneChunkLists + zone*4 (terminated by byte 0xff); if zone < 0 it walks the full visible-chunk list at g_pWorldChunkArray (length g_nWorldChunkCount). For each chunk, projects its anchor through gte_rtir_b, performs frustum/depth tests, and applies any pending deferred chunk-anim keyframes (chunk bytes 0x18..0x1B, g_pWorldAnimLodVertsList..), sorts it by view depth against g_nWorldChunkLodDepth onto the near list (g_apMainDrawEntityList + 0x1C00, drawn with the detail mesh) and/or the far list (+ 0x2000, drawn with the LOD mesh); g_abWorldChunkDrawn (0x100 bytes) is cleared first and marked per drawn chunk. Also called by Cutscene_Draw. */
+/* 0x800258f0: World chunk renderer. Loads the camera GTE rotation matrix from
+ * g_anCameraViewMtx..df4, then iterates a chunk pointer table: if zone >= 0 it
+ * walks that visibility zone's chunk list at g_pVisZoneChunkLists + zone*4
+ * (terminated by byte 0xff); if zone < 0 it walks the full visible-chunk list
+ * at g_pWorldChunkArray (length g_nWorldChunkCount). For each chunk, projects
+ * its anchor through gte_rtir_b, performs frustum/depth tests, and applies any
+ * pending deferred chunk-anim keyframes (chunk bytes 0x18..0x1B,
+ * g_pWorldAnimLodVertsList..), sorts it by view depth against
+ * g_nWorldChunkLodDepth onto the near list (g_apMainDrawEntityList + 0x1C00,
+ * drawn with the detail mesh) and/or the far list (+ 0x2000, drawn with the LOD
+ * mesh); g_abWorldChunkDrawn (0x100 bytes) is cleared first and marked per
+ * drawn chunk. Also called by Cutscene_Draw. */
 void RenderWorldChunks(int zone);
 
-/* 0x8002a6fc: Per-frame world chunk-animation driver — advances all 7 world chunk-anim tables by step ticks. Called once per game frame from GamestateUpdate. Each table is a count + pointer-array pair read off one held base: g_nWorldAnimTextureFrameCount / List, g_nWorldAnimUvCycleCount / List, g_nWorldAnimLodVerts/LodColors/DetailVerts/DetailColorsCount / List and g_nWorldAnimVertexMorphCount / List (+0x40). Per-entry header bytes: [+1]=state-flags (CHUNK_ANIM_HALTED 0x2 = skip, CHUNK_ANIM_BRANCH 0x1 = follow next_b; a step entry's low two bits are copied in on arrival), [+2]=current step index, [+3]=delay counter, [+4]=target index. Each tick: skip if halted, else delay -= step → if expired advance state via the RLE/state table at +8 (4-byte step entries) or +0xc (8-byte step entries) following the (bit&1?next_b:next_a) successor links; arm new delay from step byte and write its payload to the world target. The 6 sub-tables drive: (1) texture frames: copies texture `src`'s records over texture `dst` (its 0x10-byte g_pWorldTextureLodRecords record and 0xA8-byte g_pWorldTextureDetailRecords record), so a texture slot steps through frames; (2) UV scroll/cycle that writes 6/12/8/8/8 byte UVs at fixed offsets in the two UV targets producing a rotating-byte pattern; (3..6) deferred keyframes: only the due keyframe index is written into the world chunk (bytes +0x18..+0x1b, one per table), and RenderWorldChunks applies it to the far/near mesh vertices or colours when it draws the chunk; (7) packed-21-bit-per-axis vertex morph at g_pWorldAnimVertexMorphList that decodes the source triplet then writes the dest triangle's packed-XY anchors (with optional GTE matrix interpolation when secondary keyframe selected by step byte). Skips advance if not yet due (just decrements delay counter). */
+/* 0x8002a6fc: Per-frame world chunk-animation driver — advances all 7 world
+ * chunk-anim tables by step ticks. Called once per game frame from
+ * GamestateUpdate. Each table is a count + pointer-array pair read off one held
+ * base: g_nWorldAnimTextureFrameCount / List, g_nWorldAnimUvCycleCount / List,
+ * g_nWorldAnimLodVerts/LodColors/DetailVerts/DetailColorsCount / List and
+ * g_nWorldAnimVertexMorphCount / List (+0x40). Per-entry header bytes:
+ * [+1]=state-flags (CHUNK_ANIM_HALTED 0x2 = skip, CHUNK_ANIM_BRANCH 0x1 =
+ * follow next_b; a step entry's low two bits are copied in on arrival),
+ * [+2]=current step index, [+3]=delay counter, [+4]=target index. Each tick:
+ * skip if halted, else delay -= step → if expired advance state via the
+ * RLE/state table at +8 (4-byte step entries) or +0xc (8-byte step entries)
+ * following the (bit&1?next_b:next_a) successor links; arm new delay from step
+ * byte and write its payload to the world target. The 6 sub-tables drive: (1)
+ * texture frames: copies texture `src`'s records over texture `dst` (its
+ * 0x10-byte g_pWorldTextureLodRecords record and 0xA8-byte
+ * g_pWorldTextureDetailRecords record), so a texture slot steps through frames;
+ * (2) UV scroll/cycle that writes 6/12/8/8/8 byte UVs at fixed offsets in the
+ * two UV targets producing a rotating-byte pattern; (3..6) deferred keyframes:
+ * only the due keyframe index is written into the world chunk (bytes
+ * +0x18..+0x1b, one per table), and RenderWorldChunks applies it to the
+ * far/near mesh vertices or colours when it draws the chunk; (7)
+ * packed-21-bit-per-axis vertex morph at g_pWorldAnimVertexMorphList that
+ * decodes the source triplet then writes the dest triangle's packed-XY anchors
+ * (with optional GTE matrix interpolation when secondary keyframe selected by
+ * step byte). Skips advance if not yet due (just decrements delay counter). */
 void TickWorldChunkAnimations(int step);
 
-/* 0x8002b4ac: Sibling of TickWorldChunkAnimations that snaps every world chunk-anim table to its current keyframe state without advancing time (no delay decrement, no RLE walk). Same 6 tables: copies the current-keyframe full-mesh blob (0xa8 + 0x10), applies the current UV rotation pattern, writes the current step-index byte to each color-cycle target byte (+0x18..+0x1b), and rebuilds the packed-XY triangle anchors at g_pWorldCollisionHeader+0x10 from the source triplet. Used by the level-loader (BuildLoadedLevelRuntime) to seed all world animations to their initial keyframe before gameplay begins. */
+/* 0x8002b4ac: Sibling of TickWorldChunkAnimations that snaps every world
+ * chunk-anim table to its current keyframe state without advancing time (no
+ * delay decrement, no RLE walk). Same 6 tables: copies the current-keyframe
+ * full-mesh blob (0xa8 + 0x10), applies the current UV rotation pattern, writes
+ * the current step-index byte to each color-cycle target byte (+0x18..+0x1b),
+ * and rebuilds the packed-XY triangle anchors at g_pWorldCollisionHeader+0x10
+ * from the source triplet. Used by the level-loader (BuildLoadedLevelRuntime)
+ * to seed all world animations to their initial keyframe before gameplay
+ * begins. */
 void ResetWorldChunkAnimations(void);
 
-/* 0x8002b9cc: Frame OT/depth setup. Zero-fills the first 0x1c00 bytes of the frame scratch arena at g_apMainDrawEntityList (FillBlock16), then picks the draw-distance constant g_nFarPlaneDrawDistance by context: In-level (g_nCameraVisZone < g_nVisZoneCount): 0x28000 (far draw distance, the camera's zone list). Story-intro splash / scripted cutscene (GS_TITLE or GS_CUTSCENE): 0x1c000 (close). Otherwise: 0x14000 (default UI / shorter range). Then calls RenderWorldChunks to publish the chosen OT range. */
+/* 0x8002b9cc: Frame OT/depth setup. Zero-fills the first 0x1c00 bytes of the
+ * frame scratch arena at g_apMainDrawEntityList (FillBlock16), then picks the
+ * draw-distance constant g_nFarPlaneDrawDistance by context: In-level
+ * (g_nCameraVisZone < g_nVisZoneCount): 0x28000 (far draw distance, the
+ * camera's zone list). Story-intro splash / scripted cutscene (GS_TITLE or
+ * GS_CUTSCENE): 0x1c000 (close). Otherwise: 0x14000 (default UI / shorter
+ * range). Then calls RenderWorldChunks to publish the chosen OT range. */
 void SetupFrameOT(void);
 
-/* 0x8002bb20: Returns the "X%" completion percentage shown in the inventory header (GS_INVENTORY). Formula: (g_nTotalTreasureCollected*50 + g_nTotalDragonsRescued*6000 + g_nTotalEggsRecovered*10000) / 12000 — i.e. 12000 gems = 50%, 80 dragons = 40%, 12 eggs = 10%, Spyro 1's exact 100% split. When treasure exceeds 12000 (Gnasty's Loot's extra 2000), switches to 100 + (treasure-12000)/100, giving the famous 120% cap. */
+/* 0x8002bb20: Returns the "X%" completion percentage shown in the inventory
+ * header (GS_INVENTORY). Formula: (g_nTotalTreasureCollected*50 +
+ * g_nTotalDragonsRescued*6000 + g_nTotalEggsRecovered*10000) / 12000 — i.e.
+ * 12000 gems = 50%, 80 dragons = 40%, 12 eggs = 10%, Spyro 1's exact 100%
+ * split. When treasure exceeds 12000 (Gnasty's Loot's extra 2000), switches to
+ * 100 + (treasure-12000)/100, giving the famous 120% cap. */
 int ComputeInventoryProgressPercent(void);
 
-/* 0x8002bbe0: Per-frame CD-DA / XA music stream state machine + volume fade ramp. NOT memcard despite earlier triage. Ticked every game frame from GamestateUpdate / PauseMenu_Update / StoryIntro_Update / Cutscene_Update / TickDemoPlayback, and additionally from inside CdReadSyncSectors's wait loop so music keeps advancing during long sync CD reads. (1) Polls CdSync(1, &g_abCdSyncResult); on completion of the in-flight cmd at g_nLastCdMusicCommand (mid-range 8..9 cmds need status-bit 0x200, 0x1b=ReadS uses a different mask), clears the cmd code and stamps g_dwMusicStreamStatus status. If a pending music cmd is queued at g_nPendingMusicCommand, dispatches HandleMusicCommand(track=g_nCurrentMusicTrack, cmd=g_nPendingMusicCommand) and clears the pending slot. (2) If music-stream-active (g_dwMusicStreamStatus bit 0x10): on CdSync==2 idle, if read head g_dwCdMusicReadHead has passed the current track end (g_anMusicTrackEndLbaTable[track*8]), maybe advance to a random track from the per-world triple at &g_nLevelMusicTrack[g_nLevelIndex*0xc/4] (track guard via g_nCdMusicStreamTimeout cooldown vs g_nVblankTickCount timer) then CdControlBlocking(0xd=setfilter, filter=track&7) + CdControl(0x1b=ReadS, LBA), else (still inside track) issues CdControlForce(0x11=getlocL) and copies the absolute time at &0x800776c1 back into g_dwCdMusicReadHead. On CdSync==5 hold, re-issues 0x1b ReadS at the track-start LBA. (3) Volume fade ramp: animates current vol g_nCdDaVolumeCurrent toward target g_nMusicVolumeFadeTarget by g_nMusicVolumeFadeStep step/frame; on reaching target, issues a finalizing CdControl (e.g. cmd 8/9 for unmute/mute via g_nLastCdMusicCommand path) and resets the request. Final volume byte stamped into g_abSpuCommonAttr=0xc0 buffer and pushed via SetSpuCommonAttr. */
+/* 0x8002bbe0: Per-frame CD-DA / XA music stream state machine + volume fade
+ * ramp. NOT memcard despite earlier triage. Ticked every game frame from
+ * GamestateUpdate / PauseMenu_Update / StoryIntro_Update / Cutscene_Update /
+ * TickDemoPlayback, and additionally from inside CdReadSyncSectors's wait loop
+ * so music keeps advancing during long sync CD reads. (1) Polls CdSync(1,
+ * &g_abCdSyncResult); on completion of the in-flight cmd at
+ * g_nLastCdMusicCommand (mid-range 8..9 cmds need status-bit 0x200, 0x1b=ReadS
+ * uses a different mask), clears the cmd code and stamps g_dwMusicStreamStatus
+ * status. If a pending music cmd is queued at g_nPendingMusicCommand,
+ * dispatches HandleMusicCommand(track=g_nCurrentMusicTrack,
+ * cmd=g_nPendingMusicCommand) and clears the pending slot. (2) If
+ * music-stream-active (g_dwMusicStreamStatus bit 0x10): on CdSync==2 idle, if
+ * read head g_dwCdMusicReadHead has passed the current track end
+ * (g_anMusicTrackEndLbaTable[track*8]), maybe advance to a random track from
+ * the per-world triple at &g_nLevelMusicTrack[g_nLevelIndex*0xc/4] (track guard
+ * via g_nCdMusicStreamTimeout cooldown vs g_nVblankTickCount timer) then
+ * CdControlBlocking(0xd=setfilter, filter=track&7) + CdControl(0x1b=ReadS,
+ * LBA), else (still inside track) issues CdControlForce(0x11=getlocL) and
+ * copies the absolute time at &0x800776c1 back into g_dwCdMusicReadHead. On
+ * CdSync==5 hold, re-issues 0x1b ReadS at the track-start LBA. (3) Volume fade
+ * ramp: animates current vol g_nCdDaVolumeCurrent toward target
+ * g_nMusicVolumeFadeTarget by g_nMusicVolumeFadeStep step/frame; on reaching
+ * target, issues a finalizing CdControl (e.g. cmd 8/9 for unmute/mute via
+ * g_nLastCdMusicCommand path) and resets the request. Final volume byte stamped
+ * into g_abSpuCommonAttr=0xc0 buffer and pushed via SetSpuCommonAttr. */
 void TickCdMusicStream(void);
 
-/* 0x8002bfe0: Scripted-cutscene per-frame driver — interpolates camera transform + per-actor poses from the scripted cutscene path table at g_pPathTableHead. Reads g_pPathTableHead[0] = current sub-frame index, [3] = actor count, [4] = camera keyframe array base (24-byte entries: pos[12]+euler[12]). Writes camera pos to g_anCameraPos and Euler to g_nCameraEulerRoll/Pitch/Yaw. Per-actor (i=0..count-1): reads its model's first animation's m_ProgressPerTick (g_apActorMeshTable[type]->m_Animations[0]) to choose a keyframe-rate divisor — 0x10 → /8 (8fps phase, low 3 bits ×8), 0x15 → /6 (custom), 0x20 → /4, default → /2 (60fps). Stamps actor's per-frame anim-state (anim, nextAnim, frame, nextFrame, and frameProgress as the inter-frame phase) and linearly-interpolates XYZ from packed 10-bit-per-component vertex pairs at *(g_pPathTableHead+0x14+id*4) into the actor's posX/posY/posZ. Callers: Cutscene_Update, Titlescreen_Update. */
+/* 0x8002bfe0: Scripted-cutscene per-frame driver — interpolates camera
+ * transform + per-actor poses from the scripted cutscene path table at
+ * g_pPathTableHead. Reads g_pPathTableHead[0] = current sub-frame index, [3] =
+ * actor count, [4] = camera keyframe array base (24-byte entries:
+ * pos[12]+euler[12]). Writes camera pos to g_anCameraPos and Euler to
+ * g_nCameraEulerRoll/Pitch/Yaw. Per-actor (i=0..count-1): reads its model's
+ * first animation's m_ProgressPerTick
+ * (g_apActorMeshTable[type]->m_Animations[0]) to choose a keyframe-rate divisor
+ * — 0x10 → /8 (8fps phase, low 3 bits ×8), 0x15 → /6 (custom), 0x20 → /4,
+ * default → /2 (60fps). Stamps actor's per-frame anim-state (anim, nextAnim,
+ * frame, nextFrame, and frameProgress as the inter-frame phase) and
+ * linearly-interpolates XYZ from packed 10-bit-per-component vertex pairs at
+ * *(g_pPathTableHead+0x14+id*4) into the actor's posX/posY/posZ. Callers:
+ * Cutscene_Update, Titlescreen_Update. */
 void AdvanceCutsceneFrame(int timer);
 
-/* 0x8002c420: Enters GS_PAUSE_MENU: g_nGamestate=GS_PAUSE_MENU, zeros pause-menu cursor/substate/idle frames, plays the menu-open sfx (sample id from g_pLevelSampleBankHeader+0x2c). param nonzero = entered from gameplay/sub-menu (StopAllSoundExceptMask(0) first, resets transition frames); param 0 = re-entry path that forces all 5 HUD counters visible with roll phase 0xc. Flight levels skip the HUD work. */
+/* 0x8002c420: Enters GS_PAUSE_MENU: g_nGamestate=GS_PAUSE_MENU, zeros
+ * pause-menu cursor/substate/idle frames, plays the menu-open sfx (sample id
+ * from g_pLevelSampleBankHeader+0x2c). param nonzero = entered from
+ * gameplay/sub-menu (StopAllSoundExceptMask(0) first, resets transition
+ * frames); param 0 = re-entry path that forces all 5 HUD counters visible with
+ * roll phase 0xc. Flight levels skip the HUD work. */
 void EnterPauseMenu(int fromGameplay);
 
-/* 0x8002c534: Exits pause menu back to gameplay: g_nGamestate=GS_GAMEPLAY, restores pause-snapshot framebuffer from g_pRenderScratchPrimTop-0x1c200 via LoadImage, repaints HUD palette indices to {3,…,0xd}, releases memcard slot. */
+/* 0x8002c534: Exits pause menu back to gameplay: g_nGamestate=GS_GAMEPLAY,
+ * restores pause-snapshot framebuffer from g_pRenderScratchPrimTop-0x1c200 via
+ * LoadImage, repaints HUD palette indices to {3,…,0xd}, releases memcard
+ * slot. */
 void ExitPauseMenuToGame(int resumeMusic);
 
-/* 0x8002c618: Begins the pause→world-map curtain animation: g_nGamestate=GS_MENU_TRANSITION, zeros pause idle frames, kicks ChangeSpyroState(NULL,…) to freeze the player. */
+/* 0x8002c618: Begins the pause→world-map curtain animation:
+ * g_nGamestate=GS_MENU_TRANSITION, zeros pause idle frames, kicks
+ * ChangeSpyroState(NULL,…) to freeze the player. */
 void BeginPauseToMenuTransition(void);
 
-/* 0x8002c664: Returns to the current world hub from a sub-level: g_nGamestate=GS_LEVEL_LOAD (logo/splash), g_nSkipGamestateDraw=1, snaps g_nNextLevelId down to world id (id/10*10). Called from SpyroStateDelay_Update at homecoming-portal exit. */
+/* 0x8002c664: Returns to the current world hub from a sub-level:
+ * g_nGamestate=GS_LEVEL_LOAD (logo/splash), g_nSkipGamestateDraw=1, snaps
+ * g_nNextLevelId down to world id (id/10*10). Called from
+ * SpyroStateDelay_Update at homecoming-portal exit. */
 void BeginWorldHubReturn(void);
 
-/* 0x8002c714: Enters GS_INVENTORY (g_nGamestate=GS_INVENTORY); seeds g_nSubMenuCursor to g_nLevelIndex/6 so the cursor lands on the active world row; zeros scroll state and clears the pad-history ring. */
+/* 0x8002c714: Enters GS_INVENTORY (g_nGamestate=GS_INVENTORY); seeds
+ * g_nSubMenuCursor to g_nLevelIndex/6 so the cursor lands on the active world
+ * row; zeros scroll state and clears the pad-history ring. */
 void EnterInventoryMenu(int fromGameplay);
 
-/* 0x8002c7bc: Exits the sub-menu back to title (g_nGamestate=GS_GAMEPLAY); restores the title snapshot framebuffer from g_pRenderScratchPrimTop-0x1c200, zeros all five HUD palette indices, releases memcard slot 8. */
+/* 0x8002c7bc: Exits the sub-menu back to title (g_nGamestate=GS_GAMEPLAY);
+ * restores the title snapshot framebuffer from g_pRenderScratchPrimTop-0x1c200,
+ * zeros all five HUD palette indices, releases memcard slot 8. */
 void ExitSubMenuToTitle(void);
 
-/* 0x8002c85c: Player death dispatch: if g_nExtraLives > 0 decrement and go to g_nGamestate=GS_RESPAWN; else g_nGamestate=GS_GAME_OVER. Resets g_nRespawnOrGameOverMode/Frame to 0 so the frame counter restarts cleanly. */
+/* 0x8002c85c: Player death dispatch: if g_nExtraLives > 0 decrement and go to
+ * g_nGamestate=GS_RESPAWN; else g_nGamestate=GS_GAME_OVER. Resets
+ * g_nRespawnOrGameOverMode/Frame to 0 so the frame counter restarts cleanly. */
 void TriggerRespawnOrGameOver(void);
 
-/* 0x8002c8a4: Sets g_nGamestate=GS_GAMEPLAY (gameplay) and restores HUD palette indices to defaults; ends the respawn (state 4) and game-over restart (state 5) paths of RespawnOrGameOver_Update — its only two callers. */
+/* 0x8002c8a4: Sets g_nGamestate=GS_GAMEPLAY (gameplay) and restores HUD palette
+ * indices to defaults; ends the respawn (state 4) and game-over restart (state
+ * 5) paths of RespawnOrGameOver_Update — its only two callers. */
 void EndRespawnToGameplay(void);
 
-/* 0x8002c91c: Empty body (single `jr ra`); Gamestate06_Update's only call, so gamestate 6 updates nothing. */
+/* 0x8002c91c: Empty body (single `jr ra`); Gamestate06_Update's only call, so
+ * gamestate 6 updates nothing. */
 void Gamestate06SubstateStub_Noop(void);
 
-/* 0x8002c924: Begins the dragon-rescue statue cutscene overlay (g_nGamestate = GS_DRAGON_RESCUE). Seeds the cutscene substate/timer globals, increments BOTH dragon counters in lockstep (g_anLevelDragonsRescued[g_nLevelIndex] per-level + g_nTotalDragonsRescued game-wide total, with the HUD cache primed from the latter), blocks gameplay (g_nCinematicActive=1, g_nSkipGamestateDraw=1), sets the statue's partner checkpoint to CHECKPT_ANIM_FLASH, anchors the aura star above the statue, and fires the rescue chime sfx. Special cases: Artisans home (level 10) upgrades pickup type 1->2 once any sibling-level g_abLevelExited entry is nonzero; Gnasty's Loot (level 0x3c) rewrites the actor params for the key-locked treasure variant. */
+/* 0x8002c924: Begins the dragon-rescue statue cutscene overlay (g_nGamestate =
+ * GS_DRAGON_RESCUE). Seeds the cutscene substate/timer globals, increments BOTH
+ * dragon counters in lockstep (g_anLevelDragonsRescued[g_nLevelIndex] per-level
+ * + g_nTotalDragonsRescued game-wide total, with the HUD cache primed from the
+ * latter), blocks gameplay (g_nCinematicActive=1, g_nSkipGamestateDraw=1), sets
+ * the statue's partner checkpoint to CHECKPT_ANIM_FLASH, anchors the aura star
+ * above the statue, and fires the rescue chime sfx. Special cases: Artisans
+ * home (level 10) upgrades pickup type 1->2 once any sibling-level
+ * g_abLevelExited entry is nonzero; Gnasty's Loot (level 0x3c) rewrites the
+ * actor params for the key-locked treasure variant. */
 void BeginDragonRescue(Actor *actor);
 
-/* 0x8002cb6c: Returns from the dragon rescue to gameplay: GS_GAMEPLAY, gameplay unblocked, the rescued dragon's checkpoint armed (CHECKPT_HELD -> CHECKPT_ARMED), ResetSpyroEntity(1), a 0xC-frame pad snapshot, the camera anchor back on Spyro with the standing camera (CAM_MODE_STAND) on the dynamic target params, the superflame timer restored and the HUD counters reset (InitHudCounters(0)). */
+/* 0x8002cb6c: Returns from the dragon rescue to gameplay: GS_GAMEPLAY, gameplay
+ * unblocked, the rescued dragon's checkpoint armed (CHECKPT_HELD ->
+ * CHECKPT_ARMED), ResetSpyroEntity(1), a 0xC-frame pad snapshot, the camera
+ * anchor back on Spyro with the standing camera (CAM_MODE_STAND) on the dynamic
+ * target params, the superflame timer restored and the HUD counters reset
+ * (InitHudCounters(0)). */
 void EndDragonRescueToWorld(void);
 
-/* 0x8002d02c: Ends the save-menu (GS_SAVE_MENU) back to gameplay: g_nGamestate=GS_GAMEPLAY, resets Spyro (ResetSpyroEntity) + camera mode 0, snapshots the live camera pose INTO g_anCameraDynamicTargetParams (CopyWords from &g_nCameraYaw, 0x18 BYTES = 6 ints), biases slot[0] yaw by g_nCameraParamsReferenceYaw, and points g_pCameraTargetParams at it so the world-return camera eases from the menu pose instead of a canned table. Re-inits HUD counters, restores music track. Mirrors EndDragonRescueToWorld. */
+/* 0x8002d02c: Ends the save-menu (GS_SAVE_MENU) back to gameplay:
+ * g_nGamestate=GS_GAMEPLAY, resets Spyro (ResetSpyroEntity) + camera mode 0,
+ * snapshots the live camera pose INTO g_anCameraDynamicTargetParams (CopyWords
+ * from &g_nCameraYaw, 0x18 BYTES = 6 ints), biases slot[0] yaw by
+ * g_nCameraParamsReferenceYaw, and points g_pCameraTargetParams at it so the
+ * world-return camera eases from the menu pose instead of a canned table.
+ * Re-inits HUD counters, restores music track. Mirrors
+ * EndDragonRescueToWorld. */
 void EndSaveMenuToWorld(void);
 
-/* 0x8002d170: Begins the "IN THE WORLD OF DRAGONS…" story intro: g_nGamestate=GS_TITLE (story-intro mode). FillWord zeros 0x5c bytes starting at g_nTitleMode, resets sfx/music volume to 10, primes the title-CD anchor at g_pStoryIntroStreamCursor to the CD buffer end-2000, and kicks the libpress audio start at srand(0x159). */
+/* 0x8002d170: Begins the "IN THE WORLD OF DRAGONS…" story intro:
+ * g_nGamestate=GS_TITLE (story-intro mode). FillWord zeros 0x5c bytes starting
+ * at g_nTitleMode, resets sfx/music volume to 10, primes the title-CD anchor at
+ * g_pStoryIntroStreamCursor to the CD buffer end-2000, and kicks the libpress
+ * audio start at srand(0x159). */
 void BeginStoryIntro(void);
 
-/* 0x8002d228: Begins the credits sequence: g_nGamestate=GS_CREDITS, g_nCreditsMode=-1. Clears the screen to black, calls ResetSpyroEntity(1), loads the credits image via CdReadSyncSectors. reloadMeshes nonzero (post-game variant) also runs LoadActorMeshTables (audio reset) and marks g_nCreditsPageIndex=10 (post-game flag). */
+/* 0x8002d228: Begins the credits sequence: g_nGamestate=GS_CREDITS,
+ * g_nCreditsMode=-1. Clears the screen to black, calls ResetSpyroEntity(1),
+ * loads the credits image via CdReadSyncSectors. reloadMeshes nonzero
+ * (post-game variant) also runs LoadActorMeshTables (audio reset) and marks
+ * g_nCreditsPageIndex=10 (post-game flag). */
 void BeginCreditsSequence(int reloadMeshes);
 
-/* 0x8002d338: Enters the scripted in-engine cutscene (g_nGamestate=GS_CUTSCENE = GS_CUTSCENE). The cutscene id is g_nCutsceneId (the bundle loaded by TickCutsceneBundleLoadStream): 0 = title-screen backdrop (boot, quit to title, demo end), 1 = opening story (skippable, then a new game at level 0xA), 2/3 = ending (credits; see DispatchSpecialCutscene). Builds a 0x10-byte intro packet at &g_CutsceneSoundDef keyed off g_nCutsceneId (cutscene id), with sound bank id from &g_nCutsceneSamplePitch[id], and sets sfx/music vols to max (0x3fff). */
+/* 0x8002d338: Enters the scripted in-engine cutscene (g_nGamestate=GS_CUTSCENE
+ * = GS_CUTSCENE). The cutscene id is g_nCutsceneId (the bundle loaded by
+ * TickCutsceneBundleLoadStream): 0 = title-screen backdrop (boot, quit to
+ * title, demo end), 1 = opening story (skippable, then a new game at level
+ * 0xA), 2/3 = ending (credits; see DispatchSpecialCutscene). Builds a 0x10-byte
+ * intro packet at &g_CutsceneSoundDef keyed off g_nCutsceneId (cutscene id),
+ * with sound bank id from &g_nCutsceneSamplePitch[id], and sets sfx/music vols
+ * to max (0x3fff). */
 void BeginCutscene(void);
 
-/* 0x8002d440: Dispatches a special-cutscene request based on g_nCutsceneId: 1 → clears screen + g_nGamestate=GS_TITLE (story intro with substate 3 / message 1, calls InitNewGameState to reload the new-game state, jumps to world 10); 2 → BeginCreditsSequence(0) (mid-game credits); 3 → BeginCreditsSequence(1) + sets the post-game marker g_nCreditsPageIndex=10. */
+/* 0x8002d440: Dispatches a special-cutscene request based on g_nCutsceneId: 1 →
+ * clears screen + g_nGamestate=GS_TITLE (story intro with substate 3 / message
+ * 1, calls InitNewGameState to reload the new-game state, jumps to world 10); 2
+ * → BeginCreditsSequence(0) (mid-game credits); 3 → BeginCreditsSequence(1) +
+ * sets the post-game marker g_nCreditsPageIndex=10. */
 void DispatchSpecialCutscene(void);
 
-/* 0x8002d554: Zeros the 16-slot pad-history ring at g_anPadHistoryRing and resets the write index g_nPadHistoryIndex to 0. Called by cheat-code reset (after a successful match) and by EnterInventoryMenu so cheat sequences don't carry across the menu open. */
+/* 0x8002d554: Zeros the 16-slot pad-history ring at g_anPadHistoryRing and
+ * resets the write index g_nPadHistoryIndex to 0. Called by cheat-code reset
+ * (after a successful match) and by EnterInventoryMenu so cheat sequences don't
+ * carry across the menu open. */
 void ClearPadHistoryRing(void);
 
-/* 0x8002d580: Level-select (warp) mode input, active while g_nLevelSelectModeActive: Circle, Cross, Square, Triangle, Right, Down, Left pick the sub-level digit 0..6; Up auto-advances g_nNextLevelId to the next valid id (wraps sub>5 to next world, world>6 back to 10) and arms g_nLevelSelectWorldIndex. A sub-press while a world is armed commits: g_nNextLevelId = world*10+sub, resets Spyro (RestartSpyroAnimWithState SPYRO_ST_GLIDE), g_nGamestate=GS_LEVEL_LOAD + g_nCdStreamState=LSTREAM_FRESH, camera CAM_MODE_LEVEL_TRANSITION, clears g_nLevelSelectModeActive, records g_nLevelSelectSubIndex (write-only). */
+/* 0x8002d580: Level-select (warp) mode input, active while
+ * g_nLevelSelectModeActive: Circle, Cross, Square, Triangle, Right, Down, Left
+ * pick the sub-level digit 0..6; Up auto-advances g_nNextLevelId to the next
+ * valid id (wraps sub>5 to next world, world>6 back to 10) and arms
+ * g_nLevelSelectWorldIndex. A sub-press while a world is armed commits:
+ * g_nNextLevelId = world*10+sub, resets Spyro (RestartSpyroAnimWithState
+ * SPYRO_ST_GLIDE), g_nGamestate=GS_LEVEL_LOAD + g_nCdStreamState=LSTREAM_FRESH,
+ * camera CAM_MODE_LEVEL_TRANSITION, clears g_nLevelSelectModeActive, records
+ * g_nLevelSelectSubIndex (write-only). */
 void HandleLevelSelectInput(void);
 
-/* 0x8002d810: Cheat-code dispatch (slot index from CheckCheatCodeMatch, which only runs on the inventory screen via SubMenu_Update). Slot 2 = credits: stashes g_nActiveLevelId in g_nCreditsReturnLevelId then BeginCreditsSequence(0). Slot 3 = all worlds: fills g_abLevelVisitedFlag[0..31] with 1 + g_abWorldBalloonistState[0..5] with BALLOONIST_OPEN. Slot 4 = g_nExtraLives = 99. Slots 2 and 3 play the reward sound. Slots 0/1/5-7 have sequences in g_anCheatCodeSequences and still match (clearing the pad history), but nothing in the EXE or the overlays acts on them. */
+/* 0x8002d810: Cheat-code dispatch (slot index from CheckCheatCodeMatch, which
+ * only runs on the inventory screen via SubMenu_Update). Slot 2 = credits:
+ * stashes g_nActiveLevelId in g_nCreditsReturnLevelId then
+ * BeginCreditsSequence(0). Slot 3 = all worlds: fills
+ * g_abLevelVisitedFlag[0..31] with 1 + g_abWorldBalloonistState[0..5] with
+ * BALLOONIST_OPEN. Slot 4 = g_nExtraLives = 99. Slots 2 and 3 play the reward
+ * sound. Slots 0/1/5-7 have sequences in g_anCheatCodeSequences and still match
+ * (clearing the pad history), but nothing in the EXE or the overlays acts on
+ * them. */
 void ApplyCheatCodeEffect(int code);
 
-/* 0x8002d8ec: Cheat-code matcher: appends g_dwPadPressed to the 16-slot g_anPadHistoryRing (index g_nPadHistoryIndex); for each of the 8 sequences in g_anCheatCodeSequences (stride 0x40 = 16 ints, 0-terminated) compares the last len presses of the ring; on match calls ApplyCheatCodeEffect(slot) + ClearPadHistoryRing. Only runs while g_nCdStreamState < 0 (no stream in flight). Called from SubMenu_Update (inventory screen). */
+/* 0x8002d8ec: Cheat-code matcher: appends g_dwPadPressed to the 16-slot
+ * g_anPadHistoryRing (index g_nPadHistoryIndex); for each of the 8 sequences in
+ * g_anCheatCodeSequences (stride 0x40 = 16 ints, 0-terminated) compares the
+ * last len presses of the ring; on match calls ApplyCheatCodeEffect(slot) +
+ * ClearPadHistoryRing. Only runs while g_nCdStreamState < 0 (no stream in
+ * flight). Called from SubMenu_Update (inventory screen). */
 void CheckCheatCodeMatch(void);
 
-/* 0x8002da74: Update half of the level-transition gem tally (sole caller LevelLoad_Update; was misread as a logo-splash fire ring). At phase 0 computes g_nGemTallyHoldEndPhase and clears the alive flags of all 64 records at g_pGemTallyParticleRecords (reused g_anActorShadowQueue storage). Advances g_nLevelTransitionPhase by g_nFrameStep; from phase 0x80 spawns one gem-icon particle per tally unit (i-th at phase 0x80+2i, i < g_nGemTallyIconCount, max 32) with randomized arc params, then flies each through three sine arcs (age 0..0x30 rise, 0x30..0x60 hop, 0x60..0x93 fall into the total counter) and retires it — pickup sfx every 8 phase steps on spawn, chime every 3rd particle on landing. Past phase 0x1a0 clears g_nLevelTransitionTallyActive. DrawLevelTransitionOverlay renders one gem sprite per alive record. */
+/* 0x8002da74: Update half of the level-transition gem tally (sole caller
+ * LevelLoad_Update; was misread as a logo-splash fire ring). At phase 0
+ * computes g_nGemTallyHoldEndPhase and clears the alive flags of all 64 records
+ * at g_pGemTallyParticleRecords (reused g_anActorShadowQueue storage). Advances
+ * g_nLevelTransitionPhase by g_nFrameStep; from phase 0x80 spawns one gem-icon
+ * particle per tally unit (i-th at phase 0x80+2i, i < g_nGemTallyIconCount, max
+ * 32) with randomized arc params, then flies each through three sine arcs (age
+ * 0..0x30 rise, 0x30..0x60 hop, 0x60..0x93 fall into the total counter) and
+ * retires it — pickup sfx every 8 phase steps on spawn, chime every 3rd
+ * particle on landing. Past phase 0x1a0 clears g_nLevelTransitionTallyActive.
+ * DrawLevelTransitionOverlay renders one gem sprite per alive record. */
 void AnimateGemTallyParticles(void);
 
-/* 0x8002df9c: g_nGamestate==GS_LEVEL_LOAD handler: calls TickSpyroFrameGlideHold, UpdateCameraFrame, AnimateGemTallyParticles; conditionally calls TickLevelTransitionStream when g_nCdStreamState<0xb or g_nLevelTransitionTallyActive==0. */
+/* 0x8002df9c: g_nGamestate==GS_LEVEL_LOAD handler: calls
+ * TickSpyroFrameGlideHold, UpdateCameraFrame, AnimateGemTallyParticles;
+ * conditionally calls TickLevelTransitionStream when g_nCdStreamState<0xb or
+ * g_nLevelTransitionTallyActive==0. */
 void LevelLoad_Update(void);
 
-/* 0x8002e000: GS_ARRIVAL_CAMERA handler (set by TickLevelTransitionStream after a level transition): runs a normal gameplay tick (TickSpyroGameplayFrame + UpdateCameraFrame) while the scripted arrival camera settles. Normalizes g_nCameraEulerPitch to signed 12-bit; returns to GS_GAMEPLAY when pitch < -0x200 OR g_pCameraTargetParams has latched g_anCameraParamTransitionGlideIn (the portal glide-in arrival preset). */
+/* 0x8002e000: GS_ARRIVAL_CAMERA handler (set by TickLevelTransitionStream after
+ * a level transition): runs a normal gameplay tick (TickSpyroGameplayFrame +
+ * UpdateCameraFrame) while the scripted arrival camera settles. Normalizes
+ * g_nCameraEulerPitch to signed 12-bit; returns to GS_GAMEPLAY when pitch <
+ * -0x200 OR g_pCameraTargetParams has latched g_anCameraParamTransitionGlideIn
+ * (the portal glide-in arrival preset). */
 void CameraSettle_Update(void);
 
-/* 0x8002e084: GS_MENU_TRANSITION (10) handler. Counter g_nMenuTickFrames (reused) increments. At frame 16 (when g_nMenuDrawFrames==0) calls ChangeSpyroState(SPYRO_ST_GLIDE). At frame 32 resets counter, increments g_nMenuDrawFrames; when it reaches 2 calls BeginWorldHubReturn. */
+/* 0x8002e084: GS_MENU_TRANSITION (10) handler. Counter g_nMenuTickFrames
+ * (reused) increments. At frame 16 (when g_nMenuDrawFrames==0) calls
+ * ChangeSpyroState(SPYRO_ST_GLIDE). At frame 32 resets counter, increments
+ * g_nMenuDrawFrames; when it reaches 2 calls BeginWorldHubReturn. */
 void SpyroStateDelay_Update(void);
 
-/* 0x8002e12c: g_nGamestate==GS_PAUSE_MENU handler. Pause menu input loop: reads g_dwPadPressed (bits 0x10/0x40/0x1000/0x2000/0x4000/0x8000), moves g_nPauseMenuCursor, plays SFX from g_pLevelSampleBankHeader+0x2d..0x2e on every move/select. Sub-mode in g_nPauseMenuSubstate (0=top, 1=options, 2=quit). Cases adjust SFX/music/vibration volumes and quit-to-title. */
+/* 0x8002e12c: g_nGamestate==GS_PAUSE_MENU handler. Pause menu input loop: reads
+ * g_dwPadPressed (bits 0x10/0x40/0x1000/0x2000/0x4000/0x8000), moves
+ * g_nPauseMenuCursor, plays SFX from g_pLevelSampleBankHeader+0x2d..0x2e on
+ * every move/select. Sub-mode in g_nPauseMenuSubstate (0=top, 1=options,
+ * 2=quit). Cases adjust SFX/music/vibration volumes and quit-to-title. */
 void PauseMenu_Update(void);
 
-/* 0x8002eb2c: GS_INVENTORY (inventory sub-menu) update. Ticks the HUD icon spin angle and frame cycle + RotateLightVectorXZ; after 4 transition frames: if g_nLevelSelectModeActive routes everything to HandleLevelSelectInput; else runs CheckCheatCodeMatch, then horizontal world scrolling — held PAD_LEFT / PAD_RIGHT start a +/-0x40-per-frame slide of g_nSubMenuScrollOffset toward +/-0x1c0 where g_nSubMenuCursor steps and the offset flips sign (gated on the neighbor world's home-level g_abLevelVisitedFlag via the +/-6 virtual base); PAD_TRIANGLE / PAD_START go back to the pause menu (EnterPauseMenu(0)), PAD_CROSS / PAD_SELECT leave through ExitSubMenuToTitle. */
+/* 0x8002eb2c: GS_INVENTORY (inventory sub-menu) update. Ticks the HUD icon spin
+ * angle and frame cycle + RotateLightVectorXZ; after 4 transition frames: if
+ * g_nLevelSelectModeActive routes everything to HandleLevelSelectInput; else
+ * runs CheckCheatCodeMatch, then horizontal world scrolling — held PAD_LEFT /
+ * PAD_RIGHT start a +/-0x40-per-frame slide of g_nSubMenuScrollOffset toward
+ * +/-0x1c0 where g_nSubMenuCursor steps and the offset flips sign (gated on the
+ * neighbor world's home-level g_abLevelVisitedFlag via the +/-6 virtual base);
+ * PAD_TRIANGLE / PAD_START go back to the pause menu (EnterPauseMenu(0)),
+ * PAD_CROSS / PAD_SELECT leave through ExitSubMenuToTitle. */
 void SubMenu_Update(void);
 
-/* 0x8002edf0: GS_RESPAWN / GS_GAME_OVER handler (ex-LevelIntro_Update misnomer), mirror of its setter TriggerRespawnOrGameOver. State 4 (lives left): wait 0x10 frames, EndRespawnToGameplay + LoadAndStartLevelFromCd reload. State 5 (game over): CD-loads the game-over scene, resets g_nExtraLives=4 / sparx, latches g_nGameOverLevelIndex, FillWord-clears the 0x68-byte level-persistence block, then flies Spyro in a spiral (frames 0xb4..0x174) over the GAMEOVER letters until Start (pad 0x800) restarts via TickLevelTransitionStream. */
+/* 0x8002edf0: GS_RESPAWN / GS_GAME_OVER handler (ex-LevelIntro_Update
+ * misnomer), mirror of its setter TriggerRespawnOrGameOver. State 4 (lives
+ * left): wait 0x10 frames, EndRespawnToGameplay + LoadAndStartLevelFromCd
+ * reload. State 5 (game over): CD-loads the game-over scene, resets
+ * g_nExtraLives=4 / sparx, latches g_nGameOverLevelIndex, FillWord-clears the
+ * 0x68-byte level-persistence block, then flies Spyro in a spiral (frames
+ * 0xb4..0x174) over the GAMEOVER letters until Start (pad 0x800) restarts via
+ * TickLevelTransitionStream. */
 void RespawnOrGameOver_Update(void);
 
-/* 0x8002f3c4: Gamestate 6 handler — intentionally empty (calls the no-op substate stub). NO in-EXE writer ever sets g_nGamestate=GS_UNUSED_6 (full setter map: 1=HandleLevelSelectInput/BeginWorldHubReturn/portal, 2=EnterPauseMenu, 3=EnterInventoryMenu, 4/5=TriggerRespawnOrGameOver, 7=PauseMenu_Update overlay handoff, 8=BeginDragonRescue, 9=TickLevelTransitionStream, 0xA=BeginPauseToMenuTransition, 0xD=BeginStoryIntro/DispatchSpecialCutscene, 0xE=TickDemoPlayback, 0xF=BeginCreditsSequence) — state 6 is entered only by overlay code poking g_nGamestate by absolute address. Its Draw path (PauseMenu_Draw) renders just the grayscale frozen-scene backdrop + whatever sprites the overlay enqueued: an overlay-rendered menu/dialog state (balloonist dialogue is the prime candidate; confirm when overlay disassembly lands). */
+/* 0x8002f3c4: Gamestate 6 handler — intentionally empty (calls the no-op
+ * substate stub). NO in-EXE writer ever sets g_nGamestate=GS_UNUSED_6 (full
+ * setter map: 1=HandleLevelSelectInput/BeginWorldHubReturn/portal,
+ * 2=EnterPauseMenu, 3=EnterInventoryMenu, 4/5=TriggerRespawnOrGameOver,
+ * 7=PauseMenu_Update overlay handoff, 8=BeginDragonRescue,
+ * 9=TickLevelTransitionStream, 0xA=BeginPauseToMenuTransition,
+ * 0xD=BeginStoryIntro/DispatchSpecialCutscene, 0xE=TickDemoPlayback,
+ * 0xF=BeginCreditsSequence) — state 6 is entered only by overlay code poking
+ * g_nGamestate by absolute address. Its Draw path (PauseMenu_Draw) renders just
+ * the grayscale frozen-scene backdrop + whatever sprites the overlay enqueued:
+ * an overlay-rendered menu/dialog state (balloonist dialogue is the prime
+ * candidate; confirm when overlay disassembly lands). */
 void Gamestate06_Update(void);
 
-/* 0x8002f3e4: g_nGamestate==GS_DRAGON_RESCUE handler. 8-state submachine via g_nDragonRescueSubstate (0..7) and g_nDragonRescueTimer drives the gem-collect / dragon-rescue overlay: camera orbits via ArcTan2 + LookupSine/Cosine, spawns g_pDragonRescueStatueActor / g_pDragonRescueSpyroMirrorActor, plays sfx bank g_pLevelSampleBankHeader+0x31..0x35. Substate 7 ends via EndDragonRescueToWorld back to GS_GAMEPLAY. */
+/* 0x8002f3e4: g_nGamestate==GS_DRAGON_RESCUE handler. 8-state submachine via
+ * g_nDragonRescueSubstate (0..7) and g_nDragonRescueTimer drives the
+ * gem-collect / dragon-rescue overlay: camera orbits via ArcTan2 +
+ * LookupSine/Cosine, spawns g_pDragonRescueStatueActor /
+ * g_pDragonRescueSpyroMirrorActor, plays sfx bank
+ * g_pLevelSampleBankHeader+0x31..0x35. Substate 7 ends via
+ * EndDragonRescueToWorld back to GS_GAMEPLAY. */
 void DragonRescue_Update(void);
 
 /* 0x800314b4: g_nGamestate==GS_SAVE_MENU handler. */
 void SaveMenu_Update(void);
 
-/* 0x800324d8: GS_ACTOR_CUTSCENE (0xC) handler. Drives substate 4, the camera fly-in to the level entry point (g_anLevelEntryPoints); every other substate runs g_pfnActorCutsceneSubstateUpdate. */
+/* 0x800324d8: GS_ACTOR_CUTSCENE (0xC) handler. Drives substate 4, the camera
+ * fly-in to the level entry point (g_anLevelEntryPoints); every other substate
+ * runs g_pfnActorCutsceneSubstateUpdate. */
 void ActorCutscene_Update(void);
 
-/* 0x80032b08: g_nGamestate==GS_TITLE primary handler — the story-intro flow ("IN THE WORLD OF DRAGONS…"). Reached when g_nTitleMode==TITLE_MODE_STORY_INTRO; other modes call the titlescreen overlay's Titlescreen_Update (0x8007abac, g_abAssetDirectoryBuffer+0x174). Drives a 3-state submachine via g_nStoryIntroSubstate (0=enter/CD-load init, 1=stream tier-N CD chunks until ready, 2=camera fly-by + per-glyph text emit, ends by either BeginCutscene or fading to level-load). g_nTitleExitPath selects the variant (0='IN THE WORLD OF DRAGONS...', then the opening-story cutscene; 1='THE ADVENTURE BEGINS/CONTINUES...', then the level; 2='ENTERING DEMO MODE...', loads g_anDemoLevelIds[g_nDemoIndex] and arms g_nDemoMode = 1). */
+/* 0x80032b08: g_nGamestate==GS_TITLE primary handler — the story-intro flow
+ * ("IN THE WORLD OF DRAGONS…"). Reached when
+ * g_nTitleMode==TITLE_MODE_STORY_INTRO; other modes call the titlescreen
+ * overlay's Titlescreen_Update (0x8007abac, g_abAssetDirectoryBuffer+0x174).
+ * Drives a 3-state submachine via g_nStoryIntroSubstate (0=enter/CD-load init,
+ * 1=stream tier-N CD chunks until ready, 2=camera fly-by + per-glyph text emit,
+ * ends by either BeginCutscene or fading to level-load). g_nTitleExitPath
+ * selects the variant (0='IN THE WORLD OF DRAGONS...', then the opening-story
+ * cutscene; 1='THE ADVENTURE BEGINS/CONTINUES...', then the level; 2='ENTERING
+ * DEMO MODE...', loads g_anDemoLevelIds[g_nDemoIndex] and arms g_nDemoMode =
+ * 1). */
 void StoryIntro_Update(void);
 
-/* 0x800331ac: g_nGamestate==GS_CUTSCENE handler. Paired with Cutscene_Draw (the cutscene render). On entry (timer==0, cutscene id > 1) it issues a synchronous CD-load loop and re-seeds via BeginCutscene; per tick it advances *g_pPathTableHead (timer) toward threshold g_pPathTableHead[2]*2, fades g_nScreenFadeLevel at both ends, then calls DispatchSpecialCutscene to hand off to BeginStoryIntro / BeginCreditsSequence when finished. */
+/* 0x800331ac: g_nGamestate==GS_CUTSCENE handler. Paired with Cutscene_Draw (the
+ * cutscene render). On entry (timer==0, cutscene id > 1) it issues a
+ * synchronous CD-load loop and re-seeds via BeginCutscene; per tick it advances
+ * *g_pPathTableHead (timer) toward threshold g_pPathTableHead[2]*2, fades
+ * g_nScreenFadeLevel at both ends, then calls DispatchSpecialCutscene to hand
+ * off to BeginStoryIntro / BeginCreditsSequence when finished. */
 void Cutscene_Update(void);
 
-/* 0x800333dc: g_nGamestate==GS_CREDITS (/ returning-home) primary handler. Reached when g_nCreditsMode >= 99. mode 99 = init: picks return-to-hub level (60 normal / 10 post-game when g_nTotalTreasureCollected==14000), zeros g_nReturningHomePhase, transitions mode to 100. mode 100 = tick: bumps phase, drives TickLevelTransitionStream (level transition state machine). Modes <99 (e.g. -1 from BeginCreditsSequence) dispatch into the credits overlay's Credits_Update (0x8007aa50, g_abAssetDirectoryBuffer+0x18) that the credits CD-stream populates at runtime. */
+/* 0x800333dc: g_nGamestate==GS_CREDITS (/ returning-home) primary handler.
+ * Reached when g_nCreditsMode >= 99. mode 99 = init: picks return-to-hub level
+ * (60 normal / 10 post-game when g_nTotalTreasureCollected==14000), zeros
+ * g_nReturningHomePhase, transitions mode to 100. mode 100 = tick: bumps phase,
+ * drives TickLevelTransitionStream (level transition state machine). Modes <99
+ * (e.g. -1 from BeginCreditsSequence) dispatch into the credits overlay's
+ * Credits_Update (0x8007aa50, g_abAssetDirectoryBuffer+0x18) that the credits
+ * CD-stream populates at runtime. */
 void CreditsSequence_Update(void);
 
-/* 0x800334d4: Attract-demo playback watcher. Called from the GamestateUpdate gameplay path while g_nDemoMode != 0 (also samples the pad via SampleDemoPadFrame). Starts the exit fade once the demo has run g_anDemoLengthFrames[g_nDemoIndex] - 8 frames or the real pad shows a press; at fade frame 16 it stops sound, clears VRAM, ends the demo (g_nDemoMode = g_nDemoActive = 0), reloads cutscene bundle 0 (the title backdrop), enters GS_CUTSCENE + BeginStoryIntro, and advances g_nDemoIndex (&3). A demo that ran its full length restarts the title flyover at path frame 0x2D0 with the title sample; an interrupted one at 0x490. Returns 1 when the demo ended this frame (caller skips the rest of the frame). */
+/* 0x800334d4: Attract-demo playback watcher. Called from the GamestateUpdate
+ * gameplay path while g_nDemoMode != 0 (also samples the pad via
+ * SampleDemoPadFrame). Starts the exit fade once the demo has run
+ * g_anDemoLengthFrames[g_nDemoIndex] - 8 frames or the real pad shows a press;
+ * at fade frame 16 it stops sound, clears VRAM, ends the demo (g_nDemoMode =
+ * g_nDemoActive = 0), reloads cutscene bundle 0 (the title backdrop), enters
+ * GS_CUTSCENE + BeginStoryIntro, and advances g_nDemoIndex (&3). A demo that
+ * ran its full length restarts the title flyover at path frame 0x2D0 with the
+ * title sample; an interrupted one at 0x490. Returns 1 when the demo ended this
+ * frame (caller skips the rest of the frame). */
 int TickDemoPlayback(void);
 
-/* 0x8003385c: Per-frame main-loop dispatcher (called from main @ main). 16-way switch on g_nGamestate: 0 = active gameplay (heavy path: input, physics, camera, early/late hooks g_pfnLevelUpdateActors/LateHook, pause/inventory entry); 1 = LevelLoad_Update; 2 = PauseMenu_Update; 3 = SubMenu_Update; 4,5 = RespawnOrGameOver_Update (4 = death respawn with lives left, 5 = game over); 6 = Gamestate06_Update; 7 = (*g_pfnFlightResultsUpdate)() flight-level results screen; 8 = DragonRescue_Update (dragon rescue); 9 = CameraSettle_Update; 0xA = SpyroStateDelay_Update; 0xB..0xD per-state updates (0xD mode-switched on g_nTitleMode); 0xE = Cutscene_Update; 0xF = CreditsSequence_Update/Alt switched on g_nCreditsMode (>=99 = returning-home/credits). The attract-demo watcher TickDemoPlayback flips to state 0xE when a demo ends. */
+/* 0x8003385c: Per-frame main-loop dispatcher (called from main @ main). 16-way
+ * switch on g_nGamestate: 0 = active gameplay (heavy path: input, physics,
+ * camera, early/late hooks g_pfnLevelUpdateActors/LateHook, pause/inventory
+ * entry); 1 = LevelLoad_Update; 2 = PauseMenu_Update; 3 = SubMenu_Update; 4,5 =
+ * RespawnOrGameOver_Update (4 = death respawn with lives left, 5 = game over);
+ * 6 = Gamestate06_Update; 7 = (*g_pfnFlightResultsUpdate)() flight-level
+ * results screen; 8 = DragonRescue_Update (dragon rescue); 9 =
+ * CameraSettle_Update; 0xA = SpyroStateDelay_Update; 0xB..0xD per-state updates
+ * (0xD mode-switched on g_nTitleMode); 0xE = Cutscene_Update; 0xF =
+ * CreditsSequence_Update/Alt switched on g_nCreditsMode (>=99 =
+ * returning-home/credits). The attract-demo watcher TickDemoPlayback flips to
+ * state 0xE when a demo ends. */
 void GamestateUpdate(void);
 
-/* 0x80033c50: Builds the 3x3 camera view matrix from g_nCameraEulerPitch/Yaw/Roll (X * Y * Z order). Writes the full matrix to g_anCameraViewMtx and a Y-row-scaled-by-0x140>>9 copy to g_anWorldToCameraRotMtx (the projection-ready variant). Stack matrix is reused as both accumulator and scratch. */
+/* 0x80033c50: Builds the 3x3 camera view matrix from
+ * g_nCameraEulerPitch/Yaw/Roll (X * Y * Z order). Writes the full matrix to
+ * g_anCameraViewMtx and a Y-row-scaled-by-0x140>>9 copy to
+ * g_anWorldToCameraRotMtx (the projection-ready variant). Stack matrix is
+ * reused as both accumulator and scratch. */
 void BuildCameraViewMatrix(void);
 
-/* 0x80033e40: Line-of-sight segment test. Marches from from toward to in 0x400-length steps (segment length / 0x400 iterations) and calls CastRayWorldAndActors (world collision query) at each step. Returns 1 if every step is clear, 0 on the first hit. Shared by UpdateGameplayCamera for camera occlusion tests. */
+/* 0x80033e40: Line-of-sight segment test. Marches from from toward to in
+ * 0x400-length steps (segment length / 0x400 iterations) and calls
+ * CastRayWorldAndActors (world collision query) at each step. Returns 1 if
+ * every step is clear, 0 on the first hit. Shared by UpdateGameplayCamera for
+ * camera occlusion tests. */
 int CheckLineOfSightSegment(int *from, int *to);
 
-/* 0x80033f08: Derives the camera pitch / yaw from the anchor -> `target` delta; when the inverted heading is closer (or the mode / target asks for it) flips the framing half a turn and returns 1, else commits the plain yaw and returns 0. */
+/* 0x80033f08: Derives the camera pitch / yaw from the anchor -> `target` delta;
+ * when the inverted heading is closer (or the mode / target asks for it) flips
+ * the framing half a turn and returns 1, else commits the plain yaw and returns
+ * 0. */
 int ComputeCameraToTargetAngle(int *target);
 
-/* 0x80034198: Loads the current camera-mode's 6-int parameter block from g_pCameraTargetParams into the g_nCameraTarget* set (Yaw, Pitch, Distance, Roll, PitchBias, YawBias). The yaw is biased by -g_nCameraParamsReferenceYaw & 0xfff so the params can be stored in world-space yaw. */
+/* 0x80034198: Loads the current camera-mode's 6-int parameter block from
+ * g_pCameraTargetParams into the g_nCameraTarget* set (Yaw, Pitch, Distance,
+ * Roll, PitchBias, YawBias). The yaw is biased by -g_nCameraParamsReferenceYaw
+ * & 0xfff so the params can be stored in world-space yaw. */
 void LoadCameraTargetAnglesFromMode(void);
 
-/* 0x80034204: Polar-to-Cartesian for the camera orbit. Writes (x = D*Cos(P)*Cos(Y), y = -D*Cos(P)*Sin(Y), z = D*Sin(P)) into *out using g_nCameraSpringYaw/Pitch/Distance. The result is the offset from g_pCameraAnchorPos to the eye position. */
+/* 0x80034204: Polar-to-Cartesian for the camera orbit. Writes (x =
+ * D*Cos(P)*Cos(Y), y = -D*Cos(P)*Sin(Y), z = D*Sin(P)) into *out using
+ * g_nCameraSpringYaw/Pitch/Distance. The result is the offset from
+ * g_pCameraAnchorPos to the eye position. */
 void ComputeCameraOrbitOffset(int *out);
 
-/* 0x800342f8: Final blend of the spring biases into the Euler angles consumed by BuildCameraViewMatrix. EulerPitch = Pitch + SpringPitchBias; EulerRoll = SpringRoll; EulerYaw = (0x800 - SpringYawBias) - Yaw. All wrapped & 0xfff. */
+/* 0x800342f8: Final blend of the spring biases into the Euler angles consumed
+ * by BuildCameraViewMatrix. EulerPitch = Pitch + SpringPitchBias; EulerRoll =
+ * SpringRoll; EulerYaw = (0x800 - SpringYawBias) - Yaw. All wrapped & 0xfff. */
 void UpdateCameraEulerAngles(void);
 
-/* 0x80034358: Hard-reset of the camera spring state to the current target. Clears tracking accumulators (g_anCameraSpringDeltaState..e98 and g_nCameraShakeDuration, g_nCameraShakeMagnitude), copies the g_nCameraTarget* set into g_nCameraSpring*, derives a fresh eye position via ComputeCameraOrbitOffset + g_pCameraAnchorPos, then primes the smoothed-position copy and runs one ComputeCameraToTargetAngle + UpdateCameraEulerAngles pass. */
+/* 0x80034358: Hard-reset of the camera spring state to the current target.
+ * Clears tracking accumulators (g_anCameraSpringDeltaState..e98 and
+ * g_nCameraShakeDuration, g_nCameraShakeMagnitude), copies the g_nCameraTarget*
+ * set into g_nCameraSpring*, derives a fresh eye position via
+ * ComputeCameraOrbitOffset + g_pCameraAnchorPos, then primes the
+ * smoothed-position copy and runs one ComputeCameraToTargetAngle +
+ * UpdateCameraEulerAngles pass. */
 void ResetCameraStateToTarget(void);
 
-/* 0x80034480: Per-frame gameplay camera update. Marches the smoothed camera position toward the desired eye in 0x100-sized substeps; at each substep runs CollideSphereWithWorldAndActors and slides off the surface using the contact at g_anCollisionResolvedPos. On LOS-clear (g_nCameraLosClear=1) decrements g_nCameraCollisionRetries; on occlusion (=0): after 0x1e stuck frames first re-seats via the 5 mode-param blocks at &g_anCameraStuckReseatParams (g_pCameraTargetParams + ResetCameraStateToTarget), then probes g_anCameraEscapeOffsets (5 yaw/pitch/dist offset records at 1x, 2x, 4x scale) for a collision-free seat with two-way line of sight. Calls ComputeCameraToTargetAngle each frame to refresh g_nCameraYaw/Pitch/Distance, then runs two CheckLineOfSightSegment probes between the eye and the look-at point g_anSpyroWorldPos. */
+/* 0x80034480: Per-frame gameplay camera update. Marches the smoothed camera
+ * position toward the desired eye in 0x100-sized substeps; at each substep runs
+ * CollideSphereWithWorldAndActors and slides off the surface using the contact
+ * at g_anCollisionResolvedPos. On LOS-clear (g_nCameraLosClear=1) decrements
+ * g_nCameraCollisionRetries; on occlusion (=0): after 0x1e stuck frames first
+ * re-seats via the 5 mode-param blocks at &g_anCameraStuckReseatParams
+ * (g_pCameraTargetParams + ResetCameraStateToTarget), then probes
+ * g_anCameraEscapeOffsets (5 yaw/pitch/dist offset records at 1x, 2x, 4x scale)
+ * for a collision-free seat with two-way line of sight. Calls
+ * ComputeCameraToTargetAngle each frame to refresh g_nCameraYaw/Pitch/Distance,
+ * then runs two CheckLineOfSightSegment probes between the eye and the look-at
+ * point g_anSpyroWorldPos. */
 void UpdateGameplayCamera(void);
 
-/* 0x80034c84: Teleports the smoothed camera position to the current eye (g_anCameraEyeTarget -> g_anCameraPos), zeros the spring tracking state, raises g_nCameraSnapped + g_nCameraLosClear, and rebases the camera-to-target angles via ComputeCameraToTargetAngle. Called when a discontinuous camera cut is needed. */
+/* 0x80034c84: Teleports the smoothed camera position to the current eye
+ * (g_anCameraEyeTarget -> g_anCameraPos), zeros the spring tracking state,
+ * raises g_nCameraSnapped + g_nCameraLosClear, and rebases the camera-to-target
+ * angles via ComputeCameraToTargetAngle. Called when a discontinuous camera cut
+ * is needed. */
 void SnapCameraToTarget(void);
 
-/* 0x80034ce8: Per-frame 6-axis camera spring step. column = tuning-set COLUMN (0..5) into g_anCameraSpringDriveGains (K0) / g_anCameraSpringDampingGains (K1) / g_anCameraSpringSnapThresholds: callers pass min(4, (g_nCameraStuckFrames+1)>>1) (collision-stuck stiffness escalation), 5 for CAM_MODE_FREE_LOOK (stick-driven) and CAM_MODE_REQUEST with SPYRO_RQ_LOCK_ON, 0 from UpdateLevelTransitionCamera and the CAM_MODE_HAZARD settle loop. For each axis (Yaw, Pitch, Distance, Roll, PitchBias, YawBias): g_anCameraSpringDeltaState[axis] += (K0*delta - K1*accum) >> 8, snaps to 0/±0x100 below threshold (g_nCameraSnapped), then adds (accum >> 8) to the matching g_nCameraSpring* angle. Yaw uses g_nCameraManualYawInput as drive override (R1/L1 rotate); CAM_MODE_HAZARD (latched anchor) zeros all drives. Clamps: ±0x800 on the yaw while Spyro enters a glide (SPYRO_ST_GLIDE, SPYRO_SUB_GLIDE_ENTER) and on the passive-camera re-engage; ±0x2000 with CAM_OPT_SMOOTH_SWING in CAM_MODE_FREE_LOOK / CAM_MODE_CHARGE. */
+/* 0x80034ce8: Per-frame 6-axis camera spring step. column = tuning-set COLUMN
+ * (0..5) into g_anCameraSpringDriveGains (K0) / g_anCameraSpringDampingGains
+ * (K1) / g_anCameraSpringSnapThresholds: callers pass min(4,
+ * (g_nCameraStuckFrames+1)>>1) (collision-stuck stiffness escalation), 5 for
+ * CAM_MODE_FREE_LOOK (stick-driven) and CAM_MODE_REQUEST with SPYRO_RQ_LOCK_ON,
+ * 0 from UpdateLevelTransitionCamera and the CAM_MODE_HAZARD settle loop. For
+ * each axis (Yaw, Pitch, Distance, Roll, PitchBias, YawBias):
+ * g_anCameraSpringDeltaState[axis] += (K0*delta - K1*accum) >> 8, snaps to
+ * 0/±0x100 below threshold (g_nCameraSnapped), then adds (accum >> 8) to the
+ * matching g_nCameraSpring* angle. Yaw uses g_nCameraManualYawInput as drive
+ * override (R1/L1 rotate); CAM_MODE_HAZARD (latched anchor) zeros all drives.
+ * Clamps: ±0x800 on the yaw while Spyro enters a glide (SPYRO_ST_GLIDE,
+ * SPYRO_SUB_GLIDE_ENTER) and on the passive-camera re-engage; ±0x2000 with
+ * CAM_OPT_SMOOTH_SWING in CAM_MODE_FREE_LOOK / CAM_MODE_CHARGE. */
 void AdvanceCameraSpringStep(int column);
 
-/* 0x800357a4: Per-frame camera-mode arbiter. Holds/clears the sentinel modes against g_dwSpyroRequestMask bits (SPYRO_RQ_CAMERA -> CAM_MODE_REQUEST, SPYRO_RQ_PORTAL_PATH_CAMERA -> CAM_MODE_PORTAL_PATH, SPYRO_RQ_TARGET_CAMERA -> CAM_MODE_SCRIPTED_TARGET, SPYRO_RQ_FOLLOW_CAMERA -> CAM_MODE_SCRIPTED_FOLLOW) and otherwise falls back to g_abSpyroStateCameraMode[g_nSpyroState]. CAM_MODE_FREE_LOOK (with CAM_OPT_PASSIVE_FOLLOW): exits to mode CAM_HELD | CAM_MODE_PASSIVE with g_nCameraPassiveModeHoldTimer = 0x2d when Triangle (PAD_TRIANGLE, held bit 0x10 in g_dwPadHeld) releases in SPYRO_ST_IDLE / SPYRO_ST_TEETER. CAM_MODE_PASSIVE / PASSIVE_SETTLE persist while g_nCameraPassiveModeHoldTimer > 0 and the state-table mode is CAM_MODE_STAND / FALL. Passive-idle recenter: when CAM_MODE_STAND with passive camera and Spyro near the screen anchor (projected |x−0x100| ≤ 0x40, |y−0x78| ≤ 0x28, depth ≤ 0x1400 via ProjectWorldPointGTEUnscaled), re-enters CAM_MODE_PASSIVE; a generic mode change with passive idle instead enters mode CAM_HELD | CAM_MODE_PASSIVE_SETTLE with timer 8 + g_nCameraSpringReengageCountdown 0x5a. On CAM_MODE_PORTAL_PATH entry seeds the path index (0 forward / count−1 reverse) in g_pPortalCamPathData per g_nPortalCamPathReverseFlag. On commit re-snaps the spring state to the recomputed g_nCameraYaw/Pitch/Distance (CAM_MODE_SIDESTEP / SCRIPTED_VANTAGE too); entering CAM_MODE_FREE_LOOK zeros g_anCameraScriptStickIntegrator and clears g_nCameraCollisionRetries if LOS is clear. */
+/* 0x800357a4: Per-frame camera-mode arbiter. Holds/clears the sentinel modes
+ * against g_dwSpyroRequestMask bits (SPYRO_RQ_CAMERA -> CAM_MODE_REQUEST,
+ * SPYRO_RQ_PORTAL_PATH_CAMERA -> CAM_MODE_PORTAL_PATH, SPYRO_RQ_TARGET_CAMERA
+ * -> CAM_MODE_SCRIPTED_TARGET, SPYRO_RQ_FOLLOW_CAMERA ->
+ * CAM_MODE_SCRIPTED_FOLLOW) and otherwise falls back to
+ * g_abSpyroStateCameraMode[g_nSpyroState]. CAM_MODE_FREE_LOOK (with
+ * CAM_OPT_PASSIVE_FOLLOW): exits to mode CAM_HELD | CAM_MODE_PASSIVE with
+ * g_nCameraPassiveModeHoldTimer = 0x2d when Triangle (PAD_TRIANGLE, held bit
+ * 0x10 in g_dwPadHeld) releases in SPYRO_ST_IDLE / SPYRO_ST_TEETER.
+ * CAM_MODE_PASSIVE / PASSIVE_SETTLE persist while g_nCameraPassiveModeHoldTimer
+ * > 0 and the state-table mode is CAM_MODE_STAND / FALL. Passive-idle recenter:
+ * when CAM_MODE_STAND with passive camera and Spyro near the screen anchor
+ * (projected |x−0x100| ≤ 0x40, |y−0x78| ≤ 0x28, depth ≤ 0x1400 via
+ * ProjectWorldPointGTEUnscaled), re-enters CAM_MODE_PASSIVE; a generic mode
+ * change with passive idle instead enters mode CAM_HELD |
+ * CAM_MODE_PASSIVE_SETTLE with timer 8 + g_nCameraSpringReengageCountdown 0x5a.
+ * On CAM_MODE_PORTAL_PATH entry seeds the path index (0 forward / count−1
+ * reverse) in g_pPortalCamPathData per g_nPortalCamPathReverseFlag. On commit
+ * re-snaps the spring state to the recomputed g_nCameraYaw/Pitch/Distance
+ * (CAM_MODE_SIDESTEP / SCRIPTED_VANTAGE too); entering CAM_MODE_FREE_LOOK zeros
+ * g_anCameraScriptStickIntegrator and clears g_nCameraCollisionRetries if LOS
+ * is clear. */
 void SelectCameraMode(void);
 
-/* 0x80035f58: Reads R1/L1 camera-rotate input bits at g_dwPadHeld (bits 0/1) and writes ±0x400 to g_nCameraManualYawInput — the yaw-drive override consumed by AdvanceCameraSpringStep. Suppressed when (g_dwSpyroRequestMask & 0x1000) is set or when g_nCameraStuckFrames != 0. Called by UpdateCameraSpringForMode for modes that allow manual camera rotation; the rotation-blocked modes (held CAM_MODE_FREE_LOOK, SCRIPTED_TARGET, LEVEL_TRANSITION, PORTAL_PATH, SCRIPTED_VANTAGE, and CAM_MODE_CHARGE) zero g_nCameraManualYawInput directly instead. */
+/* 0x80035f58: Reads R1/L1 camera-rotate input bits at g_dwPadHeld (bits 0/1)
+ * and writes ±0x400 to g_nCameraManualYawInput — the yaw-drive override
+ * consumed by AdvanceCameraSpringStep. Suppressed when (g_dwSpyroRequestMask &
+ * 0x1000) is set or when g_nCameraStuckFrames != 0. Called by
+ * UpdateCameraSpringForMode for modes that allow manual camera rotation; the
+ * rotation-blocked modes (held CAM_MODE_FREE_LOOK, SCRIPTED_TARGET,
+ * LEVEL_TRANSITION, PORTAL_PATH, SCRIPTED_VANTAGE, and CAM_MODE_CHARGE) zero
+ * g_nCameraManualYawInput directly instead. */
 void UpdateCameraManualYawInput(void);
 
-/* 0x80035fb4: Per-frame camera spring driver. Dispatches off g_nCameraCurrentMode to pick the target-params block (g_anCameraParamDefault / FollowBehind/Facing (Facing once Spyro turns more than 0x578 from the camera yaw) / Charge / FallBehind/Facing / GlideLeftBias/RightBias / FreeLook / ScriptedFollow / ScriptedTarget) and the anchor (g_anSpyroWorldPos for most modes; g_anCameraScriptedTargetPos from g_pScriptedCameraActor for held CAM_MODE_SCRIPTED_TARGET; the latched copy g_anCameraLatchedAnchorPos for CAM_MODE_HAZARD). Computes the spring tuning column = min(4, (g_nCameraStuckFrames+1)>>1), overridden to 5 for CAM_MODE_FREE_LOOK / CAM_MODE_REQUEST with SPYRO_RQ_LOCK_ON, then runs AdvanceCameraSpringStep(column) x g_nFrameStep, ComputeCameraOrbitOffset, UpdateGameplayCamera + UpdateCameraEulerAngles. CAM_MODE_HAZARD (latched anchor while Spyro sinks): springs only advance while sum(|g_anCameraSpringDeltaState[0..5]|) > 0x20 — the settle threshold (the old 'slti 0x21' question) — then SnapCameraToTarget; once settled the camera freezes. CAM_MODE_FREE_LOOK integrates the right stick / D-pad into g_anCameraScriptStickIntegrator (via g_pPadSubstepState or g_dwPadHeld) onto g_nCameraTargetYaw/Pitch and publishes counter-request g_nSpyroSwingEulerTargetZ/Y. Passive-camera (option 0x10 / look-around) idle path: while g_nPadAllInputIdleFlag with LOS clear in CAM_MODE_STAND, counts down g_nCameraSpringReengageCountdown (0x5a) before re-engaging the auto spring; CAM_MODE_PASSIVE / PASSIVE_SETTLE decrement g_nCameraPassiveModeHoldTimer. Look-ahead: target yaw-bias = angle(player) − angle(player + motionvec * g_bCameraLookaheadMotionScale >> 5|6) in CAM_MODE_MOVE / SIDESTEP / GLIDE. Ends by re-running ComputeCameraToTargetAngle to re-sync the spring state with the smoothed eye position. */
+/* 0x80035fb4: Per-frame camera spring driver. Dispatches off
+ * g_nCameraCurrentMode to pick the target-params block (g_anCameraParamDefault
+ * / FollowBehind/Facing (Facing once Spyro turns more than 0x578 from the
+ * camera yaw) / Charge / FallBehind/Facing / GlideLeftBias/RightBias / FreeLook
+ * / ScriptedFollow / ScriptedTarget) and the anchor (g_anSpyroWorldPos for most
+ * modes; g_anCameraScriptedTargetPos from g_pScriptedCameraActor for held
+ * CAM_MODE_SCRIPTED_TARGET; the latched copy g_anCameraLatchedAnchorPos for
+ * CAM_MODE_HAZARD). Computes the spring tuning column = min(4,
+ * (g_nCameraStuckFrames+1)>>1), overridden to 5 for CAM_MODE_FREE_LOOK /
+ * CAM_MODE_REQUEST with SPYRO_RQ_LOCK_ON, then runs
+ * AdvanceCameraSpringStep(column) x g_nFrameStep, ComputeCameraOrbitOffset,
+ * UpdateGameplayCamera + UpdateCameraEulerAngles. CAM_MODE_HAZARD (latched
+ * anchor while Spyro sinks): springs only advance while
+ * sum(|g_anCameraSpringDeltaState[0..5]|) > 0x20 — the settle threshold (the
+ * old 'slti 0x21' question) — then SnapCameraToTarget; once settled the camera
+ * freezes. CAM_MODE_FREE_LOOK integrates the right stick / D-pad into
+ * g_anCameraScriptStickIntegrator (via g_pPadSubstepState or g_dwPadHeld) onto
+ * g_nCameraTargetYaw/Pitch and publishes counter-request
+ * g_nSpyroSwingEulerTargetZ/Y. Passive-camera (option 0x10 / look-around) idle
+ * path: while g_nPadAllInputIdleFlag with LOS clear in CAM_MODE_STAND, counts
+ * down g_nCameraSpringReengageCountdown (0x5a) before re-engaging the auto
+ * spring; CAM_MODE_PASSIVE / PASSIVE_SETTLE decrement
+ * g_nCameraPassiveModeHoldTimer. Look-ahead: target yaw-bias = angle(player) −
+ * angle(player + motionvec * g_bCameraLookaheadMotionScale >> 5|6) in
+ * CAM_MODE_MOVE / SIDESTEP / GLIDE. Ends by re-running
+ * ComputeCameraToTargetAngle to re-sync the spring state with the smoothed eye
+ * position. */
 void UpdateCameraSpringForMode(void);
 
-/* 0x8003740c: Camera updater for mode 0x8000000b (portal spline path). Walks g_anCameraPos along the overlay-provided path at g_pPortalCamPathData: count byte [0], current index byte [1], waypoint vec3s at +8 + i*0x10. Within 0x200 of the current waypoint the index advances (g_nPortalCamPathReverseFlag == 0) or retreats. Speed: while an onward waypoint exists, dot(camera→player excess beyond 0x400, segment tangent normalized to 0x1000) <<7 >>12 (capped 0x80); at the path ends, distance capped by g_nPortalCamPathMaxStep. Step = ScaleVector3ByRatio(toWaypoint, dist, speed * g_nFrameStep); finishes with ComputeCameraToTargetAngle + UpdateCameraEulerAngles to keep the angles in sync. */
+/* 0x8003740c: Camera updater for mode 0x8000000b (portal spline path). Walks
+ * g_anCameraPos along the overlay-provided path at g_pPortalCamPathData: count
+ * byte [0], current index byte [1], waypoint vec3s at +8 + i*0x10. Within 0x200
+ * of the current waypoint the index advances (g_nPortalCamPathReverseFlag == 0)
+ * or retreats. Speed: while an onward waypoint exists, dot(camera→player excess
+ * beyond 0x400, segment tangent normalized to 0x1000) <<7 >>12 (capped 0x80);
+ * at the path ends, distance capped by g_nPortalCamPathMaxStep. Step =
+ * ScaleVector3ByRatio(toWaypoint, dist, speed * g_nFrameStep); finishes with
+ * ComputeCameraToTargetAngle + UpdateCameraEulerAngles to keep the angles in
+ * sync. */
 void UpdatePortalPathCamera(void);
 
-/* 0x80037714: Makes view the active scripted-camera record (g_pScriptedCameraView): g_anCameraPos = its camPos, g_anSpyroVelocity zeroed with g_nSpyroVelocityZ = -0x2300, g_nCameraEulerRoll / Pitch / Yaw = its camRoll / camPitch / camYaw, and both camera mode slots set to CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE. Called by UpdateScriptedCameraView when it picks a new vantage, and by TickLevelTransitionStream (level arrival), TickSpyroGameplayFrame and IntegrateSpyroMotionForSubstep. */
+/* 0x80037714: Makes view the active scripted-camera record
+ * (g_pScriptedCameraView): g_anCameraPos = its camPos, g_anSpyroVelocity zeroed
+ * with g_nSpyroVelocityZ = -0x2300, g_nCameraEulerRoll / Pitch / Yaw = its
+ * camRoll / camPitch / camYaw, and both camera mode slots set to CAM_HELD |
+ * CAM_MODE_SCRIPTED_VANTAGE. Called by UpdateScriptedCameraView when it picks a
+ * new vantage, and by TickLevelTransitionStream (level arrival),
+ * TickSpyroGameplayFrame and IntegrateSpyroMotionForSubstep. */
 void ActivateScriptedCameraView(ScriptedCamView *view);
 
-/* 0x800377a8: Camera updater for mode 0x8000000e (scripted vantage triplet). Once the level-load stream has finished (g_nCdStreamState < 0), picks the next mode from &g_abSpyroStateCameraMode unless the current camera state matches the override list (modes 6/0x10/0x20/0x21/0x22/0xf/0x1d). When the active scripted-camera record (g_pScriptedCameraView) is exhausted — either the player has moved further than the record's max distance (range) OR the player has left the camera-screen window via ProjectWorldPointGTEUnscaled (Y > 0xf0) — picks one of 3 ROM records at &g_aScriptedCamViews (stride 0x38), avoiding immediate self-repeat, and calls ActivateScriptedCameraView. Refreshes camera euler angles when the record's aimAtSpyro is 1. */
+/* 0x800377a8: Camera updater for mode 0x8000000e (scripted vantage triplet).
+ * Once the level-load stream has finished (g_nCdStreamState < 0), picks the
+ * next mode from &g_abSpyroStateCameraMode unless the current camera state
+ * matches the override list (modes 6/0x10/0x20/0x21/0x22/0xf/0x1d). When the
+ * active scripted-camera record (g_pScriptedCameraView) is exhausted — either
+ * the player has moved further than the record's max distance (range) OR the
+ * player has left the camera-screen window via ProjectWorldPointGTEUnscaled (Y
+ * > 0xf0) — picks one of 3 ROM records at &g_aScriptedCamViews (stride 0x38),
+ * avoiding immediate self-repeat, and calls ActivateScriptedCameraView.
+ * Refreshes camera euler angles when the record's aimAtSpyro is 1. */
 void UpdateScriptedCameraView(void);
 
-/* 0x80037a20: Camera updater for mode 0x80000012 (level transition: set with GS_LEVEL_LOAD by portal entry, BeginWorldHubReturn and HandleLevelSelectInput; holds on Spyro while the next level streams). Anchors on the player (&g_anSpyroWorldPos) with yaw bias from level yaw g_nSpyroBodyYaw. Picks the target-params block based on whether yaw is above/below the level yaw (g_anCameraParamTransitionYawBelow vs g_anCameraParamTransitionYawAbove) or, when g_nReturnPortalLevelId is set, by submode threshold (g_anCameraParamTransitionStreaming vs g_anCameraParamFollowFacing). Zeros the yaw torque, runs the spring step (axis 0) per frame-step, recomputes the eye position via ComputeCameraOrbitOffset + AddVector, then SnapCameraToTarget + UpdateCameraEulerAngles + ComputeCameraToTargetAngle. Copies the auto-aim outputs into the spring set so subsequent frames smoothly leave the freeze. */
+/* 0x80037a20: Camera updater for mode 0x80000012 (level transition: set with
+ * GS_LEVEL_LOAD by portal entry, BeginWorldHubReturn and
+ * HandleLevelSelectInput; holds on Spyro while the next level streams). Anchors
+ * on the player (&g_anSpyroWorldPos) with yaw bias from level yaw
+ * g_nSpyroBodyYaw. Picks the target-params block based on whether yaw is
+ * above/below the level yaw (g_anCameraParamTransitionYawBelow vs
+ * g_anCameraParamTransitionYawAbove) or, when g_nReturnPortalLevelId is set, by
+ * submode threshold (g_anCameraParamTransitionStreaming vs
+ * g_anCameraParamFollowFacing). Zeros the yaw torque, runs the spring step
+ * (axis 0) per frame-step, recomputes the eye position via
+ * ComputeCameraOrbitOffset + AddVector, then SnapCameraToTarget +
+ * UpdateCameraEulerAngles + ComputeCameraToTargetAngle. Copies the auto-aim
+ * outputs into the spring set so subsequent frames smoothly leave the
+ * freeze. */
 void UpdateLevelTransitionCamera(void);
 
-/* 0x80037bd4: Top-level per-frame camera updater. Called from GamestateUpdate (gameplay) and CameraSettle_Update, LevelLoad_Update, SpyroStateDelay_Update, DragonRescue_Update. Sets g_nCameraForcePassiveFollow = (g_nSpyroState == SPYRO_ST_HURT_LONG) and picks the next mode from the per-state byte table at &g_abSpyroStateCameraMode[g_nSpyroState]. Calls SelectCameraMode to commit g_nCameraCurrentMode, then dispatches: CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE → UpdateScriptedCameraView, CAM_HELD | CAM_MODE_LEVEL_TRANSITION → UpdateLevelTransitionCamera, CAM_HELD | CAM_MODE_PORTAL_PATH → UpdatePortalPathCamera, else → UpdateCameraSpringForMode. Tail handles camera shake (g_nCameraShakeDuration countdown) and the per-level-mode camera distance/LOS check (g_nCdStreamState negative branch). */
+/* 0x80037bd4: Top-level per-frame camera updater. Called from GamestateUpdate
+ * (gameplay) and CameraSettle_Update, LevelLoad_Update, SpyroStateDelay_Update,
+ * DragonRescue_Update. Sets g_nCameraForcePassiveFollow = (g_nSpyroState ==
+ * SPYRO_ST_HURT_LONG) and picks the next mode from the per-state byte table at
+ * &g_abSpyroStateCameraMode[g_nSpyroState]. Calls SelectCameraMode to commit
+ * g_nCameraCurrentMode, then dispatches: CAM_HELD | CAM_MODE_SCRIPTED_VANTAGE →
+ * UpdateScriptedCameraView, CAM_HELD | CAM_MODE_LEVEL_TRANSITION →
+ * UpdateLevelTransitionCamera, CAM_HELD | CAM_MODE_PORTAL_PATH →
+ * UpdatePortalPathCamera, else → UpdateCameraSpringForMode. Tail handles camera
+ * shake (g_nCameraShakeDuration countdown) and the per-level-mode camera
+ * distance/LOS check (g_nCdStreamState negative branch). */
 void UpdateCameraFrame(void);
 
-/* 0x80038dc0: Turns an actor's byte yaw (Actor.rotZ) toward Spyro (ArcTan2 of g_anSpyroWorldPos - actor position). Frame-delta boost: g_nActorFrameDelta == 3 → step *= 1.5; == 4 → step *= 2. Returns 1 once within threshold deadzone (YAW_STEP_IN_BAND still applies one ApproachAngle8 step at lock-on); returns 0 while still rotating. Callers: the level actor updates (actors that face Spyro) and SaveMenu_Update. */
+/* 0x80038dc0: Turns an actor's byte yaw (Actor.rotZ) toward Spyro (ArcTan2 of
+ * g_anSpyroWorldPos - actor position). Frame-delta boost: g_nActorFrameDelta ==
+ * 3 → step *= 1.5; == 4 → step *= 2. Returns 1 once within threshold deadzone
+ * (YAW_STEP_IN_BAND still applies one ApproachAngle8 step at lock-on); returns
+ * 0 while still rotating. Callers: the level actor updates (actors that face
+ * Spyro) and SaveMenu_Update. */
 #ifndef YAW_HOLD_IN_BAND
 #define YAW_HOLD_IN_BAND 0 /* inside the threshold band: stop turning */
-#define YAW_STEP_IN_BAND 1 /* inside the band: keep stepping onto the target */
+/* inside the band: keep stepping onto the target */
+#define YAW_STEP_IN_BAND 1
 #endif
-/* 0x80038dc0: turns actor->rotZ toward Spyro by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 0 while outside the `threshold` dead-band, 1 inside it (with one more step when `flag` is YAW_STEP_IN_BAND). */
+/* 0x80038dc0: turns actor->rotZ toward Spyro by at most `step` (x1.5 / x2 at
+ * frame delta 3 / 4); returns 0 while outside the `threshold` dead-band, 1
+ * inside it (with one more step when `flag` is YAW_STEP_IN_BAND). */
 int TrackEntityYawTowardSpyro(Actor *actor, int step, int threshold, int flag);
 
-/* 0x8003a720: Resets a newly allocated actor to its spawn defaults: mode ACTOR_SPAWN_MODE with anim/nextAnim ACTOR_SPAWN_ANIM at frame 0 (nextFrame 1, frameRate 0x20), cullRadius 0x10, updateDist ACTOR_UPDATE_ALWAYS, otBias 4, group 0xFF, gateChunk GATE_CHUNK_ALWAYS, dropKind DROP_GEM_ROLL, renderList 0x20, voiceRow VOICE_ROW_NONE; flags, rotation, groundCode, scale, floorOffset and the tint word are zeroed. Every level's SpawnActor runs it first; so do the flight UpdateActors, DragonRescue_Update and TickCutsceneBundleLoadStream. */
+/* 0x8003a720: Resets a newly allocated actor to its spawn defaults: mode
+ * ACTOR_SPAWN_MODE with anim/nextAnim ACTOR_SPAWN_ANIM at frame 0 (nextFrame 1,
+ * frameRate 0x20), cullRadius 0x10, updateDist ACTOR_UPDATE_ALWAYS, otBias 4,
+ * group 0xFF, gateChunk GATE_CHUNK_ALWAYS, dropKind DROP_GEM_ROLL, renderList
+ * 0x20, voiceRow VOICE_ROW_NONE; flags, rotation, groundCode, scale,
+ * floorOffset and the tint word are zeroed. Every level's SpawnActor runs it
+ * first; so do the flight UpdateActors, DragonRescue_Update and
+ * TickCutsceneBundleLoadStream. */
 void InitActorRenderDefaults(Actor *actor);
 
-/* 0x8003c6e4: Per-frame tick of a dragon-rescue statue burst shard (BurstShardState at ->state). While its life runs and posZ is above floorZ: adds vel to the position (vel[2] -= 6 a tick, floored at -0x80), turns rotX / rotY / rotZ by spinX / spinY / spinZ, counts life down and every other tick emits a dim spark (EMIT_SPARK_VEL_DIM). Otherwise it emits the streak burst (EMIT_STREAK_BURST) and despawns (DespawnActorRecord). Caller: DragonRescue_Update. */
+/* 0x8003c6e4: Per-frame tick of a dragon-rescue statue burst shard
+ * (BurstShardState at ->state). While its life runs and posZ is above floorZ:
+ * adds vel to the position (vel[2] -= 6 a tick, floored at -0x80), turns rotX /
+ * rotY / rotZ by spinX / spinY / spinZ, counts life down and every other tick
+ * emits a dim spark (EMIT_SPARK_VEL_DIM). Otherwise it emits the streak burst
+ * (EMIT_STREAK_BURST) and despawns (DespawnActorRecord). Caller:
+ * DragonRescue_Update. */
 void TickStatueBurstShard(Actor *actor);
 
-/* 0x8003cb24: Adds delta to the sub-frame timer g_bSpyroSubFrameTimer. On overflow past 0xf, advances g_bSpyroAnimFrame by 1 within current anim, wrapping back to its SPYRO_ANIM_DESC_LOOP_START frame when it reaches SPYRO_ANIM_DESC_LOOP_END. Pure incremental step — does not change state. */
+/* 0x8003cb24: Adds delta to the sub-frame timer g_bSpyroSubFrameTimer. On
+ * overflow past 0xf, advances g_bSpyroAnimFrame by 1 within current anim,
+ * wrapping back to its SPYRO_ANIM_DESC_LOOP_START frame when it reaches
+ * SPYRO_ANIM_DESC_LOOP_END. Pure incremental step — does not change state. */
 void AdvanceSpyroAnimFrame(int delta);
 
-/* 0x8003cbb8: Frame stepper with state-transition commit. Like AdvanceSpyroAnimFrame but when the current anim hits its SPYRO_ANIM_DESC_FRAMES count, commits the pending state change and loads the new state's default anim g_abSpyroStateAnimIndexMap[g_nSpyroState]. Restart style comes from g_abSpyroStateTransitionAnimMatrix[newState + prevState*0x2d]: entry 10 = restart at the anim's SPYRO_ANIM_DESC_LOOP_START frame, else partial restart at frame 1 with sub-frame timer 4. Returns 1 if the transition committed, 0 otherwise. */
+/* 0x8003cbb8: Frame stepper with state-transition commit. Like
+ * AdvanceSpyroAnimFrame but when the current anim hits its
+ * SPYRO_ANIM_DESC_FRAMES count, commits the pending state change and loads the
+ * new state's default anim g_abSpyroStateAnimIndexMap[g_nSpyroState]. Restart
+ * style comes from g_abSpyroStateTransitionAnimMatrix[newState +
+ * prevState*0x2d]: entry 10 = restart at the anim's SPYRO_ANIM_DESC_LOOP_START
+ * frame, else partial restart at frame 1 with sub-frame timer 4. Returns 1 if
+ * the transition committed, 0 otherwise. */
 int StepSpyroAnimAndCommitTransition(int step);
 
-/* 0x8003cce4: Applies a pending Spyro state transition. Reads transition-action byte at &g_abSpyroStateTransitionAnimMatrix[g_nSpyroState + g_nSpyroPrevState*0x2d] (case 1..0xb) and dispatches to one of 9 anim-restart strategies. Sets g_nSpyroAnimMode (anim sub-state code), g_bSpyroAnimCurrent / g_bSpyroAnimFrame (current anim/frame), g_bSpyroSubFrameTimer (timer). Also handles case-4 break-out to a fresh anim when transitioning from SPYRO_ST_FALL with g_nSpyroPrevStateTimer < 0x18. */
+/* 0x8003cce4: Applies a pending Spyro state transition. Reads transition-action
+ * byte at &g_abSpyroStateTransitionAnimMatrix[g_nSpyroState +
+ * g_nSpyroPrevState*0x2d] (case 1..0xb) and dispatches to one of 9 anim-restart
+ * strategies. Sets g_nSpyroAnimMode (anim sub-state code), g_bSpyroAnimCurrent
+ * / g_bSpyroAnimFrame (current anim/frame), g_bSpyroSubFrameTimer (timer). Also
+ * handles case-4 break-out to a fresh anim when transitioning from
+ * SPYRO_ST_FALL with g_nSpyroPrevStateTimer < 0x18. */
 void ApplySpyroStateTransition(void);
 
-/* 0x8003d194: Per-frame Spyro animation state-machine tick. Routes on g_nSpyroAnimMode (0..10): case 0 = advance frame (no pending transition) or ApplySpyroStateTransition; cases 1/2/6 = advance sub-frame timer by 2; cases 3/10 = stepped transition — only when g_abSpyroStateTransitionAnimMatrix[g_nSpyroState + g_nSpyroPrevState*0x2d] is 3/4/10, calls StepSpyroAnimAndCommitTransition at the previous anim's play rate (plays the landing SFX when prev anim was 0x1a); case 4 = wait for sub-frame overflow then enter mode 3; cases 5/8 = advance with a specific increment then drop back to mode 0. */
+/* 0x8003d194: Per-frame Spyro animation state-machine tick. Routes on
+ * g_nSpyroAnimMode (0..10): case 0 = advance frame (no pending transition) or
+ * ApplySpyroStateTransition; cases 1/2/6 = advance sub-frame timer by 2; cases
+ * 3/10 = stepped transition — only when
+ * g_abSpyroStateTransitionAnimMatrix[g_nSpyroState + g_nSpyroPrevState*0x2d] is
+ * 3/4/10, calls StepSpyroAnimAndCommitTransition at the previous anim's play
+ * rate (plays the landing SFX when prev anim was 0x1a); case 4 = wait for
+ * sub-frame overflow then enter mode 3; cases 5/8 = advance with a specific
+ * increment then drop back to mode 0. */
 void TickSpyroAnimStateMachine(void);
 
-/* 0x8003d3b8: Reads the current pad (via g_pPadSubstepState) and converts directional input into a movement target. The left stick (PAD_AXIS_LX / LY, 0x7F centred) maps to ArcTan2 → target yaw g_nSpyroMoveTargetYaw + magnitude-scaled speed g_nSpyroSpeedTarget. The D-pad (held & PAD_DPAD) maps via the 16-entry yaw table at &g_anDpadDirectionYaw (stride 2). Both paths combine with g_nCameraEulerYaw so movement is camera-relative. */
+/* 0x8003d3b8: Reads the current pad (via g_pPadSubstepState) and converts
+ * directional input into a movement target. The left stick (PAD_AXIS_LX / LY,
+ * 0x7F centred) maps to ArcTan2 → target yaw g_nSpyroMoveTargetYaw +
+ * magnitude-scaled speed g_nSpyroSpeedTarget. The D-pad (held & PAD_DPAD) maps
+ * via the 16-entry yaw table at &g_anDpadDirectionYaw (stride 2). Both paths
+ * combine with g_nCameraEulerYaw so movement is camera-relative. */
 void ComputeSpyroMoveTargetFromPad(int speed);
 
-/* 0x8003d52c: Applies sin/cos integration of body-frame angular velocity (rate) to update world-frame Euler angles. Reads current pitch (g_nSpyroBodyPitch) and yaw (g_nSpyroBodyRoll) via the LUTs, then increments yaw (g_nSpyroBodyRoll), roll (g_nSpyroBodyYaw), and pitch (g_nSpyroBodyPitch) by the cos/sin-projected components. Also updates the byte snapshots g_abSpyroPersistentEuler[0..2] (12-bit angles >> 4). The cos(pitch) denominator divisor models a pitch-coupled yaw scaling. */
+/* 0x8003d52c: Applies sin/cos integration of body-frame angular velocity (rate)
+ * to update world-frame Euler angles. Reads current pitch (g_nSpyroBodyPitch)
+ * and yaw (g_nSpyroBodyRoll) via the LUTs, then increments yaw
+ * (g_nSpyroBodyRoll), roll (g_nSpyroBodyYaw), and pitch (g_nSpyroBodyPitch) by
+ * the cos/sin-projected components. Also updates the byte snapshots
+ * g_abSpyroPersistentEuler[0..2] (12-bit angles >> 4). The cos(pitch)
+ * denominator divisor models a pitch-coupled yaw scaling. */
 void IntegrateSpyroBodyEuler(int rate);
 
-/* 0x8003d6d0: Steers Spyro's body yaw (g_nSpyroBodyYaw) toward the move target yaw (g_nSpyroMoveTargetYaw) using a lean accumulator (g_nSpyroBodyYawStep, range -6..+6). Picks turn rate from g_anSpyroTurnRateRows + 0xc + bucket * 0x1a + lean * 2 (bucket selects speed bucket). Resets lean when target is overshot or the desired delta falls inside the table-indexed band. Always finishes by calling IntegrateSpyroBodyEuler with the chosen angular delta and reports the new |delta| via AbsAngleDelta12. */
+/* 0x8003d6d0: Steers Spyro's body yaw (g_nSpyroBodyYaw) toward the move target
+ * yaw (g_nSpyroMoveTargetYaw) using a lean accumulator (g_nSpyroBodyYawStep,
+ * range -6..+6). Picks turn rate from g_anSpyroTurnRateRows + 0xc + bucket *
+ * 0x1a + lean * 2 (bucket selects speed bucket). Resets lean when target is
+ * overshot or the desired delta falls inside the table-indexed band. Always
+ * finishes by calling IntegrateSpyroBodyEuler with the chosen angular delta and
+ * reports the new |delta| via AbsAngleDelta12. */
 int TurnSpyroTowardMoveTargetWithLean(int bucket);
 
-/* 0x8003d840: When the analog stick is past the inner deadzone (button bit and not centered at 0x7f7f) but its magnitude is < 0x60, smooths Spyro's body yaw (g_nSpyroBodyYaw) partway toward the move target yaw (g_nSpyroMoveTargetYaw) proportional to stick magnitude. Large delta (> 0x100) sets the snap-flag g_nSpyroSubstate = 1. Always follows with TurnSpyroTowardMoveTargetWithLean(0). */
+/* 0x8003d840: When the analog stick is past the inner deadzone (button bit and
+ * not centered at 0x7f7f) but its magnitude is < 0x60, smooths Spyro's body yaw
+ * (g_nSpyroBodyYaw) partway toward the move target yaw (g_nSpyroMoveTargetYaw)
+ * proportional to stick magnitude. Large delta (> 0x100) sets the snap-flag
+ * g_nSpyroSubstate = 1. Always follows with
+ * TurnSpyroTowardMoveTargetWithLean(0). */
 int ApplyPadInputToSpyroBodyYaw(void);
 
-/* 0x8003d92c: Accelerate/decelerate current speed (g_nSpyroMotionSpeed) toward the target speed (g_nSpyroSpeedTarget) using two separate ramps: +accel per frame when below target, -decel per frame when at-or-above. Clamps to the target on overshoot. The split rates let walking states use a softer brake than throttle. */
+/* 0x8003d92c: Accelerate/decelerate current speed (g_nSpyroMotionSpeed) toward
+ * the target speed (g_nSpyroSpeedTarget) using two separate ramps: +accel per
+ * frame when below target, -decel per frame when at-or-above. Clamps to the
+ * target on overshoot. The split rates let walking states use a softer brake
+ * than throttle. */
 void AdvanceSpyroSpeedTowardTarget(int accel, int decel);
 
-/* 0x8003d978: Compose Spyro's linear velocity vector (g_anSpyroVelocity..b54) by rotating (speed,0,0) through the body Euler matrix. Builds the matrix into stack via ApplyEulerRotation from the byte snapshots of pitch/roll/yaw (g_nSpyroBodyPitch / Yaw / Roll >> 4), then RotateVectorByMatrix expands the speed (g_nSpyroMotionSpeed) along the body forward axis. */
+/* 0x8003d978: Compose Spyro's linear velocity vector (g_anSpyroVelocity..b54)
+ * by rotating (speed,0,0) through the body Euler matrix. Builds the matrix into
+ * stack via ApplyEulerRotation from the byte snapshots of pitch/roll/yaw
+ * (g_nSpyroBodyPitch / Yaw / Roll >> 4), then RotateVectorByMatrix expands the
+ * speed (g_nSpyroMotionSpeed) along the body forward axis. */
 void BuildSpyroVelocityFromBodyEuler(void);
 
-/* 0x8003da08: Free-fall body attitude damper. Spring-damps pitch (g_nSpyroBodyPitch) and roll (g_nSpyroBodyRoll) back toward 0 via the angular accumulators g_nSpyroPitchSpringVel / g_nSpyroRollSpringVel with PD coefficients (4/16 - 16/64). No target-velocity tracking — used in SPYRO_ST_FALL (AdvanceSpyroSubstepState) and by UpdateSpyroFlightAttitudeNearGround when the ground below is too steep to stand on (g_nSpyroGroundSlope >= SLOPE_STEEP). */
+/* 0x8003da08: Free-fall body attitude damper. Spring-damps pitch
+ * (g_nSpyroBodyPitch) and roll (g_nSpyroBodyRoll) back toward 0 via the angular
+ * accumulators g_nSpyroPitchSpringVel / g_nSpyroRollSpringVel with PD
+ * coefficients (4/16 - 16/64). No target-velocity tracking — used in
+ * SPYRO_ST_FALL (AdvanceSpyroSubstepState) and by
+ * UpdateSpyroFlightAttitudeNearGround when the ground below is too steep to
+ * stand on (g_nSpyroGroundSlope >= SLOPE_STEEP). */
 void DampenSpyroFreeFallAttitude(void);
 
-/* 0x8003dae4: Per-frame attitude controller for glide/flight when Spyro is close to ground (g_nSpyroGroundSlope < 0x17). Spring-damps body pitch (g_nSpyroBodyPitch) and yaw (g_nSpyroBodyRoll) toward velocity-relative angles derived from the local ground frame and body yaw, using the angular accumulators g_nSpyroPitchSpringVel / g_nSpyroRollSpringVel. When both byte snapshots g_abSpyroPersistentEuler[0..1] are tilted past 0xc0+0x20, layers an additional position offset on g_anSpyroWorldPos (Spyro pos) for the ground-hug effect. Falls through to DampenSpyroFreeFallAttitude when above the 0x17 altitude threshold. */
+/* 0x8003dae4: Per-frame attitude controller for glide/flight when Spyro is
+ * close to ground (g_nSpyroGroundSlope < 0x17). Spring-damps body pitch
+ * (g_nSpyroBodyPitch) and yaw (g_nSpyroBodyRoll) toward velocity-relative
+ * angles derived from the local ground frame and body yaw, using the angular
+ * accumulators g_nSpyroPitchSpringVel / g_nSpyroRollSpringVel. When both byte
+ * snapshots g_abSpyroPersistentEuler[0..1] are tilted past 0xc0+0x20, layers an
+ * additional position offset on g_anSpyroWorldPos (Spyro pos) for the
+ * ground-hug effect. Falls through to DampenSpyroFreeFallAttitude when above
+ * the 0x17 altitude threshold. */
 void UpdateSpyroFlightAttitudeNearGround(void);
 
-/* 0x8003de44: Spring-aligns Spyro's body pitch (g_nSpyroBodyPitch) and yaw (g_nSpyroBodyRoll) to the current velocity (g_anSpyroVelocity..b54). Computes target pitch as -ArcTan2(|XY|, Z) and target yaw as ArcTan2(vx,vy)+0x8e, drives g_nSpyroPitchSpringVel / g_nSpyroRollSpringVel angular accumulators with PD coefficients (4/16 - 16/64) and integrates the result. Used by free-flight states where the body should "face the way it's moving". */
+/* 0x8003de44: Spring-aligns Spyro's body pitch (g_nSpyroBodyPitch) and yaw
+ * (g_nSpyroBodyRoll) to the current velocity (g_anSpyroVelocity..b54). Computes
+ * target pitch as -ArcTan2(|XY|, Z) and target yaw as ArcTan2(vx,vy)+0x8e,
+ * drives g_nSpyroPitchSpringVel / g_nSpyroRollSpringVel angular accumulators
+ * with PD coefficients (4/16 - 16/64) and integrates the result. Used by
+ * free-flight states where the body should "face the way it's moving". */
 void AlignSpyroBodyToVelocity(void);
 
-/* 0x8003dfa4: Hard-zero of Spyro's linear motion. Clears the knockback accumulator g_anSpyroMotionVec..b6c, the frame-delta length g_nSpyroFrameMotionLength, the live velocity g_anSpyroVelocity..b54, and the speed scalar g_nSpyroMotionSpeed. Called by jump/glide/dive transitions (ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges / UpdateSpyroStateBehavior) just before they overwrite velocity with their own launch. */
+/* 0x8003dfa4: Hard-zero of Spyro's linear motion. Clears the knockback
+ * accumulator g_anSpyroMotionVec..b6c, the frame-delta length
+ * g_nSpyroFrameMotionLength, the live velocity g_anSpyroVelocity..b54, and the
+ * speed scalar g_nSpyroMotionSpeed. Called by jump/glide/dive transitions
+ * (ApplySpyroTriggerEvents / DispatchSpyroChargeStateChanges /
+ * UpdateSpyroStateBehavior) just before they overwrite velocity with their own
+ * launch. */
 void ResetSpyroLinearMotion(void);
 
-/* 0x8003dfec: Turns Spyro's byte yaw (g_bSpyroPersistentEulerZ, then g_nSpyroBodyYaw = byte << 4) toward his motion direction ArcTan2(g_anSpyroMotionVec): no change inside +-band, a snap when within +-step, else one step. Only use: IntegrateSpyroMotionForSubstep's SPYRO_ST_SLIDE (step 8, band 4). */
+/* 0x8003dfec: Turns Spyro's byte yaw (g_bSpyroPersistentEulerZ, then
+ * g_nSpyroBodyYaw = byte << 4) toward his motion direction
+ * ArcTan2(g_anSpyroMotionVec): no change inside +-band, a snap when within
+ * +-step, else one step. Only use: IntegrateSpyroMotionForSubstep's
+ * SPYRO_ST_SLIDE (step 8, band 4). */
 void TurnSpyroYawTowardMotion(int step, int band);
 
-/* 0x8003e0b4: Decomposes gravity along the slope tangent of the current surface. Computes the component of gravity (g_nSpyroGravityStep) projected onto the ground plane defined by normal g_anSpyroGroundNormal and writes the down-slope acceleration into the slope-slide vector (SPY_SLOPE_SLIDE, 0x80078b28; with g_nSpyroSlopeGravityStep = gravity magnitude). Called on entering and per substep of SPYRO_ST_CHARGE, SPYRO_ST_SLIDE and SPYRO_ST_SUPERCHARGE (ChangeSpyroState, DispatchSpyroPhysicsByState) to give Spyro a slope-slide push along the ground tangent. */
+/* 0x8003e0b4: Decomposes gravity along the slope tangent of the current
+ * surface. Computes the component of gravity (g_nSpyroGravityStep) projected
+ * onto the ground plane defined by normal g_anSpyroGroundNormal and writes the
+ * down-slope acceleration into the slope-slide vector (SPY_SLOPE_SLIDE,
+ * 0x80078b28; with g_nSpyroSlopeGravityStep = gravity magnitude). Called on
+ * entering and per substep of SPYRO_ST_CHARGE, SPYRO_ST_SLIDE and
+ * SPYRO_ST_SUPERCHARGE (ChangeSpyroState, DispatchSpyroPhysicsByState) to give
+ * Spyro a slope-slide push along the ground tangent. */
 void ApplyGravityAlongSpyroSlopeTangent(void);
 
-/* 0x8003e1ac: Sets g_anSpyroSlopeGravityVec to gravity-magnitude pulling Spyro along the negated ground normal. Copies g_anSpyroGroundNormal (surface normal) into g_anSpyroSlopeGravityVec, scales length to |g_nSpyroGravityStep| (gravity), then negates. Combines with ApplyGravityAlongSpyroSlopeTangent to fully decompose gravity onto the slope frame. ChangeSpyroState calls it on entering the grounded states (walk / run / stop / jog, sidestep / charge, teeter / hurt, slide, scripted walk, knockback, death, supercharge); DispatchSpyroPhysicsByState calls it too. */
+/* 0x8003e1ac: Sets g_anSpyroSlopeGravityVec to gravity-magnitude pulling Spyro
+ * along the negated ground normal. Copies g_anSpyroGroundNormal (surface
+ * normal) into g_anSpyroSlopeGravityVec, scales length to |g_nSpyroGravityStep|
+ * (gravity), then negates. Combines with ApplyGravityAlongSpyroSlopeTangent to
+ * fully decompose gravity onto the slope frame. ChangeSpyroState calls it on
+ * entering the grounded states (walk / run / stop / jog, sidestep / charge,
+ * teeter / hurt, slide, scripted walk, knockback, death, supercharge);
+ * DispatchSpyroPhysicsByState calls it too. */
 void ApplyGravityAlongSpyroSlopeNormal(void);
 
-/* 0x8003e218: Forward surface probe: fires a LOS (CastRayWorldAndActors) from Spyro's position plus (0, 0, -SPYRO_RADIUS) in body space toward his position plus (0x1c4, 0, -0x1a4) through the active GTE rotation (ahead and down). If the probe hits a surface whose normal rises >= 0x17 (8-bit angle) above horizontal, latches g_nSpyroWallSlideContributedFlag = 1 and copies the hit normal into g_anSpyroWallSlideNudgeAccum, as a wall slide in AdvanceSpyroPhysics would. Run by the airborne states (JUMP, LIFT, FALL, GLIDE_DROP) only when no wall was touched this step. */
+/* 0x8003e218: Forward surface probe: fires a LOS (CastRayWorldAndActors) from
+ * Spyro's position plus (0, 0, -SPYRO_RADIUS) in body space toward his position
+ * plus (0x1c4, 0, -0x1a4) through the active GTE rotation (ahead and down). If
+ * the probe hits a surface whose normal rises >= 0x17 (8-bit angle) above
+ * horizontal, latches g_nSpyroWallSlideContributedFlag = 1 and copies the hit
+ * normal into g_anSpyroWallSlideNudgeAccum, as a wall slide in
+ * AdvanceSpyroPhysics would. Run by the airborne states (JUMP, LIFT, FALL,
+ * GLIDE_DROP) only when no wall was touched this step. */
 void ProbeSpyroLedgeForward(void);
 
-/* 0x8003e318: Per-frame Spyro grounding probe (skipped when g_dwSpyroRequestMask bit 0x4000 is set). Fires LOS from a body-frame point above Spyro to a point below; on hit, captures the surface normal into g_anSpyroGroundNormal..b04, computes the slope angle into g_nSpyroGroundSlope, stores the hit triangle's index into g_nSpyroGroundTriIndex, and unpacks its vertices into g_anSpyroGroundTriVerts via UnpackWorldCollisionTri. Slope < 0x21 marks footing (g_nSpyroAirborneFrames = 0 contact frame counter); steeper triggers the fallback inner downward probe (vertical line to z=-0x3c). Updates g_nSpyroCliffEdgeHint if a secondary forward-down LOS fails (cliff-edge hint). */
+/* 0x8003e318: Per-frame Spyro grounding probe (skipped when
+ * g_dwSpyroRequestMask bit 0x4000 is set). Fires LOS from a body-frame point
+ * above Spyro to a point below; on hit, captures the surface normal into
+ * g_anSpyroGroundNormal..b04, computes the slope angle into
+ * g_nSpyroGroundSlope, stores the hit triangle's index into
+ * g_nSpyroGroundTriIndex, and unpacks its vertices into g_anSpyroGroundTriVerts
+ * via UnpackWorldCollisionTri. Slope < 0x21 marks footing
+ * (g_nSpyroAirborneFrames = 0 contact frame counter); steeper triggers the
+ * fallback inner downward probe (vertical line to z=-0x3c). Updates
+ * g_nSpyroCliffEdgeHint if a secondary forward-down LOS fails (cliff-edge
+ * hint). */
 void ProbeSpyroGroundContact(void);
 
-/* 0x8003e628: When standing on a known world triangle (g_nSpyroGroundTriIndex >= 0), averages the per-vertex displacement of its 3 vertices vs. their cached values at g_anSpyroGroundTriVerts+ (loaded by ProbeSpyroGroundContact). Stores the mean delta into g_anSpyroPendingImpulse — Spyro's "moving-platform" inherited velocity, applied by the per-frame physics integrator. Significant motion (length > 0x20) sets g_nCameraSpringSuppressFlag = 1 to wake camera tracking. */
+/* 0x8003e628: When standing on a known world triangle (g_nSpyroGroundTriIndex
+ * >= 0), averages the per-vertex displacement of its 3 vertices vs. their
+ * cached values at g_anSpyroGroundTriVerts+ (loaded by
+ * ProbeSpyroGroundContact). Stores the mean delta into g_anSpyroPendingImpulse
+ * — Spyro's "moving-platform" inherited velocity, applied by the per-frame
+ * physics integrator. Significant motion (length > 0x20) sets
+ * g_nCameraSpringSuppressFlag = 1 to wake camera tracking. */
 void AverageSpyroPlatformMotion(void);
 
-/* 0x8003e758: Sub-frame footing recovery: fires LOS (CastRayWorldAndActors) from a body-frame point (X+0x80) to a point (Z-0x164, Z-0x80) and, on a hit with positive height delta, subtracts the world-collision delta from the hit position (relative to g_anCollisionResolvedPos GTE reference) and applies the small displacement (per-component cleared if abs < 8) to g_anSpyroWorldPos (Spyro pos). Clears the off-ground counter g_nSpyroAirborneFrames on success, otherwise increments it. Acts as the per-frame "snap-to-floor" step. */
+/* 0x8003e758: Sub-frame footing recovery: fires LOS (CastRayWorldAndActors)
+ * from a body-frame point (X+0x80) to a point (Z-0x164, Z-0x80) and, on a hit
+ * with positive height delta, subtracts the world-collision delta from the hit
+ * position (relative to g_anCollisionResolvedPos GTE reference) and applies the
+ * small displacement (per-component cleared if abs < 8) to g_anSpyroWorldPos
+ * (Spyro pos). Clears the off-ground counter g_nSpyroAirborneFrames on success,
+ * otherwise increments it. Acts as the per-frame "snap-to-floor" step. */
 void StepSpyroOntoLocalFloor(void);
 
-/* 0x8003e90c: Cliff-edge / wall-clear nudge: fires 4 LOS probes (CastRayWorldAndActors) around Spyro at the diagonals (g_anCosineLut[0x20] / g_anSineLut, 8-bit angles 0x20 + 0x40k), builds a 4-bit hit mask, then looks up a clear-direction index in the 16-entry table at &g_anSpyroWallNudgeAngleByProbeMask. If index ≥ 0, applies the corresponding (X,Z) nudge from g_anCosineLut / g_anSineLut (>>4 scaled) to velocity g_anSpyroVelocity[0..1]. Called on entering SPYRO_ST_FALL / SPYRO_ST_GLIDE_DROP (ChangeSpyroState) and per substep of the fall (IntegrateSpyroMotionForSubstep) while g_nSpyroGroundSlope < SLOPE_NUDGE_MAX — pushes Spyro horizontally clear of geometry. */
+/* 0x8003e90c: Cliff-edge / wall-clear nudge: fires 4 LOS probes
+ * (CastRayWorldAndActors) around Spyro at the diagonals (g_anCosineLut[0x20] /
+ * g_anSineLut, 8-bit angles 0x20 + 0x40k), builds a 4-bit hit mask, then looks
+ * up a clear-direction index in the 16-entry table at
+ * &g_anSpyroWallNudgeAngleByProbeMask. If index ≥ 0, applies the corresponding
+ * (X,Z) nudge from g_anCosineLut / g_anSineLut (>>4 scaled) to velocity
+ * g_anSpyroVelocity[0..1]. Called on entering SPYRO_ST_FALL /
+ * SPYRO_ST_GLIDE_DROP (ChangeSpyroState) and per substep of the fall
+ * (IntegrateSpyroMotionForSubstep) while g_nSpyroGroundSlope < SLOPE_NUDGE_MAX
+ * — pushes Spyro horizontally clear of geometry. */
 void NudgeSpyroFromWallProbes(void);
 
-/* 0x8003ea68: Spyro state-change entry point: per-new-state initialization switch (state = the new SpyroState). Exit-side preamble: leaving certain states stops/plays exit SFX from g_pLevelSampleBankHeader bytes. Per-state setup writes the movement core (g_nSpyroSubstate, g_nSpyroGravityStep/EnableFlag, velocity/carry vectors, g_nSpyroFloorReferenceZ) — notably: WALK/RUN/STOP/JOG compute g_nSpyroMoveTargetMag from g_anSpyroSlopeSpeedTargets interpolated by ground slope; SPYRO_ST_CHARGE scans the actor list for the nearest chargeable target in a 0x200-yaw cone; SPYRO_ST_IDLE and the fidget states (SPYRO_ST_FIDGET_*) seed g_nSpyroIdleAnimTimeout. Tail commits g_nSpyroState/g_nSpyroPrevStateTimer, zeroes g_nSpyroStateTimer, and loads g_nSpyroAnimPlayRate from g_abSpyroAnimDescTable via g_abSpyroStateAnimIndexMap. */
+/* 0x8003ea68: Spyro state-change entry point: per-new-state initialization
+ * switch (state = the new SpyroState). Exit-side preamble: leaving certain
+ * states stops/plays exit SFX from g_pLevelSampleBankHeader bytes. Per-state
+ * setup writes the movement core (g_nSpyroSubstate,
+ * g_nSpyroGravityStep/EnableFlag, velocity/carry vectors,
+ * g_nSpyroFloorReferenceZ) — notably: WALK/RUN/STOP/JOG compute
+ * g_nSpyroMoveTargetMag from g_anSpyroSlopeSpeedTargets interpolated by ground
+ * slope; SPYRO_ST_CHARGE scans the actor list for the nearest chargeable target
+ * in a 0x200-yaw cone; SPYRO_ST_IDLE and the fidget states (SPYRO_ST_FIDGET_*)
+ * seed g_nSpyroIdleAnimTimeout. Tail commits
+ * g_nSpyroState/g_nSpyroPrevStateTimer, zeroes g_nSpyroStateTimer, and loads
+ * g_nSpyroAnimPlayRate from g_abSpyroAnimDescTable via
+ * g_abSpyroStateAnimIndexMap. */
 void ChangeSpyroState(int state);
 
-/* 0x8003fdc8: Wrapper: calls ChangeSpyroState(state..4), then hard-resets the anim state machine — sets g_bSpyroAnimCurrent (current anim) to &g_abSpyroStateAnimIndexMap[g_nSpyroState] (the state's default anim), frame=1, timer=0, sub-state g_nSpyroAnimMode=0, and collapses g_nSpyroPrevState (prev-state ctx) to g_nSpyroState. Used by callers that need a clean anim restart vs ChangeSpyroState's preserved blending. */
+/* 0x8003fdc8: Wrapper: calls ChangeSpyroState(state..4), then hard-resets the
+ * anim state machine — sets g_bSpyroAnimCurrent (current anim) to
+ * &g_abSpyroStateAnimIndexMap[g_nSpyroState] (the state's default anim),
+ * frame=1, timer=0, sub-state g_nSpyroAnimMode=0, and collapses
+ * g_nSpyroPrevState (prev-state ctx) to g_nSpyroState. Used by callers that
+ * need a clean anim restart vs ChangeSpyroState's preserved blending. */
 void RestartSpyroAnimWithState(int state);
 
-/* 0x8003fe40: Per-frame Spyro physics integrator + collision march. Consumes the request bitmask g_dwSpyroRequestMask (bit0/1/2 set linear velocity from absolute targets g_anSpyroRequestTargetPos..58; bit3/4/5 set angles 0xc..0xe from g_abSpyroRequestEuler..5e; bit6 selects shifted-value mode; bit8 forces ChangeSpyroState to g_nSpyroRequestState; bit0x200..0x10000 set g_nCameraNextMode/anchor/target-params; bit0x1000 = enemy-locked turning toward g_pScriptedCameraActor->rotZ). Divides velocity by g_nFrameStep to per-frame delta, then substep-marches in 0x154-unit segments calling DispatchActorContactAtSphere (collision detect) + CollideSphereWithWorldAndActors (slide) up to 6 retries per substep. Maintains g_anSpyroPrevWorldPos prev-position + g_nSpyroFrameMotionLength distance traveled. */
+/* 0x8003fe40: Per-frame Spyro physics integrator + collision march. Consumes
+ * the request bitmask g_dwSpyroRequestMask (bit0/1/2 set linear velocity from
+ * absolute targets g_anSpyroRequestTargetPos..58; bit3/4/5 set angles 0xc..0xe
+ * from g_abSpyroRequestEuler..5e; bit6 selects shifted-value mode; bit8 forces
+ * ChangeSpyroState to g_nSpyroRequestState; bit0x200..0x10000 set
+ * g_nCameraNextMode/anchor/target-params; bit0x1000 = enemy-locked turning
+ * toward g_pScriptedCameraActor->rotZ). Divides velocity by g_nFrameStep to
+ * per-frame delta, then substep-marches in 0x154-unit segments calling
+ * DispatchActorContactAtSphere (collision detect) +
+ * CollideSphereWithWorldAndActors (slide) up to 6 retries per substep.
+ * Maintains g_anSpyroPrevWorldPos prev-position + g_nSpyroFrameMotionLength
+ * distance traveled. */
 int AdvanceSpyroPhysics(void);
 
-/* 0x80040f68: Applies this frame's trigger events (g_dwSpyroTriggerEventFlags & mask, the SPYRO_EV_MASK_* values) as state changes: each hit bit costs one g_nSparxHealth and picks its hurt state (SPYRO_ST_HURT / HURT_PINNED / HURT_TINT / HURT_LONG / KNOCKBACK / KNOCKBACK_2, or DEATH / DEATH_PINNED once the health runs out); SPYRO_EV_HAZARD enters SPYRO_ST_HAZARD, SPYRO_EV_LIFT SPYRO_ST_LIFT, SPYRO_EV_CHARGE_HOLD latches g_nSpyroChargeHoldFlag and SPYRO_EV_REBOUND bounces Spyro off g_anSpyroFirstContactNormal. Returns nonzero when the state changed; UpdateSpyroStateBehavior's cases call it first and bail on nonzero. */
+/* 0x80040f68: Applies this frame's trigger events (g_dwSpyroTriggerEventFlags &
+ * mask, the SPYRO_EV_MASK_* values) as state changes: each hit bit costs one
+ * g_nSparxHealth and picks its hurt state (SPYRO_ST_HURT / HURT_PINNED /
+ * HURT_TINT / HURT_LONG / KNOCKBACK / KNOCKBACK_2, or DEATH / DEATH_PINNED once
+ * the health runs out); SPYRO_EV_HAZARD enters SPYRO_ST_HAZARD, SPYRO_EV_LIFT
+ * SPYRO_ST_LIFT, SPYRO_EV_CHARGE_HOLD latches g_nSpyroChargeHoldFlag and
+ * SPYRO_EV_REBOUND bounces Spyro off g_anSpyroFirstContactNormal. Returns
+ * nonzero when the state changed; UpdateSpyroStateBehavior's cases call it
+ * first and bail on nonzero. */
 int ApplySpyroTriggerEvents(int events);
 
-/* 0x80041270: The charge states' version of ApplySpyroTriggerEvents (SPYRO_ST_CHARGE, and CHARGE_AIR unless entered from a supercharge). The two contact bits matter here: SPYRO_EV_CONTACT_FRONT bonks (SPYRO_ST_CHARGE_BONK) when the contact actor is ahead of Spyro's body yaw (ArcTan2 within +-0x1FF), SPYRO_EV_CONTACT bonks anyway, and both together (SPYRO_EV_CHARGE_HIT) hurt; the other events are applied as in ApplySpyroTriggerEvents. */
+/* 0x80041270: The charge states' version of ApplySpyroTriggerEvents
+ * (SPYRO_ST_CHARGE, and CHARGE_AIR unless entered from a supercharge). The two
+ * contact bits matter here: SPYRO_EV_CONTACT_FRONT bonks (SPYRO_ST_CHARGE_BONK)
+ * when the contact actor is ahead of Spyro's body yaw (ArcTan2 within +-0x1FF),
+ * SPYRO_EV_CONTACT bonks anyway, and both together (SPYRO_EV_CHARGE_HIT) hurt;
+ * the other events are applied as in ApplySpyroTriggerEvents. */
 int DispatchSpyroChargeStateChanges(void);
 
-/* 0x80041558: Idle-animation cycler: advances g_nSpyroIdleAnimSeqCursor (wrap 9) through g_anSpyroIdleAnimStateSeq looking for the next idle-fidget state whose anim record has a nonzero mesh callback (state -> g_abSpyroStateAnimIndexMap -> g_apActorMeshTable[+0x38]). Calls ChangeSpyroState to that state ID. If a full lap finds none, sets g_nSpyroIdleAnimTimeout = 10000 (re-idle later). Triggered from SPYRO_ST_IDLE of UpdateSpyroStateBehavior when the state timer exceeds g_nSpyroIdleAnimTimeout. */
+/* 0x80041558: Idle-animation cycler: advances g_nSpyroIdleAnimSeqCursor (wrap
+ * 9) through g_anSpyroIdleAnimStateSeq looking for the next idle-fidget state
+ * whose anim record has a nonzero mesh callback (state ->
+ * g_abSpyroStateAnimIndexMap -> g_apActorMeshTable[+0x38]). Calls
+ * ChangeSpyroState to that state ID. If a full lap finds none, sets
+ * g_nSpyroIdleAnimTimeout = 10000 (re-idle later). Triggered from SPYRO_ST_IDLE
+ * of UpdateSpyroStateBehavior when the state timer exceeds
+ * g_nSpyroIdleAnimTimeout. */
 void CycleSpyroIdleAnim(void);
 
-/* 0x80041670: Per-frame Spyro state exits: a switch over all SPYRO_STATE_COUNT SpyroState values. Each case first applies the trigger events (ApplySpyroTriggerEvents, or the charge variant) and bails if they changed the state, then tests its own exits (pad bits, speed, airborne frames, slope, timers) and calls ChangeSpyroState. Called by TickSpyroGameplayFrame. */
+/* 0x80041670: Per-frame Spyro state exits: a switch over all SPYRO_STATE_COUNT
+ * SpyroState values. Each case first applies the trigger events
+ * (ApplySpyroTriggerEvents, or the charge variant) and bails if they changed
+ * the state, then tests its own exits (pad bits, speed, airborne frames, slope,
+ * timers) and calls ChangeSpyroState. Called by TickSpyroGameplayFrame. */
 void UpdateSpyroStateBehavior(void);
 
-/* 0x80043fe4: Per-substep Spyro motion integrator. Called g_nFrameStep times per frame from AdvanceSpyroFrameMotion / TickSpyroFrameGlideHold / TickSpyroFrameNoInput; substep = substep index. Sets g_pPadSubstepState = per-substep pad-input record (&g_anPadSubstepRing + idx*0x18). switch(g_nSpyroState) drives per-state motion routines: walk/run cluster → ComputeSpyroMoveTargetFromPad + ApplyPadInputToSpyroBodyYaw + TurnSpyroTowardMoveTargetWithLean + AdvanceSpyroSpeedTowardTarget + BuildSpyroVelocityFromBodyEuler; flame/glide/jump → IntegrateSpyroBodyEuler + BuildSpyroVelocityFromBodyEuler; charge inner switch on g_nSpyroSubstate (charge-substate). Accumulates g_anSpyroVelocity (velocity this substep) into g_anSpyroVelocityFp6 (frame motion accumulator). Updates byte Euler snapshots at g_abSpyroPersistentEuler[0..2]. */
+/* 0x80043fe4: Per-substep Spyro motion integrator. Called g_nFrameStep times
+ * per frame from AdvanceSpyroFrameMotion / TickSpyroFrameGlideHold /
+ * TickSpyroFrameNoInput; substep = substep index. Sets g_pPadSubstepState =
+ * per-substep pad-input record (&g_anPadSubstepRing + idx*0x18).
+ * switch(g_nSpyroState) drives per-state motion routines: walk/run cluster →
+ * ComputeSpyroMoveTargetFromPad + ApplyPadInputToSpyroBodyYaw +
+ * TurnSpyroTowardMoveTargetWithLean + AdvanceSpyroSpeedTowardTarget +
+ * BuildSpyroVelocityFromBodyEuler; flame/glide/jump → IntegrateSpyroBodyEuler +
+ * BuildSpyroVelocityFromBodyEuler; charge inner switch on g_nSpyroSubstate
+ * (charge-substate). Accumulates g_anSpyroVelocity (velocity this substep) into
+ * g_anSpyroVelocityFp6 (frame motion accumulator). Updates byte Euler snapshots
+ * at g_abSpyroPersistentEuler[0..2]. */
 void IntegrateSpyroMotionForSubstep(int substep);
 
-/* 0x80047b60: Per-substep physics for the current SpyroState: each state runs its own mix of AverageSpyroPlatformMotion (grounded states), AdvanceSpyroPhysics, ProbeSpyroGroundContact, slope gravity (ApplyGravityAlongSpyroSlopeNormal / Tangent), StepSpyroOntoLocalFloor and ProbeSpyroLedgeForward. Walking states derive the slope-adjusted g_nSpyroMoveTargetMag; the fall and glide states track g_nSpyroFloorReferenceZ for fall damage (kept while g_nSpyroFlightMode); SPYRO_ST_HAZARD sinks Spyro by g_nSpyroHazardSinkDepth and records g_nSpyroHazardFloorZ; SPYRO_ST_SUPERCHARGE emits its trail particles. Called per substep from AdvanceSpyroFrameMotion. */
+/* 0x80047b60: Per-substep physics for the current SpyroState: each state runs
+ * its own mix of AverageSpyroPlatformMotion (grounded states),
+ * AdvanceSpyroPhysics, ProbeSpyroGroundContact, slope gravity
+ * (ApplyGravityAlongSpyroSlopeNormal / Tangent), StepSpyroOntoLocalFloor and
+ * ProbeSpyroLedgeForward. Walking states derive the slope-adjusted
+ * g_nSpyroMoveTargetMag; the fall and glide states track
+ * g_nSpyroFloorReferenceZ for fall damage (kept while g_nSpyroFlightMode);
+ * SPYRO_ST_HAZARD sinks Spyro by g_nSpyroHazardSinkDepth and records
+ * g_nSpyroHazardFloorZ; SPYRO_ST_SUPERCHARGE emits its trail particles. Called
+ * per substep from AdvanceSpyroFrameMotion. */
 void DispatchSpyroPhysicsByState(void);
 
-/* 0x8004888c: Per-substep attitude + anim-rate step for the current SpyroState: SPYRO_ST_FALL damps the free-fall attitude (DampenSpyroFreeFallAttitude), SPYRO_ST_CHARGE_AIR aligns the body to the velocity (AlignSpyroBodyToVelocity), and the other ground and air states run UpdateSpyroFlightAttitudeNearGround (SPYRO_ST_SUPERCHARGE only while grounded). WALK, JUMP, SLIDE and JOG scale g_nSpyroAnimPlayRate from g_nSpyroMotionSpeed; a WALK at speed 0 with CAM_OPT_PASSIVE_FOLLOW requests camera mode CAM_HELD | CAM_MODE_STAND. Always ends with g_nSpyroStateTimer++. Called per substep from AdvanceSpyroFrameMotion (after DispatchSpyroPhysicsByState), TickSpyroFrameGlideHold and TickSpyroFrameNoInput. */
+/* 0x8004888c: Per-substep attitude + anim-rate step for the current SpyroState:
+ * SPYRO_ST_FALL damps the free-fall attitude (DampenSpyroFreeFallAttitude),
+ * SPYRO_ST_CHARGE_AIR aligns the body to the velocity
+ * (AlignSpyroBodyToVelocity), and the other ground and air states run
+ * UpdateSpyroFlightAttitudeNearGround (SPYRO_ST_SUPERCHARGE only while
+ * grounded). WALK, JUMP, SLIDE and JOG scale g_nSpyroAnimPlayRate from
+ * g_nSpyroMotionSpeed; a WALK at speed 0 with CAM_OPT_PASSIVE_FOLLOW requests
+ * camera mode CAM_HELD | CAM_MODE_STAND. Always ends with g_nSpyroStateTimer++.
+ * Called per substep from AdvanceSpyroFrameMotion (after
+ * DispatchSpyroPhysicsByState), TickSpyroFrameGlideHold and
+ * TickSpyroFrameNoInput. */
 void AdvanceSpyroSubstepState(void);
 
-/* 0x80048b9c: Per-frame Spyro physics + trigger-region driver. Zeros g_anSpyroVelocityFp6 motion accumulator, loops g_nFrameStep times calling IntegrateSpyroMotionForSubstep(substep_idx), then DispatchSpyroPhysicsByState (footing-state — includes AdvanceSpyroPhysics collision march), then loops g_nFrameStep times calling AdvanceSpyroSubstepState (per-substep finalize). Then (unless SPYRO_RQ_NO_CLIP) computes g_nSpyroGroundHeightZ via FindGroundHeightBelow and fires one trigger region through DispatchSpyroTriggerEvent: the one he stands on (grounded within TRIGGER_ON_HEIGHT, TRIGGER_EV_ON), else the first one touched this frame (g_nSpyroFirstContactSurfaceType, TRIGGER_EV_TOUCH), else the one on the ground below him (TRIGGER_EV_OVER). Called only by TickSpyroGameplayFrame. */
+/* 0x80048b9c: Per-frame Spyro physics + trigger-region driver. Zeros
+ * g_anSpyroVelocityFp6 motion accumulator, loops g_nFrameStep times calling
+ * IntegrateSpyroMotionForSubstep(substep_idx), then DispatchSpyroPhysicsByState
+ * (footing-state — includes AdvanceSpyroPhysics collision march), then loops
+ * g_nFrameStep times calling AdvanceSpyroSubstepState (per-substep finalize).
+ * Then (unless SPYRO_RQ_NO_CLIP) computes g_nSpyroGroundHeightZ via
+ * FindGroundHeightBelow and fires one trigger region through
+ * DispatchSpyroTriggerEvent: the one he stands on (grounded within
+ * TRIGGER_ON_HEIGHT, TRIGGER_EV_ON), else the first one touched this frame
+ * (g_nSpyroFirstContactSurfaceType, TRIGGER_EV_TOUCH), else the one on the
+ * ground below him (TRIGGER_EV_OVER). Called only by TickSpyroGameplayFrame. */
 void AdvanceSpyroFrameMotion(void);
 
-/* 0x80048d10: Per-tick Spyro attack-effects driver — two independent subsystems sharing the function. (1) Superflame glow: while g_nSpyroSuperflameTimer > 0 spawns random-offset particle (1,0x1e) behind Spyro via g_pfnLevelEmitParticles, sets Spyro's red tint g_abSpyroTintRgba (0x90,0x20,0x10) + sinusoidal alpha pulse, blinking for the last 0x78 frames; timer decrements by g_nFrameStep. (2) Flame breath: when g_bSpyroFlameActive, arms flame slots through the g_abSpyroFlameSlotMap permutation, recomputes g_anSpyroFlameAnchorPos (static or body-frame per g_bSpyroFlameAnchorMode, matrix copied to g_anSpyroFlameAnchorMtx), then per slot walks the arc point at its age: DispatchActorContactAtSphere(radius 0xa0) + CastRayWorldAndActors from g_anSpyroFlameSlotPrevPos; on hit freezes the slot (state 2, clip age saved) + spawns a 3-particle burst + SFX_ATTACK_HIT; on arc-end without hit spawns the g_anSpyroFlameEndBurstDirs burst. steps = frame delta. Called from TickSpyroGameplayFrame, SaveMenu_Update and the hub balloonist cutscenes. */
+/* 0x80048d10: Per-tick Spyro attack-effects driver — two independent subsystems
+ * sharing the function. (1) Superflame glow: while g_nSpyroSuperflameTimer > 0
+ * spawns random-offset particle (1,0x1e) behind Spyro via
+ * g_pfnLevelEmitParticles, sets Spyro's red tint g_abSpyroTintRgba
+ * (0x90,0x20,0x10) + sinusoidal alpha pulse, blinking for the last 0x78 frames;
+ * timer decrements by g_nFrameStep. (2) Flame breath: when g_bSpyroFlameActive,
+ * arms flame slots through the g_abSpyroFlameSlotMap permutation, recomputes
+ * g_anSpyroFlameAnchorPos (static or body-frame per g_bSpyroFlameAnchorMode,
+ * matrix copied to g_anSpyroFlameAnchorMtx), then per slot walks the arc point
+ * at its age: DispatchActorContactAtSphere(radius 0xa0) + CastRayWorldAndActors
+ * from g_anSpyroFlameSlotPrevPos; on hit freezes the slot (state 2, clip age
+ * saved) + spawns a 3-particle burst + SFX_ATTACK_HIT; on arc-end without hit
+ * spawns the g_anSpyroFlameEndBurstDirs burst. steps = frame delta. Called from
+ * TickSpyroGameplayFrame, SaveMenu_Update and the hub balloonist cutscenes. */
 void TickSpyroAttackEffects(int steps);
 
-/* 0x800495d8: Anim-layer-1 sub-frame advance: g_abSpyroAnimLayer1SubstepBlock += step; on overflow >= 0x10 wraps and advances g_bSpyroAnimLayer1Frame (frame) by 1, snapshots g_bSpyroAnimLayer1Current → g_bSpyroAnimLayer1Prev and g_bSpyroAnimLayer1Frame → g_bSpyroAnimLayer1FramePrev. Caps the frame at the anim's SPYRO_ANIM_DESC_FRAMES - 1. Layer-1 byte set is the flame-breath anim overlay (vs layer-0 g_bSpyro* primary body anim). */
+/* 0x800495d8: Anim-layer-1 sub-frame advance: g_abSpyroAnimLayer1SubstepBlock
+ * += step; on overflow >= 0x10 wraps and advances g_bSpyroAnimLayer1Frame
+ * (frame) by 1, snapshots g_bSpyroAnimLayer1Current → g_bSpyroAnimLayer1Prev
+ * and g_bSpyroAnimLayer1Frame → g_bSpyroAnimLayer1FramePrev. Caps the frame at
+ * the anim's SPYRO_ANIM_DESC_FRAMES - 1. Layer-1 byte set is the flame-breath
+ * anim overlay (vs layer-0 g_bSpyro* primary body anim). */
 void AdvanceSpyroAnimLayer1Frame(int step);
 
-/* 0x80049660: Per-tick anim-layer-1 state machine — tracks the flame-breath anim overlay. g_nSpyroFlamePhase = layer mode (0=play, 1=mid-blend +2/tick, 2=hard-switch +4/tick). When mode=0 and g_nSpyroFlameState (flame-breath state) matches g_nSpyroFlameLayer1State (last seen): if bf0=0 snapshots primary g_bSpyro* into layer-1 byte set (g_bSpyroAnimLayer1Prev / Current / FramePrev / Frame and its substep byte), else AdvanceSpyroAnimLayer1Frame(g_nSpyroFlameAnimRate rate). On state mismatch reads &g_abSpyroFlameTransitionModes[bf0+ac0*2] transition byte (1=blend, 2=hard) and starts that mode. Modes 1/2 finish when g_abSpyroAnimLayer1SubstepBlock > 0xf → AdvanceSpyroAnimLayer1Frame(0) + mode=0. */
+/* 0x80049660: Per-tick anim-layer-1 state machine — tracks the flame-breath
+ * anim overlay. g_nSpyroFlamePhase = layer mode (0=play, 1=mid-blend +2/tick,
+ * 2=hard-switch +4/tick). When mode=0 and g_nSpyroFlameState (flame-breath
+ * state) matches g_nSpyroFlameLayer1State (last seen): if bf0=0 snapshots
+ * primary g_bSpyro* into layer-1 byte set (g_bSpyroAnimLayer1Prev / Current /
+ * FramePrev / Frame and its substep byte), else
+ * AdvanceSpyroAnimLayer1Frame(g_nSpyroFlameAnimRate rate). On state mismatch
+ * reads &g_abSpyroFlameTransitionModes[bf0+ac0*2] transition byte (1=blend,
+ * 2=hard) and starts that mode. Modes 1/2 finish when
+ * g_abSpyroAnimLayer1SubstepBlock > 0xf → AdvanceSpyroAnimLayer1Frame(0) +
+ * mode=0. */
 void TickSpyroAnimLayer1(void);
 
-/* 0x80049880: Per-tick PD spring of byte-Euler snapshot. Drives g_abSpyroSwingByteEuler[0..2] (smoothed byte Euler) toward targets g_nSpyroSwingEulerTargetX / Y / Z via accumulators g_anSpyroSwingEulerSpringAccum[0..2] using shortest-path 12-bit angle delta ((target - prev) & 0xfff, > 0x800 wrapping). Spring law: accum += (delta<<7 - accum<<4) >> 6 ; prev += accum >> 6. Called every tick by TickSpyroFlameAttack. */
+/* 0x80049880: Per-tick PD spring of byte-Euler snapshot. Drives
+ * g_abSpyroSwingByteEuler[0..2] (smoothed byte Euler) toward targets
+ * g_nSpyroSwingEulerTargetX / Y / Z via accumulators
+ * g_anSpyroSwingEulerSpringAccum[0..2] using shortest-path 12-bit angle delta
+ * ((target - prev) & 0xfff, > 0x800 wrapping). Spring law: accum += (delta<<7 -
+ * accum<<4) >> 6 ; prev += accum >> 6. Called every tick by
+ * TickSpyroFlameAttack. */
 void SmoothSpyroByteEulerSpring(void);
 
-/* 0x800499c0: Per-tick flame-breath (PAD_CIRCLE) state machine on g_nSpyroFlameState (0 idle / 1 breathing). An anim with SPYRO_ANIM_NO_OVERLAY cancels it. A fresh Circle press while no flame is live starts a breath (g_bSpyroFlameActive = 1, phase/segment reset, random ring base, g_nSpyroFlameVariant = 1 while the superflame timer runs, slot ages cleared); every 4th frame of timer 0xC..0x1C (CD idle) it spawns flame particles at the two g_anSpyroFlameTipOffsets mouth points; another press after 0x2C chains a second breath; at 0x30 it ends. Always ends with SmoothSpyroByteEulerSpring(). */
+/* 0x800499c0: Per-tick flame-breath (PAD_CIRCLE) state machine on
+ * g_nSpyroFlameState (0 idle / 1 breathing). An anim with SPYRO_ANIM_NO_OVERLAY
+ * cancels it. A fresh Circle press while no flame is live starts a breath
+ * (g_bSpyroFlameActive = 1, phase/segment reset, random ring base,
+ * g_nSpyroFlameVariant = 1 while the superflame timer runs, slot ages cleared);
+ * every 4th frame of timer 0xC..0x1C (CD idle) it spawns flame particles at the
+ * two g_anSpyroFlameTipOffsets mouth points; another press after 0x2C chains a
+ * second breath; at 0x30 it ends. Always ends with
+ * SmoothSpyroByteEulerSpring(). */
 void TickSpyroFlameAttack(void);
 
-/* 0x80049dfc: Anim-layer-2 sub-frame advance: g_bSpyroAnimLayer2Substep += step; on overflow >= 0x10 wraps and advances g_bSpyroAnimLayer2Frame (frame), snapshots g_bSpyroAnimLayer2Current → g_bSpyroAnimLayer2Prev and g_bSpyroAnimLayer2Frame → g_bSpyroAnimLayer2FramePrev. Wraps to the anim's SPYRO_ANIM_DESC_LOOP_START frame when it reaches SPYRO_ANIM_DESC_LOOP_END. Layer-2 byte set at g_bSpyroAnimLayer2Prev / Current / FramePrev / Frame / Substep. */
+/* 0x80049dfc: Anim-layer-2 sub-frame advance: g_bSpyroAnimLayer2Substep +=
+ * step; on overflow >= 0x10 wraps and advances g_bSpyroAnimLayer2Frame (frame),
+ * snapshots g_bSpyroAnimLayer2Current → g_bSpyroAnimLayer2Prev and
+ * g_bSpyroAnimLayer2Frame → g_bSpyroAnimLayer2FramePrev. Wraps to the anim's
+ * SPYRO_ANIM_DESC_LOOP_START frame when it reaches SPYRO_ANIM_DESC_LOOP_END.
+ * Layer-2 byte set at g_bSpyroAnimLayer2Prev / Current / FramePrev / Frame /
+ * Substep. */
 void AdvanceSpyroAnimLayer2Frame(int step);
 
-/* 0x80049e8c: Per-tick anim-layer-2 state machine (analogous to TickSpyroAnimLayer1 but for the second overlay). Vestigial in the shipped game: nothing stores a nonzero g_nSpyroAnimLayer2Phase / Rate / Active, and g_nSpyroAnimLayer2Request is only ever cleared (TickSpyroAnimLayer2GateTimer), so layer 2 always mirrors the primary anim for RasterizeSpyroModel and the AdvanceSpyroAnimLayer2Frame arm never runs (xref). Only ticks when g_nSpyroAnimLayer2Phase == 0 (layer-2 enabled) AND g_nSpyroAnimLayer2Request == g_nSpyroAnimLayer2Active (state stable). If g_nSpyroAnimLayer2Request == 0 snapshots primary g_bSpyro* into layer-2 byte set (g_bSpyroAnimLayer2Prev / Current / FramePrev / Frame / Substep); else AdvanceSpyroAnimLayer2Frame(g_nSpyroAnimLayer2Rate rate). g_nSpyroAnimLayer2Request is forcibly zeroed by TickSpyroAnimLayer2GateTimer when primary anims block layer 2. */
+/* 0x80049e8c: Per-tick anim-layer-2 state machine (analogous to
+ * TickSpyroAnimLayer1 but for the second overlay). Vestigial in the shipped
+ * game: nothing stores a nonzero g_nSpyroAnimLayer2Phase / Rate / Active, and
+ * g_nSpyroAnimLayer2Request is only ever cleared
+ * (TickSpyroAnimLayer2GateTimer), so layer 2 always mirrors the primary anim
+ * for RasterizeSpyroModel and the AdvanceSpyroAnimLayer2Frame arm never runs
+ * (xref). Only ticks when g_nSpyroAnimLayer2Phase == 0 (layer-2 enabled) AND
+ * g_nSpyroAnimLayer2Request == g_nSpyroAnimLayer2Active (state stable). If
+ * g_nSpyroAnimLayer2Request == 0 snapshots primary g_bSpyro* into layer-2 byte
+ * set (g_bSpyroAnimLayer2Prev / Current / FramePrev / Frame / Substep); else
+ * AdvanceSpyroAnimLayer2Frame(g_nSpyroAnimLayer2Rate rate).
+ * g_nSpyroAnimLayer2Request is forcibly zeroed by TickSpyroAnimLayer2GateTimer
+ * when primary anims block layer 2. */
 void TickSpyroAnimLayer2(void);
 
-/* 0x80049f3c: Layer-2 gate timer. If neither g_bSpyroAnimPrev nor g_bSpyroAnimCurrent has SPYRO_ANIM_NO_OVERLAY, counts g_nSpyroAnimLayer2GateFrames up (how long layer 2 has been allowed); otherwise drops the layer-2 request (g_nSpyroAnimLayer2Request = 0). */
+/* 0x80049f3c: Layer-2 gate timer. If neither g_bSpyroAnimPrev nor
+ * g_bSpyroAnimCurrent has SPYRO_ANIM_NO_OVERLAY, counts
+ * g_nSpyroAnimLayer2GateFrames up (how long layer 2 has been allowed);
+ * otherwise drops the layer-2 request (g_nSpyroAnimLayer2Request = 0). */
 void TickSpyroAnimLayer2GateTimer(void);
 
-/* 0x80049fac: Per-tick Spyro shadow-ring sampler. Computes the shadow center (local (0,0,-0x164) through g_anSpyroBodyMtx + g_anSpyroWorldPos) into g_anSpyroShadowPos with Z = g_nSpyroGroundHeightZ. Refreshes g_bSpyroOtBinBias (5 while < 0x7f), g_nSpyroShadowOtBinBias (3, or 5 when Spyro > 0x364 above ground) and g_nSpyroShadowHiddenFlag (ground <= g_anLevelDeathPlaneZTable[g_nLevelIndex] or trigger event active). Then advances g_nSpyroShadowRingIndex (&7) and samples ONE probe vertex per tick: g_anSpyroShadowProbeOffsetTable entry through the body matrix, +0x200 Z headroom, FindGroundHeightBelow(pt, 0x400); ground within 0x100 of expected writes g_abSpyroShadowRingHeights[idx] = (shadowZ - ground)*0xc2>>9, else sets g_abSpyroShadowRingNoGroundFlags[idx]. probe == 0 skips probing and clears both slots. Output consumed by DrawSpyroDropShadow. */
+/* 0x80049fac: Per-tick Spyro shadow-ring sampler. Computes the shadow center
+ * (local (0,0,-0x164) through g_anSpyroBodyMtx + g_anSpyroWorldPos) into
+ * g_anSpyroShadowPos with Z = g_nSpyroGroundHeightZ. Refreshes
+ * g_bSpyroOtBinBias (5 while < 0x7f), g_nSpyroShadowOtBinBias (3, or 5 when
+ * Spyro > 0x364 above ground) and g_nSpyroShadowHiddenFlag (ground <=
+ * g_anLevelDeathPlaneZTable[g_nLevelIndex] or trigger event active). Then
+ * advances g_nSpyroShadowRingIndex (&7) and samples ONE probe vertex per tick:
+ * g_anSpyroShadowProbeOffsetTable entry through the body matrix, +0x200 Z
+ * headroom, FindGroundHeightBelow(pt, 0x400); ground within 0x100 of expected
+ * writes g_abSpyroShadowRingHeights[idx] = (shadowZ - ground)*0xc2>>9, else
+ * sets g_abSpyroShadowRingNoGroundFlags[idx]. probe == 0 skips probing and
+ * clears both slots. Output consumed by DrawSpyroDropShadow. */
 void SampleSpyroShadowRingHeights(int probe);
 
-/* 0x8004a200: Main per-frame Spyro tick — gameplay entry. Called from GamestateUpdate, CameraSettle_Update, DragonRescue_Update. Order: (1) SPYRO_RQ_FREEZE_INPUT or a scripted move holds g_nSpyroInputBlankCountdown at >= 2, and while it runs the live pad block is moved aside to g_dwPadStash for the frame (MovePadInputState); SPYRO_RQ_FORCE_STATE or a scripted move skips step 3, (2) AdvanceSpyroFrameMotion (physics + footing), (3) UpdateSpyroStateBehavior (state transitions) unless suppressed, (4) per-substep TickSpyroAnimStateMachine + 4 actor ticks TickSpyroFlameAttack, TickSpyroAnimLayer1, TickSpyroAnimLayer2GateTimer, TickSpyroAnimLayer2, (5) build body rotation matrices g_anSpyroBodyMtx + g_anSpyroComposedBodyMtx, (6) SampleSpyroShadowRingHeights + TickSpyroAttackEffects, (7) clears g_dwSpyroTriggerEventFlags, (8) death/respawn arbiter: out-of-bounds → ChangeSpyroState(SPYRO_ST_FALL) + a scripted camera view at the camera → TriggerRespawnOrGameOver, (9) per-keyframe anim sounds from g_bSpyroFramePrev / g_bSpyroAnimLayer1FramePrev anim frames, then clears SPYRO_RQ_PENDING and restores the stashed pad block. */
+/* 0x8004a200: Main per-frame Spyro tick — gameplay entry. Called from
+ * GamestateUpdate, CameraSettle_Update, DragonRescue_Update. Order: (1)
+ * SPYRO_RQ_FREEZE_INPUT or a scripted move holds g_nSpyroInputBlankCountdown at
+ * >= 2, and while it runs the live pad block is moved aside to g_dwPadStash for
+ * the frame (MovePadInputState); SPYRO_RQ_FORCE_STATE or a scripted move skips
+ * step 3, (2) AdvanceSpyroFrameMotion (physics + footing), (3)
+ * UpdateSpyroStateBehavior (state transitions) unless suppressed, (4)
+ * per-substep TickSpyroAnimStateMachine + 4 actor ticks TickSpyroFlameAttack,
+ * TickSpyroAnimLayer1, TickSpyroAnimLayer2GateTimer, TickSpyroAnimLayer2, (5)
+ * build body rotation matrices g_anSpyroBodyMtx + g_anSpyroComposedBodyMtx, (6)
+ * SampleSpyroShadowRingHeights + TickSpyroAttackEffects, (7) clears
+ * g_dwSpyroTriggerEventFlags, (8) death/respawn arbiter: out-of-bounds →
+ * ChangeSpyroState(SPYRO_ST_FALL) + a scripted camera view at the camera →
+ * TriggerRespawnOrGameOver, (9) per-keyframe anim sounds from g_bSpyroFramePrev
+ * / g_bSpyroAnimLayer1FramePrev anim frames, then clears SPYRO_RQ_PENDING and
+ * restores the stashed pad block. */
 void TickSpyroGameplayFrame(void);
 
-/* 0x8004a7ec: Spyro frame tick that holds a frozen glide (SPYRO_ST_GLIDE, SPYRO_SUB_GLIDE_HOLD; formerly TickSpyroFrameForceJump). Called from LevelLoad_Update (post-level-load intro). Snapshots g_dwPadPressed into g_dwPadStash, forces ChangeSpyroState(SPYRO_ST_GLIDE) if not already there, sets g_nSpyroSubstate = SPYRO_SUB_GLIDE_HOLD, then per-substep IntegrateSpyroMotionForSubstep → RShift+Add to position g_anSpyroWorldPos → AdvanceSpyroSubstepState → TickSpyroAnimStateMachine + 4 actor ticks. Builds Euler rotation matrices. Skips footing probe and ground-snap collision (no DispatchSpyroPhysicsByState / FindGroundHeightBelow / DispatchSpyroTriggerEvent calls) — Spyro just flies wherever scripting puts him. */
+/* 0x8004a7ec: Spyro frame tick that holds a frozen glide (SPYRO_ST_GLIDE,
+ * SPYRO_SUB_GLIDE_HOLD; formerly TickSpyroFrameForceJump). Called from
+ * LevelLoad_Update (post-level-load intro). Snapshots g_dwPadPressed into
+ * g_dwPadStash, forces ChangeSpyroState(SPYRO_ST_GLIDE) if not already there,
+ * sets g_nSpyroSubstate = SPYRO_SUB_GLIDE_HOLD, then per-substep
+ * IntegrateSpyroMotionForSubstep → RShift+Add to position g_anSpyroWorldPos →
+ * AdvanceSpyroSubstepState → TickSpyroAnimStateMachine + 4 actor ticks. Builds
+ * Euler rotation matrices. Skips footing probe and ground-snap collision (no
+ * DispatchSpyroPhysicsByState / FindGroundHeightBelow /
+ * DispatchSpyroTriggerEvent calls) — Spyro just flies wherever scripting puts
+ * him. */
 void TickSpyroFrameGlideHold(void);
 
-/* 0x8004aa0c: Spyro frame tick — no player input, no state-machine. Called from SpyroStateDelay_Update. Same structure as TickSpyroFrameGlideHold but does NOT force a state (only sets g_nSpyroSubstate=8 if already jumping). Per-substep IntegrateSpyroMotionForSubstep + position-step + AdvanceSpyroSubstepState + TickSpyroAnimStateMachine + actor ticks. Used during scripted post-state delays where Spyro coasts visually without responding to pad or transitions. */
+/* 0x8004aa0c: Spyro frame tick — no player input, no state-machine. Called from
+ * SpyroStateDelay_Update. Same structure as TickSpyroFrameGlideHold but does
+ * NOT force a state (only sets g_nSpyroSubstate=8 if already jumping).
+ * Per-substep IntegrateSpyroMotionForSubstep + position-step +
+ * AdvanceSpyroSubstepState + TickSpyroAnimStateMachine + actor ticks. Used
+ * during scripted post-state delays where Spyro coasts visually without
+ * responding to pad or transitions. */
 void TickSpyroFrameNoInput(void);
 
-/* 0x8004ac24: Reset Spyro entity state. State 7 → clear high byte of g_abSpyroTintRgba. States 0xb/0xf/0x20/0x2c → StopSoundVoicesByOwner(audio reset). full==0 = soft reset (clear input/charge flags g_abSpyroTintRgba, g_dwSpyroTriggerEventFlags, g_nSpyroHazardFloorZ, g_nSpyroFlightMode, g_nSpyroChargeHoldFlag, g_nSpyroGlideBankingFlag, g_nSpyroHazardSinkDepth + rebuild g_nSpyroBodyPitch / Roll / Yaw from byte Euler snapshots). full!=0 = hard reset: save pos+euler+g_nSparxHealth, FillWord(g_anSpyroWorldPos, 0, 0x2a4) wiping the whole Spyro state block, restore saved fields, ChangeSpyroState(SPYRO_ST_IDLE). Always sets g_nSpyroFirstContactSurfaceType=0xff (sentinel surface-type) and g_nSpyroSuperflameTimer=0. Called from BeginCreditsSequence/BeginPauseToMenuTransition/EndDragonRescueToWorld/EndSaveMenuToWorld/BeginSaveMenuFromWorld/RespawnOrGameOver_Update/StoryIntro_Update/HandleLevelSelectInput/DragonRescue_Update, the hub balloonist cutscenes and some UpdateActors + level loader BuildLoadedLevelRuntime. */
+/* 0x8004ac24: Reset Spyro entity state. State 7 → clear high byte of
+ * g_abSpyroTintRgba. States 0xb/0xf/0x20/0x2c → StopSoundVoicesByOwner(audio
+ * reset). full==0 = soft reset (clear input/charge flags g_abSpyroTintRgba,
+ * g_dwSpyroTriggerEventFlags, g_nSpyroHazardFloorZ, g_nSpyroFlightMode,
+ * g_nSpyroChargeHoldFlag, g_nSpyroGlideBankingFlag, g_nSpyroHazardSinkDepth +
+ * rebuild g_nSpyroBodyPitch / Roll / Yaw from byte Euler snapshots). full!=0 =
+ * hard reset: save pos+euler+g_nSparxHealth, FillWord(g_anSpyroWorldPos, 0,
+ * 0x2a4) wiping the whole Spyro state block, restore saved fields,
+ * ChangeSpyroState(SPYRO_ST_IDLE). Always sets
+ * g_nSpyroFirstContactSurfaceType=0xff (sentinel surface-type) and
+ * g_nSpyroSuperflameTimer=0. Called from BeginCreditsSequence,
+ * BeginPauseToMenuTransition, EndDragonRescueToWorld, EndSaveMenuToWorld,
+ * BeginSaveMenuFromWorld, RespawnOrGameOver_Update, StoryIntro_Update,
+ * HandleLevelSelectInput, DragonRescue_Update, the hub balloonist cutscenes and
+ * some UpdateActors + level loader BuildLoadedLevelRuntime. */
 #ifndef RESET_SPYRO_SOFT
-#define RESET_SPYRO_SOFT 0 /* clears input/charge flags, rebuilds body angles */
-#define RESET_SPYRO_FULL 1 /* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
+/* clears input/charge flags, rebuilds body angles */
+#define RESET_SPYRO_SOFT 0
+/* wipes the Spyro block (keeps pos, euler, Sparx), state IDLE */
+#define RESET_SPYRO_FULL 1
 #endif
-/* 0x8004ac24: resets Spyro's entity record. Stops a looping-sfx state's voices; with `full` wipes the 0x2A4-byte record (keeping world position, persistent euler and the level-health flag) and re-enters SPYRO_ST_IDLE, else clears only the transient flags and timers. */
+/* 0x8004ac24: resets Spyro's entity record. Stops a looping-sfx state's voices;
+ * with `full` wipes the 0x2A4-byte record (keeping world position, persistent
+ * euler and the level-health flag) and re-enters SPYRO_ST_IDLE, else clears
+ * only the transient flags and timers. */
 void ResetSpyroEntity(int full);
 
-/* 0x8004ae38: Ray cast against world geometry + dynamic actor meshes. Args: ray-start (vec3), ray-end (vec3), unused, scratch buffer. Walks the 4-cell actor grid at g_pActorSpatialGridBase+0x1000 (testing each actor's local-frame mesh via the per-actor-mesh table at &g_apActorMeshTable[idx]+0x38) and the world-chunk index at g_pWorldCollisionHeader. On hit writes: g_anCollisionResolvedPos..b88 = hit point, g_anCollisionHitNormal..70 = hit normal (or surface vector), g_pCollisionHitActor = hit actor ptr (NULL = world hit), g_nCollisionHitTriIndex = hit triangle index (-1 = actor hit). Returns 1 on hit, 0 otherwise. Shared by every Spyro line probe (ProbeSpyroLedgeForward / ProbeSpyroGroundContact / StepSpyroOntoLocalFloor / NudgeSpyroFromWallProbes) and CheckLineOfSightSegment. */
+/* 0x8004ae38: Ray cast against world geometry + dynamic actor meshes. Args:
+ * ray-start (vec3), ray-end (vec3), unused, scratch buffer. Walks the 4-cell
+ * actor grid at g_pActorSpatialGridBase+0x1000 (testing each actor's
+ * local-frame mesh via the per-actor-mesh table at
+ * &g_apActorMeshTable[idx]+0x38) and the world-chunk index at
+ * g_pWorldCollisionHeader. On hit writes: g_anCollisionResolvedPos..b88 = hit
+ * point, g_anCollisionHitNormal..70 = hit normal (or surface vector),
+ * g_pCollisionHitActor = hit actor ptr (NULL = world hit),
+ * g_nCollisionHitTriIndex = hit triangle index (-1 = actor hit). Returns 1 on
+ * hit, 0 otherwise. Shared by every Spyro line probe (ProbeSpyroLedgeForward /
+ * ProbeSpyroGroundContact / StepSpyroOntoLocalFloor / NudgeSpyroFromWallProbes)
+ * and CheckLineOfSightSegment. */
 int CastRayWorldAndActors(int *start, int *end);
 
-/* 0x8004bdec: continuation of CastRayWorldAndActors (hand-written asm). Splat starts a symbol at this address, but the code there is the routine's exit: it falls in from the hit test, returns 1 (restoring the saved registers from g_anStaticRegSaveArea) or steps the ray and jumps back into the walk loop. No callers. */
+/* 0x8004bdec: continuation of CastRayWorldAndActors (hand-written asm). Splat
+ * starts a symbol at this address, but the code there is the routine's exit: it
+ * falls in from the hit test, returns 1 (restoring the saved registers from
+ * g_anStaticRegSaveArea) or steps the ray and jumps back into the walk loop. No
+ * callers. */
 void CastRayWorldAndActors_Tail(void);
 
-/* 0x8004be4c: Sphere-vs-world+actors collision with slide-out resolution. Args: sphere center, radius, max-slide-distance, scratch. Same 4-cell actor grid + world-chunk-index iteration as CastRayWorldAndActors but tests sphere against each triangle: AABB reject, signed dot-product front-face test, then ray-triangle barycentric for closest point. On contact, computes penetration via g_anSqrtLUT iterative refinement and writes pushed-out sphere center to g_anCollisionResolvedPos..b88 + contact point to g_anCollisionContactPoint..60 + normal to g_anCollisionHitNormal..70 + hit actor/triangle. Returns 1 on hit. Callers: AdvanceSpyroPhysics (per-substep collision march, up to 6 retries), DispatchSpyroPhysicsByState (the SPYRO_ST_FLY states' crash test), UpdateGameplayCamera (camera-vs-world collision). */
+/* 0x8004be4c: Sphere-vs-world+actors collision with slide-out resolution. Args:
+ * sphere center, radius, max-slide-distance, scratch. Same 4-cell actor grid +
+ * world-chunk-index iteration as CastRayWorldAndActors but tests sphere against
+ * each triangle: AABB reject, signed dot-product front-face test, then
+ * ray-triangle barycentric for closest point. On contact, computes penetration
+ * via g_anSqrtLUT iterative refinement and writes pushed-out sphere center to
+ * g_anCollisionResolvedPos..b88 + contact point to
+ * g_anCollisionContactPoint..60 + normal to g_anCollisionHitNormal..70 + hit
+ * actor/triangle. Returns 1 on hit. Callers: AdvanceSpyroPhysics (per-substep
+ * collision march, up to 6 retries), DispatchSpyroPhysicsByState (the
+ * SPYRO_ST_FLY states' crash test), UpdateGameplayCamera (camera-vs-world
+ * collision). */
 int CollideSphereWithWorldAndActors(int *pos, int r1, int r2);
 
-/* 0x8004cedc: continuation of CollideSphereWithWorldAndActors (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of the routine, entered by falling through mid-GTE sequence. No callers. */
+/* 0x8004cedc: continuation of CollideSphereWithWorldAndActors (hand-written
+ * asm). Splat starts a symbol at this address, but the code there is the rest
+ * of the routine, entered by falling through mid-GTE sequence. No callers. */
 void CollideSphereWithWorldAndActors_Tail(void);
 
-/* 0x8004d5ec: Finds the highest world+actor triangle below a point within search distance. Args: position (vec3), max-search-down. Iterates 4-cell actor grid + world chunk index, testing each candidate triangle for XY-containment and reading its Y at the projected point. Tracks highest hit so far in scratchpad word 0x1f800020. On result writes g_anCollisionResolvedPos..b88 (hit point), g_anCollisionHitNormal..70 (normal), g_pCollisionHitActor (actor or NULL=world), g_nCollisionHitTriIndex (triangle), g_nGroundSurfaceType (the hit triangle's WorldCollisionHeader groundCode byte, 0xFF past groundCodeCount; actor hits take theirs from the actor mesh). Return value (via g_nCollisionResolvedZ + v0) is the ground Y the caller uses for foot height. Callers: AdvanceSpyroFrameMotion (per-frame foot probe via g_nSpyroGroundHeightZ), DispatchSpyroPhysicsByState (swim/state-0xf air probes), IntegrateSpyroMotionForSubstep, SaveMenu_Update, level-loader BuildLoadedLevelRuntime. */
+/* 0x8004d5ec: Finds the highest world+actor triangle below a point within
+ * search distance. Args: position (vec3), max-search-down. Iterates 4-cell
+ * actor grid + world chunk index, testing each candidate triangle for
+ * XY-containment and reading its Y at the projected point. Tracks highest hit
+ * so far in scratchpad word 0x1f800020. On result writes
+ * g_anCollisionResolvedPos..b88 (hit point), g_anCollisionHitNormal..70
+ * (normal), g_pCollisionHitActor (actor or NULL=world), g_nCollisionHitTriIndex
+ * (triangle), g_nGroundSurfaceType (the hit triangle's WorldCollisionHeader
+ * groundCode byte, 0xFF past groundCodeCount; actor hits take theirs from the
+ * actor mesh). Return value (via g_nCollisionResolvedZ + v0) is the ground Y
+ * the caller uses for foot height. Callers: AdvanceSpyroFrameMotion (per-frame
+ * foot probe via g_nSpyroGroundHeightZ), DispatchSpyroPhysicsByState
+ * (swim/state-0xf air probes), IntegrateSpyroMotionForSubstep, SaveMenu_Update,
+ * level-loader BuildLoadedLevelRuntime. */
 int FindGroundHeightBelow(int *pos, int depth);
 
-/* 0x8004df24: FindWorldFloorBelowPoint — lightweight world-only ground-height probe at a point. Differs from FindGroundHeightBelow: - World chunks only (no actor grid scan). - First-hit early-exit: scans Z-chunks downward one at a time from the input Z chunk; stops as soon as any world triangle satisfying (X,Y)-containment + Y < input.Y is found. - Writes only to g_nWorldFloorVisZone (the hit triangle's visZone byte); does NOT touch the shared hit-point / hit-normal globals. - Assumes ground Y > 0 — a zero best-floor sentinel doubles as "no hit yet". Returns floor Y (in world units, << 4 of grid units), or 0 + g_nWorldFloorVisZone = -1 on no-hit. Callers: - UpdateCameraFrame (camera-vs-floor — what's the world geometry directly under the camera target). - DragonRescue_Update (snap gem-display pose to local floor). World data layout: WorldCollisionHeader (world_collision.h) — xIndex/yzIndex cell indices, tris (stride 0xc, 14-bit grid-quantized vertices), visZone per-triangle byte array. */
+/* 0x8004df24: FindWorldFloorBelowPoint — lightweight world-only ground-height
+ * probe at a point. Differs from FindGroundHeightBelow: - World chunks only (no
+ * actor grid scan). - First-hit early-exit: scans Z-chunks downward one at a
+ * time from the input Z chunk; stops as soon as any world triangle satisfying
+ * (X,Y)-containment + Y < input.Y is found. - Writes only to
+ * g_nWorldFloorVisZone (the hit triangle's visZone byte); does NOT touch the
+ * shared hit-point / hit-normal globals. - Assumes ground Y > 0 — a zero
+ * best-floor sentinel doubles as "no hit yet". Returns floor Y (in world units,
+ * << 4 of grid units), or 0 + g_nWorldFloorVisZone = -1 on no-hit. Callers: -
+ * UpdateCameraFrame (camera-vs-floor — what's the world geometry directly under
+ * the camera target). - DragonRescue_Update (snap gem-display pose to local
+ * floor). World data layout: WorldCollisionHeader (world_collision.h) —
+ * xIndex/yzIndex cell indices, tris (stride 0xc, 14-bit grid-quantized
+ * vertices), visZone per-triangle byte array. */
 int FindWorldFloorBelowPoint(int *pos);
 
-/* 0x8004e3c8: Actor-only sphere overlap dispatcher (no world). Args: sphere centre, radius, the trigger-event word the touched actor may raise bits in (Spyro passes &g_dwSpyroTriggerEventFlags, actors 0), the Actor.flags hit bits it gets (ACTOR_HIT_* from Spyro's attacks, 0x40000 from thrown actors, 0 for plain movement), the actor to skip (the mover), and a CONTACT_* mode. Shapes flagged pass-through never stop the scan; shape flag 4 withholds hitBits. Walks the 4-cell actor grid at g_pActorSpatialGridBase+0x1000 and, for each actor whose bounding sphere overlaps, runs its type's contact handler through a jump table (damage, pickup, push/bounce). Returns the touched actor or 0. Callers: AdvanceSpyroPhysics, TickSpyroAttackEffects and the actor movers (MoveActorByDelta, SteerActorAlongWaypoints, ...). */
+/* 0x8004e3c8: Actor-only sphere overlap dispatcher (no world). Args: sphere
+ * centre, radius, the trigger-event word the touched actor may raise bits in
+ * (Spyro passes &g_dwSpyroTriggerEventFlags, actors 0), the Actor.flags hit
+ * bits it gets (ACTOR_HIT_* from Spyro's attacks, 0x40000 from thrown actors, 0
+ * for plain movement), the actor to skip (the mover), and a CONTACT_* mode.
+ * Shapes flagged pass-through never stop the scan; shape flag 4 withholds
+ * hitBits. Walks the 4-cell actor grid at g_pActorSpatialGridBase+0x1000 and,
+ * for each actor whose bounding sphere overlaps, runs its type's contact
+ * handler through a jump table (damage, pickup, push/bounce). Returns the
+ * touched actor or 0. Callers: AdvanceSpyroPhysics, TickSpyroAttackEffects and
+ * the actor movers (MoveActorByDelta, SteerActorAlongWaypoints, ...). */
 #ifndef CONTACT_STOP_AT_SOLID
-#define CONTACT_STOP_AT_SOLID 0 /* stop at the first solid shape; returns the last actor touched */
-#define CONTACT_PUSH_OUT      1 /* push pos out of the first solid shape (written back); returns that actor */
-#define CONTACT_ALL           2 /* keep testing past solid shapes */
+/* stop at the first solid shape; returns the last actor touched */
+#define CONTACT_STOP_AT_SOLID 0
+/* push pos out of the first solid shape (written back); returns that actor */
+#define CONTACT_PUSH_OUT 1
+#define CONTACT_ALL 2 /* keep testing past solid shapes */
 #endif
-Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *events, int hitBits, Actor *self, int mode);
+Actor *DispatchActorContactAtSphere(int *pos, int radius, unsigned int *events,
+                                    int hitBits, Actor *self, int mode);
 
-/* 0x8004e60c: continuation of DispatchActorContactAtSphere (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of the routine, entered by falling through. No callers. */
+/* 0x8004e60c: continuation of DispatchActorContactAtSphere (hand-written asm).
+ * Splat starts a symbol at this address, but the code there is the rest of the
+ * routine, entered by falling through. No callers. */
 void DispatchActorContactAtSphere_Tail(void);
 
-/* 0x8004eba8: Draws the active sky (g_nSkyChunkCount / g_pSkyChunkArray; level sky or a portal's): the GTE translation is zeroed, so it is drawn camera-centred at infinity. Stage 1: Z-cull each sky chunk via gte_rtps_b, building visible-chunk pointer list at &g_apMainDrawEntityList. Stage 2: project triangle verts through GTE, build 5-bit frustum outcodes, emit POLY_F3 (0x84) / POLY_F4 (0x86) flat prims into the OT bump buffer at g_pPrimBufferWriteCursor. zone = vis zone selecting a g_pSkyZoneLists chunk list (or -1 to walk every chunk at g_pSkyChunkArray..+g_nSkyChunkCount*4). viewMtx/worldMtx = camera rot/translate matrices. Called once at the end of DrawPortalsAndSky, and by LevelTransition_Draw, RespawnOrGameOver_Draw and Cutscene_Draw. */
+/* 0x8004eba8: Draws the active sky (g_nSkyChunkCount / g_pSkyChunkArray; level
+ * sky or a portal's): the GTE translation is zeroed, so it is drawn
+ * camera-centred at infinity. Stage 1: Z-cull each sky chunk via gte_rtps_b,
+ * building visible-chunk pointer list at &g_apMainDrawEntityList. Stage 2:
+ * project triangle verts through GTE, build 5-bit frustum outcodes, emit
+ * POLY_F3 (0x84) / POLY_F4 (0x86) flat prims into the OT bump buffer at
+ * g_pPrimBufferWriteCursor. zone = vis zone selecting a g_pSkyZoneLists chunk
+ * list (or -1 to walk every chunk at g_pSkyChunkArray..+g_nSkyChunkCount*4).
+ * viewMtx/worldMtx = camera rot/translate matrices. Called once at the end of
+ * DrawPortalsAndSky, and by LevelTransition_Draw, RespawnOrGameOver_Draw and
+ * Cutscene_Draw. */
 void EmitSkyMesh(int zone, MATRIX *viewMtx, MATRIX *worldMtx);
 
-/* 0x8004f000: Fog-cued sibling of EmitSkyMesh. Same two-stage pattern but uses pre-loaded global view matrix (&g_anCameraViewMtx..df4) + model matrix (&g_anWorldToCameraRotMtx..de0), and applies per-vertex depth cueing via gte_dpcs_b using g_dwSkyFadeColor fog RGB and g_nFadeProgress. Cued colors are written to the frame scratch at g_anActorShadowQueue (reached as g_apMainDrawEntityList + 0x2800) and fed back into the F3/F4 emit loop. Callers: MenuTransition_Draw (the pause -> world-map cross-fade) and ActorCutscene_Draw (the level-transition title card). */
+/* 0x8004f000: Fog-cued sibling of EmitSkyMesh. Same two-stage pattern but uses
+ * pre-loaded global view matrix (&g_anCameraViewMtx..df4) + model matrix
+ * (&g_anWorldToCameraRotMtx..de0), and applies per-vertex depth cueing via
+ * gte_dpcs_b using g_dwSkyFadeColor fog RGB and g_nFadeProgress. Cued colors
+ * are written to the frame scratch at g_anActorShadowQueue (reached as
+ * g_apMainDrawEntityList + 0x2800) and fed back into the F3/F4 emit loop.
+ * Callers: MenuTransition_Draw (the pause -> world-map cross-fade) and
+ * ActorCutscene_Draw (the level-transition title card). */
 void EmitSkyMeshFogged(void);
 
-/* 0x8004f4bc: Draws a portal's destination sky (Portal.pSky) clipped to the portal's screen outline. Stage 1: Z-cull each sky chunk via gte_rtps_b. Stage 2: project each triangle, build 5-bit outcodes against the portal's bounding rect g_anPortalScissorRect (set by DrawPortalsAndSky from the ring's screen extents) and dispatch to ClipAndEmitPortalSkyTriangle, which clips against g_aPortalSilhouetteEdges. Final drain of the deferred-prim stack g_pPortalDeferredTriStackTop / g_anPortalDeferredTriStack. viewMtx/outMtx = view/model matrices. Caller: DrawPortalsAndSky (far portals, no fade) */
+/* 0x8004f4bc: Draws a portal's destination sky (Portal.pSky) clipped to the
+ * portal's screen outline. Stage 1: Z-cull each sky chunk via gte_rtps_b. Stage
+ * 2: project each triangle, build 5-bit outcodes against the portal's bounding
+ * rect g_anPortalScissorRect (set by DrawPortalsAndSky from the ring's screen
+ * extents) and dispatch to ClipAndEmitPortalSkyTriangle, which clips against
+ * g_aPortalSilhouetteEdges. Final drain of the deferred-prim stack
+ * g_pPortalDeferredTriStackTop / g_anPortalDeferredTriStack. viewMtx/outMtx =
+ * view/model matrices. Caller: DrawPortalsAndSky (far portals, no fade) */
 void EmitPortalSky(int *mesh, MATRIX *viewMtx, MATRIX *outMtx);
 
-/* 0x8004f7e8: Per-triangle clip-and-emit helper for EmitPortalSky. Builds a 6-bit visibility code from 3 gte_nclip signed-area tests (one per edge) + the upstream 5-bit frustum outcode, then dispatches the 32-entry D_8004F890 jumptable to pick a clip case. Fast path: when in_t2 prim head is empty, writes the triangle directly into the OT bump buffer instead of clipping. */
-void ClipAndEmitPortalSkyTriangle(void); /* register-convention helper: no C callers */
+/* 0x8004f7e8: Per-triangle clip-and-emit helper for EmitPortalSky. Builds a
+ * 6-bit visibility code from 3 gte_nclip signed-area tests (one per edge) + the
+ * upstream 5-bit frustum outcode, then dispatches the 32-entry D_8004F890
+ * jumptable to pick a clip case. Fast path: when in_t2 prim head is empty,
+ * writes the triangle directly into the OT bump buffer instead of clipping. */
+/* register-convention helper: no C callers */
+void ClipAndEmitPortalSkyTriangle(void);
 
-/* 0x8004f8ec: continuation of ClipAndEmitPortalSkyTriangle (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of the same routine: it falls in mid-way through saving the deferred-triangle slot and blends the clipped edge colours (BlendDepthCuedEdgeColor). No callers. */
+/* 0x8004f8ec: continuation of ClipAndEmitPortalSkyTriangle (hand-written asm).
+ * Splat starts a symbol at this address, but the code there is the rest of the
+ * same routine: it falls in mid-way through saving the deferred-triangle slot
+ * and blends the clipped edge colours (BlendDepthCuedEdgeColor). No callers. */
 void ClipAndEmitPortalSkyTriangle_Tail(void);
 
-/* 0x8004fdac: GTE depth-cue color helper for a clipped polygon edge. Loads vertex RGB + fog direction (the fog color in a register) into GTE, runs gte_gpl12 (general-purpose linear interp along edge) followed by gte_dpcs_b (depth-cue single-color) to produce the blended RGB at the clip point. Returns the depth-cued colour as a POLY_G3 colour+code word (0x30000000 | rgb) and, off-ABI in $at, the clip point's packed screen xy. Called (jal) from the clip-case bodies the D_8004F890 / D_80050028 jump tables dispatch to, in the ClipAndEmitPortalSkyTriangle / SkyFogShaded / FillTriangle tails. */
-unsigned int BlendDepthCuedEdgeColor(void); /* register-convention helper: no C callers */
+/* 0x8004fdac: GTE depth-cue color helper for a clipped polygon edge. Loads
+ * vertex RGB + fog direction (the fog color in a register) into GTE, runs
+ * gte_gpl12 (general-purpose linear interp along edge) followed by gte_dpcs_b
+ * (depth-cue single-color) to produce the blended RGB at the clip point.
+ * Returns the depth-cued colour as a POLY_G3 colour+code word (0x30000000 |
+ * rgb) and, off-ABI in $at, the clip point's packed screen xy. Called (jal)
+ * from the clip-case bodies the D_8004F890 / D_80050028 jump tables dispatch
+ * to, in the ClipAndEmitPortalSkyTriangle / SkyFogShaded / FillTriangle
+ * tails. */
+/* register-convention helper: no C callers */
+unsigned int BlendDepthCuedEdgeColor(void);
 
-/* 0x8004fea0: Fills a portal's screen outline with one flat colour (*color, the destination sky's background or its depth-cued fade): clips the full-screen triangle pair g_anFogFullScreenTriPairSxy against g_aPortalSilhouetteEdges via ClipAndEmitPortalFillTriangle into OT bin g_nPortalOtDepthBin. Saves s-regs in g_anStaticRegSaveArea. Caller: DrawPortalsAndSky (portals nearer than 0x4000) */
+/* 0x8004fea0: Fills a portal's screen outline with one flat colour (*color, the
+ * destination sky's background or its depth-cued fade): clips the full-screen
+ * triangle pair g_anFogFullScreenTriPairSxy against g_aPortalSilhouetteEdges
+ * via ClipAndEmitPortalFillTriangle into OT bin g_nPortalOtDepthBin. Saves
+ * s-regs in g_anStaticRegSaveArea. Caller: DrawPortalsAndSky (portals nearer
+ * than 0x4000) */
 void EmitPortalColorFill(unsigned int *color);
 
-/* 0x8004ff90: Per-triangle clip-and-emit helper for EmitPortalColorFill. Mirrors ClipAndEmitPortalSkyTriangle: 3 gte_nclip tests build a 6-bit visibility code that dispatches the D_80050028 fog clip jumptable (32 cases). Fast path: when in_t2 is empty, emits a 5-dword POLY_F4 record into the caller's prim buffer (unaff_s2) and links it via OT head/tail (unaff_s3) without going through the clip jumptable. */
-void ClipAndEmitPortalFillTriangle(void); /* register-convention helper: no C callers */
+/* 0x8004ff90: Per-triangle clip-and-emit helper for EmitPortalColorFill.
+ * Mirrors ClipAndEmitPortalSkyTriangle: 3 gte_nclip tests build a 6-bit
+ * visibility code that dispatches the D_80050028 fog clip jumptable (32 cases).
+ * Fast path: when in_t2 is empty, emits a 5-dword POLY_F4 record into the
+ * caller's prim buffer (unaff_s2) and links it via OT head/tail (unaff_s3)
+ * without going through the clip jumptable. */
+/* register-convention helper: no C callers */
+void ClipAndEmitPortalFillTriangle(void);
 
-/* 0x80050068: continuation of ClipAndEmitPortalFillTriangle (hand-written asm). Splat starts a symbol at this address, but the code there is the outcode cases of its jump table (D_80050028) and the emitter's exit, which restores g_pPrimBufferWriteCursor and the registers saved in g_anStaticRegSaveArea. No callers. */
+/* 0x80050068: continuation of ClipAndEmitPortalFillTriangle (hand-written asm).
+ * Splat starts a symbol at this address, but the code there is the outcode
+ * cases of its jump table (D_80050028) and the emitter's exit, which restores
+ * g_pPrimBufferWriteCursor and the registers saved in g_anStaticRegSaveArea. No
+ * callers. */
 void ClipAndEmitPortalFillTriangle_Tail(void);
 
-/* 0x80050240: Depth-faded sibling of EmitPortalSky (portals 0x3000..0x4000 away): the same Z-cull pass into the &g_apMainDrawEntityList survivor list, then a per-vertex gte_dpcs_b pass toward g_dwSkyFadeColor by g_nFadeProgress before projection; outcodes against g_anPortalScissorRect and per-triangle ClipAndEmitPortalSkyFogShadedTriangle (jump table D_800506B4). Saves the GTE backup at g_anStaticRegSaveArea and advances g_pPrimBufferWriteCursor */
+/* 0x80050240: Depth-faded sibling of EmitPortalSky (portals 0x3000..0x4000
+ * away): the same Z-cull pass into the &g_apMainDrawEntityList survivor list,
+ * then a per-vertex gte_dpcs_b pass toward g_dwSkyFadeColor by g_nFadeProgress
+ * before projection; outcodes against g_anPortalScissorRect and per-triangle
+ * ClipAndEmitPortalSkyFogShadedTriangle (jump table D_800506B4). Saves the GTE
+ * backup at g_anStaticRegSaveArea and advances g_pPrimBufferWriteCursor */
 void EmitPortalSkyFogShaded(int *mesh, MATRIX *viewMtx, MATRIX *outMtx);
 
-/* 0x8005060c: Per-triangle clip-and-emit helper for EmitPortalSkyFogShaded. Mirrors ClipAndEmitPortalSkyTriangle / ClipAndEmitPortalFillTriangle: 3× gte_nclip on the three SXY's loaded by the caller → 6-bit outcode → dispatches through 32-entry jumptable at D_800506B4. Fast direct-emit path (5-dword POLY_F* head/tail) when the prim head is empty; otherwise writes the 7-dword deferred slot into the &g_anPortalDeferredTriStack stack at g_pPortalDeferredTriStackTop for the caller's drain loop. */
-void ClipAndEmitPortalSkyFogShadedTriangle(void); /* register-convention helper: no C callers */
+/* 0x8005060c: Per-triangle clip-and-emit helper for EmitPortalSkyFogShaded.
+ * Mirrors ClipAndEmitPortalSkyTriangle / ClipAndEmitPortalFillTriangle: 3×
+ * gte_nclip on the three SXY's loaded by the caller → 6-bit outcode →
+ * dispatches through 32-entry jumptable at D_800506B4. Fast direct-emit path
+ * (5-dword POLY_F* head/tail) when the prim head is empty; otherwise writes the
+ * 7-dword deferred slot into the &g_anPortalDeferredTriStack stack at
+ * g_pPortalDeferredTriStackTop for the caller's drain loop. */
+/* register-convention helper: no C callers */
+void ClipAndEmitPortalSkyFogShadedTriangle(void);
 
-/* 0x80050710: continuation of ClipAndEmitPortalSkyFogShadedTriangle (hand-written asm). Splat starts a symbol at this address, but the code there is the rest of its jump table's first case (D_800506B4, entered at 0x800506F4) and the remaining outcode cases, each clipping an edge through BlendDepthCuedEdgeColor. No callers. */
+/* 0x80050710: continuation of ClipAndEmitPortalSkyFogShadedTriangle
+ * (hand-written asm). Splat starts a symbol at this address, but the code there
+ * is the rest of its jump table's first case (D_800506B4, entered at
+ * 0x800506F4) and the remaining outcode cases, each clipping an edge through
+ * BlendDepthCuedEdgeColor. No callers. */
 void ClipAndEmitPortalSkyFogShadedTriangle_Tail(void);
 
-/* 0x80050bd0: Render stage 4 (formerly DrawActors). Draws each hub portal in g_apPortals[0..g_nPortalCount] whose gate chunk was drawn this frame (g_abWorldChunkDrawn), filled with its destination's sky (Portal.pSky): a view matrix rebuilt from the camera euler angles plus the slow g_nPortalSkyYawSpin / PitchTilt swirl, the portal's ring projected into g_aPortalRingScreenPts, depth-cued (ComputeDepthCuedColor), its silhouette edges built in g_aPortalSilhouetteEdges and emitted once as-is and, nearer than 0x4000, once fattened by 2 px. Then draws the sky (EmitSkyMesh) with the camera's vis-zone chunk list, or every chunk (-1) when g_nCameraVisZone is out of range. */
+/* 0x80050bd0: Render stage 4 (formerly DrawActors). Draws each hub portal in
+ * g_apPortals[0..g_nPortalCount] whose gate chunk was drawn this frame
+ * (g_abWorldChunkDrawn), filled with its destination's sky (Portal.pSky): a
+ * view matrix rebuilt from the camera euler angles plus the slow
+ * g_nPortalSkyYawSpin / PitchTilt swirl, the portal's ring projected into
+ * g_aPortalRingScreenPts, depth-cued (ComputeDepthCuedColor), its silhouette
+ * edges built in g_aPortalSilhouetteEdges and emitted once as-is and, nearer
+ * than 0x4000, once fattened by 2 px. Then draws the sky (EmitSkyMesh) with the
+ * camera's vis-zone chunk list, or every chunk (-1) when g_nCameraVisZone is
+ * out of range. */
 void DrawPortalsAndSky(void);
 
-/* 0x800521c0: Visible-entity-list builder (hand-written asm). Walks the actor pool from g_pActorListBase (stride 0x58), reading ->mode: >= 0x80 (dormant) is skipped and 0xFF ends the pool. The signed renderList byte (+0x4B) picks the list: > 0 the main mesh list at g_apMainDrawEntityList (BuildActorDrawList), < 0 (ACTOR_RENDER_SECONDARY) g_apSecondaryDrawEntityList, 0 the sprite queue g_apSpritePrimQueue. An actor whose gateChunk is not 0xFF and whose chunk RenderWorldChunks did not draw (g_abWorldChunkDrawn byte 0) is taken back off the list and gets drawn = 0. Each list ends with a 0 entry. Called once at the top of every gameplay-frame render chain. */
+/* 0x800521c0: Visible-entity-list builder (hand-written asm). Walks the actor
+ * pool from g_pActorListBase (stride 0x58), reading ->mode: >= 0x80 (dormant)
+ * is skipped and 0xFF ends the pool. The signed renderList byte (+0x4B) picks
+ * the list: > 0 the main mesh list at g_apMainDrawEntityList
+ * (BuildActorDrawList), < 0 (ACTOR_RENDER_SECONDARY)
+ * g_apSecondaryDrawEntityList, 0 the sprite queue g_apSpritePrimQueue. An actor
+ * whose gateChunk is not 0xFF and whose chunk RenderWorldChunks did not draw
+ * (g_abWorldChunkDrawn byte 0) is taken back off the list and gets drawn = 0.
+ * Each list ends with a 0 entry. Called once at the top of every gameplay-frame
+ * render chain. */
 void BuildRenderEntityLists(void);
 
-/* 0x800522c0: Actor animation tick (hand-written asm) over a NULL-terminated actor-pointer list. Each actor's +0x3C/+0x40 words are staged in scratchpad 0x1F800000; frameProgress += frameRate >> (mode & 31). Below 0x40 nothing steps (animFlags cleared unless ANIM_TICK_EXTRA). On overflow (progress &= 0x3F): if nextAnim == anim, frame = nextFrame and nextFrame++, wrapping to 0 at the header's m_NumFrames with ACTOR_ANIM_DONE; animFlags gets ACTOR_ANIM_NEW_FRAME. Otherwise the anim switches: anim = nextAnim, frame = nextFrame, progress 0, frameRate from the new header's m_ProgressPerTick (rate 0 holds the frame). With ANIM_TICK_EXTRA (the second pass of a long frame) this frame's flags are kept, an actor already DONE is left untouched, and a second step adds ACTOR_ANIM_EXTRA_STEP. A stepped frame's 8-byte record (header +0x24 + frame * 8) carries a signed sound index in byte 3; >= 0 queues (Model.m_Sounds[index], actor) over the g_apMainDrawEntityList area, and after the walk each pair plays as PlaySoundEffect(id, actor, 8, &actor->voiceRow) with the return state in g_anStaticRegSaveArea. Every level's UpdateActors runs it on g_apActiveActorList (plus the extra pass when g_nFrameStep >= 3); SaveMenu_Update runs it on a one-actor list. */
+/* 0x800522c0: Actor animation tick (hand-written asm) over a NULL-terminated
+ * actor-pointer list. Each actor's +0x3C/+0x40 words are staged in scratchpad
+ * 0x1F800000; frameProgress += frameRate >> (mode & 31). Below 0x40 nothing
+ * steps (animFlags cleared unless ANIM_TICK_EXTRA). On overflow (progress &=
+ * 0x3F): if nextAnim == anim, frame = nextFrame and nextFrame++, wrapping to 0
+ * at the header's m_NumFrames with ACTOR_ANIM_DONE; animFlags gets
+ * ACTOR_ANIM_NEW_FRAME. Otherwise the anim switches: anim = nextAnim, frame =
+ * nextFrame, progress 0, frameRate from the new header's m_ProgressPerTick
+ * (rate 0 holds the frame). With ANIM_TICK_EXTRA (the second pass of a long
+ * frame) this frame's flags are kept, an actor already DONE is left untouched,
+ * and a second step adds ACTOR_ANIM_EXTRA_STEP. A stepped frame's 8-byte record
+ * (header +0x24 + frame * 8) carries a signed sound index in byte 3; >= 0
+ * queues (Model.m_Sounds[index], actor) over the g_apMainDrawEntityList area,
+ * and after the walk each pair plays as PlaySoundEffect(id, actor, 8,
+ * &actor->voiceRow) with the return state in g_anStaticRegSaveArea. Every
+ * level's UpdateActors runs it on g_apActiveActorList (plus the extra pass when
+ * g_nFrameStep >= 3); SaveMenu_Update runs it on a one-actor list. */
 void TickActorAnims(struct Actor **list, int mode);
 
-/* 0x800524c4: Allocates a spawned actor (hand-written asm). Bumps g_nActorPoolLiveCount and returns the old g_pActorPoolFreeHead slot with ->mode set to 0. Advancing the primary (0x58-stride, growing up) head: if the taken slot held the 0xFF end marker the next slot becomes the new end (0xFF) and the head; otherwise the head walks forward to the next slot whose ->mode byte is negative (>= 0x80, a free marker). The same step runs on the aux pool of 0x18-byte records at g_pActorAuxPoolFreeHead, which grows DOWN and keeps each record's free marker in its last byte (+0x17; the head points one past the record); the aux record taken becomes the new actor's ->state block. Callers: every level's SpawnActor and DragonRescue_Update. */
+/* 0x800524c4: Allocates a spawned actor (hand-written asm). Bumps
+ * g_nActorPoolLiveCount and returns the old g_pActorPoolFreeHead slot with
+ * ->mode set to 0. Advancing the primary (0x58-stride, growing up) head: if the
+ * taken slot held the 0xFF end marker the next slot becomes the new end (0xFF)
+ * and the head; otherwise the head walks forward to the next slot whose ->mode
+ * byte is negative (>= 0x80, a free marker). The same step runs on the aux pool
+ * of 0x18-byte records at g_pActorAuxPoolFreeHead, which grows DOWN and keeps
+ * each record's free marker in its last byte (+0x17; the head points one past
+ * the record); the aux record taken becomes the new actor's ->state block.
+ * Callers: every level's SpawnActor and DragonRescue_Update. */
 Actor *AllocActorRecordSlot(void);
 
-/* 0x80052568: Frees an actor record (hand-written asm). If ->gridCell >= 0, unlinks it from that g_pActorSpatialGridBase cell chain (->gridNext). A loaded actor (below g_pActorPoolDynBase) just gets ->mode = 0xFD and keeps its slot. A spawned one decrements g_nActorPoolLiveCount and is marked 0xFE, or, when it was the last record in use (the next slot is the 0xFF end), the run of 0xFE slots ending at it collapses into a new 0xFF end; g_pActorPoolFreeHead drops to that slot if it is lower. The ->state aux record (see AllocActorRecordSlot) is freed the same way in its downward pool, and g_pActorAuxPoolFreeHead rises to it if higher. */
+/* 0x80052568: Frees an actor record (hand-written asm). If ->gridCell >= 0,
+ * unlinks it from that g_pActorSpatialGridBase cell chain (->gridNext). A
+ * loaded actor (below g_pActorPoolDynBase) just gets ->mode = 0xFD and keeps
+ * its slot. A spawned one decrements g_nActorPoolLiveCount and is marked 0xFE,
+ * or, when it was the last record in use (the next slot is the 0xFF end), the
+ * run of 0xFE slots ending at it collapses into a new 0xFF end;
+ * g_pActorPoolFreeHead drops to that slot if it is lower. The ->state aux
+ * record (see AllocActorRecordSlot) is freed the same way in its downward pool,
+ * and g_pActorAuxPoolFreeHead rises to it if higher. */
 void DespawnActorRecord(Actor *actor);
 
-/* 0x800526a8: Refreshes an actor after a pose change (hand-written asm): from g_apActorMeshTable[type]'s anim[anim] header it takes the frameRate byte and, from frame[frame]'s packed word (bits 19..20), which collision record goes in ->collision. If the model is collidable (model +0x14 != 0) it quantizes posX/posY into a 32-wide grid cell (bit 0x400 = negative side), stores it in ->gridCell and pushes the actor onto g_pActorSpatialGridBase[cell] (linked through ->gridNext). Finally rebuilds ->mtx from the rotX/rotY/rotZ bytes through g_anCosineLut / g_anSineLut, skipping zero angles. */
+/* 0x800526a8: Refreshes an actor after a pose change (hand-written asm): from
+ * g_apActorMeshTable[type]'s anim[anim] header it takes the frameRate byte and,
+ * from frame[frame]'s packed word (bits 19..20), which collision record goes in
+ * ->collision. If the model is collidable (model +0x14 != 0) it quantizes
+ * posX/posY into a 32-wide grid cell (bit 0x400 = negative side), stores it in
+ * ->gridCell and pushes the actor onto g_pActorSpatialGridBase[cell] (linked
+ * through ->gridNext). Finally rebuilds ->mtx from the rotX/rotY/rotZ bytes
+ * through g_anCosineLut / g_anSineLut, skipping zero angles. */
 void InsertActorIntoSpatialGrid(Actor *actor);
 
-/* 0x800529cc: Hides an actor (hand-written asm): renderList = 0, frameRate = 0, collision = 0 and gridCell = -1 (the "not in grid" sentinel). The inverse of InsertActorIntoSpatialGrid, but it does NOT unlink the actor from its grid cell list (the caller has, or it was never linked). Used by SpawnActor arms for actors that start hidden, InitHudCounters' icon slots and BuildLoadedLevelRuntime. */
+/* 0x800529cc: Hides an actor (hand-written asm): renderList = 0, frameRate = 0,
+ * collision = 0 and gridCell = -1 (the "not in grid" sentinel). The inverse of
+ * InsertActorIntoSpatialGrid, but it does NOT unlink the actor from its grid
+ * cell list (the caller has, or it was never linked). Used by SpawnActor arms
+ * for actors that start hidden, InitHudCounters' icon slots and
+ * BuildLoadedLevelRuntime. */
 void HideActorRenderRecord(Actor *actor);
 
-/* 0x80052f38 (hand-written): Adds animation `anim`/`sub`'s root-motion step for `frame` (from Spyro's mesh record in g_apActorMeshTable and g_anAnimRootMotionDeltaLut) to the vector `out`. Called twice per substep by IntegrateSpyroMotionForSubstep (body and second layer). */
+/* 0x80052f38 (hand-written): Adds animation `anim`/`sub`'s root-motion step for
+ * `frame` (from Spyro's mesh record in g_apActorMeshTable and
+ * g_anAnimRootMotionDeltaLut) to the vector `out`. Called twice per substep by
+ * IntegrateSpyroMotionForSubstep (body and second layer). */
 void AccumulateAnimRootMotionDelta(int frame, int *out, int anim, int sub);
 
-/* 0x800533d0: Encodes the last hit normal g_anCollisionHitNormal (X/Y/Z, written by FindGroundHeightBelow / CastRayWorldAndActors / sphere-probe paths) plus a 14-bit scalar at g_nCollisionResolvedZ into a packed direction code at ->groundCode. Only re-encodes when bit 31 of the existing field is set (caller flips bit 31 as a "needs recompute" sentinel). Magnitude path: gte_sqr0 on (X,Z), sqrt-LUT lookup at g_anSqrtLUT → 2D XZ-plane magnitude. Then two arctan2 quadrant-decompositions: (XZmag vs Y) → pitch byte angle, (Z vs X) → yaw byte angle (each = quadrant + 5-bit frac, packed to 6 bits via >>2). Output layout: bit 31 set + pitch<<22 + yaw<<16 + (g_nCollisionResolvedZ>>2) in low 14 bits. Callers: BuildLoadedLevelRuntime (level loader, spawn-time encoding), SaveMenu_Update (save-host pan re-encode), DragonRescue_Update (per-frame burst direction). */
+/* 0x800533d0: Encodes the last hit normal g_anCollisionHitNormal (X/Y/Z,
+ * written by FindGroundHeightBelow / CastRayWorldAndActors / sphere-probe
+ * paths) plus a 14-bit scalar at g_nCollisionResolvedZ into a packed direction
+ * code at ->groundCode. Only re-encodes when bit 31 of the existing field is
+ * set (caller flips bit 31 as a "needs recompute" sentinel). Magnitude path:
+ * gte_sqr0 on (X,Z), sqrt-LUT lookup at g_anSqrtLUT → 2D XZ-plane magnitude.
+ * Then two arctan2 quadrant-decompositions: (XZmag vs Y) → pitch byte angle, (Z
+ * vs X) → yaw byte angle (each = quadrant + 5-bit frac, packed to 6 bits via
+ * >>2). Output layout: bit 31 set + pitch<<22 + yaw<<16 +
+ * (g_nCollisionResolvedZ>>2) in low 14 bits. Callers: BuildLoadedLevelRuntime
+ * (level loader, spawn-time encoding), SaveMenu_Update (save-host pan
+ * re-encode), DragonRescue_Update (per-frame burst direction). */
 void EncodeHitNormalToActorGroundCode(Actor *actor);
 
-/* 0x800536a4: Resets a PadState's per-frame input: pressed / released / held cleared, analog centred (PAD_ANALOG_CENTERED), allInputIdle / directionalIdle raised; each of the 4 ring PadSubsteps gets the block's padType, cleared buttons and a centred analog word. Called by MovePadInputState (end-of-frame) and the level-loader BuildLoadedLevelRuntime. */
+/* 0x800536a4: Resets a PadState's per-frame input: pressed / released / held
+ * cleared, analog centred (PAD_ANALOG_CENTERED), allInputIdle / directionalIdle
+ * raised; each of the 4 ring PadSubsteps gets the block's padType, cleared
+ * buttons and a centred analog word. Called by MovePadInputState (end-of-frame)
+ * and the level-loader BuildLoadedLevelRuntime. */
 void ResetPadFrameSubstepTable(int *base);
 
-/* 0x80053708: Moves the 0xA4-byte pad state block (g_dwPadPressed head + 4-record per-substep table) from `from` to `to` (CopyWords), then clears `from` via ResetPadFrameSubstepTable and toggles g_bPadInputStashed. Called in pairs by TickSpyroFrameGlideHold, TickSpyroFrameNoInput, TickSpyroGameplayFrame, UpdateCameraFrame: live -> g_dwPadStash while g_nSpyroInputBlankCountdown runs (Spyro sees no input), and back after the frame. */
+/* 0x80053708: Moves the 0xA4-byte pad state block (g_dwPadPressed head +
+ * 4-record per-substep table) from `from` to `to` (CopyWords), then clears
+ * `from` via ResetPadFrameSubstepTable and toggles g_bPadInputStashed. Called
+ * in pairs by TickSpyroFrameGlideHold, TickSpyroFrameNoInput,
+ * TickSpyroGameplayFrame, UpdateCameraFrame: live -> g_dwPadStash while
+ * g_nSpyroInputBlankCountdown runs (Spyro sees no input), and back after the
+ * frame. */
 void MovePadInputState(void *from, void *to);
 
-/* 0x8005375c: Writes the uncalibrated defaults for the 4 stick axes of a PadState: stickNeutral 0x7F, stickLow 0, stickHigh 0xFF. The fallback when FinalizePadCalibration finds the reported range too narrow. Callers: FinalizePadCalibration, PollPadAndDistributeInput, InitPadSystem. */
+/* 0x8005375c: Writes the uncalibrated defaults for the 4 stick axes of a
+ * PadState: stickNeutral 0x7F, stickLow 0, stickHigh 0xFF. The fallback when
+ * FinalizePadCalibration finds the reported range too narrow. Callers:
+ * FinalizePadCalibration, PollPadAndDistributeInput, InitPadSystem. */
 void ResetPadStickCalibrationDefaults(unsigned char *cal);
 
-/* 0x80053790: Validates and bakes a PadState's stick calibration. Every axis needs its recorded stickNeutral at least 0x30 from both stickLow and stickHigh; otherwise it falls back to ResetPadStickCalibrationDefaults and returns 0. Otherwise each axis gets deadHigh = neutral + 0x30, deadLow = neutral - 0x30 and the Q7 gains scaleHigh = 0x4000 / (high - deadHigh), scaleLow = 0x3F80 / (deadLow - low); the head words and the four ring PadSubsteps are cleared with centred analog words, and it returns 1. Callers: PollPadAndDistributeInput, InitPadSystem. */
+/* 0x80053790: Validates and bakes a PadState's stick calibration. Every axis
+ * needs its recorded stickNeutral at least 0x30 from both stickLow and
+ * stickHigh; otherwise it falls back to ResetPadStickCalibrationDefaults and
+ * returns 0. Otherwise each axis gets deadHigh = neutral + 0x30, deadLow =
+ * neutral - 0x30 and the Q7 gains scaleHigh = 0x4000 / (high - deadHigh),
+ * scaleLow = 0x3F80 / (deadLow - low); the head words and the four ring
+ * PadSubsteps are cleared with centred analog words, and it returns 1. Callers:
+ * PollPadAndDistributeInput, InitPadSystem. */
 int FinalizePadCalibration(unsigned char *cal);
 
-/* 0x80053940: Maps 4 raw analog bytes into 0..0xFF through a PadState's calibration: above deadHigh -> 0x7F + ((raw - deadHigh) * scaleHigh >> 7), capped at 0xFF; below deadLow -> 0x7F - ((deadLow - raw) * scaleLow >> 7), floored at 0; in between 0x7F. FinalizePadCalibration fills the tables. Callers: SampleDemoPadFrame, PollPadAndDistributeInput. */
+/* 0x80053940: Maps 4 raw analog bytes into 0..0xFF through a PadState's
+ * calibration: above deadHigh -> 0x7F + ((raw - deadHigh) * scaleHigh >> 7),
+ * capped at 0xFF; below deadLow -> 0x7F - ((deadLow - raw) * scaleLow >> 7),
+ * floored at 0; in between 0x7F. FinalizePadCalibration fills the tables.
+ * Callers: SampleDemoPadFrame, PollPadAndDistributeInput. */
 void MapPadAxisToCalibratedRange(unsigned char *axes, int calib);
 
-/* 0x800539fc: Attract-demo pad sampler (sole caller TickDemoPlayback). Record mode (g_nDemoMode == 2): reads the raw pad (inverted button halfword + calibrated right-stick bytes via MapPadAxisToCalibratedRange) and appends the packed word (buttons | stick<<16) at g_pDemoPadCursor. Playback: reads the next recorded word back instead (left stick centred at 0x7F). Either way rebuilds g_dwPadHeld/Pressed/Released and the stick-active flag, broadcasts to all 4 pad substep records, refreshes the idle flags, sets g_nPadType = 3 and forces g_nFrameTicks = 2 so every demo frame is two vblanks. Returns 2. */
+/* 0x800539fc: Attract-demo pad sampler (sole caller TickDemoPlayback). Record
+ * mode (g_nDemoMode == 2): reads the raw pad (inverted button halfword +
+ * calibrated right-stick bytes via MapPadAxisToCalibratedRange) and appends the
+ * packed word (buttons | stick<<16) at g_pDemoPadCursor. Playback: reads the
+ * next recorded word back instead (left stick centred at 0x7F). Either way
+ * rebuilds g_dwPadHeld/Pressed/Released and the stick-active flag, broadcasts
+ * to all 4 pad substep records, refreshes the idle flags, sets g_nPadType = 3
+ * and forces g_nFrameTicks = 2 so every demo frame is two vblanks. Returns
+ * 2. */
 int SampleDemoPadFrame(void);
 
-/* 0x80053c68: Per-VBlank pad poll callback (registered by InitPadSystem via InstallVSyncCallback). Increments g_nVblankTickCount (+ g_nCdStallWatchdogTicks while g_nCdStallTimeoutTicks set), bails if g_nDemoMode != 0 (the attract demo samples the pad itself in SampleDemoPadFrame). Identifies pad type from g_abPadRawReport (status/id bytes) → g_nPadType (enum PadType: 0 none, 1 unsupported id, 2 digital 0x41, 3 analog 0x73 / 0x53 remapped); on disconnect sets g_nPadSetMainModePending, on state 6 sends PadSetActAlign(g_abPadActAlignTable) → g_nPadActAlignedFlag; PadInfoMode(0,2,0) → g_nPadIsDualshockFlag. Vibration: builds g_abPadActCommand from g_nHitRumbleTimer (motor1 0x78) / g_nVibrationLevel (motor0) / g_nPulseRumbleTimer+Amount, decrements all timers, sends via PadSetAct — all cleared unless g_nOptionVibrationEnabled && DualShock. Input: inverts button shorts, remaps Saturn buttons, MapPadAxisToCalibratedRange → g_dwPadAnalogCalibrated, synthesizes virtual D-pad bits 0x1000-0x8000 from the left stick (g_nPadStickActiveFlag), edge-detects vs g_dwPadHeld, resets (substep 0) or OR-accumulates g_dwPadPressed / g_dwPadReleased, maintains the sticky idle flags g_nPadAllInputIdleFlag / g_nPadDirectionalIdleFlag, and distributes {type, held, pressed, released, stickActive, analog} into g_anPadSubstepRing[g_nFrameTicks*6] (max 4 substeps). Increments g_nFrameTicks. */
+/* 0x80053c68: Per-VBlank pad poll callback (registered by InitPadSystem via
+ * InstallVSyncCallback). Increments g_nVblankTickCount (+
+ * g_nCdStallWatchdogTicks while g_nCdStallTimeoutTicks set), bails if
+ * g_nDemoMode != 0 (the attract demo samples the pad itself in
+ * SampleDemoPadFrame). Identifies pad type from g_abPadRawReport (status/id
+ * bytes) → g_nPadType (enum PadType: 0 none, 1 unsupported id, 2 digital 0x41,
+ * 3 analog 0x73 / 0x53 remapped); on disconnect sets g_nPadSetMainModePending,
+ * on state 6 sends PadSetActAlign(g_abPadActAlignTable) → g_nPadActAlignedFlag;
+ * PadInfoMode(0,2,0) → g_nPadIsDualshockFlag. Vibration: builds
+ * g_abPadActCommand from g_nHitRumbleTimer (motor1 0x78) / g_nVibrationLevel
+ * (motor0) / g_nPulseRumbleTimer+Amount, decrements all timers, sends via
+ * PadSetAct — all cleared unless g_nOptionVibrationEnabled && DualShock. Input:
+ * inverts button shorts, remaps Saturn buttons, MapPadAxisToCalibratedRange →
+ * g_dwPadAnalogCalibrated, synthesizes virtual D-pad bits 0x1000-0x8000 from
+ * the left stick (g_nPadStickActiveFlag), edge-detects vs g_dwPadHeld, resets
+ * (substep 0) or OR-accumulates g_dwPadPressed / g_dwPadReleased, maintains the
+ * sticky idle flags g_nPadAllInputIdleFlag / g_nPadDirectionalIdleFlag, and
+ * distributes {type, held, pressed, released, stickActive, analog} into
+ * g_anPadSubstepRing[g_nFrameTicks*6] (max 4 substeps). Increments
+ * g_nFrameTicks. */
 void PollPadAndDistributeInput(void);
 
-/* 0x800542e4: Writes value into count HUD digit records from slot (&g_aHudIconActorRecords[slot * 0x58]) as decimal digits, most significant first. HUD_DIGITS_PENDING stores each digit as the pending one (->subMode) for a roll to swap in (CommitHudCounterAnimState); HUD_DIGITS_SHOW shows each digit shows at once (->type = ACTOR_TYPE_GEM_DIGIT_0 + digit, ->cullRadius 0xFF) and the unused slots are hidden. Called by UpdateHudCounters' roll paths, DragonRescue_Update, RefreshHudLevelGemCounter and InitHudCounters. */
+/* 0x800542e4: Writes value into count HUD digit records from slot
+ * (&g_aHudIconActorRecords[slot * 0x58]) as decimal digits, most significant
+ * first. HUD_DIGITS_PENDING stores each digit as the pending one (->subMode)
+ * for a roll to swap in (CommitHudCounterAnimState); HUD_DIGITS_SHOW shows each
+ * digit shows at once (->type = ACTOR_TYPE_GEM_DIGIT_0 + digit, ->cullRadius
+ * 0xFF) and the unused slots are hidden. Called by UpdateHudCounters' roll
+ * paths, DragonRescue_Update, RefreshHudLevelGemCounter and InitHudCounters. */
 void SetHudCounterDigits(int slot, int count, int value, int show);
 
-/* 0x80054400: Rolls count HUD icon actors from slot base: each one's posY = its rest Y (g_anHudIconRestPos[slot][1]) + delta. UpdateHudCounters passes the g_anHudRollInStepTable / g_anHudRollOutStepTable step to slide a counter's digits and icon in or out. */
+/* 0x80054400: Rolls count HUD icon actors from slot base: each one's posY = its
+ * rest Y (g_anHudIconRestPos[slot][1]) + delta. UpdateHudCounters passes the
+ * g_anHudRollInStepTable / g_anHudRollOutStepTable step to slide a counter's
+ * digits and icon in or out. */
 void OffsetHudIconRollAxis(int base, int count, int delta);
 
-/* 0x8005445c: The same roll for the HUD sprite rects: count g_anHudSpriteRects entries from slot base get y = their g_anHudDigitRestRects y + delta. */
+/* 0x8005445c: The same roll for the HUD sprite rects: count g_anHudSpriteRects
+ * entries from slot base get y = their g_anHudDigitRestRects y + delta. */
 void OffsetHudDigitRollAxis(int base, int count, int delta);
 
-/* 0x800544a8: Steps a digit roll over count HUD digit records from slot: a digit already turned (rotZ != 0) or with a pending value (->subMode) different from the shown one (->type - ACTOR_TYPE_GEM_DIGIT_0) takes rotZ = state, the counter's roll phase. At HUD_DIGIT_SWAP_PHASE (0xC0, a quarter turn) each pending digit is swapped into ->type and made drawable (->cullRadius 0xFF). Called by UpdateHudCounters' hold/ratchet paths and DragonRescue_Update. */
+/* 0x800544a8: Steps a digit roll over count HUD digit records from slot: a
+ * digit already turned (rotZ != 0) or with a pending value (->subMode)
+ * different from the shown one (->type - ACTOR_TYPE_GEM_DIGIT_0) takes rotZ =
+ * state, the counter's roll phase. At HUD_DIGIT_SWAP_PHASE (0xC0, a quarter
+ * turn) each pending digit is swapped into ->type and made drawable
+ * (->cullRadius 0xFF). Called by UpdateHudCounters' hold/ratchet paths and
+ * DragonRescue_Update. */
 void CommitHudCounterAnimState(int slot, int count, int state);
 
-/* 0x80054600: HUD init for entering gameplay-with-HUD state. Zeros + re-seeds the 12 big-icon records in g_aHudIconActorRecords (HideActorRenderRecord per slot, rest vec3 from g_anHudIconRestPos, default render bytes), copies the 12 rest rects from g_anHudDigitRestRects into g_anHudSpriteRects, sets all five g_abHudCounterDisplayState machines to 1 with phases/timers zeroed, seeds the cached counts (g_nHudLevelGemCachedCount / g_nHudDragonCachedCount / g_nHudLivesCachedCount / g_nHudEggCachedCount / g_nHudKeyCachedState / g_nHudButterflyCachedCount) from the live values, and draws the initial digits via SetHudCounterDigits x3. layout_butterflies != 0 additionally clears g_nHudEggRollRequest and lays out the sparx-food butterflies from g_abHudButterflyRingXY. Callers: EndDragonRescueToWorld, EndSaveMenuToWorld, EnterPauseMenu, BuildLoadedLevelRuntime, the hub balloonist cutscenes. */
+/* 0x80054600: HUD init for entering gameplay-with-HUD state. Zeros + re-seeds
+ * the 12 big-icon records in g_aHudIconActorRecords (HideActorRenderRecord per
+ * slot, rest vec3 from g_anHudIconRestPos, default render bytes), copies the 12
+ * rest rects from g_anHudDigitRestRects into g_anHudSpriteRects, sets all five
+ * g_abHudCounterDisplayState machines to 1 with phases/timers zeroed, seeds the
+ * cached counts (g_nHudLevelGemCachedCount / g_nHudDragonCachedCount /
+ * g_nHudLivesCachedCount / g_nHudEggCachedCount / g_nHudKeyCachedState /
+ * g_nHudButterflyCachedCount) from the live values, and draws the initial
+ * digits via SetHudCounterDigits x3. layout_butterflies != 0 additionally
+ * clears g_nHudEggRollRequest and lays out the sparx-food butterflies from
+ * g_abHudButterflyRingXY. Callers: EndDragonRescueToWorld, EndSaveMenuToWorld,
+ * EnterPauseMenu, BuildLoadedLevelRuntime, the hub balloonist cutscenes. */
 void InitHudCounters(int layout_butterflies);
 
-/* 0x80054988: Per-frame HUD update. Ticks the five digit-counter state machines in g_abHudCounterDisplayState (0=level gems vs g_anLevelGemsCollected[g_nLevelIndex], 1=dragons rescued, 2=extra lives + sparx food, 3=egg tally vs g_nTotalEggsRecovered — forced visible while g_nHudEggRollRequest is set (by a recovered dragon egg, type 34), 4=the level key vs g_nLevelKeyState). Each machine: state 1 roll-in (g_anHudRollInStepTable), state 2 hold + count-up toward the live value (g_nHud*HoldTimer pacing, sparkle bursts via g_pfnLevelEmitParticles), state 3 roll-out (g_anHudRollOutStepTable); counter 0 adds state 4 = level-complete highlight when cached == g_anLevelTotalGemsTable[level]. Spins the gem icon (rotZ = g_dwHudIconSpinAngle, rotY tilt from its cosine) inside g_aHudIconActorRecords, lays out one butterfly sprite per food unit into g_anHudSpriteRects, and rolls g_nSparxFoodCount over into +1 extra life at 20. Callers: GamestateUpdate, PauseMenu_Update, EnterPauseMenu. */
+/* 0x80054988: Per-frame HUD update. Ticks the five digit-counter state machines
+ * in g_abHudCounterDisplayState (0=level gems vs
+ * g_anLevelGemsCollected[g_nLevelIndex], 1=dragons rescued, 2=extra lives +
+ * sparx food, 3=egg tally vs g_nTotalEggsRecovered — forced visible while
+ * g_nHudEggRollRequest is set (by a recovered dragon egg, type 34), 4=the level
+ * key vs g_nLevelKeyState). Each machine: state 1 roll-in
+ * (g_anHudRollInStepTable), state 2 hold + count-up toward the live value
+ * (g_nHud*HoldTimer pacing, sparkle bursts via g_pfnLevelEmitParticles), state
+ * 3 roll-out (g_anHudRollOutStepTable); counter 0 adds state 4 = level-complete
+ * highlight when cached == g_anLevelTotalGemsTable[level]. Spins the gem icon
+ * (rotZ = g_dwHudIconSpinAngle, rotY tilt from its cosine) inside
+ * g_aHudIconActorRecords, lays out one butterfly sprite per food unit into
+ * g_anHudSpriteRects, and rolls g_nSparxFoodCount over into +1 extra life at
+ * 20. Callers: GamestateUpdate, PauseMenu_Update, EnterPauseMenu. */
 void UpdateHudCounters(void);
 
-/* 0x800557cc: Spawns one floating digit actor (id 0x104 + digit) per decimal digit of value, least significant first, walking away from src along the camera yaw (CommitActorKillGems, for kills worth gems above z 0x300). */
+/* 0x800557cc: Spawns one floating digit actor (id 0x104 + digit) per decimal
+ * digit of value, least significant first, walking away from src along the
+ * camera yaw (CommitActorKillGems, for kills worth gems above z 0x300). */
 void SpawnFloatingDigitActors(int value, Actor *src);
 
-/* 0x8005595c: Top-level music/sound state init called from Initialize after SpuInit. Calls InitSpu (sound channel reset), seeds master volume + CD-DA mix words at g_abSpuCommonAttr..g_nSoundMonoMixFlag, then SetSpuCommonAttr / ApplySpuVoiceAttr / SetSpuKeyMask / SetSpuTransferMode (sound-bank registration), FillWord(g_aSpuVoiceRows, 0, 0x2a0) zeros the channel-state block. */
+/* 0x8005595c: Top-level music/sound state init called from Initialize after
+ * SpuInit. Calls InitSpu (sound channel reset), seeds master volume + CD-DA mix
+ * words at g_abSpuCommonAttr..g_nSoundMonoMixFlag, then SetSpuCommonAttr /
+ * ApplySpuVoiceAttr / SetSpuKeyMask / SetSpuTransferMode (sound-bank
+ * registration), FillWord(g_aSpuVoiceRows, 0, 0x2a0) zeros the channel-state
+ * block. */
 void InitSoundEngine(void);
 
-/* 0x80055a78: Starts sample `sampleId` on a free mixer row owned by `owner`. `mode` is SFX_MODE_FLAT / SFX_MODE_3D (positional; dropped outside owner->soundRange) / SFX_MODE_PANNED; FLAT and 3D refuse to retrigger a looping sample the owner is already playing (GetSoundVoiceStatusByOwner == VOICE_OWNER_LOOPING). The row index (0x7F when dropped) goes to *pPlaying. */
-unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner, unsigned int mode, unsigned char *pPlaying);
+/* 0x80055a78: Starts sample `sampleId` on a free mixer row owned by `owner`.
+ * `mode` is SFX_MODE_FLAT / SFX_MODE_3D (positional; dropped outside
+ * owner->soundRange) / SFX_MODE_PANNED; FLAT and 3D refuse to retrigger a
+ * looping sample the owner is already playing (GetSoundVoiceStatusByOwner ==
+ * VOICE_OWNER_LOOPING). The row index (0x7F when dropped) goes to *pPlaying. */
+unsigned int PlaySoundEffect(unsigned int sampleId, Actor *owner,
+                             unsigned int mode, unsigned char *pPlaying);
 
-/* 0x80056200: Stops SPU voice `index` (low 7 bits, 0..23): sets its bit in g_dwSpuPendingKeyOff, and with mode 2 or 4 also frees its SpuVoiceRow (the caller's pPlaying byte gets VOICE_ROW_NONE, pPlaying / pOwner cleared, nFlags = VOICE_ROW_STOPPED, nSampleId 0xFF). Callers: DragonRescue_Update, Titlescreen_Update and the level 12..16 UpdateActors. */
+/* 0x80056200: Stops SPU voice `index` (low 7 bits, 0..23): sets its bit in
+ * g_dwSpuPendingKeyOff, and with mode 2 or 4 also frees its SpuVoiceRow (the
+ * caller's pPlaying byte gets VOICE_ROW_NONE, pPlaying / pOwner cleared, nFlags
+ * = VOICE_ROW_STOPPED, nSampleId 0xFF). Callers: DragonRescue_Update,
+ * Titlescreen_Update and the level 12..16 UpdateActors. */
 #ifndef VOICE_RELEASE
-#define VOICE_RELEASE 4 /* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other modes only key off) */
+/* StopSoundVoiceByIndex: key off and free the voice row (2 does the same; other
+ * modes only key off) */
+#define VOICE_RELEASE 4
 #endif
-/* 0x80056200: queues an SPU key-off for voice row `index`; with `mode` 2 or 4 also frees its sample-callback slot and resets its common-attr shadow record. */
+/* 0x80056200: queues an SPU key-off for voice row `index`; with `mode` 2 or 4
+ * also frees its sample-callback slot and resets its common-attr shadow
+ * record. */
 void StopSoundVoiceByIndex(int index, int mode);
 
-/* 0x800562a4: Stops every voice row owned by actor: all of them with VOICE_STOP_ALL, only the VOICE_ROW_LOOPING ones with VOICE_STOP_LOOPING. Each is freed as in StopSoundVoiceByIndex and the voice bits are ORed into g_dwSpuPendingKeyOff. Callers: ChangeSpyroState, ResetSpyroEntity, PlayActorMeshVoice and most levels' UpdateActors. */
+/* 0x800562a4: Stops every voice row owned by actor: all of them with
+ * VOICE_STOP_ALL, only the VOICE_ROW_LOOPING ones with VOICE_STOP_LOOPING. Each
+ * is freed as in StopSoundVoiceByIndex and the voice bits are ORed into
+ * g_dwSpuPendingKeyOff. Callers: ChangeSpyroState, ResetSpyroEntity,
+ * PlayActorMeshVoice and most levels' UpdateActors. */
 void StopSoundVoicesByOwner(Actor *actor, int mode);
 
-/* 0x8005637c: Per-frame SPU voice mixer tick — walks all 24 voice rows at &g_aSpuVoiceRows (stride 0x1c). A VOICE_ROW_STOPPED row is cleared; for each VOICE_ROW_ACTIVE row: queries hardware state via GetSpuVoiceKeyStatus (SpuGetKeyStatus equiv) and dispatches on the SFX_MODE_* group (nFlags & SFX_MODE_MASK). SFX_MODE_3D: subtracts source pos from camera at g_anCameraPos, computes distance via VectorLength, ArcTan2 vs camera yaw g_nCameraEulerYaw, calls ComputeVoicePanAndFalloff for 3D pan, attenuates with 1/r² falloff over the owner's Actor.soundRange << 10 (defaults 0x4000 when 0), reuses cached vol/pan via SpuGetVoiceVolume when out-of-range. SFX_MODE_FLAT: defaults vol to 0x2000. SFX_MODE_PANNED: holds last vol/pan. Always multiplies final by master vol g_nSoundMasterVolume (>>0xc), folds the pending nPitchStep into nPitch, issues the SPU update via ApplySpuVoiceAttr. A row the SPU first reports keyed on (GetSpuVoiceKeyStatus 1 or 3) gets VOICE_ROW_KEYED; a VOICE_ROW_KEYED row whose envelope has ended (status 3) is freed (VOICE_ROW_STOPPED, its pPlaying byte VOICE_ROW_NONE) and keyed off through g_dwSpuPendingKeyOff. Callers: CdReadSyncSectors, GamestateUpdate, Titlescreen_Update, the hub balloonist cutscenes. */
+/* 0x8005637c: Per-frame SPU voice mixer tick — walks all 24 voice rows at
+ * &g_aSpuVoiceRows (stride 0x1c). A VOICE_ROW_STOPPED row is cleared; for each
+ * VOICE_ROW_ACTIVE row: queries hardware state via GetSpuVoiceKeyStatus
+ * (SpuGetKeyStatus equiv) and dispatches on the SFX_MODE_* group (nFlags &
+ * SFX_MODE_MASK). SFX_MODE_3D: subtracts source pos from camera at
+ * g_anCameraPos, computes distance via VectorLength, ArcTan2 vs camera yaw
+ * g_nCameraEulerYaw, calls ComputeVoicePanAndFalloff for 3D pan, attenuates
+ * with 1/r² falloff over the owner's Actor.soundRange << 10 (defaults 0x4000
+ * when 0), reuses cached vol/pan via SpuGetVoiceVolume when out-of-range.
+ * SFX_MODE_FLAT: defaults vol to 0x2000. SFX_MODE_PANNED: holds last vol/pan.
+ * Always multiplies final by master vol g_nSoundMasterVolume (>>0xc), folds the
+ * pending nPitchStep into nPitch, issues the SPU update via ApplySpuVoiceAttr.
+ * A row the SPU first reports keyed on (GetSpuVoiceKeyStatus 1 or 3) gets
+ * VOICE_ROW_KEYED; a VOICE_ROW_KEYED row whose envelope has ended (status 3) is
+ * freed (VOICE_ROW_STOPPED, its pPlaying byte VOICE_ROW_NONE) and keyed off
+ * through g_dwSpuPendingKeyOff. Callers: CdReadSyncSectors, GamestateUpdate,
+ * Titlescreen_Update, the hub balloonist cutscenes. */
 int TickActiveSoundVoices(void);
 
-/* 0x800567f4: XA music command dispatcher (libcd). cmd = MUSIC_CMD_* (cd_music.h): 1 = play track track (uses sector at g_anMusicTrackLbaTable + track*8); 2 or 4 = stop streaming (sets state machine via g_nPendingMusicCommand to fade/pause); 8 = resume streaming from saved sector g_dwCdMusicReadHead. Play path issues CdlSetmode(0x0e, 0xc8) + CdlSetfilter(0x0d) + CdlReadS(0x1b) (XA-stream read). Short-circuits when mute bit (g_dwMusicStreamStatus & 0x80) is set; falls through to "stop" path if music volume is 0 or 0x40 state bit not set. Used by game-state transitions (level/cutscene boundaries) and StopAllSoundExceptMask. */
+/* 0x800567f4: XA music command dispatcher (libcd). cmd = MUSIC_CMD_*
+ * (cd_music.h): 1 = play track track (uses sector at g_anMusicTrackLbaTable +
+ * track*8); 2 or 4 = stop streaming (sets state machine via
+ * g_nPendingMusicCommand to fade/pause); 8 = resume streaming from saved sector
+ * g_dwCdMusicReadHead. Play path issues CdlSetmode(0x0e, 0xc8) +
+ * CdlSetfilter(0x0d) + CdlReadS(0x1b) (XA-stream read). Short-circuits when
+ * mute bit (g_dwMusicStreamStatus & 0x80) is set; falls through to "stop" path
+ * if music volume is 0 or 0x40 state bit not set. Used by game-state
+ * transitions (level/cutscene boundaries) and StopAllSoundExceptMask. */
 void HandleMusicCommand(int track, int cmd);
 
-/* 0x80056b28: Mass voice stop for state transitions. Every row with VOICE_ROW_ACTIVE / KEYED / FLAG_80 whose voice bit is NOT in mask is keyed off (g_dwSpuPendingKeyOff), its owner's voice byte reset (Actor.voiceRow for SFX_MODE_3D, the sample-bank playing byte for SFX_MODE_FLAT) and the row freed (VOICE_ROW_STOPPED). Then g_dwSpuPendingKeyOn is cleared and HandleMusicCommand(0, 4) stops the CD music. Callers (mostly mask 0, stop everything): pause / inventory entry, cutscene and credits starts, level loads, the dragon rescue. */
+/* 0x80056b28: Mass voice stop for state transitions. Every row with
+ * VOICE_ROW_ACTIVE / KEYED / FLAG_80 whose voice bit is NOT in mask is keyed
+ * off (g_dwSpuPendingKeyOff), its owner's voice byte reset (Actor.voiceRow for
+ * SFX_MODE_3D, the sample-bank playing byte for SFX_MODE_FLAT) and the row
+ * freed (VOICE_ROW_STOPPED). Then g_dwSpuPendingKeyOn is cleared and
+ * HandleMusicCommand(0, 4) stops the CD music. Callers (mostly mask 0, stop
+ * everything): pause / inventory entry, cutscene and credits starts, level
+ * loads, the dragon rescue. */
 void StopAllSoundExceptMask(int mask);
 
-/* 0x80056c84: 3D positional sound pan + distance falloff. Inputs: out=[L,R] gains, vol=distance falloff scalar, pan=pan byte (0x80=center; wraps full-L/full-R via the 0x40/0xbf compare), range=range (divisor; returns early if 0), base=listener-relative baseline [L,R]. Computes falloff fraction (dist<<8)/range, derives per-channel gains, applies to baseline, clamps each to [0,0x3fff]. If mono-mix flag g_nSoundMonoMixFlag set, averages L=R. Called by PlaySoundEffect (one-shot trigger pan) + TickActiveSoundVoices (per-frame mode-8 voices). */
-void ComputeVoicePanAndFalloff(short *out, int vol, unsigned char pan, unsigned int range, short *base);
+/* 0x80056c84: 3D positional sound pan + distance falloff. Inputs: out=[L,R]
+ * gains, vol=distance falloff scalar, pan=pan byte (0x80=center; wraps
+ * full-L/full-R via the 0x40/0xbf compare), range=range (divisor; returns early
+ * if 0), base=listener-relative baseline [L,R]. Computes falloff fraction
+ * (dist<<8)/range, derives per-channel gains, applies to baseline, clamps each
+ * to [0,0x3fff]. If mono-mix flag g_nSoundMonoMixFlag set, averages L=R. Called
+ * by PlaySoundEffect (one-shot trigger pan) + TickActiveSoundVoices (per-frame
+ * mode-8 voices). */
+void ComputeVoicePanAndFalloff(short *out, int vol, unsigned char pan,
+                               unsigned int range, short *base);
 
-/* 0x80056dc4: Is owner playing sampleId? Scans the 24 SpuVoiceRows for pOwner == owner and nSampleId == sampleId: 0 = no such row, 1 = playing once, 2 = playing a VOICE_ROW_LOOPING sample. Callers: the levels' UpdateActors (to avoid re-triggering a voice). */
+/* 0x80056dc4: Is owner playing sampleId? Scans the 24 SpuVoiceRows for pOwner
+ * == owner and nSampleId == sampleId: 0 = no such row, 1 = playing once, 2 =
+ * playing a VOICE_ROW_LOOPING sample. Callers: the levels' UpdateActors (to
+ * avoid re-triggering a voice). */
 int GetSoundVoiceStatusByOwner(Actor *actor, int sampleId);
 
-/* 0x80056e3c: Reconciles the voice rows with the SPU: GetAllSpuVoiceKeyStatus into a 24-byte buffer, and any voice the SPU reports keyed on (1) whose row is free (no VOICE_ROW_BUSY bit) is marked VOICE_ROW_STOPPED and keyed off (g_dwSpuPendingKeyOff). Sole caller TickSpuPerFrame (every 64 frames). */
+/* 0x80056e3c: Reconciles the voice rows with the SPU: GetAllSpuVoiceKeyStatus
+ * into a 24-byte buffer, and any voice the SPU reports keyed on (1) whose row
+ * is free (no VOICE_ROW_BUSY bit) is marked VOICE_ROW_STOPPED and keyed off
+ * (g_dwSpuPendingKeyOff). Sole caller TickSpuPerFrame (every 64 frames). */
 void SyncSoundVoicesWithHardware(void);
 
-/* 0x80056ed4: Per-frame SPU update tick. Every 64 frames (g_dwGamestateFrames & 0x3f == 0) runs SyncSoundVoicesWithHardware to reconcile drift. Then drains the two pending hardware-key masks: if g_dwSpuPendingKeyOn (pending keyon mask) != 0, calls SetSpuKeyMask(1, mask) and clears it; if g_dwSpuPendingKeyOff (pending keyoff mask) != 0, calls SetSpuKeyMask(0, mask) and clears it. Callers: GamestateUpdate + every per-state Update that may set/clear voices (PauseMenu_Update, Cutscene_Update, etc.). */
+/* 0x80056ed4: Per-frame SPU update tick. Every 64 frames (g_dwGamestateFrames &
+ * 0x3f == 0) runs SyncSoundVoicesWithHardware to reconcile drift. Then drains
+ * the two pending hardware-key masks: if g_dwSpuPendingKeyOn (pending keyon
+ * mask) != 0, calls SetSpuKeyMask(1, mask) and clears it; if
+ * g_dwSpuPendingKeyOff (pending keyoff mask) != 0, calls SetSpuKeyMask(0, mask)
+ * and clears it. Callers: GamestateUpdate + every per-state Update that may
+ * set/clear voices (PauseMenu_Update, Cutscene_Update, etc.). */
 void TickSpuPerFrame(void);
 
-/* 0x80056f64: Fires trigger region `idx` for `event` (1 enter, 2 inside): the region's TriggerRegionType picks hazard / lift / ground latch / charge-hold / rebound / damage event bits, or a portal warp. */
+/* 0x80056f64: Fires trigger region `idx` for `event` (1 enter, 2 inside): the
+ * region's TriggerRegionType picks hazard / lift / ground latch / charge-hold /
+ * rebound / damage event bits, or a portal warp. */
 void DispatchSpyroTriggerEvent(int idx, int event);
 
-/* 0x800573c8: Emit-list rasterizer (hand-asm GTE core; saves the s-regs and $gp to scratchpad 0x1f800000 and uses $gp as a work register). Walks the per-level particle/billboard emit list at g_pEmitListBase: linear 0x20-byte records, capacity 0x2000 (256 records), list empty when a record's opcode byte is 0xff (loader seeds this; DragonRescue_Update resets it during the rescue cutscene; records are appended by overlay code via g_pfnLevelEmitParticles). RECORD FORMAT: +0 short header {lo byte = index into g_apEmitTextureTable (texture source), hi byte = opcode; hi<0 = skip record, 0xff = end}; +3 byte = written back each frame (1 = prim emitted, 0 = culled) so game logic can poll visibility; +4/+8 packed world pos (x,y,z halfwords, transformed camera-relative via g_anCameraPos>>2 and g_anWorldToCameraRotMtx); +0xA byte: for the billboard opcodes 2/3/5/6+ the half-size (loaded as IR0, it scales the spun sin/cos corner offsets through gpf), for opcode 0 the dot's OT depth-bin bias; +0xB byte = spin phase into g_anSineLut; +0xc = packed RGB/mode color word; +0x10 ushort {lo = 8-byte sub-record index into the effect's g_apEmitTextureTable record (+4/+8 = texpage/UV words), hi = OT depth-bin bias subtracted from sz>>5}; +0x14 = texword for flat opcodes. OPCODES: 0 = 1px line dot (0x03-len prim), 1/4 = flat 2-vert prim (0x04-len; 4 = absolute-pos variant via gte_ldtr), 2 = lit spinning billboard quad, 3 = alt-lit billboard, 5 = depth-faded spinning billboard, 6+ = default spinning billboard (all 0x09-len POLY_FT4, 0x28 bytes). Links prims into g_pOtDepthBinArrayBase bins; bails with g_nPrimBufferOverflowFlag=1 at g_pPrimBufferLimit-0x400. */
+/* 0x800573c8: Emit-list rasterizer (hand-asm GTE core; saves the s-regs and $gp
+ * to scratchpad 0x1f800000 and uses $gp as a work register). Walks the
+ * per-level particle/billboard emit list at g_pEmitListBase: linear 0x20-byte
+ * records, capacity 0x2000 (256 records), list empty when a record's opcode
+ * byte is 0xff (loader seeds this; DragonRescue_Update resets it during the
+ * rescue cutscene; records are appended by overlay code via
+ * g_pfnLevelEmitParticles). RECORD FORMAT: +0 short header {lo byte = index
+ * into g_apEmitTextureTable (texture source), hi byte = opcode; hi<0 = skip
+ * record, 0xff = end}; +3 byte = written back each frame (1 = prim emitted, 0 =
+ * culled) so game logic can poll visibility; +4/+8 packed world pos (x,y,z
+ * halfwords, transformed camera-relative via g_anCameraPos>>2 and
+ * g_anWorldToCameraRotMtx); +0xA byte: for the billboard opcodes 2/3/5/6+ the
+ * half-size (loaded as IR0, it scales the spun sin/cos corner offsets through
+ * gpf), for opcode 0 the dot's OT depth-bin bias; +0xB byte = spin phase into
+ * g_anSineLut; +0xc = packed RGB/mode color word; +0x10 ushort {lo = 8-byte
+ * sub-record index into the effect's g_apEmitTextureTable record (+4/+8 =
+ * texpage/UV words), hi = OT depth-bin bias subtracted from sz>>5}; +0x14 =
+ * texword for flat opcodes. OPCODES: 0 = 1px line dot (0x03-len prim), 1/4 =
+ * flat 2-vert prim (0x04-len; 4 = absolute-pos variant via gte_ldtr), 2 = lit
+ * spinning billboard quad, 3 = alt-lit billboard, 5 = depth-faded spinning
+ * billboard, 6+ = default spinning billboard (all 0x09-len POLY_FT4, 0x28
+ * bytes). Links prims into g_pOtDepthBinArrayBase bins; bails with
+ * g_nPrimBufferOverflowFlag=1 at g_pPrimBufferLimit-0x400. */
 void RasterizeEmitList(void);
 
-/* 0x800580f4 (hand-written): Projects and emits the world sparkle particles in g_abWorldSparkleParticleTable into the OT at g_pPrimBufferWriteCursor. First half of DrawWorldParticleEmitters. */
+/* 0x800580f4 (hand-written): Projects and emits the world sparkle particles in
+ * g_abWorldSparkleParticleTable into the OT at g_pPrimBufferWriteCursor. First
+ * half of DrawWorldParticleEmitters. */
 void DrawWorldSparkleParticles(void);
 
-/* 0x800584c4 (hand-written): Ages by `frameStep`, projects and emits the rotating billboards in g_aRotBillboards (SpawnActorRotBillboard). Second half of DrawWorldParticleEmitters. */
+/* 0x800584c4 (hand-written): Ages by `frameStep`, projects and emits the
+ * rotating billboards in g_aRotBillboards (SpawnActorRotBillboard). Second half
+ * of DrawWorldParticleEmitters. */
 void DrawWorldRotatingBillboards(int frameStep);
 
-/* 0x80058864: Dragon-rescue aura emitter — 8-pointed semitransparent star burst billboard around the gem position. Loads view matrix at g_anWorldToCameraRotMtx..de0, computes camera-relative anchor (g_anDragonRescueAuraStarAnchor minus g_anCameraPos, read off the view-matrix base at +0x28), then loads billboard rotation matrix at g_anDragonRescueAuraStarMtx..68 (filled by ApplyEulerRotation from byte-angles at g_abDragonRescueAuraStarEuler by caller). Projects center vertex + 8 inner-ring verts (radius scale = g_nDragonRescueAuraStarRadius >> 0xc, angles from sin/cos LUTs at &g_anSineLut/&g_anCosineLut stride 0x40 = 45°) + 8 outer-ring verts (radius 4x larger via >> 0xa, angles offset by 22.5°). Inner ring is closed (vertex[0] = vertex[N]). Emits drawmode prim (0xe1000620 untextured + 0x2000000 semi-trans), then loops 8 times emitting 2 POLY_F3 per slice: outer-spike triangle (inner[i], inner[i+1], outer[i]) + inner-fan triangle (inner[i], inner[i+1], center) for 16 triangles total. Color byte applied to all 6 color slots from g_bDragonRescueAuraStarColor. Each prim inserts into OT via g_pOtActiveDepthSlot head-ptr. Sole caller: DragonRescue_Draw, conditional on g_nDragonRescueAuraStarEnabled trigger flag. */
+/* 0x80058864: Dragon-rescue aura emitter — 8-pointed semitransparent star burst
+ * billboard around the gem position. Loads view matrix at
+ * g_anWorldToCameraRotMtx..de0, computes camera-relative anchor
+ * (g_anDragonRescueAuraStarAnchor minus g_anCameraPos, read off the view-matrix
+ * base at +0x28), then loads billboard rotation matrix at
+ * g_anDragonRescueAuraStarMtx..68 (filled by ApplyEulerRotation from
+ * byte-angles at g_abDragonRescueAuraStarEuler by caller). Projects center
+ * vertex + 8 inner-ring verts (radius scale = g_nDragonRescueAuraStarRadius >>
+ * 0xc, angles from sin/cos LUTs at &g_anSineLut/&g_anCosineLut stride 0x40 =
+ * 45°) + 8 outer-ring verts (radius 4x larger via >> 0xa, angles offset by
+ * 22.5°). Inner ring is closed (vertex[0] = vertex[N]). Emits drawmode prim
+ * (0xe1000620 untextured + 0x2000000 semi-trans), then loops 8 times emitting 2
+ * POLY_F3 per slice: outer-spike triangle (inner[i], inner[i+1], outer[i]) +
+ * inner-fan triangle (inner[i], inner[i+1], center) for 16 triangles total.
+ * Color byte applied to all 6 color slots from g_bDragonRescueAuraStarColor.
+ * Each prim inserts into OT via g_pOtActiveDepthSlot head-ptr. Sole caller:
+ * DragonRescue_Draw, conditional on g_nDragonRescueAuraStarEnabled trigger
+ * flag. */
 void DrawDragonRescueAuraStar(void);
 
-/* 0x80058b68: Resets the world particle/billboard tables on level load. Frees the 16 world sparkles (FxNode, 0x24 bytes, at g_abWorldSparkleParticleTable: points = 0) and the 8 rotating billboards (g_aRotBillboards: life = 0, through g_abRotBillboardLife). Sole caller BuildLoadedLevelRuntime (level loader meat). */
+/* 0x80058b68: Resets the world particle/billboard tables on level load. Frees
+ * the 16 world sparkles (FxNode, 0x24 bytes, at g_abWorldSparkleParticleTable:
+ * points = 0) and the 8 rotating billboards (g_aRotBillboards: life = 0,
+ * through g_abRotBillboardLife). Sole caller BuildLoadedLevelRuntime (level
+ * loader meat). */
 void ResetWorldParticleTables(void);
 
-/* 0x80058ba8: Per-frame driver for the world particle/billboard emitter pair. Calls DrawWorldSparkleParticles (sparkle/particle emitter — iterates &g_abWorldSparkleParticleTable 16-entry table, each entry = 9 ints, emits GTE-projected POLY_FT3+POLY_GT3 chains scaled by distance) then DrawWorldRotatingBillboards(g_nFrameStep) (the 8 g_aRotBillboards: ages and spins each by g_nFrameStep and draws it as a camera-facing quad, sin/cos from g_anSineLut / g_anCosineLut). Called by ComposeFrameScene. */
+/* 0x80058ba8: Per-frame driver for the world particle/billboard emitter pair.
+ * Calls DrawWorldSparkleParticles (sparkle/particle emitter — iterates
+ * &g_abWorldSparkleParticleTable 16-entry table, each entry = 9 ints, emits
+ * GTE-projected POLY_FT3+POLY_GT3 chains scaled by distance) then
+ * DrawWorldRotatingBillboards(g_nFrameStep) (the 8 g_aRotBillboards: ages and
+ * spins each by g_nFrameStep and draws it as a camera-facing quad, sin/cos from
+ * g_anSineLut / g_anCosineLut). Called by ComposeFrameScene. */
 void DrawWorldParticleEmitters(void);
 
-/* 0x80058bd8: Precomputes the 3 camera-space basis vectors used by the billboard sprite emitter. Calls WorldToCameraRotate on the X-axis (0x1000,0,0), Y-axis (0,0x1000,0), and inverted Z-axis (0,0,-0x1000), packs each result via VectorToSVector to the 3 SVECTOR slots at g_anBillboardBasisVectors (3 SVECTORs). Sole caller GamestateUpdate; runs once per frame after the camera matrix is committed so the billboard emitter can splat sprites with consistent screen-facing orientation. */
+/* 0x80058bd8: Precomputes the 3 camera-space basis vectors used by the
+ * billboard sprite emitter. Calls WorldToCameraRotate on the X-axis
+ * (0x1000,0,0), Y-axis (0,0x1000,0), and inverted Z-axis (0,0,-0x1000), packs
+ * each result via VectorToSVector to the 3 SVECTOR slots at
+ * g_anBillboardBasisVectors (3 SVECTORs). Sole caller GamestateUpdate; runs
+ * once per frame after the camera matrix is committed so the billboard emitter
+ * can splat sprites with consistent screen-facing orientation. */
 void ComputeBillboardBasisVectors(void);
 
-/* 0x80058c7c: Seeds the 6-component light-direction vector pair at g_anWorldLightDirVec..dc with the fixed default {-0x9d5, -0x99a, -0xb20, -0x9d5, -0x99a, -0xb20} (the same default for both lights: [0..2] the sprite queue's, [3..5] the secondary actors'). Called by level-init paths before RotateLightVectorXZ tweaks the vector per-frame. */
+/* 0x80058c7c: Seeds the 6-component light-direction vector pair at
+ * g_anWorldLightDirVec..dc with the fixed default {-0x9d5, -0x99a, -0xb20,
+ * -0x9d5, -0x99a, -0xb20} (the same default for both lights: [0..2] the sprite
+ * queue's, [3..5] the secondary actors'). Called by level-init paths before
+ * RotateLightVectorXZ tweaks the vector per-frame. */
 void InitLightVectorConstants(void);
 
-/* 0x80058cc0: Spins the primary light direction vector in the XY plane (Z is up). Advances byte angle accumulator g_nLightSweepAngle by steps (wraps mod 256), looks up cos at g_anCosineLut[angle*2] scaled by 0x7bf and sin at g_anSineLut[angle*2] scaled by 0x18c9 (the two scale factors give an asymmetric ellipse, not a circle), pins Z at -0x400 (from above). Writes XYZ to g_anWorldLightDirVec. Used to animate sun/moon direction over time. */
+/* 0x80058cc0: Spins the primary light direction vector in the XY plane (Z is
+ * up). Advances byte angle accumulator g_nLightSweepAngle by steps (wraps mod
+ * 256), looks up cos at g_anCosineLut[angle*2] scaled by 0x7bf and sin at
+ * g_anSineLut[angle*2] scaled by 0x18c9 (the two scale factors give an
+ * asymmetric ellipse, not a circle), pins Z at -0x400 (from above). Writes XYZ
+ * to g_anWorldLightDirVec. Used to animate sun/moon direction over time. */
 void RotateLightVectorXZ(int steps);
 
-/* 0x80058d64: Draws the flame-breath trails (formerly misnamed DrawWorldFenceBillboards, then read as a horn strike; PAD_CIRCLE starts it in TickSpyroFlameAttack). For each armed trail slot (g_abSpyroFlameSlotAge, walked 8..1) it follows the slot's precomputed flame arc (g_anSpyroFlameArcPathsShort/Long) around g_anSpyroFlameAnchorPos, oriented by g_anSpyroFlameRenderMtx on top of the world-to-camera matrix. End-cap stage: projects 3 ring verts at the trail head and emits up to 4 backface-culled POLY_F3 prims colored from g_anSpyroFlameCapColors (Alt palette when g_nSpyroFlameVariant != 0, i.e. superflame). Ribbon stage: POLY_GT3 strip from the per-age head (g_anSpyroFlameAgeConfigShort/Long) back to the clip point (g_abSpyroFlameSlotEndAge), fading by 0xa0a0a then 0x50505 with a 2x-elongated teardrop head. OT insert at sz3>>7 via g_pOtDepthBinArrayBase. Sole caller: ComposeFrameScene. The g_anStaticRegSaveArea..e04 stores are register-spill scratch (Ghidra artifact). */
+/* 0x80058d64: Draws the flame-breath trails (formerly misnamed
+ * DrawWorldFenceBillboards, then read as a horn strike; PAD_CIRCLE starts it in
+ * TickSpyroFlameAttack). For each armed trail slot (g_abSpyroFlameSlotAge,
+ * walked 8..1) it follows the slot's precomputed flame arc
+ * (g_anSpyroFlameArcPathsShort/Long) around g_anSpyroFlameAnchorPos, oriented
+ * by g_anSpyroFlameRenderMtx on top of the world-to-camera matrix. End-cap
+ * stage: projects 3 ring verts at the trail head and emits up to 4
+ * backface-culled POLY_F3 prims colored from g_anSpyroFlameCapColors (Alt
+ * palette when g_nSpyroFlameVariant != 0, i.e. superflame). Ribbon stage:
+ * POLY_GT3 strip from the per-age head (g_anSpyroFlameAgeConfigShort/Long) back
+ * to the clip point (g_abSpyroFlameSlotEndAge), fading by 0xa0a0a then 0x50505
+ * with a 2x-elongated teardrop head. OT insert at sz3>>7 via
+ * g_pOtDepthBinArrayBase. Sole caller: ComposeFrameScene. The
+ * g_anStaticRegSaveArea..e04 stores are register-spill scratch (Ghidra
+ * artifact). */
 void DrawSpyroFlameTrails(void);
 
-/* 0x8005956c: Save-block checksum compute. Sums the unsigned byte values of the first 0x58c bytes of the save buffer (everything except the 4-byte checksum field itself at +0x58c). Used both by BuildSaveGameBuffer to seal the buffer and by SaveMenu_Update to verify a loaded buffer matches its stored checksum. */
+/* 0x8005956c: Save-block checksum compute. Sums the unsigned byte values of the
+ * first 0x58c bytes of the save buffer (everything except the 4-byte checksum
+ * field itself at +0x58c). Used both by BuildSaveGameBuffer to seal the buffer
+ * and by SaveMenu_Update to verify a loaded buffer matches its stored
+ * checksum. */
 int ComputeSaveGameChecksum(unsigned char *data);
 
-/* 0x80059864: Memcard save serializer: zeroes and fills a SaveGameBuffer (save_game.h): level id, volumes, vibration, camera options, mono flag, the escape-run counts and extra lives; flight clear times and bonus-paid flags; per-level visited / exited flags, dragons (bytes), gems (shorts) and eggs; balloonist state; the per-level kill bitmaps; then the ComputeSaveGameChecksum checksum. Callers: SaveMenu_Update (save write), Titlescreen_Update. */
+/* 0x80059864: Memcard save serializer: zeroes and fills a SaveGameBuffer
+ * (save_game.h): level id, volumes, vibration, camera options, mono flag, the
+ * escape-run counts and extra lives; flight clear times and bonus-paid flags;
+ * per-level visited / exited flags, dragons (bytes), gems (shorts) and eggs;
+ * balloonist state; the per-level kill bitmaps; then the
+ * ComputeSaveGameChecksum checksum. Callers: SaveMenu_Update (save write),
+ * Titlescreen_Update. */
 void BuildSaveGameBuffer(unsigned char *buf);
 
-/* 0x80059a48: Spyro drop-shadow renderer. Emits a 16-segment subtractive-blend polygon ring (texpage 0xe1000640, blend mode 2 = B-F, darkens framebuffer) anchored at g_anSpyroShadowPos, rotated to Spyro's yaw (g_abSpyroPersistentEuler[2] through g_anSpyroShadowCircleTable 16-gon). Silhouette extents come from per-anim-keyframe bytes (mesh +0x38 anim table, +0x24 frame entry) interpolated by g_bSpyroSubFrameTimer in GTE scratchpad; vertex Z lift from g_abSpyroShadowRingHeights; if any g_abSpyroShadowRingNoGroundFlags byte is set the silhouette shrinks x3/4. Per-segment OT bin = depth>>9 - g_nSpyroShadowOtBinBias (skip if negative). Early-out while g_nSpyroShadowHiddenFlag >= 1 (over water/abyss or trigger event). Formerly misnamed DrawSunFlareBillboard. */
+/* 0x80059a48: Spyro drop-shadow renderer. Emits a 16-segment subtractive-blend
+ * polygon ring (texpage 0xe1000640, blend mode 2 = B-F, darkens framebuffer)
+ * anchored at g_anSpyroShadowPos, rotated to Spyro's yaw
+ * (g_abSpyroPersistentEuler[2] through g_anSpyroShadowCircleTable 16-gon).
+ * Silhouette extents come from per-anim-keyframe bytes (mesh +0x38 anim table,
+ * +0x24 frame entry) interpolated by g_bSpyroSubFrameTimer in GTE scratchpad;
+ * vertex Z lift from g_abSpyroShadowRingHeights; if any
+ * g_abSpyroShadowRingNoGroundFlags byte is set the silhouette shrinks x3/4.
+ * Per-segment OT bin = depth>>9 - g_nSpyroShadowOtBinBias (skip if negative).
+ * Early-out while g_nSpyroShadowHiddenFlag >= 1 (over water/abyss or trigger
+ * event). Formerly misnamed DrawSunFlareBillboard. */
 void DrawSpyroDropShadow(void);
 
-/* 0x80059f8c (hand-written): Draws the actor drop shadows: for each actor BuildActorDrawList queued on its near list (at g_apMainDrawEntityList + 0x2800, end in g_anActorShadowTexWords[2]; actors nearer than 0x1200 whose ->groundCode has bit 31 set), semi-transparent textured triangles (POLY_FT3 0x26, tex words g_anActorShadowTexWords[0..1]) at the floor Z packed in ->groundCode, tilted by its two floor-normal angles and sized by a per-frame byte of the actor's model. The actor counterpart of DrawSpyroDropShadow. Called from ComposeFrameScene and DragonRescue_Draw. */
+/* 0x80059f8c (hand-written): Draws the actor drop shadows: for each actor
+ * BuildActorDrawList queued on its near list (at g_apMainDrawEntityList +
+ * 0x2800, end in g_anActorShadowTexWords[2]; actors nearer than 0x1200 whose
+ * ->groundCode has bit 31 set), semi-transparent textured triangles (POLY_FT3
+ * 0x26, tex words g_anActorShadowTexWords[0..1]) at the floor Z packed in
+ * ->groundCode, tilted by its two floor-normal angles and sized by a per-frame
+ * byte of the actor's model. The actor counterpart of DrawSpyroDropShadow.
+ * Called from ComposeFrameScene and DragonRescue_Draw. */
 void DrawActorDropShadows(void);
 
-/* 0x8005a470: Points the level hooks at the overlay just loaded for g_nActiveLevelId (43 cases). Every level sets g_pLoadStagingBuffer (the overlay's end, where free RAM starts) and g_pfnLevelSpawnActor / UpdateActors / EmitParticles / AdvanceEmitList. The 11 levels with a balloonist or fly-in cutscene also set g_pfnLevelBeginActorCutscene, g_pfnLevelOnSaveMenuExit and the GS_ACTOR_CUTSCENE substate hooks (g_pfnActorCutsceneSubstateUpdate / Draw); the 5 flight levels set g_pfnLevelHandleFlightResults, g_pfnFlightTimeFormatter, g_pfnLevelEndFlightRun and the gamestate-7 handler pair. Ends with g_pLevelDataBuffer = g_pLoadStagingBuffer. Sole caller TickLevelTransitionStream, once per level entry. */
+/* 0x8005a470: Points the level hooks at the overlay just loaded for
+ * g_nActiveLevelId (43 cases). Every level sets g_pLoadStagingBuffer (the
+ * overlay's end, where free RAM starts) and g_pfnLevelSpawnActor / UpdateActors
+ * / EmitParticles / AdvanceEmitList. The 11 levels with a balloonist or fly-in
+ * cutscene also set g_pfnLevelBeginActorCutscene, g_pfnLevelOnSaveMenuExit and
+ * the GS_ACTOR_CUTSCENE substate hooks (g_pfnActorCutsceneSubstateUpdate /
+ * Draw); the 5 flight levels set g_pfnLevelHandleFlightResults,
+ * g_pfnFlightTimeFormatter, g_pfnLevelEndFlightRun and the gamestate-7 handler
+ * pair. Ends with g_pLevelDataBuffer = g_pLoadStagingBuffer. Sole caller
+ * TickLevelTransitionStream, once per level entry. */
 void ApplyPerLevelGlobalsTable(void);
 
-/* 0x8005b6f8: Carves the per-frame render scratch out of the top of the work area: g_pEmitListBuffer = top-0x2000, OT depth-bin base = top-0x6000 (g_pFrameOtDepthBinBase0/1 + published g_pRenderScratchOtBase, 0x4000 zeroed), OT merged-chain slot = top-0x6008 (g_pFrameOtMergedChainSlot0/1, 8 bytes zeroed), then two prim-buffer halves of 0x1c000 (param=0, in-game) or 0x13000 (cutscene) growing down: g_pFramePrimBufferBase1 then g_pFramePrimBufferBase0. Publishes the bounds at g_pRenderScratchRegionBase/PrimBase1/PrimTop/OtBase. Callers: StoryIntro_Update, Cutscene_Update, LoadActorMeshTables. */
+/* 0x8005b6f8: Carves the per-frame render scratch out of the top of the work
+ * area: g_pEmitListBuffer = top-0x2000, OT depth-bin base = top-0x6000
+ * (g_pFrameOtDepthBinBase0/1 + published g_pRenderScratchOtBase, 0x4000
+ * zeroed), OT merged-chain slot = top-0x6008 (g_pFrameOtMergedChainSlot0/1, 8
+ * bytes zeroed), then two prim-buffer halves of 0x1c000 (param=0, in-game) or
+ * 0x13000 (cutscene) growing down: g_pFramePrimBufferBase1 then
+ * g_pFramePrimBufferBase0. Publishes the bounds at
+ * g_pRenderScratchRegionBase/PrimBase1/PrimTop/OtBase. Callers:
+ * StoryIntro_Update, Cutscene_Update, LoadActorMeshTables. */
 void InitActorMeshScratchRegions(int split);
 
-/* 0x8005b7d8: Loads the actor mesh table from CD into the top of the boot-load region. CdReadSyncSectors pulls a directory (size g_nActorMeshDirByteSize, sector g_nActorMeshDirSectorOffset) into a buffer below 0x80200000 - g_nCrt0StackSize; iterates up to 64 entries; for each: RelocateActorMeshHeader (anim/mesh header relocator) and stores the resolved pointer at g_apActorMeshTable + slot*4. Finishes with InitActorMeshScratchRegions(0) to post-init the actor system. */
+/* 0x8005b7d8: Loads the actor mesh table from CD into the top of the boot-load
+ * region. CdReadSyncSectors pulls a directory (size g_nActorMeshDirByteSize,
+ * sector g_nActorMeshDirSectorOffset) into a buffer below 0x80200000 -
+ * g_nCrt0StackSize; iterates up to 64 entries; for each:
+ * RelocateActorMeshHeader (anim/mesh header relocator) and stores the resolved
+ * pointer at g_apActorMeshTable + slot*4. Finishes with
+ * InitActorMeshScratchRegions(0) to post-init the actor system. */
 void LoadActorMeshTables(void);
 
 /* 0x8005b8e0: Possible SNMAIN.OBJ/__SN_ENTRY_POINT */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined start(undefined4 param_1, undefined4 param_2, uint param_3, int *param_4);
+undefined start(undefined4 param_1, undefined4 param_2, uint param_3,
+                int *param_4);
 
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined __main(void);
@@ -895,98 +2808,294 @@ undefined __main(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined __do_global_dtors(void);
 
-/* 0x8005ba60: PSY-Q SpuInit equivalent (S_I.OBJ/SpuInit signature match). Trivial 1-line wrapper: calls InitSpuSubsystem(0) (full-init path that re-seeds voice-table shadow, opens VBlank event, zeros DMA tracking state). No other callers under this address — game routes SPU subsystem init through this single entry. */
+/* 0x8005ba60: PSY-Q SpuInit equivalent (S_I.OBJ/SpuInit signature match).
+ * Trivial 1-line wrapper: calls InitSpuSubsystem(0) (full-init path that
+ * re-seeds voice-table shadow, opens VBlank event, zeros DMA tracking state).
+ * No other callers under this address — game routes SPU subsystem init through
+ * this single entry. */
 void InitSpu(void);
 
-/* 0x8005ba80: SPU subsystem init worker — the public InitSpu wraps with (0). Sequence: (1) FUN_8005ddc8 vtable callback (pre-init hook through g_pLibapiSysVtable+0xc), (2) InitSpuHardware(param_1) — hardware reset + per-voice register seed, (3) when param_1==0: fills all 24 entries of g_anSpuVoiceNoteShadow with 0xc000 (default note shadow), (4) InstallSpuDmaEventHandler — opens VBlank event 0xf0000009 for SPU DMA completion, (5) zeros DMA-tracking state (0x800730f4/f8/104/108/10a/10c/110), (6) saves g_nSpuReverbEsaDefault -> g_nSpuReverbEsaShadow (transfer-control default), (7) WriteSpuRegister(0xd1, g_nSpuReverbEsaDefault, 0) — direct SPU register write at slot 0xd1, (8) zeros more SPU tracking state (0x800735b0/b4/b8, g_nSpuTransferMode, g_dwSpuLiveKeyOnMask, g_dwSpuDeferredFlushPending, g_dwSpuDeferredKeyOnMask). param_1 selects full reset (0) vs minimal re-init (!=0; skips voice-shadow seed). Sole caller: InitSpu. */
+/* 0x8005ba80: SPU subsystem init worker — the public InitSpu wraps with (0).
+ * Sequence: (1) FUN_8005ddc8 vtable callback (pre-init hook through
+ * g_pLibapiSysVtable+0xc), (2) InitSpuHardware(param_1) — hardware reset +
+ * per-voice register seed, (3) when param_1==0: fills all 24 entries of
+ * g_anSpuVoiceNoteShadow with 0xc000 (default note shadow), (4)
+ * InstallSpuDmaEventHandler — opens VBlank event 0xf0000009 for SPU DMA
+ * completion, (5) zeros DMA-tracking state (0x800730f4/f8/104/108/10a/10c/110),
+ * (6) saves g_nSpuReverbEsaDefault -> g_nSpuReverbEsaShadow (transfer-control
+ * default), (7) WriteSpuRegister(0xd1, g_nSpuReverbEsaDefault, 0) — direct SPU
+ * register write at slot 0xd1, (8) zeros more SPU tracking state
+ * (0x800735b0/b4/b8, g_nSpuTransferMode, g_dwSpuLiveKeyOnMask,
+ * g_dwSpuDeferredFlushPending, g_dwSpuDeferredKeyOnMask). param_1 selects full
+ * reset (0) vs minimal re-init (!=0; skips voice-shadow seed). Sole caller:
+ * InitSpu. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined InitSpuSubsystem(int param_1);
 
-/* 0x8005bb78: Installs the VBlank-driven SPU DMA-completion event handler exactly once (guarded by SPU-state-struct+0x40 install flag). Wraps EnterCriticalSection / ExitCriticalSection (syscall(0)) around OpenEvent(0xf0000009, 0x20, 0x2000, NULL) (vector=root-counter VBlank, class=interrupt-handler-mode, mode=do-not-call-callback) + EnableEvent. Saves the event handle into g_nSpuDmaEventHandle for later cleanup. Also runs InstallSpuDmaCallback (further DMA-engine init via DmaCallback). Sole caller: InitSpuSubsystem. */
+/* 0x8005bb78: Installs the VBlank-driven SPU DMA-completion event handler
+ * exactly once (guarded by SPU-state-struct+0x40 install flag). Wraps
+ * EnterCriticalSection / ExitCriticalSection (syscall(0)) around
+ * OpenEvent(0xf0000009, 0x20, 0x2000, NULL) (vector=root-counter VBlank,
+ * class=interrupt-handler-mode, mode=do-not-call-callback) + EnableEvent. Saves
+ * the event handle into g_nSpuDmaEventHandle for later cleanup. Also runs
+ * InstallSpuDmaCallback (further DMA-engine init via DmaCallback). Sole caller:
+ * InitSpuSubsystem. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined InstallSpuDmaEventHandler(void);
 
-/* 0x8005bbf4: PSY-Q SpuInit-equivalent SPU hardware reset. Clears main/reverb vol, sets transfer mode=4, key-offs all 24 voices, waits SPUSTAT lower 11 bits to settle. When param_1==0 (full-init path): clears FM/Noise/reverb-config regs, calls WriteSpuRamPio(shadow+0x14, 0x10) to seed reverb work area, writes default voice register set (VolL=0/VolR=0/Pitch=0x3fff/StartAddr=0x200/ADSR1=0/ADSR2=0) to all 24 voices, then key-on-all-24 followed by key-off-all-24 to flush key state. Finally sets SPUCNT (+0x1aa) = 0xc000 (SPU enable + IRQ unmask). param_1 selects full reset (0) vs minimal re-init (!=0). Sole caller: InitSpuSubsystem (InitSpu wrapper). */
+/* 0x8005bbf4: PSY-Q SpuInit-equivalent SPU hardware reset. Clears main/reverb
+ * vol, sets transfer mode=4, key-offs all 24 voices, waits SPUSTAT lower 11
+ * bits to settle. When param_1==0 (full-init path): clears
+ * FM/Noise/reverb-config regs, calls WriteSpuRamPio(shadow+0x14, 0x10) to seed
+ * reverb work area, writes default voice register set
+ * (VolL=0/VolR=0/Pitch=0x3fff/StartAddr=0x200/ADSR1=0/ADSR2=0) to all 24
+ * voices, then key-on-all-24 followed by key-off-all-24 to flush key state.
+ * Finally sets SPUCNT (+0x1aa) = 0xc000 (SPU enable + IRQ unmask). param_1
+ * selects full reset (0) vs minimal re-init (!=0). Sole caller:
+ * InitSpuSubsystem (InitSpu wrapper). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 InitSpuHardware(int param_1);
 
-/* 0x8005be88: PSY-Q SpuWrite-style PIO upload to SPU sound RAM via the data register at SPU_BASE+0x1a8. Stamps the SPU transfer-address register (+0x1a6) from the shadow at the top. Chunks param_2 bytes into batches of up to 0x40 bytes, writing 2 bytes per store, then sets SPUCNT transfer-mode bits (+0x1aa & 0xffcf | 0x10), and waits for SPUSTAT (+0x1ae) bit 0x400 (write-FIFO ready) to clear. Loops until param_2 reaches 0; on entry with param_2==0, finalizes by clearing the SPUCNT transfer-mode bits and waiting SPUSTAT lower 11 bits to return to the saved value. Used by both the SPU init path (seeding the reverb work area) and the PIO branch of the DMA/PIO dispatcher WriteSpuRamInternal. Logs "SPU:T/O [...]" on timeout. Callers: InitSpuHardware, WriteSpuRamInternal. */
+/* 0x8005be88: PSY-Q SpuWrite-style PIO upload to SPU sound RAM via the data
+ * register at SPU_BASE+0x1a8. Stamps the SPU transfer-address register (+0x1a6)
+ * from the shadow at the top. Chunks param_2 bytes into batches of up to 0x40
+ * bytes, writing 2 bytes per store, then sets SPUCNT transfer-mode bits (+0x1aa
+ * & 0xffcf | 0x10), and waits for SPUSTAT (+0x1ae) bit 0x400 (write-FIFO ready)
+ * to clear. Loops until param_2 reaches 0; on entry with param_2==0, finalizes
+ * by clearing the SPUCNT transfer-mode bits and waiting SPUSTAT lower 11 bits
+ * to return to the saved value. Used by both the SPU init path (seeding the
+ * reverb work area) and the PIO branch of the DMA/PIO dispatcher
+ * WriteSpuRamInternal. Logs "SPU:T/O [...]" on timeout. Callers:
+ * InitSpuHardware, WriteSpuRamInternal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined WriteSpuRamPio(undefined2 *param_1, uint param_2);
 
-/* 0x8005c1c0: PSY-Q-style multi-mode SPU DMA transfer controller. param_1 = subcommand: 0 = start READ transfer (SPU→CPU; waits for SPU transfer-addr register at +0x1a6 to match shadow, then sets SPUCNT (+0x1aa) transfer-mode bits = 0x30 = DMA-read, sets pending-read flag g_nSpuPendingDmaDirection=1 so subcmd 3 will issue CHCR=0x1000200); 1 = start WRITE transfer (CPU→SPU; same wait, sets SPUCNT transfer-mode bits = 0x20 = DMA-write, g_nSpuPendingDmaDirection=0 → CHCR=0x1000201); 2 = set transfer-address shadow + immediately stamp encoded form to SPU +0x1a6 register; 3 = wait for transfer-mode bits to settle, fire pre-kick state-bit callback (SetSpuDmaReadStateBits if read / SetSpuDmaWriteStateBits if write), then kick DMA controller via DPCR-shadow at SPU-state+0x3c (byte addr), +0x40 (chunk count = (param_3>>6 round-up) | 0x10), +0x44 (control word 0x1000200 read / 0x1000201 write). Returns 0xfffffffe on timeout, 0 otherwise. Used by both ReadSpuRamDma and the DMA path of WriteSpuRamInternal. */
+/* 0x8005c1c0: PSY-Q-style multi-mode SPU DMA transfer controller. param_1 =
+ * subcommand: 0 = start READ transfer (SPU→CPU; waits for SPU transfer-addr
+ * register at +0x1a6 to match shadow, then sets SPUCNT (+0x1aa) transfer-mode
+ * bits = 0x30 = DMA-read, sets pending-read flag g_nSpuPendingDmaDirection=1 so
+ * subcmd 3 will issue CHCR=0x1000200); 1 = start WRITE transfer (CPU→SPU; same
+ * wait, sets SPUCNT transfer-mode bits = 0x20 = DMA-write,
+ * g_nSpuPendingDmaDirection=0 → CHCR=0x1000201); 2 = set transfer-address
+ * shadow + immediately stamp encoded form to SPU +0x1a6 register; 3 = wait for
+ * transfer-mode bits to settle, fire pre-kick state-bit callback
+ * (SetSpuDmaReadStateBits if read / SetSpuDmaWriteStateBits if write), then
+ * kick DMA controller via DPCR-shadow at SPU-state+0x3c (byte addr), +0x40
+ * (chunk count = (param_3>>6 round-up) | 0x10), +0x44 (control word 0x1000200
+ * read / 0x1000201 write). Returns 0xfffffffe on timeout, 0 otherwise. Used by
+ * both ReadSpuRamDma and the DMA path of WriteSpuRamInternal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 ControlSpuDmaTransfer(int param_1, uint param_2, uint param_3);
 
-/* 0x8005c450: SPU RAM write dispatcher (CPU→SPU) — chooses DMA or PIO based on the g_nSpuTransferMode flag at SPU-state-struct+0x4e. DMA path (flag==0): builds encoded SPU address from current transfer-addr shadow shifted left by g_nSpuAddrShift, then ControlSpuDmaTransfer(2, addr, _) sets destination + ControlSpuDmaTransfer(1, addr, _) puts the channel into DMA-write (CPU→SPU) mode + ControlSpuDmaTransfer(3, buf, nbytes) kicks the actual DMA controller. PIO path (flag!=0): WriteSpuRamPio(buf, nbytes) directly. Sole caller: WriteSpuRam (public size-clamping entry). */
+/* 0x8005c450: SPU RAM write dispatcher (CPU→SPU) — chooses DMA or PIO based on
+ * the g_nSpuTransferMode flag at SPU-state-struct+0x4e. DMA path (flag==0):
+ * builds encoded SPU address from current transfer-addr shadow shifted left by
+ * g_nSpuAddrShift, then ControlSpuDmaTransfer(2, addr, _) sets destination +
+ * ControlSpuDmaTransfer(1, addr, _) puts the channel into DMA-write (CPU→SPU)
+ * mode + ControlSpuDmaTransfer(3, buf, nbytes) kicks the actual DMA controller.
+ * PIO path (flag!=0): WriteSpuRamPio(buf, nbytes) directly. Sole caller:
+ * WriteSpuRam (public size-clamping entry). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 uint WriteSpuRamInternal(undefined2 *param_1, uint param_2, uint param_3);
 
-/* 0x8005c4d8: DMA SPU→CPU read implementation (no PIO fallback). Re-stamps the current transfer-addr shadow (encoded back to a byte address via the SPU address shift) into the DMA controller via ControlSpuDmaTransfer subcmd 2 (set addr), switches direction to "read SPU→CPU" via subcmd 0 (SPUCNT |= 0x30 / pending-read flag g_nSpuPendingDmaDirection=1 → CHCR=0x1000200), then subcmd 3 kicks the DMA controller with (param_1=CPU buffer addr, param_2=byte count). Returns param_2. Sole caller: ReadSpuRam (public size-clamping entry). */
+/* 0x8005c4d8: DMA SPU→CPU read implementation (no PIO fallback). Re-stamps the
+ * current transfer-addr shadow (encoded back to a byte address via the SPU
+ * address shift) into the DMA controller via ControlSpuDmaTransfer subcmd 2
+ * (set addr), switches direction to "read SPU→CPU" via subcmd 0 (SPUCNT |= 0x30
+ * / pending-read flag g_nSpuPendingDmaDirection=1 → CHCR=0x1000200), then
+ * subcmd 3 kicks the DMA controller with (param_1=CPU buffer addr, param_2=byte
+ * count). Returns param_2. Sole caller: ReadSpuRam (public size-clamping
+ * entry). */
 uint ReadSpuRamDma(uint param_1, uint param_2, uint param_3);
 
-/* 0x8005c540: Write one short into an arbitrary SPU register slot. Address = (param_1*2) + SPU register base ptr at SPU-state-struct+24. When param_3==0 writes param_2 raw; otherwise writes (param_2 >> g_nSpuAddrShift) — used to encode byte-addresses into SPU register units. Used by InitSpuSubsystem to seed the SPU control word at slot 0xd1 with g_nSpuReverbEsaDefault. */
+/* 0x8005c540: Write one short into an arbitrary SPU register slot. Address =
+ * (param_1*2) + SPU register base ptr at SPU-state-struct+24. When param_3==0
+ * writes param_2 raw; otherwise writes (param_2 >> g_nSpuAddrShift) — used to
+ * encode byte-addresses into SPU register units. Used by InitSpuSubsystem to
+ * seed the SPU control word at slot 0xd1 with g_nSpuReverbEsaDefault. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined WriteSpuRegister(int param_1, uint param_2, int param_3);
 
-/* 0x8005c588: Encodes a byte-address into SPU register units and writes it to one voice's address slot. Aligns up by g_nSpuAddrAlignUnit (8) if g_nSpuAddrAlignEnable alignment-enable is set; shifts down by g_nSpuAddrShift (=3, since SPU memory is addressed in 8-byte blocks); writes the result short to D_80073554 (0x1F801C00, the SPU voice registers) + param_1*2 when param_1>=0. Sentinels: param_1==-1 returns the encoded value (no write), param_1==-2 returns the aligned byte address unchanged. Used by ApplySpuVoiceAttrRange for sample-start (slot voice*8|3) and loop-start (slot voice*8|7) writes. */
+/* 0x8005c588: Encodes a byte-address into SPU register units and writes it to
+ * one voice's address slot. Aligns up by g_nSpuAddrAlignUnit (8) if
+ * g_nSpuAddrAlignEnable alignment-enable is set; shifts down by g_nSpuAddrShift
+ * (=3, since SPU memory is addressed in 8-byte blocks); writes the result short
+ * to D_80073554 (0x1F801C00, the SPU voice registers) + param_1*2 when
+ * param_1>=0. Sentinels: param_1==-1 returns the encoded value (no write),
+ * param_1==-2 returns the aligned byte address unchanged. Used by
+ * ApplySpuVoiceAttrRange for sample-start (slot voice*8|3) and loop-start (slot
+ * voice*8|7) writes. */
 uint WriteSpuVoiceAddrRegister(int param_1, uint param_2);
 
-/* 0x8005c6c8: Pre-DMA-kick CHCR state-bit prep for SPU writes (CPU -> SPU). Clears CHCR upper-byte lower nibble (bits 24-27 — busy + reserved) and sets bit 29 as a software sentinel. Called by ControlSpuDmaTransfer subcmd 3 immediately before the real CHCR write (0x1000201) so the channel is in a known state when the new transfer is triggered. */
+/* 0x8005c6c8: Pre-DMA-kick CHCR state-bit prep for SPU writes (CPU -> SPU).
+ * Clears CHCR upper-byte lower nibble (bits 24-27 — busy + reserved) and sets
+ * bit 29 as a software sentinel. Called by ControlSpuDmaTransfer subcmd 3
+ * immediately before the real CHCR write (0x1000201) so the channel is in a
+ * known state when the new transfer is triggered. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined SetSpuDmaWriteStateBits(void);
 
-/* 0x8005c6f4: Pre-DMA-kick CHCR state-bit prep for SPU reads (SPU -> CPU). Same shape as SetSpuDmaWriteStateBits but ORs in 0x22000000 (sentinel bit 29 + bit 25 distinguishes the read path). Called by ControlSpuDmaTransfer subcmd 3 immediately before the real CHCR write (0x1000200). */
+/* 0x8005c6f4: Pre-DMA-kick CHCR state-bit prep for SPU reads (SPU -> CPU). Same
+ * shape as SetSpuDmaWriteStateBits but ORs in 0x22000000 (sentinel bit 29 + bit
+ * 25 distinguishes the read path). Called by ControlSpuDmaTransfer subcmd 3
+ * immediately before the real CHCR write (0x1000200). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined SetSpuDmaReadStateBits(void);
 
-/* 0x8005c720: SPU register-write fence — empty 0x3c-iter busy-wait loop that gives the SPU time to absorb prior register writes before the next access. Called as a "flush" after each batch of voice-register writes (ApplySpuVoiceAttrRange, WriteSpuVoiceAddrRegister, SetSpuVoiceVolumeLR). PSY-Q-internal style hardware barrier. */
+/* 0x8005c720: SPU register-write fence — empty 0x3c-iter busy-wait loop that
+ * gives the SPU time to absorb prior register writes before the next access.
+ * Called as a "flush" after each batch of voice-register writes
+ * (ApplySpuVoiceAttrRange, WriteSpuVoiceAddrRegister, SetSpuVoiceVolumeLR).
+ * PSY-Q-internal style hardware barrier. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined DelaySpuRegisterWrite(void);
 
-/* 0x8005c788: Installs the SPU DMA channel-4 completion callback. Trivial wrapper: forwards caller's a0 as a1 (the callback function pointer), hardcodes a0=4 (SPU DMA channel), and calls DmaCallback. Sole caller: InstallSpuDmaEventHandler — pairs the OpenEvent VBlank handler with the underlying DMA-completion hook. */
+/* 0x8005c788: Installs the SPU DMA channel-4 completion callback. Trivial
+ * wrapper: forwards caller's a0 as a1 (the callback function pointer),
+ * hardcodes a0=4 (SPU DMA channel), and calls DmaCallback. Sole caller:
+ * InstallSpuDmaEventHandler — pairs the OpenEvent VBlank handler with the
+ * underlying DMA-completion hook. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined InstallSpuDmaCallback(void);
 
-/* 0x8005c7ac: Apply SPU voice attr struct to all selected voices and flush. Thin wrapper for ApplySpuVoiceAttrRange(attr, 0, 0x17, 0): iterates voice indices 0..23, writes attr fields (volume/pitch/ADSR/sample-addr/mode) into the SPU voice registers (base pointer D_80073554 = 0x1F801C00) for each voice whose bit is set in attr[0] (voice select mask), then issues hardware flush via DelaySpuRegisterWrite. Equivalent to PSY-Q SpuSetVoiceAttr. Callers: InitSoundEngine, PlaySoundEffect, TickActiveSoundVoices. */
+/* 0x8005c7ac: Apply SPU voice attr struct to all selected voices and flush.
+ * Thin wrapper for ApplySpuVoiceAttrRange(attr, 0, 0x17, 0): iterates voice
+ * indices 0..23, writes attr fields (volume/pitch/ADSR/sample-addr/mode) into
+ * the SPU voice registers (base pointer D_80073554 = 0x1F801C00) for each voice
+ * whose bit is set in attr[0] (voice select mask), then issues hardware flush
+ * via DelaySpuRegisterWrite. Equivalent to PSY-Q SpuSetVoiceAttr. Callers:
+ * InitSoundEngine, PlaySoundEffect, TickActiveSoundVoices. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 void ApplySpuVoiceAttr(unsigned int *attr);
 
-/* 0x8005c7d4: PSY-Q SpuSetKey-equivalent voice key-on / key-off applier. on = 0 (keyoff) or 1 (keyon); voices = 24-bit voice mask (low 16 + high 8). Dispatches by SPU-state callback-mode flag at +0x10 bit 0: SYNC path writes SPU registers +0x188/+0x18a (KON lo/hi) or +0x18c/+0x18e (KOFF lo/hi) directly and updates the live key-mask g_dwSpuLiveKeyOnMask; DEFERRED path (called from event-callback context) queues into shadow registers 0x800777a8/aa (KON) or 0x800777ac/ae (KOFF), accumulates into g_dwSpuDeferredKeyOnMask, and sets pending-flush bit g_dwSpuDeferredFlushPending |= 1. Callers: InitSoundEngine, TickSpuPerFrame (drains g_dwSpuPendingKeyOn pending-keyon + g_dwSpuPendingKeyOff pending-keyoff masks). */
+/* 0x8005c7d4: PSY-Q SpuSetKey-equivalent voice key-on / key-off applier. on = 0
+ * (keyoff) or 1 (keyon); voices = 24-bit voice mask (low 16 + high 8).
+ * Dispatches by SPU-state callback-mode flag at +0x10 bit 0: SYNC path writes
+ * SPU registers +0x188/+0x18a (KON lo/hi) or +0x18c/+0x18e (KOFF lo/hi)
+ * directly and updates the live key-mask g_dwSpuLiveKeyOnMask; DEFERRED path
+ * (called from event-callback context) queues into shadow registers
+ * 0x800777a8/aa (KON) or 0x800777ac/ae (KOFF), accumulates into
+ * g_dwSpuDeferredKeyOnMask, and sets pending-flush bit
+ * g_dwSpuDeferredFlushPending |= 1. Callers: InitSoundEngine, TickSpuPerFrame
+ * (drains g_dwSpuPendingKeyOn pending-keyon + g_dwSpuPendingKeyOff
+ * pending-keyoff masks). */
 void SetSpuKeyMask(int on, unsigned int voices);
 
-/* 0x8005c9d0: Find first set voice in 24-bit mask and return its key/envelope status. Walks bits 0..23 of voiceBit; returns -1 if no bit set. Otherwise probes g_dwSpuLiveKeyOnMask (live key-on mask) and the voice's current envelope level at voice+0xc (D_80073554 (0x1F801C00, the SPU voice registers) + idx*0x10 + 0xc). Return codes match PSY-Q SpuGetKeyStatus: 0=SPU_OFF (no key, env=0), 1=SPU_ON (key held, env>0), 2=SPU_ON_ENV_OFF (no key, env still>0 in release), 3=SPU_OFF_ENV_ON (key held, env=0 in attack). Sole caller: TickActiveSoundVoices (detects natural-end of voices and re-syncs internal state with hardware). */
+/* 0x8005c9d0: Find first set voice in 24-bit mask and return its key/envelope
+ * status. Walks bits 0..23 of voiceBit; returns -1 if no bit set. Otherwise
+ * probes g_dwSpuLiveKeyOnMask (live key-on mask) and the voice's current
+ * envelope level at voice+0xc (D_80073554 (0x1F801C00, the SPU voice registers)
+ * + idx*0x10 + 0xc). Return codes match PSY-Q SpuGetKeyStatus: 0=SPU_OFF (no
+ * key, env=0), 1=SPU_ON (key held, env>0), 2=SPU_ON_ENV_OFF (no key, env
+ * still>0 in release), 3=SPU_OFF_ENV_ON (key held, env=0 in attack). Sole
+ * caller: TickActiveSoundVoices (detects natural-end of voices and re-syncs
+ * internal state with hardware). */
 int GetSpuVoiceKeyStatus(unsigned int voiceBit);
 
-/* 0x8005ca64: PSY-Q SpuRead equivalent — public clamping entry for the SPU→CPU DMA read path. Clamps size (byte count) to 0x7eff0 (SPU RAM size minus the 0x1010 reserved region), forwards to ReadSpuRamDma at the current transfer-addr shadow, then if the in-flight-DMA flag at SPU-state+0x4e is 0 (sync transfer completed) zeros the per-voice transfer-running shadow at SPU-state+0x38. Returns the (possibly clamped) byte count actually transferred. Pair: SetSpuTransferStartAddr sets the source, ReadSpuRam reads. */
+/* 0x8005ca64: PSY-Q SpuRead equivalent — public clamping entry for the SPU→CPU
+ * DMA read path. Clamps size (byte count) to 0x7eff0 (SPU RAM size minus the
+ * 0x1010 reserved region), forwards to ReadSpuRamDma at the current
+ * transfer-addr shadow, then if the in-flight-DMA flag at SPU-state+0x4e is 0
+ * (sync transfer completed) zeros the per-voice transfer-running shadow at
+ * SPU-state+0x38. Returns the (possibly clamped) byte count actually
+ * transferred. Pair: SetSpuTransferStartAddr sets the source, ReadSpuRam
+ * reads. */
 unsigned int ReadSpuRam(void *buf, unsigned int size);
 
-/* 0x8005cac4: PSY-Q SpuWrite-equivalent public entry. Clamps size (byte count) to 0x7eff0 (≈ SPU RAM size minus 0x1010 reserved region) then forwards to WriteSpuRamInternal. After the transfer, if the in-flight-DMA flag at SPU-state-struct+0x4e is 0 (sync transfer just completed), clears the per-voice transfer-running shadow at SPU-state-struct+0x38. Returns the (possibly clamped) byte count actually transferred. Callers: the three CD stream machines (level transition, cutscene bundle, dragon-rescue assets), DragonRescue_Update and Credits_Update. Pair: SetSpuTransferStartAddr sets the destination, WriteSpuRam writes data. */
+/* 0x8005cac4: PSY-Q SpuWrite-equivalent public entry. Clamps size (byte count)
+ * to 0x7eff0 (≈ SPU RAM size minus 0x1010 reserved region) then forwards to
+ * WriteSpuRamInternal. After the transfer, if the in-flight-DMA flag at
+ * SPU-state-struct+0x4e is 0 (sync transfer just completed), clears the
+ * per-voice transfer-running shadow at SPU-state-struct+0x38. Returns the
+ * (possibly clamped) byte count actually transferred. Callers: the three CD
+ * stream machines (level transition, cutscene bundle, dragon-rescue assets),
+ * DragonRescue_Update and Credits_Update. Pair: SetSpuTransferStartAddr sets
+ * the destination, WriteSpuRam writes data. */
 unsigned int WriteSpuRam(void *buf, unsigned int size);
 
-/* 0x8005cb24: PSY-Q SpuSetTransferStartAddr-equivalent. Clamps addr (byte address in SPU sound RAM) to [0x1010, 0x80000), encodes to SPU-register units via WriteSpuVoiceAddrRegister(-1, addr) (no-write sentinel returns encoded short), stashes encoded short into the SPU-state shadow at +0x2c (set as the next transfer address), returns the byte address re-shifted back from the encoded form. Out-of-range input returns 0. The shadow short is later stamped into SPU transfer-address register +0x1a6 by WriteSpuRamPio / WriteSpuRamInternal. Callers: TickCutsceneBundleLoadStream, TickDragonRescueAssetStream, TickLevelTransitionStream (band-1 sound-loaders), DragonRescue_Update, Credits_Update. */
+/* 0x8005cb24: PSY-Q SpuSetTransferStartAddr-equivalent. Clamps addr (byte
+ * address in SPU sound RAM) to [0x1010, 0x80000), encodes to SPU-register units
+ * via WriteSpuVoiceAddrRegister(-1, addr) (no-write sentinel returns encoded
+ * short), stashes encoded short into the SPU-state shadow at +0x2c (set as the
+ * next transfer address), returns the byte address re-shifted back from the
+ * encoded form. Out-of-range input returns 0. The shadow short is later stamped
+ * into SPU transfer-address register +0x1a6 by WriteSpuRamPio /
+ * WriteSpuRamInternal. Callers: TickCutsceneBundleLoadStream,
+ * TickDragonRescueAssetStream, TickLevelTransitionStream (band-1
+ * sound-loaders), DragonRescue_Update, Credits_Update. */
 int SetSpuTransferStartAddr(unsigned int addr);
 
-/* 0x8005cb7c: PSY-Q SpuSetTransferMode equivalent. Stores transfer mode (0=DMA, 1=PIO, else=0/0 default) into g_nSpuTransferMode + writes shadow word at SPU-state+0x4e consumed by WriteSpuRamInternal dispatcher. Sole caller InitSoundEngine. */
+/* 0x8005cb7c: PSY-Q SpuSetTransferMode equivalent. Stores transfer mode (0=DMA,
+ * 1=PIO, else=0/0 default) into g_nSpuTransferMode + writes shadow word at
+ * SPU-state+0x4e consumed by WriteSpuRamInternal dispatcher. Sole caller
+ * InitSoundEngine. */
 void SetSpuTransferMode(int mode);
 
-/* 0x8005cbb0: PSY-Q SpuIsTransferCompleted equivalent. Polls (mode==0) or spin-blocks (mode==1) on g_nSpuDmaEventHandle via TestEvent; short-circuits to "done" when PIO mode (g_nSpuTransferMode!=1) and g_nSpuTransferDoneFlag already set. Returns 1 on completion, raw TestEvent code otherwise. Callers: band-1 CD-streamed sample loaders + DragonRescue_Update, Credits_Update. */
+/* 0x8005cbb0: PSY-Q SpuIsTransferCompleted equivalent. Polls (mode==0) or
+ * spin-blocks (mode==1) on g_nSpuDmaEventHandle via TestEvent; short-circuits
+ * to "done" when PIO mode (g_nSpuTransferMode!=1) and g_nSpuTransferDoneFlag
+ * already set. Returns 1 on completion, raw TestEvent code otherwise. Callers:
+ * band-1 CD-streamed sample loaders + DragonRescue_Update, Credits_Update. */
 long GetSpuTransferStatus(int mode);
 
-/* 0x8005cc58: PSY-Q SpuSetCommonAttr equivalent. From SpuCommonAttr*: bit0/bit2 = mvol L/L_mode, bit1/bit3 = mvol R/R_mode (ADSR-style mode codes 1..7 select preset slopes 0x8000..0xe000 ORed into top nibble, raw values clamped to [0,0x7f]); bit0x40/0x80 = rvol L/R; bit0x100 = CD enable (SPUCNT bit2); bit0x200 = ext enable (SPUCNT bit0); bit0x1000/0x2000 = CD-input vol L/R reverb-on enable (SPUCNT bits3/1); bit0x400/0x800 = CD vol L/R. mask=0 in attr[0] applies every field (full-init path used by InitSoundEngine). */
+/* 0x8005cc58: PSY-Q SpuSetCommonAttr equivalent. From SpuCommonAttr*: bit0/bit2
+ * = mvol L/L_mode, bit1/bit3 = mvol R/R_mode (ADSR-style mode codes 1..7 select
+ * preset slopes 0x8000..0xe000 ORed into top nibble, raw values clamped to
+ * [0,0x7f]); bit0x40/0x80 = rvol L/R; bit0x100 = CD enable (SPUCNT bit2);
+ * bit0x200 = ext enable (SPUCNT bit0); bit0x1000/0x2000 = CD-input vol L/R
+ * reverb-on enable (SPUCNT bits3/1); bit0x400/0x800 = CD vol L/R. mask=0 in
+ * attr[0] applies every field (full-init path used by InitSoundEngine). */
 void SetSpuCommonAttr(unsigned char *attr);
 
-/* 0x8005cfec: Per-voice SpuVoiceAttr writeback worker over voice range [param_2..param_3]. param_1 points to a SpuVoiceAttr struct (PSY-Q libspu layout): [0]=voice mask, [1]=field mask, +0x08 volL, +0x0a volR, +0x0c volmodeL, +0x0e volmodeR, +0x14 pitch, +0x16 sample_note, +0x18 note, +0x1c sample addr, +0x20 loop addr, +0x24 a_mode, +0x28 s_mode, +0x2c r_mode, +0x30 ar/dr/sr/rr/sl, +0x3a adsr1, +0x3c adsr2. For each selected voice (bit set in param_1[0], or param_2==param_3 forces "all"), writes the fields permitted by param_1[1] into the SPU voice registers (base pointer D_80073554 = 0x1F801C00)+voice*0x10. ADSR mode values 1..7 select preset slope codes (0x8000..0xe000) ORed into the volume/sweep register top nibble. Pitch uses raw param_1[5] when note==sample_note, else ComputeSpuPitchFromNoteDelta. Sample/loop addresses go through WriteSpuVoiceAddrRegister. When param_4==0, finishes with DelaySpuRegisterWrite flush. Returns 0 on success, 0xfffffffd if range is invalid. Sole caller: ApplySpuVoiceAttr wraps with (attr, 0, 0x17, 0). */
+/* 0x8005cfec: Per-voice SpuVoiceAttr writeback worker over voice range
+ * [param_2..param_3]. param_1 points to a SpuVoiceAttr struct (PSY-Q libspu
+ * layout): [0]=voice mask, [1]=field mask, +0x08 volL, +0x0a volR, +0x0c
+ * volmodeL, +0x0e volmodeR, +0x14 pitch, +0x16 sample_note, +0x18 note, +0x1c
+ * sample addr, +0x20 loop addr, +0x24 a_mode, +0x28 s_mode, +0x2c r_mode, +0x30
+ * ar/dr/sr/rr/sl, +0x3a adsr1, +0x3c adsr2. For each selected voice (bit set in
+ * param_1[0], or param_2==param_3 forces "all"), writes the fields permitted by
+ * param_1[1] into the SPU voice registers (base pointer D_80073554 =
+ * 0x1F801C00)+voice*0x10. ADSR mode values 1..7 select preset slope codes
+ * (0x8000..0xe000) ORed into the volume/sweep register top nibble. Pitch uses
+ * raw param_1[5] when note==sample_note, else ComputeSpuPitchFromNoteDelta.
+ * Sample/loop addresses go through WriteSpuVoiceAddrRegister. When param_4==0,
+ * finishes with DelaySpuRegisterWrite flush. Returns 0 on success, 0xfffffffd
+ * if range is invalid. Sole caller: ApplySpuVoiceAttr wraps with (attr, 0,
+ * 0x17, 0). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined4 ApplySpuVoiceAttrRange(uint *param_1, uint param_2, uint param_3, int param_4);
+undefined4 ApplySpuVoiceAttrRange(uint *param_1, uint param_2, uint param_3,
+                                  int param_4);
 
-/* 0x8005d6b8: Computes the SPU pitch register value from a note delta — PSY-Q SpuFsetNToP equivalent. Each note is packed as (semitone, fraction-of-semitone) pairs; delta = (param_3*128 + param_4) - (param_1*128 + param_2) gives 128ths of a semitone. Divides by 0x600 (=12 semitones * 128 = one octave) into octave count + intra-octave remainder. Base pitch 0x1000 shifts left (positive delta = higher) or right (negative) by octave count. Within the octave, multiplies repeatedly by 0x103b (=4155 ≈ 4096 * 2^(1/12), the semitone ratio in 12.0 fixed point) for each 32-unit chunk of fractional remainder, then linearly interpolates the last 5 bits. Result clamped to 0x3fff. Sole caller: ApplySpuVoiceAttrRange (when SpuVoiceAttr.note differs from sample_note). */
-uint ComputeSpuPitchFromNoteDelta(uint param_1, uint param_2, uint param_3, uint param_4);
+/* 0x8005d6b8: Computes the SPU pitch register value from a note delta — PSY-Q
+ * SpuFsetNToP equivalent. Each note is packed as (semitone,
+ * fraction-of-semitone) pairs; delta = (param_3*128 + param_4) - (param_1*128 +
+ * param_2) gives 128ths of a semitone. Divides by 0x600 (=12 semitones * 128 =
+ * one octave) into octave count + intra-octave remainder. Base pitch 0x1000
+ * shifts left (positive delta = higher) or right (negative) by octave count.
+ * Within the octave, multiplies repeatedly by 0x103b (=4155 ≈ 4096 * 2^(1/12),
+ * the semitone ratio in 12.0 fixed point) for each 32-unit chunk of fractional
+ * remainder, then linearly interpolates the last 5 bits. Result clamped to
+ * 0x3fff. Sole caller: ApplySpuVoiceAttrRange (when SpuVoiceAttr.note differs
+ * from sample_note). */
+uint ComputeSpuPitchFromNoteDelta(uint param_1, uint param_2, uint param_3,
+                                  uint param_4);
 
-/* 0x8005d9ec: PSY-Q SpuGetAllKeysStatus equivalent. Fills status[0..23] with each voice's key/envelope status code: 0 = SPU_OFF (key clear, env=0); 1 = SPU_ON (key set, env>0); 2 = SPU_ON_ENV_OFF (key clear, env still > 0 — release tail); 3 = SPU_OFF_ENV_ON (key set, env=0 — attack ramp). Per voice: reads envelope short at (SPU register base + 0x10*idx + 0xc) and probes live key-on mask g_dwSpuLiveKeyOnMask bit idx. Sole caller: SyncSoundVoicesWithHardware (drift-reconciliation probe). */
+/* 0x8005d9ec: PSY-Q SpuGetAllKeysStatus equivalent. Fills status[0..23] with
+ * each voice's key/envelope status code: 0 = SPU_OFF (key clear, env=0); 1 =
+ * SPU_ON (key set, env>0); 2 = SPU_ON_ENV_OFF (key clear, env still > 0 —
+ * release tail); 3 = SPU_OFF_ENV_ON (key set, env=0 — attack ramp). Per voice:
+ * reads envelope short at (SPU register base + 0x10*idx + 0xc) and probes live
+ * key-on mask g_dwSpuLiveKeyOnMask bit idx. Sole caller:
+ * SyncSoundVoicesWithHardware (drift-reconciliation probe). */
 void GetAllSpuVoiceKeyStatus(char *status);
 
-/* 0x8005da74: Write L/R volume registers for one SPU voice and flush. Masks each volume short to 0x7fff (clears phase-invert / sweep-mode high bit, keeping straight volume mode) then stores into the SPU voice registers (D_80073554 = 0x1F801C00) + vNum*0x10 (+0 = VolL, +2 = VolR). Calls DelaySpuRegisterWrite to flush to hardware. Sole caller: TickActiveSoundVoices (per-frame per-voice volume update after pan/falloff compute). */
+/* 0x8005da74: Write L/R volume registers for one SPU voice and flush. Masks
+ * each volume short to 0x7fff (clears phase-invert / sweep-mode high bit,
+ * keeping straight volume mode) then stores into the SPU voice registers
+ * (D_80073554 = 0x1F801C00) + vNum*0x10 (+0 = VolL, +2 = VolR). Calls
+ * DelaySpuRegisterWrite to flush to hardware. Sole caller:
+ * TickActiveSoundVoices (per-frame per-voice volume update after pan/falloff
+ * compute). */
 void SetSpuVoiceVolumeLR(int vNum, short volL, short volR);
 
 void SpuGetVoiceVolume(int vNum, short *volL, short *volR);
@@ -997,7 +3106,11 @@ long LoadExec(char *param_1, ulong param_2, ulong param_3);
 
 void _96_init(void);
 
-/* 0x8005db4c: BIOS A0:0x72 stub (_96_remove) — issues `li t2,0xa0 / jr t2 / _li t1,0x72`. PSY-Q convention: deinit CD-ROM filesystem (releases BIOS file-system event handlers + interrupt hooks). Called by ResetCallback during libapi master init so the callback subsystem can re-arm everything from a known-clear state. */
+/* 0x8005db4c: BIOS A0:0x72 stub (_96_remove) — issues `li t2,0xa0 / jr t2 / _li
+ * t1,0x72`. PSY-Q convention: deinit CD-ROM filesystem (releases BIOS
+ * file-system event handlers + interrupt hooks). Called by ResetCallback during
+ * libapi master init so the callback subsystem can re-arm everything from a
+ * known-clear state. */
 void Bios96Remove(void);
 
 void DeliverEvent(ulong param_1, ulong param_2);
@@ -1008,11 +3121,15 @@ long TestEvent(long param_1);
 
 long EnableEvent(long param_1);
 
-/* 0x8005dba4: PSY-Q EnterCriticalSection wrapper. BIOS syscall(0) with $a0=1 — masks interrupts and enters the BIOS critical section. Pairs with ExitCriticalSection. */
+/* 0x8005dba4: PSY-Q EnterCriticalSection wrapper. BIOS syscall(0) with $a0=1 —
+ * masks interrupts and enters the BIOS critical section. Pairs with
+ * ExitCriticalSection. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined EnterCriticalSection(void);
 
-/* 0x8005dbb4: PSY-Q ExitCriticalSection wrapper. BIOS syscall(0) with $a0=2 — restores interrupts and exits the BIOS critical section. Pairs with EnterCriticalSection. */
+/* 0x8005dbb4: PSY-Q ExitCriticalSection wrapper. BIOS syscall(0) with $a0=2 —
+ * restores interrupts and exits the BIOS critical section. Pairs with
+ * EnterCriticalSection. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ExitCriticalSection(void);
 
@@ -1026,45 +3143,100 @@ void ChangeClearPAD(long param_1);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ChangeClearRCnt(void);
 
-/* 0x8005ddc8: libapi system-vector slot[3] thunk — dispatches via *(g_pLibapiSysVtable+0xc)(). The default installed handler is ResetCallback (libapi master init); callers (CdInitDriver, InitSpuSubsystem, ResetGraph, FUN_80065364) invoke this to (re)arm the BIOS event/IRQ subsystem before configuring their own hardware. SDK internal — plate-only. */
+/* 0x8005ddc8: libapi system-vector slot[3] thunk — dispatches via
+ * *(g_pLibapiSysVtable+0xc)(). The default installed handler is ResetCallback
+ * (libapi master init); callers (CdInitDriver, InitSpuSubsystem, ResetGraph,
+ * FUN_80065364) invoke this to (re)arm the BIOS event/IRQ subsystem before
+ * configuring their own hardware. SDK internal — plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005ddc8(void);
 
-/* 0x8005ddf8: libapi system-vector slot[2] thunk — dispatches via *(g_pLibapiSysVtable+0x8)(). Called after each callback-table init (InitRootCounterCallbacks + InitDmaCallbackTable + CdInitDriver + FUN_80065364) to commit the freshly-zeroed table to the master interrupt entry. SDK internal — plate-only. */
+/* 0x8005ddf8: libapi system-vector slot[2] thunk — dispatches via
+ * *(g_pLibapiSysVtable+0x8)(). Called after each callback-table init
+ * (InitRootCounterCallbacks + InitDmaCallbackTable + CdInitDriver +
+ * FUN_80065364) to commit the freshly-zeroed table to the master interrupt
+ * entry. SDK internal — plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005ddf8(void);
 
-/* 0x8005de28: PSY-Q DmaCallback equivalent. Dispatches via the system DMA function-pointer table at *g_pLibapiSysVtable+0x4 — registers (a0=dma_channel, a1=callback) with the BIOS DMA-completion machinery; the table is the system vector for libapi/libetc. Callers (EnqueueGpuOp / FlushGpuQueue / InstallSpuDmaCallback / FUN_80064050) each install their per-channel completion handler this way. */
+/* 0x8005de28: PSY-Q DmaCallback equivalent. Dispatches via the system DMA
+ * function-pointer table at *g_pLibapiSysVtable+0x4 — registers
+ * (a0=dma_channel, a1=callback) with the BIOS DMA-completion machinery; the
+ * table is the system vector for libapi/libetc. Callers (EnqueueGpuOp /
+ * FlushGpuQueue / InstallSpuDmaCallback / FUN_80064050) each install their
+ * per-channel completion handler this way. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined DmaCallback(void);
 
-/* 0x8005de58: PSY-Q VSyncCallback equivalent — installs a VBlank-driven periodic callback. Dispatches via *(g_pLibapiSysVtable+0x14)(channel=4, fn). InitPadSystem registers PollPadAndDistributeInput as the per-VBlank pad/rumble driver; QuiesceHardwareForExec removes it (cb 0). Channel 4 is the libapi RCnt slot bound to VBlank. */
+/* 0x8005de58: PSY-Q VSyncCallback equivalent — installs a VBlank-driven
+ * periodic callback. Dispatches via *(g_pLibapiSysVtable+0x14)(channel=4, fn).
+ * InitPadSystem registers PollPadAndDistributeInput as the per-VBlank
+ * pad/rumble driver; QuiesceHardwareForExec removes it (cb 0). Channel 4 is the
+ * libapi RCnt slot bound to VBlank. */
 void InstallVSyncCallback(unsigned int cb);
 
-/* 0x8005de8c: libapi system-vector slot[5] no-arg thunk — dispatches via *(g_pLibapiSysVtable+0x14)(). Callers (MemCardOpenSession, MemCardCloseSession) use this as a CD-bus arbitration release / VSync-callback clear when handing the system off between memcard and CD subsystems. SDK internal — plate-only. */
+/* 0x8005de8c: libapi system-vector slot[5] no-arg thunk — dispatches via
+ * *(g_pLibapiSysVtable+0x14)(). Callers (MemCardOpenSession,
+ * MemCardCloseSession) use this as a CD-bus arbitration release /
+ * VSync-callback clear when handing the system off between memcard and CD
+ * subsystems. SDK internal — plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005de8c(void);
 
-/* 0x8005df1c: libapi accessor returning g_nInIsrFlag — non-zero while HandleHardwareInterrupt is processing an interrupt (re-entrancy guard). Callers (CdCommandSync, CdSync) use this to detect "called from inside an ISR" and switch to a polling path instead of blocking. SDK internal — plate-only. */
+/* 0x8005df1c: libapi accessor returning g_nInIsrFlag — non-zero while
+ * HandleHardwareInterrupt is processing an interrupt (re-entrancy guard).
+ * Callers (CdCommandSync, CdSync) use this to detect "called from inside an
+ * ISR" and switch to a polling path instead of blocking. SDK internal —
+ * plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined2 FUN_8005df1c(void);
 
-/* 0x8005df44: Atomic I_MASK swap — saves old g_pIMaskReg value, writes new mask, returns old. PSY-Q SetIntMask equivalent. Used by libgpu watchdog/DMA-queue code (CheckGpuTimeout, EnqueueGpuOp, FlushGpuQueue, ResetGraphImpl) to mask interrupts during critical hardware-register touches. */
+/* 0x8005df44: Atomic I_MASK swap — saves old g_pIMaskReg value, writes new
+ * mask, returns old. PSY-Q SetIntMask equivalent. Used by libgpu
+ * watchdog/DMA-queue code (CheckGpuTimeout, EnqueueGpuOp, FlushGpuQueue,
+ * ResetGraphImpl) to mask interrupts during critical hardware-register
+ * touches. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined2 SetInterruptMask(undefined2 param_1);
 
-/* 0x8005df60: PSY-Q ResetCallback equivalent — libapi master init for the interrupt/callback subsystem. Guarded by g_nLibapiCallbackInstalled install-once flag. Sequence: mask all IRQs (I_MASK=0, I_STAT cleared) → DPCR=0x33333333 (enable all DMA channels at priority 3) → zero 0x41a-word callback registry → setjmp into 0x8007395c (unexpected-interrupt longjmp landing -> HandleHardwareInterrupt) → HookEntryInt() to install the BIOS exception entry → set vtable slot[5]=InitRootCounterCallbacks return + slot[1]=InitDmaCallbackTable return → Bios96Remove (CD-FS deinit) → ExitCriticalSection. Returns &g_nLibapiCallbackInstalled (install-flag ptr) on first call, 0 on re-entry. */
+/* 0x8005df60: PSY-Q ResetCallback equivalent — libapi master init for the
+ * interrupt/callback subsystem. Guarded by g_nLibapiCallbackInstalled
+ * install-once flag. Sequence: mask all IRQs (I_MASK=0, I_STAT cleared) →
+ * DPCR=0x33333333 (enable all DMA channels at priority 3) → zero 0x41a-word
+ * callback registry → setjmp into 0x8007395c (unexpected-interrupt longjmp
+ * landing -> HandleHardwareInterrupt) → HookEntryInt() to install the BIOS
+ * exception entry → set vtable slot[5]=InitRootCounterCallbacks return +
+ * slot[1]=InitDmaCallbackTable return → Bios96Remove (CD-FS deinit) →
+ * ExitCriticalSection. Returns &g_nLibapiCallbackInstalled (install-flag ptr)
+ * on first call, 0 on re-entry. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined2 *ResetCallback(void);
 
-/* 0x8005e03c: Master hardware-interrupt dispatcher hooked at the BIOS exception vector by ResetCallback/HookEntryInt. Reads (I_MASK & g_nIrqEnableMask enable-mask & I_STAT) and for each of up to 11 IRQ sources: ACKs the bit in I_STAT and calls g_apfnIrqHandlers[i] callback. Re-loops while any source remains pending. Sets g_nInIsrFlag=1 around dispatch (re-entrancy guard read by IsInsideInterruptHandler equivalent). Watchdog: 0x800-cycle "intr timeout(%04x:%04x)" then force-clears I_STAT. Calls ReturnFromException at the end. Unexpected pre-init entry warns "unexpected interrupt(%04x)". */
+/* 0x8005e03c: Master hardware-interrupt dispatcher hooked at the BIOS exception
+ * vector by ResetCallback/HookEntryInt. Reads (I_MASK & g_nIrqEnableMask
+ * enable-mask & I_STAT) and for each of up to 11 IRQ sources: ACKs the bit in
+ * I_STAT and calls g_apfnIrqHandlers[i] callback. Re-loops while any source
+ * remains pending. Sets g_nInIsrFlag=1 around dispatch (re-entrancy guard read
+ * by IsInsideInterruptHandler equivalent). Watchdog: 0x800-cycle "intr
+ * timeout(%04x:%04x)" then force-clears I_STAT. Calls ReturnFromException at
+ * the end. Unexpected pre-init entry warns "unexpected interrupt(%04x)". */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined HandleHardwareInterrupt(void);
 
-/* 0x8005e224: PSY-Q InterruptCallback equivalent — install or uninstall a per-IRQ callback. param_1 = IRQ number (0..10), param_2 = callback fn (NULL to uninstall). Updates the dispatch entry at &g_apfnIrqHandlers[irq], toggles the corresponding bit in I_MASK + g_nIrqEnableMask enable shadow. Special cases: irq==0 (VBlank) also calls ChangeClearPAD(uninstall ? 1 : 0) + ChangeClearRCnt(); irq==4/5/6 (RCnt0/1/2) also call ChangeClearRCnt(). Returns previous callback. Bracketed by I_MASK=0 critical section. */
+/* 0x8005e224: PSY-Q InterruptCallback equivalent — install or uninstall a
+ * per-IRQ callback. param_1 = IRQ number (0..10), param_2 = callback fn (NULL
+ * to uninstall). Updates the dispatch entry at &g_apfnIrqHandlers[irq], toggles
+ * the corresponding bit in I_MASK + g_nIrqEnableMask enable shadow. Special
+ * cases: irq==0 (VBlank) also calls ChangeClearPAD(uninstall ? 1 : 0) +
+ * ChangeClearRCnt(); irq==4/5/6 (RCnt0/1/2) also call ChangeClearRCnt().
+ * Returns previous callback. Bracketed by I_MASK=0 critical section. */
 int InstallInterruptCallback(uint param_1, int param_2);
 
-/* 0x8005e4ac: Zero-words helper used by ResetCallback to clear the 0x41a-word libapi callback registry at &g_nLibapiCallbackInstalled (install flag + dispatch table + enable shadow + setjmp buffer + auxiliary state). Identical loop to ClearRootCounterCallbackTable + ClearDmaCallbackTable — three separate compiler emissions across libapi OBJs. SDK internal — plate-only. */
+/* 0x8005e4ac: Zero-words helper used by ResetCallback to clear the 0x41a-word
+ * libapi callback registry at &g_nLibapiCallbackInstalled (install flag +
+ * dispatch table + enable shadow + setjmp buffer + auxiliary state). Identical
+ * loop to ClearRootCounterCallbackTable + ClearDmaCallbackTable — three
+ * separate compiler emissions across libapi OBJs. SDK internal — plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005e4ac(undefined4 *param_1, int param_2);
 
@@ -1076,29 +3248,55 @@ undefined ResetEntryInt(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined HookEntryInt(void);
 
-/* 0x8005e508: Initializes the libapi RCnt (root-counter) callback table. Writes TMR_HRETRACE_MODE=0x107 (one-shot, IRQ enabled, sync on HRETRACE), clears g_nRcntAuxState, zeros 8-entry callback table at &g_apfnRcntCallbacks, commits via DispatchSystemInitVector (FUN_8005ddf8). Returns &0x8005e5d8 (the RCnt master IRQ handler) — ResetCallback stores this into system-vector slot[5]. Called once during libapi master init. */
+/* 0x8005e508: Initializes the libapi RCnt (root-counter) callback table. Writes
+ * TMR_HRETRACE_MODE=0x107 (one-shot, IRQ enabled, sync on HRETRACE), clears
+ * g_nRcntAuxState, zeros 8-entry callback table at &g_apfnRcntCallbacks,
+ * commits via DispatchSystemInitVector (FUN_8005ddf8). Returns &0x8005e5d8 (the
+ * RCnt master IRQ handler) — ResetCallback stores this into system-vector
+ * slot[5]. Called once during libapi master init. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 *InitRootCounterCallbacks(void);
 
-/* 0x8005e604: 8-word memzero for the RCnt callback table at &g_apfnRcntCallbacks. Identical body to its FUN_8005e4ac / FUN_8005e8ac siblings (compiler emitted one per source OBJ). SDK internal — plate-only. */
+/* 0x8005e604: 8-word memzero for the RCnt callback table at
+ * &g_apfnRcntCallbacks. Identical body to its FUN_8005e4ac / FUN_8005e8ac
+ * siblings (compiler emitted one per source OBJ). SDK internal — plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005e604(undefined4 *param_1, int param_2);
 
-/* 0x8005e630: Initializes the libapi DMA callback table at &g_apfnDmaCallbacks. Zeros the 8-entry per-channel callback array, sets g_pDmaDicrReg=0 (clear DMA IRQ-control), commits via DispatchSystemInitVector. Returns &0x8005e804 (the DMA master IRQ handler) — ResetCallback stores this into system-vector slot[1]. Called once during libapi master init; the per-channel handlers installed by DmaCallback live in this table. */
+/* 0x8005e630: Initializes the libapi DMA callback table at &g_apfnDmaCallbacks.
+ * Zeros the 8-entry per-channel callback array, sets g_pDmaDicrReg=0 (clear DMA
+ * IRQ-control), commits via DispatchSystemInitVector. Returns &0x8005e804 (the
+ * DMA master IRQ handler) — ResetCallback stores this into system-vector
+ * slot[1]. Called once during libapi master init; the per-channel handlers
+ * installed by DmaCallback live in this table. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 *InitDmaCallbackTable(void);
 
-/* 0x8005e8ac: 8-word memzero for the DMA callback table at &g_apfnDmaCallbacks. Identical body to its FUN_8005e4ac / FUN_8005e604 siblings (compiler emitted one per source OBJ). SDK internal — plate-only. */
+/* 0x8005e8ac: 8-word memzero for the DMA callback table at &g_apfnDmaCallbacks.
+ * Identical body to its FUN_8005e4ac / FUN_8005e604 siblings (compiler emitted
+ * one per source OBJ). SDK internal — plate-only. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8005e8ac(undefined4 *param_1, int param_2);
 
-/* 0x8005ea94: PSY-Q SetDefDrawEnv (ex-SetDefaultDisplayEnv — old name had Draw/Disp SWAPPED). Fills a DRAWENV head: clip rect (x,y,w,h), ofs=(x,y), tw cleared, tpage=10, dtd=1, dfe = h within display (NTSC h<=0x100 / PAL h<=0x120 via GetGraphType), isbg=0, r0/g0/b0=0. Does not touch dr_env. Called by InitGraphicsHardware on the DB DRAWENVs at g_FrameDrawEnv0/g_FrameDrawEnv1. */
+/* 0x8005ea94: PSY-Q SetDefDrawEnv (ex-SetDefaultDisplayEnv — old name had
+ * Draw/Disp SWAPPED). Fills a DRAWENV head: clip rect (x,y,w,h), ofs=(x,y), tw
+ * cleared, tpage=10, dtd=1, dfe = h within display (NTSC h<=0x100 / PAL
+ * h<=0x120 via GetGraphType), isbg=0, r0/g0/b0=0. Does not touch dr_env. Called
+ * by InitGraphicsHardware on the DB DRAWENVs at
+ * g_FrameDrawEnv0/g_FrameDrawEnv1. */
 DRAWENV *InitDefaultDrawEnv(DRAWENV *env, int x, int y, int w, int h);
 
-/* 0x8005eb4c: PSY-Q SetDefDispEnv (ex-SetDefaultDrawEnv — old name had Draw/Disp SWAPPED). Fills a 0x14-byte DISPENV: disp rect (x,y,w,h), screen rect zeroed, isinter/isrgb24/pad cleared. Called by InitGraphicsHardware on the DB DISPENVs at g_FrameDispEnv0/g_FrameDispEnv1. */
+/* 0x8005eb4c: PSY-Q SetDefDispEnv (ex-SetDefaultDrawEnv — old name had
+ * Draw/Disp SWAPPED). Fills a 0x14-byte DISPENV: disp rect (x,y,w,h), screen
+ * rect zeroed, isinter/isrgb24/pad cleared. Called by InitGraphicsHardware on
+ * the DB DISPENVs at g_FrameDispEnv0/g_FrameDispEnv1. */
 DISPENV *InitDefaultDispEnv(DISPENV *env, int x, int y, int w, int h);
 
-/* 0x8005eba0: libgpu accessor returning g_nGraphType — the cached "graph type" / video-mode flag (0 = NTSC, non-zero = PAL). Set by libgpu init based on console region. Used by SetDefaultDisplayEnv to choose the 256-vs-288-scanline interlace boundary, and by PutDispEnv to pick the GP1 display-mode word. */
+/* 0x8005eba0: libgpu accessor returning g_nGraphType — the cached "graph type"
+ * / video-mode flag (0 = NTSC, non-zero = PAL). Set by libgpu init based on
+ * console region. Used by SetDefaultDisplayEnv to choose the
+ * 256-vs-288-scanline interlace boundary, and by PutDispEnv to pick the GP1
+ * display-mode word. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 GetGraphType(void);
 
@@ -1112,38 +3310,54 @@ void SetDrawMove(DR_MOVE *p, RECT *rect, int x, int y);
 
 int ResetGraph(int mode);
 
-/* 0x8005f53c: PSY-Q SetGraphDebug equivalent — sets the libgpu debug verbosity level (g_bGpuDebugLevel), returns previous level. When non-zero, prints "SetGraphDebug:level:%d,type:%d reverse:%d\n" via g_pfnGpuDebugPrintf. Higher levels enable extra "%s:bad RECT" / "GPU timeout:..." diagnostics in libgpu primitive packers and watchdog paths. Called by InitGraphicsHardware (typically with level=0 to disable verbose mode in shipped builds). */
+/* 0x8005f53c: PSY-Q SetGraphDebug equivalent — sets the libgpu debug verbosity
+ * level (g_bGpuDebugLevel), returns previous level. When non-zero, prints
+ * "SetGraphDebug:level:%d,type:%d reverse:%d\n" via g_pfnGpuDebugPrintf. Higher
+ * levels enable extra "%s:bad RECT" / "GPU timeout:..." diagnostics in libgpu
+ * primitive packers and watchdog paths. Called by InitGraphicsHardware
+ * (typically with level=0 to disable verbose mode in shipped builds). */
 int SetGraphDebug(int level);
 
 void SetDispMask(int on);
 
 int DrawSync(int mode);
 
-/* 0x8005f7d0: libgpu debug helper called by ClearImage/LoadImage/StoreImage/MoveImage. Validates that RECT param_2 fits within the framebuffer bounds (g_nGpuScreenWidth / Height). Prints '%s:bad RECT' via the debug printf hook (g_pfnGpuDebugPrintf) when verbose mode (g_bGpuDebugLevel) is set. */
+/* 0x8005f7d0: libgpu debug helper called by
+ * ClearImage/LoadImage/StoreImage/MoveImage. Validates that RECT param_2 fits
+ * within the framebuffer bounds (g_nGpuScreenWidth / Height). Prints '%s:bad
+ * RECT' via the debug printf hook (g_pfnGpuDebugPrintf) when verbose mode
+ * (g_bGpuDebugLevel) is set. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ValidateGpuRect(undefined4 param_1, short *param_2);
 
-/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect with packed 24-bit color (r, g, b) via the GPU command-dispatch table at g_pGpuDispatchTable. */
+/* 0x8005f8f8: libgpu ClearImage. Fills VRAM rect with packed 24-bit color (r,
+ * g, b) via the GPU command-dispatch table at g_pGpuDispatchTable. */
 int ClearImage(RECT *rect, int r, int g, int b);
 
-/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at p into VRAM rect via the GPU command-dispatch table at g_pGpuDispatchTable. */
+/* 0x8005fa28: libgpu LoadImage. Transfers CPU memory at p into VRAM rect via
+ * the GPU command-dispatch table at g_pGpuDispatchTable. */
 int LoadImage(RECT *rect, void *p);
 
-/* 0x8005fa8c: libgpu StoreImage. Transfers VRAM rect r out to CPU memory at dst via the GPU command-dispatch table at g_pGpuDispatchTable. */
+/* 0x8005fa8c: libgpu StoreImage. Transfers VRAM rect r out to CPU memory at dst
+ * via the GPU command-dispatch table at g_pGpuDispatchTable. */
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's
+ * signature */
 int StoreImage(RECT *r, void *dst);
 #else
 void StoreImage(RECT *r, void *dst);
 #endif
 
-/* 0x8005faf0: libgpu MoveImage. VRAM-to-VRAM rect copy: source rect (RECT *)rect, destination (x=x, y=y). Returns -1 if source rect has zero width or height. */
+/* 0x8005faf0: libgpu MoveImage. VRAM-to-VRAM rect copy: source rect (RECT
+ * *)rect, destination (x=x, y=y). Returns -1 if source rect has zero width or
+ * height. */
 int MoveImage(RECT *rect, int x, int y);
 
 void DrawOTag(void *ot);
 
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's
+ * signature */
 void *PutDrawEnv(void *env);
 #else
 void PutDrawEnv(void *env);
@@ -1151,82 +3365,160 @@ void PutDrawEnv(void *env);
 
 DISPENV *PutDispEnv(DISPENV *env);
 
-/* 0x80060670: libgpu SetDrawMode primitive. Initializes the DR_MODE at p (tag length = 2 words): code[0] = GP0(0xe1) draw-mode word built from dfe (force-bg), dtd (dither) and the tpage bits; code[1] = clip-area word from the optional RECT *tw (NULL = no clip). */
+/* 0x80060670: libgpu SetDrawMode primitive. Initializes the DR_MODE at p (tag
+ * length = 2 words): code[0] = GP0(0xe1) draw-mode word built from dfe
+ * (force-bg), dtd (dither) and the tpage bits; code[1] = clip-area word from
+ * the optional RECT *tw (NULL = no clip). */
 void SetDrawMode(void *p, int dfe, int dtd, int tpage, RECT *tw);
 
-/* 0x800608e0: libgpu SetDrawEnv: packs a DRAWENV (RECT clip + offset + tpage + dtd + isbg + RGB clear color) into a primitive chain at param_1: GP0(0xe3) area-TL + GP0(0xe4) area-BR + GP0(0xe5) offset + GP0(0xe1) drawmode + GP0(0xe2) texwin + GP0(0xe6) + optional 0x02 background-fill rect. Length byte set to 7 (or 10 with bg fill). */
+/* 0x800608e0: libgpu SetDrawEnv: packs a DRAWENV (RECT clip + offset + tpage +
+ * dtd + isbg + RGB clear color) into a primitive chain at param_1: GP0(0xe3)
+ * area-TL + GP0(0xe4) area-BR + GP0(0xe5) offset + GP0(0xe1) drawmode +
+ * GP0(0xe2) texwin + GP0(0xe6) + optional 0x02 background-fill rect. Length
+ * byte set to 7 (or 10 with bg fill). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined SetDrawEnv(int param_1, ushort *param_2);
 
-/* 0x80060b70: libgpu draw-mode word builder. Returns GP0(0xe1) command: texture page (low 11 bits), dither (bit 9/10 depending on PAL vs NTSC mode), draw-to-display flag. Sub-builder of SetDrawMode and SetDrawEnv. Mode-bit handling via g_bGpuDebugType (1/2=NTSC packed mask, else PAL). */
+/* 0x80060b70: libgpu draw-mode word builder. Returns GP0(0xe1) command: texture
+ * page (low 11 bits), dither (bit 9/10 depending on PAL vs NTSC mode),
+ * draw-to-display flag. Sub-builder of SetDrawMode and SetDrawEnv. Mode-bit
+ * handling via g_bGpuDebugType (1/2=NTSC packed mask, else PAL). */
 uint BuildDrawModeWord(int param_1, int param_2, uint param_3);
 
-/* 0x80060bc8: libgpu draw-area top-left builder. Returns GP0(0xe3) command with X/Y clamped to display res (g_nGpuScreenWidth / Height) and bit-packed per GPU mode (12+12 in NTSC mode 1/2 vs 10+10 in PAL/24-bit). Used by SetDrawEnv. */
+/* 0x80060bc8: libgpu draw-area top-left builder. Returns GP0(0xe3) command with
+ * X/Y clamped to display res (g_nGpuScreenWidth / Height) and bit-packed per
+ * GPU mode (12+12 in NTSC mode 1/2 vs 10+10 in PAL/24-bit). Used by
+ * SetDrawEnv. */
 uint BuildDrawAreaTopLeft(uint param_1, uint param_2);
 
-/* 0x80060c94: libgpu draw-area bottom-right builder. Returns GP0(0xe4) command with X/Y clamped + bit-packed per GPU mode. Same shape as BuildDrawAreaTopLeft. Used by SetDrawEnv. */
+/* 0x80060c94: libgpu draw-area bottom-right builder. Returns GP0(0xe4) command
+ * with X/Y clamped + bit-packed per GPU mode. Same shape as
+ * BuildDrawAreaTopLeft. Used by SetDrawEnv. */
 uint BuildDrawAreaBottomRight(uint param_1, uint param_2);
 
-/* 0x80060d60: libgpu draw-offset builder. Returns GP0(0xe5) command: signed 12+12-bit drawing offset (or 11+11 in PAL/24-bit mode via g_bGpuDebugType). Used by SetDrawEnv. */
+/* 0x80060d60: libgpu draw-offset builder. Returns GP0(0xe5) command: signed
+ * 12+12-bit drawing offset (or 11+11 in PAL/24-bit mode via g_bGpuDebugType).
+ * Used by SetDrawEnv. */
 uint BuildDrawOffsetCommand(uint param_1, uint param_2);
 
-/* 0x80060da4: libgpu texture-window builder. Returns GP0(0xe2) command from a RECT* (mask X/Y from p[0]/p[2] >> 3; offset X/Y from -p[4]/-p[6] >> 3). NULL → 0. Used by SetDrawMode (as the optional clip-rect packer) and SetDrawEnv. */
+/* 0x80060da4: libgpu texture-window builder. Returns GP0(0xe2) command from a
+ * RECT* (mask X/Y from p[0]/p[2] >> 3; offset X/Y from -p[4]/-p[6] >> 3). NULL
+ * → 0. Used by SetDrawMode (as the optional clip-rect packer) and
+ * SetDrawEnv. */
 uint BuildTextureWindow(byte *param_1);
 
-/* 0x80060e28: libgpu display-Y coordinate adjuster (SDK internal). Reads a RECT* and returns the Y coordinate in display-line space, accounting for interlace flag g_bGpuReverseFlag and PAL/NTSC mode g_bGpuDebugType. Used by display-env primitives that need to translate draw-Y → screen-Y. */
+/* 0x80060e28: libgpu display-Y coordinate adjuster (SDK internal). Reads a
+ * RECT* and returns the Y coordinate in display-line space, accounting for
+ * interlace flag g_bGpuReverseFlag and PAL/NTSC mode g_bGpuDebugType. Used by
+ * display-env primitives that need to translate draw-Y → screen-Y. */
 int FUN_80060e28(ushort *param_1);
 
-/* 0x800616f4: libgpu GP1 (GPU status/control register) write. Writes the 32-bit command word to PTR_GPU_REG1_80074b38 and snapshots the low byte into g_abGpuStatusShadow[cmd] so callers can read back the last value per status sub-command (display enable, DMA direction, video mode, etc.). */
+/* 0x800616f4: libgpu GP1 (GPU status/control register) write. Writes the 32-bit
+ * command word to PTR_GPU_REG1_80074b38 and snapshots the low byte into
+ * g_abGpuStatusShadow[cmd] so callers can read back the last value per status
+ * sub-command (display enable, DMA direction, video mode, etc.). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined WriteGpuControl(uint param_1);
 
-/* 0x80061780: libgpu GPU DMA linked-list kickoff: writes GP1(0x04000002) to set DMA direction = GPU-read-linked-list, points DMA channel 2 (GPU) MADR at the OT/cmd-chain head, and writes CHCR=0x01000401 to start the transfer (linked-list mode, from RAM). Used as the queue-callback that DrawOTag/PutDrawEnv/MoveImage pass to EnqueueGpuOp; also stored as a function pointer at 0x80074a34. */
+/* 0x80061780: libgpu GPU DMA linked-list kickoff: writes GP1(0x04000002) to set
+ * DMA direction = GPU-read-linked-list, points DMA channel 2 (GPU) MADR at the
+ * OT/cmd-chain head, and writes CHCR=0x01000401 to start the transfer
+ * (linked-list mode, from RAM). Used as the queue-callback that
+ * DrawOTag/PutDrawEnv/MoveImage pass to EnqueueGpuOp; also stored as a function
+ * pointer at 0x80074a34. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined SendGpuLinkedList(undefined4 param_1);
 
-/* 0x800617cc: libgpu GetGPUInfo: issues GP1((param | 0x10000000)) "get GPU info" sub-command, then reads GP0 status register and returns it masked to 24 bits. param 0..7 selects which info field (0=draw-area-tl, 2=draw-area-br, 3=draw-offset, 4=texture-window, 5=draw-mode, 7=GPU version). Function pointer also stored at PTR_PTR_80074a4c. */
+/* 0x800617cc: libgpu GetGPUInfo: issues GP1((param | 0x10000000)) "get GPU
+ * info" sub-command, then reads GP0 status register and returns it masked to 24
+ * bits. param 0..7 selects which info field (0=draw-area-tl, 2=draw-area-br,
+ * 3=draw-offset, 4=texture-window, 5=draw-mode, 7=GPU version). Function
+ * pointer also stored at PTR_PTR_80074a4c. */
 uint GetGpuInfo(uint param_1);
 
-/* 0x80061820: libgpu DMA-queue enqueue. Takes (func, args, args_bytes, arg4) and either invokes func(args, arg4) immediately if the GPU + DMA + 64-entry ring at g_abGpuOpQueueRing (stride 0x60, head g_nGpuQueueWriteIndex, tail g_nGpuQueueReadIndex) are all idle, OR appends the call to the ring for later replay by FlushGpuQueue when the GPU finishes the in-flight transfer. If args_bytes > 0 the inline args are copied into &g_abGpuOpArgArea+slot*0x60 and the slot's arg-ptr is rebased to point there; otherwise the caller's pointer is stored verbatim. Returns 0 on immediate execute, otherwise the new ring depth. Used by DrawOTag, ClearImage, LoadImage, etc. */
+/* 0x80061820: libgpu DMA-queue enqueue. Takes (func, args, args_bytes, arg4)
+ * and either invokes func(args, arg4) immediately if the GPU + DMA + 64-entry
+ * ring at g_abGpuOpQueueRing (stride 0x60, head g_nGpuQueueWriteIndex, tail
+ * g_nGpuQueueReadIndex) are all idle, OR appends the call to the ring for later
+ * replay by FlushGpuQueue when the GPU finishes the in-flight transfer. If
+ * args_bytes > 0 the inline args are copied into &g_abGpuOpArgArea+slot*0x60
+ * and the slot's arg-ptr is rebased to point there; otherwise the caller's
+ * pointer is stored verbatim. Returns 0 on immediate execute, otherwise the new
+ * ring depth. Used by DrawOTag, ClearImage, LoadImage, etc. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-uint EnqueueGpuOp(undefined *param_1, undefined4 *param_2, int param_3, undefined4 param_4);
+uint EnqueueGpuOp(undefined *param_1, undefined4 *param_2, int param_3,
+                  undefined4 param_4);
 
-/* 0x80061b00: libgpu DMA ring drain. Called whenever the GPU might have completed an op. If DMA channel 2 (GPU CHCR bit 0x1000000) is idle and there are queued slots, spins polling GP1 ready-bit (0x4000000) and invokes each pending slot's func(args, arg4) in FIFO order until the ring drains or the GPU goes busy again. Final invariant: if the ring is empty AND DMA is idle AND a one-shot completion callback (g_pfnGpuQueueCompletionCallback) is registered, fires it once. Returns the remaining ring depth. */
+/* 0x80061b00: libgpu DMA ring drain. Called whenever the GPU might have
+ * completed an op. If DMA channel 2 (GPU CHCR bit 0x1000000) is idle and there
+ * are queued slots, spins polling GP1 ready-bit (0x4000000) and invokes each
+ * pending slot's func(args, arg4) in FIFO order until the ring drains or the
+ * GPU goes busy again. Final invariant: if the ring is empty AND DMA is idle
+ * AND a one-shot completion callback (g_pfnGpuQueueCompletionCallback) is
+ * registered, fires it once. Returns the remaining ring depth. */
 uint FlushGpuQueue(void);
 
-/* 0x80061dec: libgpu ResetGraph impl dispatched from the public ResetGraph thunk at ResetGraph. mode bit pattern: 0/2 = full reset (DMA-2 CHCR=0x401, GP1(0)=display reset, zero GP1 shadow at g_abGpuStatusShadow[256] and the 64-entry DMA queue at g_abGpuOpQueueRing); 1/3/5 = cancel-only (GP1 soft reset 0x02000000 + 0x01000000). Brackets work in EnterCriticalSection/ExitCriticalSection (SetInterruptMask). mode==0 also runs InitDisplayEnv (display-env reinit). */
+/* 0x80061dec: libgpu ResetGraph impl dispatched from the public ResetGraph
+ * thunk at ResetGraph. mode bit pattern: 0/2 = full reset (DMA-2 CHCR=0x401,
+ * GP1(0)=display reset, zero GP1 shadow at g_abGpuStatusShadow[256] and the
+ * 64-entry DMA queue at g_abGpuOpQueueRing); 1/3/5 = cancel-only (GP1 soft
+ * reset 0x02000000 + 0x01000000). Brackets work in
+ * EnterCriticalSection/ExitCriticalSection (SetInterruptMask). mode==0 also
+ * runs InitDisplayEnv (display-env reinit). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 ResetGraphImpl(uint param_1);
 
-/* 0x80061f48: libgpu DrawSync impl (dispatched via g_pGpuDispatchTable). param=0 blocks until 64-entry DMA queue + DMA-2 + GP1 ready-bit all idle (with CheckGpuTimeout watchdog); param!=0 returns queue depth (0=idle, >=1=pending). */
+/* 0x80061f48: libgpu DrawSync impl (dispatched via g_pGpuDispatchTable).
+ * param=0 blocks until 64-entry DMA queue + DMA-2 + GP1 ready-bit all idle
+ * (with CheckGpuTimeout watchdog); param!=0 returns queue depth (0=idle,
+ * >=1=pending). */
 uint DrawSyncImpl(int param_1);
 
-/* 0x80062090: libgpu watchdog reset: sets the GPU-timeout VSync deadline to VSync(-1)+0xf0 (240 ticks ahead) and clears the spin counter at g_nGpuWatchdogSpinCount. Called by EnqueueGpuOp / FlushGpuQueue siblings whenever fresh work is queued, so CheckGpuTimeout's deadline rolls forward instead of firing on long-but-not-stuck pipelines. */
+/* 0x80062090: libgpu watchdog reset: sets the GPU-timeout VSync deadline to
+ * VSync(-1)+0xf0 (240 ticks ahead) and clears the spin counter at
+ * g_nGpuWatchdogSpinCount. Called by EnqueueGpuOp / FlushGpuQueue siblings
+ * whenever fresh work is queued, so CheckGpuTimeout's deadline rolls forward
+ * instead of firing on long-but-not-stuck pipelines. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ResetGpuTimeoutDeadline(void);
 
-/* 0x800620c4: libgpu GPU watchdog: called from EnqueueGpuOp when the 64-entry DMA ring is full. Returns 0 if there is still time on the current frame budget (g_nGpuWatchdogDeadline VSync deadline + g_nGpuWatchdogSpinCount spin counter under 0xf0000), -1 if the GPU has wedged. On timeout WritePrintf("GPU timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x,…") then hard-resets DMA channel 2 (GPU CHCR=0x401, DPCR bit 0x800), then GP1 reset (0x02000000, 0x01000000), and clears the ring head/tail. */
+/* 0x800620c4: libgpu GPU watchdog: called from EnqueueGpuOp when the 64-entry
+ * DMA ring is full. Returns 0 if there is still time on the current frame
+ * budget (g_nGpuWatchdogDeadline VSync deadline + g_nGpuWatchdogSpinCount spin
+ * counter under 0xf0000), -1 if the GPU has wedged. On timeout WritePrintf("GPU
+ * timeout:que=%d,stat=%08x,chcr=%08x,madr=%08x,…") then hard-resets DMA channel
+ * 2 (GPU CHCR=0x401, DPCR bit 0x800), then GP1 reset (0x02000000, 0x01000000),
+ * and clears the ring head/tail. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 CheckGpuTimeout(void);
 
-/* 0x80062230: libgpu display-env init (called by ResetGraphImpl mode==0). Applies initial GP1(0x10000007) get-info command, then if GPU mode is 24-bit picks a sub-mode; otherwise writes initial GP0(0xe1) draw-mode word (bit 0x1000 = display-disable check) and optionally GP1(0x20000504) for interlace setup. Returns a mode code 0..4 indicating display configuration. */
+/* 0x80062230: libgpu display-env init (called by ResetGraphImpl mode==0).
+ * Applies initial GP1(0x10000007) get-info command, then if GPU mode is 24-bit
+ * picks a sub-mode; otherwise writes initial GP0(0xe1) draw-mode word (bit
+ * 0x1000 = display-disable check) and optionally GP1(0x20000504) for interlace
+ * setup. Returns a mode code 0..4 indicating display configuration. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 InitDisplayEnv(uint param_1);
 
-/* 0x8006230c: libc memset: byte-fill (dest, value, count) with simple decrement loop. NULL/zero-count safe. */
+/* 0x8006230c: libc memset: byte-fill (dest, value, count) with simple decrement
+ * loop. NULL/zero-count safe. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined memset(undefined1 *param_1, undefined1 param_2, int param_3);
 
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined GPU_cw(void);
 
-/* 0x80062350: libgte InitGeom: enables GTE (Cop0 SR bit 0x40000000), patches the BIOS exception vector for GTE coproc (via PatchGteExceptionHandler), then loads default GTE constants — ZSF3=0x155, ZSF4=0x100, H=1000, DQA=-4194, DQB=0x1400000, OFX/OFY=0. Stores return address at 0x80074d04. */
+/* 0x80062350: libgte InitGeom: enables GTE (Cop0 SR bit 0x40000000), patches
+ * the BIOS exception vector for GTE coproc (via PatchGteExceptionHandler), then
+ * loads default GTE constants — ZSF3=0x155, ZSF4=0x100, H=1000, DQA=-4194,
+ * DQB=0x1400000, OFX/OFY=0. Stores return address at 0x80074d04. */
 void InitGeom(void);
 
 void MulMatrix0(int *a, int *b, int *out);
 
 #ifdef __psyz
-/* native: PsyZ returns a value; a wasm call must use the definition's signature */
+/* native: PsyZ returns a value; a wasm call must use the definition's
+ * signature */
 MATRIX *MulMatrix(MATRIX *a, MATRIX *b);
 #else
 void MulMatrix(MATRIX *a, MATRIX *b);
@@ -1234,28 +3526,40 @@ void MulMatrix(MATRIX *a, MATRIX *b);
 
 void SetTransMatrix(MATRIX *m);
 
-/* 0x80062618: libgte SetGeomOffset: load OFX/OFY GTE registers (x << 16, y << 16). Typically (screen_w/2, screen_h/2) so projected vertices are screen-centered. */
+/* 0x80062618: libgte SetGeomOffset: load OFX/OFY GTE registers (x << 16, y <<
+ * 16). Typically (screen_w/2, screen_h/2) so projected vertices are
+ * screen-centered. */
 void SetGeomOffset(int x, int y);
 
-/* 0x80062638: libgte SetGeomScreen: load H (projection plane Z) GTE register. Smaller H = wider FOV. */
+/* 0x80062638: libgte SetGeomScreen: load H (projection plane Z) GTE register.
+ * Smaller H = wider FOV. */
 void SetGeomScreen(int h);
 
-/* 0x80062648: Sony SDK internal — libgte BIOS exception-vector patcher. Bracketed by EnterCriticalSection / ExitCriticalSection (interrupt arbitration), calls BIOS B0 jumptable, copies a code stub from g_anGteExceptionVectorStub..FlushCache into the exception vector returned by *(int *)(iVar1+0x18), then FlushCache. Installs the GTE coprocessor-unusable handler so GTE instructions don't trap. */
+/* 0x80062648: Sony SDK internal — libgte BIOS exception-vector patcher.
+ * Bracketed by EnterCriticalSection / ExitCriticalSection (interrupt
+ * arbitration), calls BIOS B0 jumptable, copies a code stub from
+ * g_anGteExceptionVectorStub..FlushCache into the exception vector returned by
+ * *(int *)(iVar1+0x18), then FlushCache. Installs the GTE coprocessor-unusable
+ * handler so GTE instructions don't trap. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined PatchGteExceptionHandler(void);
 
 void FlushCache(void);
 
-/* 0x800626f8: libc memcpy: byte copy of n bytes from src to dst. Returns dest (or NULL if dest is NULL). */
+/* 0x800626f8: libc memcpy: byte copy of n bytes from src to dst. Returns dest
+ * (or NULL if dest is NULL). */
 void *memcpy(void *dst, const void *src, unsigned int n);
 
-/* 0x8006272c: libc rand(): g_dwRandSeed = g_dwRandSeed * 0x41C64E6D + 0x3039; returns bits 16..30 (0..0x7FFF), not a full 32-bit value. Seeded by srand. */
+/* 0x8006272c: libc rand(): g_dwRandSeed = g_dwRandSeed * 0x41C64E6D + 0x3039;
+ * returns bits 16..30 (0..0x7FFF), not a full 32-bit value. Seeded by srand. */
 unsigned int GetRandomU32(void);
 
 /* 0x8006275c: libc srand: sets g_dwRandSeed. */
 void srand(unsigned int seed);
 
-/* 0x8006276c: libc strlen clone. Returns 0 for NULL pointer; otherwise length of null-terminated string at s. Declared with the builtin's signature so gcc does not warn; no game caller's codegen depends on the return signedness. */
+/* 0x8006276c: libc strlen clone. Returns 0 for NULL pointer; otherwise length
+ * of null-terminated string at s. Declared with the builtin's signature so gcc
+ * does not warn; no game caller's codegen depends on the return signedness. */
 unsigned int strlen(const char *s);
 
 int WritePrintf(char *fmt, ...);
@@ -1264,20 +3568,32 @@ int FormatAndWrite(int fd, char *fmt, void *args);
 
 char *memchr(char *s, int c, int n);
 
-/* 0x80062f10: PSn00bSDK-style _putchar: writes one byte to fd 1 (write syscall) and tracks column position at 0x80075ac8. Special handling: tab (0x09) recurses on space until the column is 8-aligned; newline (0x0a) recurses on '\r' and resets column. Used by WriteString / WritePrintf for all debug output. */
+/* 0x80062f10: PSn00bSDK-style _putchar: writes one byte to fd 1 (write syscall)
+ * and tracks column position at 0x80075ac8. Special handling: tab (0x09)
+ * recurses on space until the column is 8-aligned; newline (0x0a) recurses on
+ * '\r' and resets column. Used by WriteString / WritePrintf for all debug
+ * output. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined WriteChar(byte param_1);
 
 long write(long param_1, void *param_2, long param_3);
 
-/* 0x80062fd4: libc sprintf clone (PSY-Q libapi). Writes formatted output to buf from format string fmt with the varargs after fmt. Supports %d/%i/%u/%s/%x/%X/%o/%p/%c/%n with flags '-' '+' ' ' '#' '0' and width.precision (use '*' for varargs). Calls strlen, memchr, and memmove (memcpy-like byte copy). */
+/* 0x80062fd4: libc sprintf clone (PSY-Q libapi). Writes formatted output to buf
+ * from format string fmt with the varargs after fmt. Supports
+ * %d/%i/%u/%s/%x/%X/%o/%p/%c/%n with flags '-' '+' ' ' '#' '0' and
+ * width.precision (use '*' for varargs). Calls strlen, memchr, and memmove
+ * (memcpy-like byte copy). */
 int sprintf(char *buf, char *fmt, ...);
 
-/* 0x80063830: libc memmove: overlap-safe byte copy. Picks ascending vs descending direction by comparing src<dst. Called from sprintf's %s/%c padding paths. */
+/* 0x80063830: libc memmove: overlap-safe byte copy. Picks ascending vs
+ * descending direction by comparing src<dst. Called from sprintf's %s/%c
+ * padding paths. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 *memmove(undefined1 *param_1, undefined1 *param_2, int param_3);
 
-/* 0x8006389c: PSn00bSDK-style _print: iterates a null-terminated string and calls WriteChar per byte. NULL input is replaced by g_szNullPlaceholder ("<NULL>"). No newline appended. Building block for WritePrintf's %s. */
+/* 0x8006389c: PSn00bSDK-style _print: iterates a null-terminated string and
+ * calls WriteChar per byte. NULL input is replaced by g_szNullPlaceholder
+ * ("<NULL>"). No newline appended. Building block for WritePrintf's %s. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined WriteString(byte *param_1);
 
@@ -1287,218 +3603,384 @@ void longjmp(__jmp_buf_tag *__env, int __val);
 
 void exit(void);
 
-/* 0x8006397c: libcd CdInit: up to 4 retries of CdReset(1) (full controller init via CdInitDriver + internal default volume setup). On success installs the three callback trampolines: CdSyncCallback(0x80063a14), CdReadyCallback(0x80063a3c), CdReadCallback(0x80063a64), and clears the read-break callback slot at g_anCdReadModeBlock. Returns 1 on success, 0 + "CdInit: Init failed" after 5 attempts. */
+/* 0x8006397c: libcd CdInit: up to 4 retries of CdReset(1) (full controller init
+ * via CdInitDriver + internal default volume setup). On success installs the
+ * three callback trampolines: CdSyncCallback(0x80063a14),
+ * CdReadyCallback(0x80063a3c), CdReadCallback(0x80063a64), and clears the
+ * read-break callback slot at g_anCdReadModeBlock. Returns 1 on success, 0 +
+ * "CdInit: Init failed" after 5 attempts. */
 int CdInit(void);
 
-/* 0x80063a8c: libcd CdStatus: returns the latest CD-ROM status byte (0x80074e44). Bit 0x10 = "data fetch in progress"; CdControlForce checks this to decide whether to abort the prior command. */
+/* 0x80063a8c: libcd CdStatus: returns the latest CD-ROM status byte
+ * (0x80074e44). Bit 0x10 = "data fetch in progress"; CdControlForce checks this
+ * to decide whether to abort the prior command. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 CdStatus(void);
 
-/* 0x80063a9c: Sony SDK internal — libcd accessor returning 0x80074e54 (1 byte, zeroed at CdInit). Likely CdLastCom or CdLastInt (canonical libcd state byte). */
+/* 0x80063a9c: Sony SDK internal — libcd accessor returning 0x80074e54 (1 byte,
+ * zeroed at CdInit). Likely CdLastCom or CdLastInt (canonical libcd state
+ * byte). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 FUN_80063a9c(void);
 
-/* 0x80063aac: Sony SDK internal — libcd accessor returning 0x80074e55 (1 byte adjacent to 0x80074e54, zeroed at CdInit). Likely the second of the CdLastCom/CdLastInt pair. */
+/* 0x80063aac: Sony SDK internal — libcd accessor returning 0x80074e55 (1 byte
+ * adjacent to 0x80074e54, zeroed at CdInit). Likely the second of the
+ * CdLastCom/CdLastInt pair. */
 int GetCdStatusByte(void);
 
-/* 0x80063abc: libcd CdLastPos: returns a pointer to the last seek position (3-byte BCD CdlLOC stored at 0x80074e50). Use CdPosToInt to convert to LBA. */
+/* 0x80063abc: libcd CdLastPos: returns a pointer to the last seek position
+ * (3-byte BCD CdlLOC stored at 0x80074e50). Use CdPosToInt to convert to
+ * LBA. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined1 *CdLastPos(void);
 
-/* 0x80063acc: libcd CdReset mode dispatcher. mode==2 → callback-only reset via FUN_80065364 (clears 0x80074e34/e38/e44/e48). Otherwise calls CdInitDriver (the controller bring-up + response-queue drain); mode==1 additionally runs FUN_80065270 (initial CD volume/buffer setup). Returns 1 on success. */
+/* 0x80063acc: libcd CdReset mode dispatcher. mode==2 → callback-only reset via
+ * FUN_80065364 (clears 0x80074e34/e38/e44/e48). Otherwise calls CdInitDriver
+ * (the controller bring-up + response-queue drain); mode==1 additionally runs
+ * FUN_80065270 (initial CD volume/buffer setup). Returns 1 on success. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 CdReset(int param_1);
 
-/* 0x80063b38: Sony SDK internal — pure thunk to CdResetController. Compiler-emitted relocation shim. */
+/* 0x80063b38: Sony SDK internal — pure thunk to CdResetController.
+ * Compiler-emitted relocation shim. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_80063b38(void);
 
-/* 0x80063bd8: Sony SDK internal — pure thunk to public CdSync(mode, result). Compiler-emitted relocation shim; do not rename — the real implementation is CdSync (already labeled). */
+/* 0x80063bd8: Sony SDK internal — pure thunk to public CdSync(mode, result).
+ * Compiler-emitted relocation shim; do not rename — the real implementation is
+ * CdSync (already labeled). */
 int CallCdSync(int mode, unsigned char *result);
 
-/* 0x80063c18: libcd CdSyncCallback: installs a callback at 0x80074e34 invoked from CdCommandSync's response-queue drain when status bit 0x02 (CdlDiskReady / command complete) fires. Returns the previous callback for save/restore. CdControl/CdControlBlocking transparently park this to NULL during the CdlSetloc preamble and restore it for the actual command. */
+/* 0x80063c18: libcd CdSyncCallback: installs a callback at 0x80074e34 invoked
+ * from CdCommandSync's response-queue drain when status bit 0x02 (CdlDiskReady
+ * / command complete) fires. Returns the previous callback for save/restore.
+ * CdControl/CdControlBlocking transparently park this to NULL during the
+ * CdlSetloc preamble and restore it for the actual command. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 CdSyncCallback(undefined4 param_1);
 
-/* 0x80063c30: libcd CdReadyCallback: installs a callback at 0x80074e38 invoked from CdCommandSync's response-queue drain when status bit 0x04 (CdlDataReady) fires. Returns the previous callback for save/restore. NULL disables. */
+/* 0x80063c30: libcd CdReadyCallback: installs a callback at 0x80074e38 invoked
+ * from CdCommandSync's response-queue drain when status bit 0x04 (CdlDataReady)
+ * fires. Returns the previous callback for save/restore. NULL disables. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 CdReadyCallback(undefined4 param_1);
 
-/* 0x80063c48: libcd CdControl: 3-retry wrapper around CdCommandSync. Saves the ready callback (0x80074e34), optionally issues a CdlSetloc (sub-cmd 2) for commands that need a location (gated by 0x80074dac[cmd] non-zero), then issues the real command. Restores the callback before returning. Returns 1 on success, 0 if all 3 retries fail. */
+/* 0x80063c48: libcd CdControl: 3-retry wrapper around CdCommandSync. Saves the
+ * ready callback (0x80074e34), optionally issues a CdlSetloc (sub-cmd 2) for
+ * commands that need a location (gated by 0x80074dac[cmd] non-zero), then
+ * issues the real command. Restores the callback before returning. Returns 1 on
+ * success, 0 if all 3 retries fail. */
 int CdControl(unsigned char com, unsigned char *param, unsigned char *result);
 
-/* 0x80063d80: libcd CdControlF: like CdControl but aborts any in-progress command first by issuing CdlNop (sub-cmd 1) when 0x80074e44 & 0x10 is set. Suppresses the sync callback during the abort + optional CdlSetloc preamble, restores it for the actual command issue, and uses CdCommandSync mode=1. Returns 1 on success, 0 after 3 retries. */
+/* 0x80063d80: libcd CdControlF: like CdControl but aborts any in-progress
+ * command first by issuing CdlNop (sub-cmd 1) when 0x80074e44 & 0x10 is set.
+ * Suppresses the sync callback during the abort + optional CdlSetloc preamble,
+ * restores it for the actual command issue, and uses CdCommandSync mode=1.
+ * Returns 1 on success, 0 after 3 retries. */
 int CdControlForce(unsigned char com, char *param);
 
-/* 0x80063eac: libcd CdControlB: same 3-retry CdlSetloc + command pattern as CdControl, but on success also CdSync(0, result) waits for completion (status 2 = CdlComplete). Returns true only if both the command issue and the post-command sync succeed. The blocking variant used when the caller wants the command finished before returning. */
+/* 0x80063eac: libcd CdControlB: same 3-retry CdlSetloc + command pattern as
+ * CdControl, but on success also CdSync(0, result) waits for completion (status
+ * 2 = CdlComplete). Returns true only if both the command issue and the
+ * post-command sync succeed. The blocking variant used when the caller wants
+ * the command finished before returning. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 int CdControlBlocking(int com, char *param, char *result);
 
-/* 0x80063ff0: libcd CdMix: sets CD-DA volume mixing (CdlATV*). Wraps FUN_80065108 which writes 4 bytes (L→Lspu, L→Rspu, R→Lspu, R→Rspu) into CDIO mixer registers via index-2/index-3 register switching. */
+/* 0x80063ff0: libcd CdMix: sets CD-DA volume mixing (CdlATV*). Wraps
+ * FUN_80065108 which writes 4 bytes (L→Lspu, L→Rspu, R→Lspu, R→Rspu) into CDIO
+ * mixer registers via index-2/index-3 register switching. */
 int CdMix(unsigned char *vol);
 
-/* 0x80064010: libcd CdGetSector: synchronous DMA read of one sector to (buf, nword). Wraps FUN_8006570c which programs DMA channel 3 with CHCR=0x11000000 (sync read), waits for status bit 0x40, then DICR ACK. Returns true (iVar1 == 0). */
+/* 0x80064010: libcd CdGetSector: synchronous DMA read of one sector to (buf,
+ * nword). Wraps FUN_8006570c which programs DMA channel 3 with CHCR=0x11000000
+ * (sync read), waits for status bit 0x40, then DICR ACK. Returns true (iVar1 ==
+ * 0). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 bool CdGetSector(undefined4 param_1, uint param_2);
 
-/* 0x80064030: libcd CdGetSector2: chained-mode DMA read (handle for continuous read). Wraps FUN_8006580c which programs DMA channel 3 with CHCR=0x11400100 (linked-list / chain mode). Returns true on issue. */
+/* 0x80064030: libcd CdGetSector2: chained-mode DMA read (handle for continuous
+ * read). Wraps FUN_8006580c which programs DMA channel 3 with CHCR=0x11400100
+ * (linked-list / chain mode). Returns true on issue. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 bool CdGetSector2(undefined4 param_1, uint param_2);
 
-/* 0x80064050: Sony SDK internal — pure thunk to DmaCallback (libcd CD-bus arbitration). Compiler-emitted shim. */
+/* 0x80064050: Sony SDK internal — pure thunk to DmaCallback (libcd CD-bus
+ * arbitration). Compiler-emitted shim. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_80064050(void);
 
-/* 0x80064074: Sony SDK internal — pure thunk to CdDataSync. Compiler-emitted relocation shim. */
+/* 0x80064074: Sony SDK internal — pure thunk to CdDataSync. Compiler-emitted
+ * relocation shim. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_80064074(int param_1);
 
-/* 0x80064094: libcd CdIntToPos: converts a signed sector LBA to a 3-byte BCD CdlLOC (minute, second, frame). +0x96 = 150-sector lead-in offset; /0x4b = /75 frames per second; /0x3c = /60 seconds per minute. Each MSF component is BCD-encoded via the `(x + (x/10)*6)` trick so the result can be written directly to the libcd command FIFO. */
+/* 0x80064094: libcd CdIntToPos: converts a signed sector LBA to a 3-byte BCD
+ * CdlLOC (minute, second, frame). +0x96 = 150-sector lead-in offset; /0x4b =
+ * /75 frames per second; /0x3c = /60 seconds per minute. Each MSF component is
+ * BCD-encoded via the `(x + (x/10)*6)` trick so the result can be written
+ * directly to the libcd command FIFO. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 char *CdIntToPos(int lba, char *loc);
 
-/* 0x80064198: libcd CdPosToInt: 3-byte BCD CdlLOC (M:S:F) -> signed LBA. Inverse of CdIntToPos. Decodes each BCD byte as (hi*10 + lo), recombines minutes*60*75 + seconds*75 + frames - 150 (lead-in offset). */
+/* 0x80064198: libcd CdPosToInt: 3-byte BCD CdlLOC (M:S:F) -> signed LBA.
+ * Inverse of CdIntToPos. Decodes each BCD byte as (hi*10 + lo), recombines
+ * minutes*60*75 + seconds*75 + frames - 150 (lead-in offset). */
 int CdPosToInt(unsigned char *pos);
 
-/* 0x80064218: libcd CD-ROM interrupt handler / response-queue drain. Reads interrupt code from CD controller (*0x80075108 & 7), pulls up-to-8 response bytes via *0x80075100 into a local 8-byte buffer, ACKs via 0x800750fc/108/104, then dispatches by interrupt code: 1=DataReady (sets 0x80075115; copies response to 0x80075ad8; returns 4), 2=Complete (0x80075114=2 or 5 on err; returns 2), 3=Acknowledge (returns 1 if callback armed at 0x80074efc[chan], else 2), 4=DataEnd (returns 4), 5=DiskError (0x80075115/114=5; prints "DiskError: com=%s,code=(%02x:%02x)"; returns 6). Default: prints "CDROM: unknown intr(%d)". Polled by CdCommandSync. */
+/* 0x80064218: libcd CD-ROM interrupt handler / response-queue drain. Reads
+ * interrupt code from CD controller (*0x80075108 & 7), pulls up-to-8 response
+ * bytes via *0x80075100 into a local 8-byte buffer, ACKs via
+ * 0x800750fc/108/104, then dispatches by interrupt code: 1=DataReady (sets
+ * 0x80075115; copies response to 0x80075ad8; returns 4), 2=Complete
+ * (0x80075114=2 or 5 on err; returns 2), 3=Acknowledge (returns 1 if callback
+ * armed at 0x80074efc[chan], else 2), 4=DataEnd (returns 4), 5=DiskError
+ * (0x80075115/114=5; prints "DiskError: com=%s,code=(%02x:%02x)"; returns 6).
+ * Default: prints "CDROM: unknown intr(%d)". Polled by CdCommandSync. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 CdProcessInterrupt(void);
 
 int CdSync(int mode, u_char *result);
 
-/* 0x80064cec: libcd CdControl primitive: parks the optional ready-callback (0x80074e34) to NULL, optionally pre-issues sub-command 1 (CdlNop) if previous mode bit 0x10 is set, then writes the command + N parameters into the libcd command FIFO (count from 0x8007507c[cmd]). If blocking flag (param_4) == 0 also drives a VSync-bounded wait for 0x80075114 != 0 (the libcd "ready" status); on timeout calls CdResetController and prints "CD timeout: %s (%s) Sync=%s, Ready=%s". Per-iteration polls CdProcessInterrupt to drain the response queue and dispatches the stored callbacks 0x80074e34/e38 if present. Used by CdControl / CdControlBlocking and game-side wrappers. */
+/* 0x80064cec: libcd CdControl primitive: parks the optional ready-callback
+ * (0x80074e34) to NULL, optionally pre-issues sub-command 1 (CdlNop) if
+ * previous mode bit 0x10 is set, then writes the command + N parameters into
+ * the libcd command FIFO (count from 0x8007507c[cmd]). If blocking flag
+ * (param_4) == 0 also drives a VSync-bounded wait for 0x80075114 != 0 (the
+ * libcd "ready" status); on timeout calls CdResetController and prints "CD
+ * timeout: %s (%s) Sync=%s, Ready=%s". Per-iteration polls CdProcessInterrupt
+ * to drain the response queue and dispatches the stored callbacks
+ * 0x80074e34/e38 if present. Used by CdControl / CdControlBlocking and
+ * game-side wrappers. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-int CdCommandSync(byte param_1, undefined1 *param_2, undefined1 *param_3, int param_4);
+int CdCommandSync(byte param_1, undefined1 *param_2, undefined1 *param_3,
+                  int param_4);
 
-/* 0x80065108: Sony SDK internal — libcd CD-DA volume register writer used by CdMix. Pokes 4 mixer values (L→L, L→R, R→L, R→R) via CDIO index-2/3 register switching at *0x800750fc/100/104/108. Always returns 0. */
+/* 0x80065108: Sony SDK internal — libcd CD-DA volume register writer used by
+ * CdMix. Pokes 4 mixer values (L→L, L→R, R→L, R→R) via CDIO index-2/3 register
+ * switching at *0x800750fc/100/104/108. Always returns 0. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80065108(undefined1 *param_1);
 
-/* 0x80065190: libcd hard CD-ROM controller reset. Drains response queue via *0x800750fc/0x80075108/0x80075104 register pokes until status bits 0..2 clear, then re-arms 0x80075114 = 2 (state=ready), clears 0x80075115/116, writes 0x8007510c = 0x1325 (CDIO config). Called as the recovery path from CdCommandSync timeout and from CdSync/CdDataSync after persistent error. */
+/* 0x80065190: libcd hard CD-ROM controller reset. Drains response queue via
+ * *0x800750fc/0x80075108/0x80075104 register pokes until status bits 0..2
+ * clear, then re-arms 0x80075114 = 2 (state=ready), clears 0x80075115/116,
+ * writes 0x8007510c = 0x1325 (CDIO config). Called as the recovery path from
+ * CdCommandSync timeout and from CdSync/CdDataSync after persistent error. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined CdResetController(void);
 
-/* 0x80065270: Sony SDK internal — libcd initial CD volume/buffer defaults applied during CdReset(mode=1). Writes 0x3fff into four 16-bit slots of *0x80075110 (mixer base) and a 0xc001 sentinel, then runs the same 4-byte CDIO mixer poke as CdMix(0x80, 0, 0x80, 0). */
+/* 0x80065270: Sony SDK internal — libcd initial CD volume/buffer defaults
+ * applied during CdReset(mode=1). Writes 0x3fff into four 16-bit slots of
+ * *0x80075110 (mixer base) and a 0xc001 sentinel, then runs the same 4-byte
+ * CDIO mixer poke as CdMix(0x80, 0, 0x80, 0). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80065270(void);
 
-/* 0x80065364: Sony SDK internal — libcd callback-only reset (dispatched from CdReset mode==2). Zeros the four callback slots 0x80074e34/e38/e44/e48, then calls FUN_8005ddc8 + FUN_8005ddf8 (CD bus / interrupt arbitration teardown). */
+/* 0x80065364: Sony SDK internal — libcd callback-only reset (dispatched from
+ * CdReset mode==2). Zeros the four callback slots 0x80074e34/e38/e44/e48, then
+ * calls FUN_8005ddc8 + FUN_8005ddf8 (CD bus / interrupt arbitration
+ * teardown). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_80065364(void);
 
-/* 0x800653b4: libcd low-level CD-ROM controller initialization (the "CD_init: addr=%08x" worker dispatched by CdReset). Clears callbacks (0x80074e34/e38/e44/e48 + status bytes), drains the response queue at *0x80075108 until bits 0..2 are clear, resets state (0x80075114 = 2 / ready), sets CDIO config 0x8007510c = 0x1325, then issues CdCommandSync(1=CdlNop), (10=CdlGetTN), (12=CdlGetTD) and a final CdSync(0). Returns 0 on success, -1 on failure. */
+/* 0x800653b4: libcd low-level CD-ROM controller initialization (the "CD_init:
+ * addr=%08x" worker dispatched by CdReset). Clears callbacks
+ * (0x80074e34/e38/e44/e48 + status bytes), drains the response queue at
+ * *0x80075108 until bits 0..2 are clear, resets state (0x80075114 = 2 / ready),
+ * sets CDIO config 0x8007510c = 0x1325, then issues CdCommandSync(1=CdlNop),
+ * (10=CdlGetTN), (12=CdlGetTD) and a final CdSync(0). Returns 0 on success, -1
+ * on failure. */
 int CdInitDriver(void);
 
 int CdDataSync(int mode);
 
-/* 0x8006570c: Sony SDK internal — libcd DMA-channel-3 sync sector read. Configures CDIO command 0x80, DPCR = 0x20943, CDIO config = 0x1323, latch=0x8000, programs MADR=param_1 BCR=(param_2|0x10000), waits for *0x800750fc bit 0x40, kicks DICR=0x11000000 then waits ACK bit 0x1000000. Wrapped by CdGetSector. */
+/* 0x8006570c: Sony SDK internal — libcd DMA-channel-3 sync sector read.
+ * Configures CDIO command 0x80, DPCR = 0x20943, CDIO config = 0x1323,
+ * latch=0x8000, programs MADR=param_1 BCR=(param_2|0x10000), waits for
+ * *0x800750fc bit 0x40, kicks DICR=0x11000000 then waits ACK bit 0x1000000.
+ * Wrapped by CdGetSector. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_8006570c(undefined4 param_1, uint param_2);
 
-/* 0x8006580c: Sony SDK internal — libcd DMA-channel-3 chained-mode read. Same shape as FUN_8006570c but DPCR = 0x21020843 and DICR = 0x11400100 (linked-list / chain DMA). Wrapped by CdGetSector2. */
+/* 0x8006580c: Sony SDK internal — libcd DMA-channel-3 chained-mode read. Same
+ * shape as FUN_8006570c but DPCR = 0x21020843 and DICR = 0x11400100
+ * (linked-list / chain DMA). Wrapped by CdGetSector2. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_8006580c(undefined4 param_1, uint param_2);
 
-/* 0x80065dbc: libcd internal: kicks the CD read state machine. Disables sync/ready callbacks, optionally aborts in-flight via CdControl(CdlPause)+CdControl(CdlSetloc), issues CdControl(CdlSetmode), installs 0x800659f0 as sector-ready callback, then CdControlForce(CdlReadN). param_1 != 0 = retry path with 'CdRead: retry...' message. */
+/* 0x80065dbc: libcd internal: kicks the CD read state machine. Disables
+ * sync/ready callbacks, optionally aborts in-flight via
+ * CdControl(CdlPause)+CdControl(CdlSetloc), issues CdControl(CdlSetmode),
+ * installs 0x800659f0 as sector-ready callback, then CdControlForce(CdlReadN).
+ * param_1 != 0 = retry path with 'CdRead: retry...' message. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 CdReadStart(int param_1);
 
-/* 0x8006606c: libcd CdRead public API. Configures per-sector size (0x200/0x246/0x249 by mode bits 0x30), saves prior callbacks, pauses any in-flight command, then calls CdReadStart(0). Returns 1 on success. */
+/* 0x8006606c: libcd CdRead public API. Configures per-sector size
+ * (0x200/0x246/0x249 by mode bits 0x30), saves prior callbacks, pauses any
+ * in-flight command, then calls CdReadStart(0). Returns 1 on success. */
 int CdRead(int sectors, void *buf, int mode);
 
-/* 0x8006623c: libcd CdReadCallback: installs the data-arrival callback for libcd reads at 0x80075144. Distinct from CdSyncCallback/CdReadyCallback — this one is invoked per sector by the CdRead state machine (CdReadStart saves and restores it around the actual read). Returns previous; NULL disables. */
+/* 0x8006623c: libcd CdReadCallback: installs the data-arrival callback for
+ * libcd reads at 0x80075144. Distinct from CdSyncCallback/CdReadyCallback —
+ * this one is invoked per sector by the CdRead state machine (CdReadStart saves
+ * and restores it around the actual read). Returns previous; NULL disables. */
 void *CdReadCallback(void *func);
 
-/* 0x80066254: Sony SDK internal — libcd read-break callback install (sets g_anCdReadModeBlock). Returns previous. Called by CdInit with 0 to clear the slot. */
+/* 0x80066254: Sony SDK internal — libcd read-break callback install (sets
+ * g_anCdReadModeBlock). Returns previous. Called by CdInit with 0 to clear the
+ * slot. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80066254(undefined4 param_1);
 
-/* 0x8006626c: libmcrd one-shot reset + init. Zeros 0x80075b4c/b90 (session retry counters) and calls MemCardBuInit (InitCARD2 + StartCARD2 + _bu_init). Called when the runtime decides the memcard driver needs a clean restart. */
+/* 0x8006626c: libmcrd one-shot reset + init. Zeros 0x80075b4c/b90 (session
+ * retry counters) and calls MemCardBuInit (InitCARD2 + StartCARD2 + _bu_init).
+ * Called when the runtime decides the memcard driver needs a clean restart. */
 void MemCardReset(int mode);
 
-/* 0x800662bc: libmcrd session open: resets per-op state (0x80075b50/54/58), arms 8 BIOS events via MemCardInit, releases CD bus via FUN_8005de8c. */
+/* 0x800662bc: libmcrd session open: resets per-op state (0x80075b50/54/58),
+ * arms 8 BIOS events via MemCardInit, releases CD bus via FUN_8005de8c. */
 void MemCardOpenSession(void);
 
-/* 0x8006631c: libmcrd session close: spins until 0x80075b50 == 0 (operation done), then releases CD bus + tears down event handles via MemCardTeardownEvents. */
+/* 0x8006631c: libmcrd session close: spins until 0x80075b50 == 0 (operation
+ * done), then releases CD bus + tears down event handles via
+ * MemCardTeardownEvents. */
 void MemCardCloseSession(void);
 
-/* 0x800665b8: libmcrd _card_load: opens a memcard channel for access (state=2, no data params). Registers 0x80066634 as event handler. Fails with 'Access Denied. : event multipul open' if a prior op is still in flight. */
+/* 0x800665b8: libmcrd _card_load: opens a memcard channel for access (state=2,
+ * no data params). Registers 0x80066634 as event handler. Fails with 'Access
+ * Denied. : event multipul open' if a prior op is still in flight. */
 void MemCardLoad(int slot);
 
-/* 0x80066e28: libmcrd _card_read: state=3. Requires size aligned to 0x80 (one BIOS sector). Stores file ID+filename+src+dst+size into 0x80075b5c..6c and registers 0x80066f34 as event handler. Caller polls via MemCardSync. */
+/* 0x80066e28: libmcrd _card_read: state=3. Requires size aligned to 0x80 (one
+ * BIOS sector). Stores file ID+filename+src+dst+size into 0x80075b5c..6c and
+ * registers 0x80066f34 as event handler. Caller polls via MemCardSync. */
 void MemCardRead(int slot, char *name, void *buf, int offset, int size);
 
-/* 0x800670e4: libmcrd _card_write: state=4. Same param layout as MemCardRead. Registers 0x800671f0 as event handler. Caller polls via MemCardSync. */
+/* 0x800670e4: libmcrd _card_write: state=4. Same param layout as MemCardRead.
+ * Registers 0x800671f0 as event handler. Caller polls via MemCardSync. */
 void MemCardWrite(int slot, char *name, void *buf, int offset, int size);
 
-/* 0x80067628: libmcrd sync/poll: out-params (cmd,result) = (state, result). Returns 0 while busy (blocks if mode==0); returns 1 when done and consumes the completion at 0x80075b58. */
+/* 0x80067628: libmcrd sync/poll: out-params (cmd,result) = (state, result).
+ * Returns 0 while busy (blocks if mode==0); returns 1 when done and consumes
+ * the completion at 0x80075b58. */
 int MemCardSync(int mode, int *cmd, int *result);
 
-/* 0x80067c7c: libmcrd channel-to-event-index map. Maps SIO0 access codes to libmcrd event-table indices: 0→0, 1→2, 2→1, 4→3. Any other input returns (code | 0x8000) — high bit signals "invalid channel" to the caller. Called by MemCardOpenSession + the three public memcard APIs (Load/Read/Write) when looking up which BIOS event handle to wait on. */
+/* 0x80067c7c: libmcrd channel-to-event-index map. Maps SIO0 access codes to
+ * libmcrd event-table indices: 0→0, 1→2, 2→1, 4→3. Any other input returns
+ * (code | 0x8000) — high bit signals "invalid channel" to the caller. Called by
+ * MemCardOpenSession + the three public memcard APIs (Load/Read/Write) when
+ * looking up which BIOS event handle to wait on. */
 uint MapMemCardAccessCode(uint param_1);
 
-/* 0x80067d74: libmcrd path-prefix formatter. Writes the 6-byte template "bu00:" (loaded from g_szMemCardPathTemplate..c5) into param_2's buffer, then overwrites bytes [2..3] with param_1 formatted as 2 decimal digits — producing "bu00:", "bu01:" … "bu15:" memcard file paths. Called by MemCardRead and MemCardWrite to construct the filename argument to _card_read/_card_write. */
+/* 0x80067d74: libmcrd path-prefix formatter. Writes the 6-byte template "bu00:"
+ * (loaded from g_szMemCardPathTemplate..c5) into param_2's buffer, then
+ * overwrites bytes [2..3] with param_1 formatted as 2 decimal digits —
+ * producing "bu00:", "bu01:" … "bu15:" memcard file paths. Called by
+ * MemCardRead and MemCardWrite to construct the filename argument to
+ * _card_read/_card_write. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FormatMemCardPath(int param_1, uint param_2);
 
-/* 0x80067dd0: Sony SDK internal — libmcrd BIOS event handler stub. Sets per-slot status flag at 0x80075b2c = 1. Registered via RegisterMemCardEvent for one of the 8 BIOS event handles (0x80075b0c..b28). PollMemCardEvents / WaitMemCardEventSlot1 read these flags. */
+/* 0x80067dd0: Sony SDK internal — libmcrd BIOS event handler stub. Sets
+ * per-slot status flag at 0x80075b2c = 1. Registered via RegisterMemCardEvent
+ * for one of the 8 BIOS event handles (0x80075b0c..b28). PollMemCardEvents /
+ * WaitMemCardEventSlot1 read these flags. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80067dd0(void);
 
-/* 0x80067de4: Sony SDK internal — libmcrd BIOS event handler stub. Sets per-slot status flag at 0x80075b30 = 1. Sibling of FUN_80067dd0. */
+/* 0x80067de4: Sony SDK internal — libmcrd BIOS event handler stub. Sets
+ * per-slot status flag at 0x80075b30 = 1. Sibling of FUN_80067dd0. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80067de4(void);
 
-/* 0x80067df8: Sony SDK internal — libmcrd BIOS event handler stub. Sets per-slot status flag at 0x80075b34 = 1. Sibling of FUN_80067dd0. */
+/* 0x80067df8: Sony SDK internal — libmcrd BIOS event handler stub. Sets
+ * per-slot status flag at 0x80075b34 = 1. Sibling of FUN_80067dd0. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80067df8(void);
 
-/* 0x80067e0c: Sony SDK internal — libmcrd BIOS event handler stub. Sets per-slot status flag at 0x80075b38 = 1. Sibling of FUN_80067dd0. */
+/* 0x80067e0c: Sony SDK internal — libmcrd BIOS event handler stub. Sets
+ * per-slot status flag at 0x80075b38 = 1. Sibling of FUN_80067dd0. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80067e0c(void);
 
-/* 0x80067e20: Sony SDK internal — libmcrd BIOS event handler stub. Sets per-slot status flag at 0x80075b3c = 1. Sibling of FUN_80067dd0. */
+/* 0x80067e20: Sony SDK internal — libmcrd BIOS event handler stub. Sets
+ * per-slot status flag at 0x80075b3c = 1. Sibling of FUN_80067dd0. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80067e20(void);
 
-/* 0x80067e34: Sony SDK internal — libmcrd BIOS event handler stub. Sets per-slot status flag at 0x80075b40 = 1. Sibling of FUN_80067dd0. */
+/* 0x80067e34: Sony SDK internal — libmcrd BIOS event handler stub. Sets
+ * per-slot status flag at 0x80075b40 = 1. Sibling of FUN_80067dd0. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80067e34(void);
 
-/* 0x80067e48: Sony SDK internal — libmcrd BIOS event handler stub. Sets per-slot status flag at 0x80075b44 = 1. Sibling of FUN_80067dd0. */
+/* 0x80067e48: Sony SDK internal — libmcrd BIOS event handler stub. Sets
+ * per-slot status flag at 0x80075b44 = 1. Sibling of FUN_80067dd0. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80067e48(void);
 
-/* 0x80067e5c: Sony SDK internal — libmcrd BIOS event handler stub. Sets per-slot status flag at 0x80075b48 = 1. Sibling of FUN_80067dd0. */
+/* 0x80067e5c: Sony SDK internal — libmcrd BIOS event handler stub. Sets
+ * per-slot status flag at 0x80075b48 = 1. Sibling of FUN_80067dd0. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80067e5c(void);
 
-/* 0x80067e70: libmcrd one-shot card-driver init: MemCardInitCard (InitCARD2) + MemCardStartCard (StartCARD2) + _bu_init (BIOS-managed memcard filesystem). Returns 0. Higher-level than MemCardInit (which only arms BIOS event handles). */
+/* 0x80067e70: libmcrd one-shot card-driver init: MemCardInitCard (InitCARD2) +
+ * MemCardStartCard (StartCARD2) + _bu_init (BIOS-managed memcard filesystem).
+ * Returns 0. Higher-level than MemCardInit (which only arms BIOS event
+ * handles). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 MemCardBuInit(void);
 
-/* 0x80067ea0: libmcrd event setup: OpenEvent x8 (per-slot ReadEnd/WriteEnd/Done/Error for slots 0xf4000001 + 0xf0000011) + EnableEvent x8 + PollMemCardEvents to drain stale events. Bracketed by EnterCriticalSection / ExitCriticalSection (CD-bus arbitration). */
+/* 0x80067ea0: libmcrd event setup: OpenEvent x8 (per-slot
+ * ReadEnd/WriteEnd/Done/Error for slots 0xf4000001 + 0xf0000011) + EnableEvent
+ * x8 + PollMemCardEvents to drain stale events. Bracketed by
+ * EnterCriticalSection / ExitCriticalSection (CD-bus arbitration). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined MemCardInit(void);
 
-/* 0x800680a4: libmcrd session teardown: CloseEvent on the 8 BIOS event handles at 0x80075b0c..b28 (per-slot ReadEnd/WriteEnd/Done/Error). Bracketed in EnterCriticalSection / ExitCriticalSection (CD-bus arbitration). Counterpart to MemCardInit. Called by MemCardCloseSession. */
+/* 0x800680a4: libmcrd session teardown: CloseEvent on the 8 BIOS event handles
+ * at 0x80075b0c..b28 (per-slot ReadEnd/WriteEnd/Done/Error). Bracketed in
+ * EnterCriticalSection / ExitCriticalSection (CD-bus arbitration). Counterpart
+ * to MemCardInit. Called by MemCardCloseSession. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined MemCardTeardownEvents(void);
 
-/* 0x8006815c: libmcrd event drain: calls TestEvent on the 8 BIOS event handles tracked at 0x80075b0c..0x80075b28 (per-memcard slot ReadEnd/WriteEnd/Done/Error events) to consume pending fires, then zeroes the 8 result-status words at 0x80075b2c..0x80075b48. Called by libmcrd Read/Write/Format/Sync entry points to clear stale events before issuing a new request. */
+/* 0x8006815c: libmcrd event drain: calls TestEvent on the 8 BIOS event handles
+ * tracked at 0x80075b0c..0x80075b28 (per-memcard slot
+ * ReadEnd/WriteEnd/Done/Error events) to consume pending fires, then zeroes the
+ * 8 result-status words at 0x80075b2c..0x80075b48. Called by libmcrd
+ * Read/Write/Format/Sync entry points to clear stale events before issuing a
+ * new request. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined PollMemCardEvents(void);
 
-/* 0x80068264: libmcrd slot-1 event wait. Busy-spins on the combined slot-1 status mask (0x80075b2c + 0x80075b30*2 + 0x80075b34*4 + 0x80075b38*8) until any bit is set, then drains the four slot-1 BIOS event handles (0x80075b1c/20/24/28) via TestEvent and clears the status words. Returns the combined value >>1 (drops the "request issued" bit so callers see only completion/error bits). */
+/* 0x80068264: libmcrd slot-1 event wait. Busy-spins on the combined slot-1
+ * status mask (0x80075b2c + 0x80075b30*2 + 0x80075b34*4 + 0x80075b38*8) until
+ * any bit is set, then drains the four slot-1 BIOS event handles
+ * (0x80075b1c/20/24/28) via TestEvent and clears the status words. Returns the
+ * combined value >>1 (drops the "request issued" bit so callers see only
+ * completion/error bits). */
 int WaitMemCardEventSlot1(void);
 
-/* 0x80068340: libmcrd slot-2 event wait. Busy-spins on combined slot-2 status (0x80075b3c + 0x80075b40*2 + 0x80075b44*4 + 0x80075b48*8) until any bit set, then TestEvent on slot-2 BIOS handles (0x80075b0c/10/14/18), clears status. Returns combined>>1 (drops the "request issued" bit). Counterpart to WaitMemCardEventSlot1. */
+/* 0x80068340: libmcrd slot-2 event wait. Busy-spins on combined slot-2 status
+ * (0x80075b3c + 0x80075b40*2 + 0x80075b44*4 + 0x80075b48*8) until any bit set,
+ * then TestEvent on slot-2 BIOS handles (0x80075b0c/10/14/18), clears status.
+ * Returns combined>>1 (drops the "request issued" bit). Counterpart to
+ * WaitMemCardEventSlot1. */
 int WaitMemCardEventSlot2(void);
 
-/* 0x8006841c: libmcrd non-blocking slot-1 status read. Returns the combined slot-1 event-status mask (0x80075b2c + 0x80075b30*2 + 0x80075b34*4 + 0x80075b38*8) without clearing or TestEvent. Polled by each public memcard API (MemCardInit/Load/Read/Write) before deciding whether to enter the WaitMemCardEventSlot1 spin. */
+/* 0x8006841c: libmcrd non-blocking slot-1 status read. Returns the combined
+ * slot-1 event-status mask (0x80075b2c + 0x80075b30*2 + 0x80075b34*4 +
+ * 0x80075b38*8) without clearing or TestEvent. Polled by each public memcard
+ * API (MemCardInit/Load/Read/Write) before deciding whether to enter the
+ * WaitMemCardEventSlot1 spin. */
 int GetMemCardEventStatusSlot1(void);
 
-/* 0x80068458: libmcrd non-blocking slot-2 status read. Returns combined slot-2 event-status mask without clearing or TestEvent. Polled by each public memcard API before deciding whether to enter WaitMemCardEventSlot2 spin. Counterpart to GetMemCardEventStatusSlot1. */
+/* 0x80068458: libmcrd non-blocking slot-2 status read. Returns combined slot-2
+ * event-status mask without clearing or TestEvent. Polled by each public
+ * memcard API before deciding whether to enter WaitMemCardEventSlot2 spin.
+ * Counterpart to GetMemCardEventStatusSlot1. */
 int GetMemCardEventStatusSlot2(void);
 
 void _bu_init(void);
@@ -1539,10 +4021,14 @@ undefined FIRST_OBJ_25C(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined firstfile2(void);
 
-/* 0x800687d4: libc strcat: appends src (param_2) to dst (param_1). NULL-safe — returns NULL if either is NULL or if buffers overlap end-to-end. Walks dst to find its terminator, then byte-copies src including its null. */
+/* 0x800687d4: libc strcat: appends src (param_2) to dst (param_1). NULL-safe —
+ * returns NULL if either is NULL or if buffers overlap end-to-end. Walks dst to
+ * find its terminator, then byte-copies src including its null. */
 char *strcat(char *param_1, char *param_2);
 
-/* 0x8006887c: libc strcmp: null-terminated byte compare. Returns (unsigned char) diff at first mismatch, 0 on equal, with NULL handling: NULL == NULL = 0, NULL < non-NULL. */
+/* 0x8006887c: libc strcmp: null-terminated byte compare. Returns (unsigned
+ * char) diff at first mismatch, 0 on equal, with NULL handling: NULL == NULL =
+ * 0, NULL < non-NULL. */
 int strcmp(const char *a, const char *b);
 
 long _card_info(long chan);
@@ -1553,15 +4039,22 @@ long _card_write(long chan, long block, uchar *buf);
 
 void _new_card(void);
 
-/* 0x80068920: libmcrd block-format helper. Calls _new_card() (BIOS card format/zero), then _card_write(in_a0, 0x3f, NULL) to write 63 (= max blocks) sectors of nulls. in_a0 is the channel handle. Used during memcard initialization / file delete. */
+/* 0x80068920: libmcrd block-format helper. Calls _new_card() (BIOS card
+ * format/zero), then _card_write(in_a0, 0x3f, NULL) to write 63 (= max blocks)
+ * sectors of nulls. in_a0 is the channel handle. Used during memcard
+ * initialization / file delete. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined MemCardFormatBlocks(void);
 
-/* 0x80068958: libmcrd InitCARD2 wrapper: ChangeClearPAD(0) + InitCARD2(initial pad state) bracketed by EnterCriticalSection / ExitCriticalSection (CD-bus arbitration). Called by MemCardBuInit and MemCardInit. */
+/* 0x80068958: libmcrd InitCARD2 wrapper: ChangeClearPAD(0) + InitCARD2(initial
+ * pad state) bracketed by EnterCriticalSection / ExitCriticalSection (CD-bus
+ * arbitration). Called by MemCardBuInit and MemCardInit. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined MemCardInitCard(void);
 
-/* 0x800689b0: libmcrd StartCARD2 wrapper: StartCARD2() bracketed by EnterCriticalSection / ExitCriticalSection (CD-bus arbitration), then ChangeClearPAD(0). Called by MemCardBuInit. */
+/* 0x800689b0: libmcrd StartCARD2 wrapper: StartCARD2() bracketed by
+ * EnterCriticalSection / ExitCriticalSection (CD-bus arbitration), then
+ * ChangeClearPAD(0). Called by MemCardBuInit. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined MemCardStartCard(void);
 
@@ -1628,28 +4121,45 @@ undefined StartCARD2(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined StopCARD2(void);
 
-/* 0x80068f30: libmcrd event-handler stack reset: sets 0x800751b0 = 0xffffffff (= -1, "empty stack"). Called by MemCardOpenSession before any RegisterMemCardEvent calls. */
+/* 0x80068f30: libmcrd event-handler stack reset: sets 0x800751b0 = 0xffffffff
+ * (= -1, "empty stack"). Called by MemCardOpenSession before any
+ * RegisterMemCardEvent calls. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined ResetMemCardEventStack(void);
 
-/* 0x80068f44: libmcrd event-tracking registration: pushes the BIOS event handle in param_1 onto the 4-slot tracking ring at 0x80075c48 and zero-fills the matching 0x10-byte state record at 0x80075c14+i*0x10. Index counter at 0x800751b0; overflow (>=4 slots) prints "libmcrd: event overflow" via WritePrintf instead of trampling the ring. */
+/* 0x80068f44: libmcrd event-tracking registration: pushes the BIOS event handle
+ * in param_1 onto the 4-slot tracking ring at 0x80075c48 and zero-fills the
+ * matching 0x10-byte state record at 0x80075c14+i*0x10. Index counter at
+ * 0x800751b0; overflow (>=4 slots) prints "libmcrd: event overflow" via
+ * WritePrintf instead of trampling the ring. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined RegisterMemCardEvent(undefined4 param_1);
 
-/* 0x80068fc4: libmcrd event-handler stack dispatcher. If stack is non-empty (0x800751b0 >= 0), calls the top handler at 0x80075c48[top] with context address &0x80075c08 + top*0x10 (the per-slot 16-byte buffer registered by RegisterMemCardEvent). If the handler returns non-zero, pops the stack. Called from MemCardSync polling loops to drive request completion. */
+/* 0x80068fc4: libmcrd event-handler stack dispatcher. If stack is non-empty
+ * (0x800751b0 >= 0), calls the top handler at 0x80075c48[top] with context
+ * address &0x80075c08 + top*0x10 (the per-slot 16-byte buffer registered by
+ * RegisterMemCardEvent). If the handler returns non-zero, pops the stack.
+ * Called from MemCardSync polling loops to drive request completion. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined PopMemCardEventHandler(void);
 
-/* 0x80069030: libmcrd "is event-handler stack empty" predicate. Returns 1 iff 0x800751b0 is negative (= -1, init value from ResetMemCardEventStack). */
+/* 0x80069030: libmcrd "is event-handler stack empty" predicate. Returns 1 iff
+ * 0x800751b0 is negative (= -1, init value from ResetMemCardEventStack). */
 uint IsMemCardEventStackEmpty(void);
 
-/* 0x80069040: Possible _OP_VDEL.OBJ/__builtin_vec_delete Possible _OP_VNEW.OBJ/__builtin_vec_new Possible GS_106.OBJ/GsSetProjection Possible SSNOFF.OBJ/SsSetNoiseOff Possible SSQUIT.OBJ/SsQuit */
+/* 0x80069040: Possible _OP_VDEL.OBJ/__builtin_vec_delete Possible
+ * _OP_VNEW.OBJ/__builtin_vec_new Possible GS_106.OBJ/GsSetProjection Possible
+ * SSNOFF.OBJ/SsSetNoiseOff Possible SSQUIT.OBJ/SsQuit */
 int PadChkVsync(void);
 
-/* 0x80069060: Possible _OP_VDEL.OBJ/__builtin_vec_delete Possible _OP_VNEW.OBJ/__builtin_vec_new Possible GS_106.OBJ/GsSetProjection Possible SSNOFF.OBJ/SsSetNoiseOff Possible SSQUIT.OBJ/SsQuit */
+/* 0x80069060: Possible _OP_VDEL.OBJ/__builtin_vec_delete Possible
+ * _OP_VNEW.OBJ/__builtin_vec_new Possible GS_106.OBJ/GsSetProjection Possible
+ * SSNOFF.OBJ/SsSetNoiseOff Possible SSQUIT.OBJ/SsQuit */
 void PadStartCom(void);
 
-/* 0x80069080: Possible _OP_VDEL.OBJ/__builtin_vec_delete Possible _OP_VNEW.OBJ/__builtin_vec_new Possible GS_106.OBJ/GsSetProjection Possible SSNOFF.OBJ/SsSetNoiseOff Possible SSQUIT.OBJ/SsQuit */
+/* 0x80069080: Possible _OP_VDEL.OBJ/__builtin_vec_delete Possible
+ * _OP_VNEW.OBJ/__builtin_vec_new Possible GS_106.OBJ/GsSetProjection Possible
+ * SSNOFF.OBJ/SsSetNoiseOff Possible SSQUIT.OBJ/SsQuit */
 void PadStopCom(void);
 
 uint PadChkMtap(int param_1);
@@ -1701,42 +4211,78 @@ int PadSetMainMode(int socket, int offs, int lock);
 
 void PadSetAct(int socket, unsigned char *table, int len);
 
-/* 0x80069608: Sony SDK internal — libmcrd SIO0 step-table init. Installs the two-step driver functions 0x80075c5c = &0x8006969c (step 1) and 0x80075c60 = &0x80069634 (step 0), and zeroes 0x80075c58 / 0x80075c64 (step counter + sentinel). Counterpart of the SIO0 step-dispatcher at 0x80069b40. */
+/* 0x80069608: Sony SDK internal — libmcrd SIO0 step-table init. Installs the
+ * two-step driver functions 0x80075c5c = &0x8006969c (step 1) and 0x80075c60 =
+ * &0x80069634 (step 0), and zeroes 0x80075c58 / 0x80075c64 (step counter +
+ * sentinel). Counterpart of the SIO0 step-dispatcher at 0x80069b40. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_80069608(void);
 
-/* 0x80069808: Sony SDK internal — libmcrd accessor that returns & clears 0x80075224 (last memcard error/result code). Polled by error-recovery paths. */
+/* 0x80069808: Sony SDK internal — libmcrd accessor that returns & clears
+ * 0x80075224 (last memcard error/result code). Polled by error-recovery
+ * paths. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_80069808(void);
 
-/* 0x8006981c: Sony SDK internal — libmcrd SIO0/RCnt interrupt-handler installer. Bracketed by EnterCriticalSection / ExitCriticalSection (CD-bus arbitration); SysDeqIntRP+SysEnqIntRP rotates the RCnt entry, ChangeClearRCnt, then calls *0x800751c0 twice to register the two SIO0 driver callbacks at offsets 0 and 0xf0 from 0x800751f0. Sets 0x800751f4 = 1 (driver active). */
+/* 0x8006981c: Sony SDK internal — libmcrd SIO0/RCnt interrupt-handler
+ * installer. Bracketed by EnterCriticalSection / ExitCriticalSection (CD-bus
+ * arbitration); SysDeqIntRP+SysEnqIntRP rotates the RCnt entry,
+ * ChangeClearRCnt, then calls *0x800751c0 twice to register the two SIO0 driver
+ * callbacks at offsets 0 and 0xf0 from 0x800751f0. Sets 0x800751f4 = 1 (driver
+ * active). */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8006981c(void);
 
-/* 0x800698e8: Sony SDK internal — libmcrd SIO0/RCnt interrupt-handler uninstall counterpart to FUN_8006981c. ChangeClearRCnt + SysDeqIntRP under CD-bus arbitration. */
+/* 0x800698e8: Sony SDK internal — libmcrd SIO0/RCnt interrupt-handler uninstall
+ * counterpart to FUN_8006981c. ChangeClearRCnt + SysDeqIntRP under CD-bus
+ * arbitration. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_800698e8(void);
 
-/* 0x8006992c: Sony SDK internal — libmcrd SIO0 init/issue. Resets SIO0 CTRL/MODE bytes, sets SIO0 BAUD (0x1003 / 0x3003 by slot), then runs the per-slot callback function ptr at 0x800751dc over the per-device queue indexed by 0x800751fc, decrementing the queue counter at &0x80075214[slot]. On final iteration also calls completion fn at 0x800751e0. Not investigated — pure libmcrd internal. */
+/* 0x8006992c: Sony SDK internal — libmcrd SIO0 init/issue. Resets SIO0
+ * CTRL/MODE bytes, sets SIO0 BAUD (0x1003 / 0x3003 by slot), then runs the
+ * per-slot callback function ptr at 0x800751dc over the per-device queue
+ * indexed by 0x800751fc, decrementing the queue counter at &0x80075214[slot].
+ * On final iteration also calls completion fn at 0x800751e0. Not investigated —
+ * pure libmcrd internal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined8 FUN_8006992c(int param_1);
 
-/* 0x80069b40: Sony SDK internal — libmcrd SIO0 step-machine dispatcher. Calls the function pointer at 0x80075240[0x80075200 * 4], advances step counter, on negative return calls error handler at 0x800751bc, otherwise calls FUN_8006a014 finalize (with SetSioTimeoutDeadline(0x3c)). Step counter capped at 5. Not investigated — pure libmcrd internal. */
+/* 0x80069b40: Sony SDK internal — libmcrd SIO0 step-machine dispatcher. Calls
+ * the function pointer at 0x80075240[0x80075200 * 4], advances step counter, on
+ * negative return calls error handler at 0x800751bc, otherwise calls
+ * FUN_8006a014 finalize (with SetSioTimeoutDeadline(0x3c)). Step counter capped
+ * at 5. Not investigated — pure libmcrd internal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_80069b40(void);
 
-/* 0x80069c08: Sony SDK internal — libmcrd SIO0 byte exchange variant. param_2<0 = END-of-frame path (writes ~param_2 after waiting for ACK rise, then for timeout via IsSioTimeoutExpired); otherwise same as FUN_80069de0 but without the cmd-0x88 acknowledge gating. Returns received byte or 0xffffffec on timeout. Not investigated — pure libmcrd internal. */
+/* 0x80069c08: Sony SDK internal — libmcrd SIO0 byte exchange variant. param_2<0
+ * = END-of-frame path (writes ~param_2 after waiting for ACK rise, then for
+ * timeout via IsSioTimeoutExpired); otherwise same as FUN_80069de0 but without
+ * the cmd-0x88 acknowledge gating. Returns received byte or 0xffffffec on
+ * timeout. Not investigated — pure libmcrd internal. */
 uint FUN_80069c08(int param_1, int param_2);
 
-/* 0x80069de0: Sony SDK internal — libmcrd SIO0 byte exchange. Waits for SIO0 STAT TX-ready bit, optionally pauses for cmd-0x88 acknowledge, writes byte, waits for STAT RX-ready (with SetSioTimeoutDeadline/IsSioTimeoutExpired guard), stores received byte into request struct at param_1+0x44/45/3c. Returns received byte or 0xfffffffe on timeout. Not investigated — pure libmcrd internal. */
+/* 0x80069de0: Sony SDK internal — libmcrd SIO0 byte exchange. Waits for SIO0
+ * STAT TX-ready bit, optionally pauses for cmd-0x88 acknowledge, writes byte,
+ * waits for STAT RX-ready (with SetSioTimeoutDeadline/IsSioTimeoutExpired
+ * guard), stores received byte into request struct at param_1+0x44/45/3c.
+ * Returns received byte or 0xfffffffe on timeout. Not investigated — pure
+ * libmcrd internal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 uint FUN_80069de0(int param_1, undefined1 param_2);
 
-/* 0x8006a014: Sony SDK internal — libmcrd SIO0 abort/finalize. Writes 0xffffff7f to SIO0 CTRL (clears ACK), spins on STAT RX-ready bit until clear with timeout via IsSioTimeoutExpired, then sets bit 0x10 in SIO0 CTRL. Returns 1 on clean abort, 0 on timeout. Not investigated — pure libmcrd internal. */
+/* 0x8006a014: Sony SDK internal — libmcrd SIO0 abort/finalize. Writes
+ * 0xffffff7f to SIO0 CTRL (clears ACK), spins on STAT RX-ready bit until clear
+ * with timeout via IsSioTimeoutExpired, then sets bit 0x10 in SIO0 CTRL.
+ * Returns 1 on clean abort, 0 on timeout. Not investigated — pure libmcrd
+ * internal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 FUN_8006a014(void);
 
-/* 0x8006a0a4: Sony SDK internal — libmcrd SIO0 TX-ready spin. Busy-waits for SIO0 STAT bit 2 (TX buffer empty) to assert. Not investigated — pure libmcrd internal. */
+/* 0x8006a0a4: Sony SDK internal — libmcrd SIO0 TX-ready spin. Busy-waits for
+ * SIO0 STAT bit 2 (TX buffer empty) to assert. Not investigated — pure libmcrd
+ * internal. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined FUN_8006a0a4(void);
 
@@ -1744,7 +4290,8 @@ undefined FUN_8006a0a4(void);
 undefined _padSetAct(int param_1, undefined4 param_2, undefined1 param_3);
 
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined _padSetCmd(int param_1, undefined1 param_2, undefined4 param_3, undefined1 param_4);
+undefined _padSetCmd(int param_1, undefined1 param_2, undefined4 param_3,
+                     undefined1 param_4);
 
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined _padSendAtLoadInfo(int param_1);
@@ -1782,7 +4329,8 @@ undefined PADCMD_OBJ_390(void);
 undefined4 PADCMD_OBJ_3A0(int *param_1);
 
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
-undefined PADCMD_OBJ_538(int param_1, int param_2, undefined1 *param_3, int param_4);
+undefined PADCMD_OBJ_538(int param_1, int param_2, undefined1 *param_3,
+                         int param_4);
 
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 PADCMD_OBJ_560(int param_1, int param_2, undefined1 *param_3);
@@ -1935,26 +4483,42 @@ undefined PADSEQD_OBJ_438(void);
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined4 PADSEQD_OBJ_448(int param_1);
 
-/* 0x8006bb20: libcomb/libcard timeout-deadline setup. Stores param_1 (tick budget) at 0x80078e9c and the current free-running TMR_SYSCLOCK_VAL at 0x80076b78 — IsSioTimeoutExpired reads the same pair to test if (now - start) (optionally >>3 when TMR_SYSCLOCK_MODE bit 0x200 is clear) has reached the budget. Used by the SIO0 controller/memcard byte exchange (FUN_80069de0) to bound the response-ready spin. */
+/* 0x8006bb20: libcomb/libcard timeout-deadline setup. Stores param_1 (tick
+ * budget) at 0x80078e9c and the current free-running TMR_SYSCLOCK_VAL at
+ * 0x80076b78 — IsSioTimeoutExpired reads the same pair to test if (now - start)
+ * (optionally >>3 when TMR_SYSCLOCK_MODE bit 0x200 is clear) has reached the
+ * budget. Used by the SIO0 controller/memcard byte exchange (FUN_80069de0) to
+ * bound the response-ready spin. */
 /* FIXME: Ghidra-inferred prototype (contains undefined) */
 undefined SetSioTimeoutDeadline(undefined4 param_1);
 
-/* 0x8006bb40: libcomb/libcard timeout-deadline predicate. Reads current TMR_SYSCLOCK_VAL, accounts for the 16-bit timer rollover using TMR_SYSCLOCK_MAX, and returns true when (now - 0x80076b78) (or >>3 when TMR_SYSCLOCK_MODE bit 0x200 is clear) >= 0x80078e9c — the budget written by SetSioTimeoutDeadline. */
+/* 0x8006bb40: libcomb/libcard timeout-deadline predicate. Reads current
+ * TMR_SYSCLOCK_VAL, accounts for the 16-bit timer rollover using
+ * TMR_SYSCLOCK_MAX, and returns true when (now - 0x80076b78) (or >>3 when
+ * TMR_SYSCLOCK_MODE bit 0x200 is clear) >= 0x80078e9c — the budget written by
+ * SetSioTimeoutDeadline. */
 bool IsSioTimeoutExpired(void);
 
 /* ---- Actor/angle/random helpers named in phase-2 readability (evidence: the
  * matched C bodies in src/main/<subsystem>/<Name>.c). ---- */
 
-/* 0x8002ccc8: Enters the save-menu gamestate (0xB) from the world: freezes gameplay, resets Spyro, and snapshots yaw/distance from Spyro to the interacted actor, its target, the level-init actor and the camera into the scripted-camera block. Counterpart of EndSaveMenuToWorld. */
+/* 0x8002ccc8: Enters the save-menu gamestate (0xB) from the world: freezes
+ * gameplay, resets Spyro, and snapshots yaw/distance from Spyro to the
+ * interacted actor, its target, the level-init actor and the camera into the
+ * scripted-camera block. Counterpart of EndSaveMenuToWorld. */
 void BeginSaveMenuFromWorld(Actor *actor);
 
-/* 0x80037ea0: Uniform random int in [lo, hi]: (int)GetRandomU32() % (hi - lo + 1) + lo. */
+/* 0x80037ea0: Uniform random int in [lo, hi]: (int)GetRandomU32() % (hi - lo +
+ * 1) + lo. */
 int RandomIntInRange(int lo, int hi);
 
-/* 0x80037f10: Like RandomIntInRange for the magnitude, with the sign taken from the draw's low bit. */
+/* 0x80037f10: Like RandomIntInRange for the magnitude, with the sign taken from
+ * the draw's low bit. */
 int RandomSignedInRange(int lo, int hi);
 
-/* 0x80037f90: Counts a 4/2/1-byte value down by the frame delta (g_nActorFrameDelta), clamping at 0. Returns 0 still counting, 2 reached zero this call, 1 already zero. */
+/* 0x80037f90: Counts a 4/2/1-byte value down by the frame delta
+ * (g_nActorFrameDelta), clamping at 0. Returns 0 still counting, 2 reached zero
+ * this call, 1 already zero. */
 int TickCountdownByFrameDelta(void *pValue, int width);
 
 #ifndef TICK_DOWN
@@ -1967,100 +4531,160 @@ int TickCountdownByFrameDelta(void *pValue, int width);
 /* 0x80038074: (a + b + 0x100) % 0x100 — 8-bit angle add with wrap. */
 int WrapAddAngle8(int a, int b);
 
-/* 0x80038098: Steps 8-bit angle b toward a by at most c (via WrapAngleDelta8 / WrapAddAngle8); returns a once within range. */
+/* 0x80038098: Steps 8-bit angle b toward a by at most c (via WrapAngleDelta8 /
+ * WrapAddAngle8); returns a once within range. */
 int StepAngle8Toward(int to, int from, int maxStep, int unused);
 
-/* 0x800381bc: Signed 8-bit angle delta (b - a) wrapped into [-0x80, 0x80]. Argument order is the reverse of SignedAngleDelta8. */
+/* 0x800381bc: Signed 8-bit angle delta (b - a) wrapped into [-0x80, 0x80].
+ * Argument order is the reverse of SignedAngleDelta8. */
 int WrapAngleDelta8(int a, int b);
 
-/* 0x80038340: FindGroundHeightBelow at the actor's position with its Z biased up 0x5DC across the probe; returns the ground height. */
+/* 0x80038340: FindGroundHeightBelow at the actor's position with its Z biased
+ * up 0x5DC across the probe; returns the ground height. */
 int ProbeActorGroundHeight(Actor *actor);
 
-/* 0x8003838c: Ground probe as ProbeActorGroundHeight, then true when the probed normal's 8-bit slope angle is < 0x18 (near-flat). */
+/* 0x8003838c: Ground probe as ProbeActorGroundHeight, then true when the probed
+ * normal's 8-bit slope angle is < 0x18 (near-flat). */
 int IsActorGroundFlat(Actor *actor);
 
-/* 0x80038400: ProbeActorGroundHeight with a caller-supplied Z bias (also added to the probe ceiling). */
+/* 0x80038400: ProbeActorGroundHeight with a caller-supplied Z bias (also added
+ * to the probe ceiling). */
 int ProbeActorGroundHeightRaised(Actor *actor, int delta);
 
-/* 0x80038458: Sets the actor's Z to ProbeActorGroundHeight + its signed ->floorOffset, then re-encodes its direction code. */
+/* 0x80038458: Sets the actor's Z to ProbeActorGroundHeight + its signed
+ * ->floorOffset, then re-encodes its direction code. */
 void SnapActorToGround(Actor *actor);
 
-/* 0x80038494: True when the actor's pool slot bit is set in g_anCheckpointKillBitmap and its +0x53 byte is 0xFF. */
+/* 0x80038494: True when the actor's pool slot bit is set in
+ * g_anCheckpointKillBitmap and its +0x53 byte is 0xFF. */
 int IsActorInCheckpointKillSet(Actor *actor);
 
-/* 0x8003851c: Plays voice `voice` of the actor's model (sample id at byte 4 + voice of its g_apActorMeshTable record), keyed to the `voiceRow` slot, or to the actor's own ->voiceRow after stopping its previous voices. */
+/* 0x8003851c: Plays voice `voice` of the actor's model (sample id at byte 4 +
+ * voice of its g_apActorMeshTable record), keyed to the `voiceRow` slot, or to
+ * the actor's own ->voiceRow after stopping its previous voices. */
 void PlayActorMeshVoice(Actor *actor, int voice, void *voiceRow);
 
-/* 0x80038ee0: Turns the actor's 8-bit yaw (->rotZ) toward `target` by at most `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within `threshold`. */
-int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold, int flag);
+/* 0x80038ee0: Turns the actor's 8-bit yaw (->rotZ) toward `target` by at most
+ * `step` (x1.5 / x2 at frame delta 3 / 4); returns 1 once within
+ * `threshold`. */
+int TurnActorYawTowardAngle(Actor *actor, int target, int step, int threshold,
+                            int flag);
 
-/* 0x8005882c (hand-written asm): scans the 8 records of g_aRotBillboards (0x18 stride) for one whose life byte (+0xC) is 0 and returns its index, or -1 when all are live. Caller: SpawnActorRotBillboard. */
+/* 0x8005882c (hand-written asm): scans the 8 records of g_aRotBillboards (0x18
+ * stride) for one whose life byte (+0xC) is 0 and returns its index, or -1 when
+ * all are live. Caller: SpawnActorRotBillboard. */
 int FindFreeRotBillboardSlot(void);
 
-/* 0x8003aaec: Allocates a g_aRotBillboards record, seeds it white at `offset` rotated by the actor's matrix plus its position, and returns the record index (negative when the table is full). */
+/* 0x8003aaec: Allocates a g_aRotBillboards record, seeds it white at `offset`
+ * rotated by the actor's matrix plus its position, and returns the record index
+ * (negative when the table is full). */
 int SpawnActorRotBillboard(Actor *actor, int *offset);
 
-/* 0x8003b1e8: Sets ->mode = value on every non-dormant actor of actor's pickup group (->group, via g_pLevelPickupTableEntries), or on actor alone when the group index is out of range. */
+/* 0x8003b1e8: Sets ->mode = value on every non-dormant actor of actor's pickup
+ * group (->group, via g_pLevelPickupTableEntries), or on actor alone when the
+ * group index is out of range. */
 void SetActorGroupState(Actor *actor, int value);
 
-/* 0x8003b538: SetActorGroupState restricted to actors whose current state equals a2. */
+/* 0x8003b538: SetActorGroupState restricted to actors whose current state
+ * equals a2. */
 void ReplaceActorGroupState(Actor *actor, int value, int match);
 
 /* 0x8003b728: SetActorGroupState for the sub-state byte ->subMode. */
 void SetActorGroupSubstate(Actor *actor, int value);
 
-/* 0x8003b7c0: Sets the actor's pool-index bit in g_anLiveKillBitmap (ignored outside the live pool). */
+/* 0x8003b7c0: Sets the actor's pool-index bit in g_anLiveKillBitmap (ignored
+ * outside the live pool). */
 void MarkActorLiveKill(Actor *actor);
 
-/* 0x8003b9d4: Pickup collection: pushes the actor's kind into the gem-tally icon ring, handles the egg thief, spawns the kind's particle burst and queues the sound for kinds 0x53..0x57. */
+/* 0x8003b9d4: Pickup collection: pushes the actor's kind into the gem-tally
+ * icon ring, handles the egg thief, spawns the kind's particle burst and queues
+ * the sound for kinds 0x53..0x57. */
 void CollectPickupActor(Actor *actor);
 
-/* 0x80038fc8: Steers the tracked yaw *yawp toward the ArcTan2 bearing to Spyro with a held turn direction (*dirp, flips past `thresh`) and frame-scaled `speed`; swaps the turn anim pair while far off-bearing; stores the coarse yaw at +0x46 and returns the delta. */
-int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed, int thresh, int animId);
+/* 0x80038fc8: Steers the tracked yaw *yawp toward the ArcTan2 bearing to Spyro
+ * with a held turn direction (*dirp, flips past `thresh`) and frame-scaled
+ * `speed`; swaps the turn anim pair while far off-bearing; stores the coarse
+ * yaw at +0x46 and returns the delta. */
+int SteerActorYawTowardSpyro(Actor *actor, int *dirp, int *yawp, int speed,
+                             int thresh, int animId);
 
-/* 0x80039228: Moves the actor by an explicit delta (x1.5/x2 at frame delta 3/4) with actor-contact and world-collision checks; returns 1 contact, 2 collision, 0 committed. */
-int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int contactRadius, int radius, int flags);
+/* 0x80039228: Moves the actor by an explicit delta (x1.5/x2 at frame delta 3/4)
+ * with actor-contact and world-collision checks; returns 1 contact, 2
+ * collision, 0 committed. */
+int MoveActorByDelta(Actor *actor, int vx, int vy, int vz, int contactRadius,
+                     int radius, int flags);
 
-/* 0x80039398: Guided-move step along the actor's own heading byte (->rotZ): contact, world collision, ground probe, step-height and slope rejects per `flags`; returns 1 contact, 2 rejected, 0 committed. Sibling of MoveActorAlongAngle. */
-int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius, int radius, int flags);
+/* 0x80039398: Guided-move step along the actor's own heading byte (->rotZ):
+ * contact, world collision, ground probe, step-height and slope rejects per
+ * `flags`; returns 1 contact, 2 rejected, 0 committed. Sibling of
+ * MoveActorAlongAngle. */
+int MoveActorAlongHeading(Actor *actor, int speed, int contactRadius,
+                          int radius, int flags);
 
-/* 0x80039688: Guided-move step along an explicit `angle`, same checks and return codes as MoveActorAlongHeading. */
-int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius, int radius, int flags);
+/* 0x80039688: Guided-move step along an explicit `angle`, same checks and
+ * return codes as MoveActorAlongHeading. */
+int MoveActorAlongAngle(Actor *actor, int angle, int speed, int contactRadius,
+                        int radius, int flags);
 
-/* 0x80039910: One frame of ballistic motion (knock-back, hop, leap): steps along `heading` while *speed lasts (bled by `friction`), then adds *vz to Z under `gravity` (terminal -0x104; vz null or *vz 0xFFFF = none) and floor-snaps once falling; returns the move result or MOVED_LANDED. */
-int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz, int friction, int gravity);
+/* 0x80039910: One frame of ballistic motion (knock-back, hop, leap): steps
+ * along `heading` while *speed lasts (bled by `friction`), then adds *vz to Z
+ * under `gravity` (terminal -0x104; vz null or *vz 0xFFFF = none) and
+ * floor-snaps once falling; returns the move result or MOVED_LANDED. */
+int DriveActorTrackedMove(Actor *actor, int *speed, int heading, int *vz,
+                          int friction, int gravity);
 
-/* 0x80039aa8: Wander/patrol step: re-picks a jittered heading on a countdown, adds a weave, leashes to the home point, turns and takes a guided-move step (behaviour block layout in the C doc). */
+/* 0x80039aa8: Wander/patrol step: re-picks a jittered heading on a countdown,
+ * adds a weave, leashes to the home point, turns and takes a guided-move step
+ * (behaviour block layout in the C doc). */
 void UpdateActorWander(Actor *actor, WanderBlock *wb);
 
-/* 0x8003a9ec: Flame-scorch tint ramp: while the actor's flame-hit bit is set the band rises by 0x10 (to 0x50), otherwise it eases back (2 per call above 0x20, 1 below); the band/4 is packed into the tint word so the flame channel rises as the other two fall (see Actor.tint0). Band 0 with no hit flags leaves the tint alone. Returns the new band, which callers keep in their state's scorchBand. */
+/* 0x8003a9ec: Flame-scorch tint ramp: while the actor's flame-hit bit is set
+ * the band rises by 0x10 (to 0x50), otherwise it eases back (2 per call above
+ * 0x20, 1 below); the band/4 is packed into the tint word so the flame channel
+ * rises as the other two fall (see Actor.tint0). Band 0 with no hit flags
+ * leaves the tint alone. Returns the new band, which callers keep in their
+ * state's scorchBand. */
 int StepActorScorchTint(Actor *actor, int band);
 
-/* 0x8003b294: ORs `bits` into +0x18 of every non-dormant actor of pickup group `group` inside a box + facing cone around `actor`. */
-void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits, int distLim, int zLim, int xyLim, int angLim);
+/* 0x8003b294: ORs `bits` into +0x18 of every non-dormant actor of pickup group
+ * `group` inside a box + facing cone around `actor`. */
+void OrActorGroupFlagsInCone(Actor *actor, int group, unsigned int bits,
+                             int distLim, int zLim, int xyLim, int angLim);
 
-/* 0x8003b47c: SetActorGroupState restricted to actors whose current state differs from a2. */
+/* 0x8003b47c: SetActorGroupState restricted to actors whose current state
+ * differs from a2. */
 void SetActorGroupStateExcept(Actor *actor, int value, int match);
 
-/* 0x8003bccc: Trial-moves the actor `speed` along its facing and commits unless blocked by contact, world collision or a ground step >= 0xC9; returns 1 / 2 / 0. */
-int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR, int flags);
+/* 0x8003bccc: Trial-moves the actor `speed` along its facing and commits unless
+ * blocked by contact, world collision or a ground step >= 0xC9; returns 1 / 2 /
+ * 0. */
+int TryMoveActorForward(Actor *actor, int speed, int contactR, int collideR,
+                        int flags);
 
-/* 0x8003c994: Advances an actor along its waypoint path record (0x10-byte waypoints from +8), wrapping the index forward or back, and steers toward the current waypoint with speed dist>>4 capped. */
-void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold, int cap, int radius, int yawLim, int pitchLim);
+/* 0x8003c994: Advances an actor along its waypoint path record (0x10-byte
+ * waypoints from +8), wrapping the index forward or back, and steers toward the
+ * current waypoint with speed dist>>4 capped. */
+void FollowActorWaypointPath(Actor *actor, PathData *path, int threshold,
+                             int cap, int radius, int yawLim, int pitchLim);
 
-/* 0x80038120: Moves 8-bit angle b toward a by the fraction c/256 of the shortest delta. */
+/* 0x80038120: Moves 8-bit angle b toward a by the fraction c/256 of the
+ * shortest delta. */
 int LerpAngle8(int to, int from, unsigned char frac);
 
 /* 0x80038178: StepAngle8Toward(a, b, c) then LerpAngle8 by d/256. */
 int StepAndLerpAngle8(int to, int from, int maxStep, int frac);
 
-/* 0x800381e8: True when the actor's yaw byte (->rotZ) is within `threshold` of the bearing to Spyro. */
+/* 0x800381e8: True when the actor's yaw byte (->rotZ) is within `threshold` of
+ * the bearing to Spyro. */
 int IsActorFacingSpyro(Actor *actor, int threshold);
 
-/* 0x80038250: Ray-march occlusion probe from g_anSpyroWorldPos toward a point; the Spyro-sourced sibling of CheckLineOfSightSegment. */
+/* 0x80038250: Ray-march occlusion probe from g_anSpyroWorldPos toward a point;
+ * the Spyro-sourced sibling of CheckLineOfSightSegment. */
 unsigned int CheckSpyroLineOfSightTo(int *target);
 
-/* 0x80038a40: Nearest point of a path list (count at [0], 0x10-byte records from +8) to the actor's position; returns the 2D distance, index via out_index. */
+/* 0x80038a40: Nearest point of a path list (count at [0], 0x10-byte records
+ * from +8) to the actor's position; returns the 2D distance, index via
+ * out_index. */
 int FindNearestPathPointToActor(Actor *actor, PathData *path, int *out_index);
 
 /* 0x80038afc: FindNearestPathPointToActor measured from Spyro. */
@@ -2069,7 +4693,8 @@ int FindNearestPathPointToSpyro(PathData *path, int *out_index);
 /* 0x80038bb0: Index of the path-list point farthest (2D) from Spyro. */
 int FindFarthestPathPointFromSpyro(PathData *path);
 
-/* 0x80038c4c: Rotates pos - box (x, y) into the TriggerBox's yaw frame (->yaw) and tests it against halfWidth / halfDepth. */
+/* 0x80038c4c: Rotates pos - box (x, y) into the TriggerBox's yaw frame (->yaw)
+ * and tests it against halfWidth / halfDepth. */
 int IsPointInRotatedBox(int *pos, struct TriggerBox *box);
 
 /* --- Shared helpers named 2026-10-21 (session 2). Evidence: the original asm
@@ -2081,10 +4706,12 @@ int IsPointInRotatedBox(int *pos, struct TriggerBox *box);
    The overlays bounce velocities with it (vel, normal, vel). */
 int ReflectVectorOffNormal(int *v, int *n, int *out);
 
-/* 0x800177f8: dst = src * (0x10000 / den) >> 16 via GTE gpl0 (IR inputs saturate to 16 bits). */
+/* 0x800177f8: dst = src * (0x10000 / den) >> 16 via GTE gpl0 (IR inputs
+ * saturate to 16 bits). */
 void DivideVector3(int *dst, int *src, int n);
 
-/* 0x80017bfc: Narrow an int[3] to short[3], dropping 2 fractional bits (>>2). */
+/* 0x80017bfc: Narrow an int[3] to short[3], dropping 2 fractional bits
+ * (>>2). */
 void VectorToSVectorShr2(short *dst, int *src);
 
 /* 0x80017c24: Widen a ushort[3] to int[3], adding 2 fractional bits (<<2). */
@@ -2099,24 +4726,26 @@ void AddSVector(short *dst, short *a, short *b);
 int ComputeStepTowardPoint(int *from, int *to, int *step, int speed);
 
 /* 0x8002b390: For every world chunk-anim entry (the 9 count/ptr tables from
- * g_nWorldAnimTextureFrameCount) whose id byte [0] == id: [1] = ([1] & andMask) | orMask
- * ([1] is the state-flags byte, see TickWorldChunkAnimations). */
+ * g_nWorldAnimTextureFrameCount) whose id byte [0] == id: [1] = ([1] & andMask)
+ * | orMask ([1] is the state-flags byte, see TickWorldChunkAnimations). */
 void ModifyWorldChunkAnimFlags(int id, int andMask, int orMask);
 
 /* 0x8002b3f4: First chunk-anim entry with id byte == id; returns its word >> 8
  * (flags | step << 8 | delay << 16). */
 int GetWorldChunkAnimState(int id);
 
-/* 0x8002b444: Every chunk-anim entry with id byte == id: [2] (current step) = step;
- * when `fire` is set also [3] (delay) = 1 so it advances on the next tick. */
+/* 0x8002b444: Every chunk-anim entry with id byte == id: [2] (current step) =
+ * step; when `fire` is set also [3] (delay) = 1 so it advances on the next
+ * tick. */
 void SetWorldChunkAnimStep(int id, int step, int fire);
 
-/* 0x8002c914: Empty `jr ra` stub; level code calls it with a reward/script id. */
+/* 0x8002c914: Empty `jr ra` stub; level code calls it with a reward/script
+ * id. */
 void StubRewardHook(void);
 
-/* 0x80032a20: Poll the pending memcard sync; on completion commit the result into
- * the 2-entry ring and flip its index, then run the card-info op handler. Used by
- * the titlescreen memcard menu. */
+/* 0x80032a20: Poll the pending memcard sync; on completion commit the result
+ * into the 2-entry ring and flip its index, then run the card-info op handler.
+ * Used by the titlescreen memcard menu. */
 void PollMemCardSyncRing(void);
 
 /* 0x80037e98: Empty `jr ra` stub; level actor code calls it with the actor. */
@@ -2126,105 +4755,152 @@ void PollMemCardSyncRing(void);
 struct Actor;
 void OnActorAnimQueued(struct Actor *actor, ...);
 #else
-void OnActorAnimQueued(); /* no-op taking (void); callers pass the actor (SteerActorYawTowardSpyro two extra args), so no prototype */
+/* no-op taking (void); callers pass the actor (SteerActorYawTowardSpyro two
+ * extra args), so no prototype */
+void OnActorAnimQueued();
 #endif
 
 /* 0x8003891c: Vertical launch speed for a lob from pos to target at horizontal
  * `speed` under `gravity`; flight time (frames) via pOutTime. */
-int ComputeLobVelocityZ(int *pos, int *target, int speed, int gravity, int *pOutTime);
+int ComputeLobVelocityZ(int *pos, int *target, int speed, int gravity,
+                        int *pOutTime);
 
-/* 0x80038d54: |dot(plane.xyz, p) >> 10 + plane.w| — absolute point/plane distance. */
+/* 0x80038d54: |dot(plane.xyz, p) >> 10 + plane.w| — absolute point/plane
+ * distance. */
 int PlaneDistanceAbs(int *pos, int *plane);
 
 /* 0x80038638: Steer an actor around a target point (aims `radius` off it on the
  * side it is already turning toward); returns the residual heading error. */
 #ifndef STEER_NO_BLOCK
 #define STEER_NO_BLOCK 0xFF /* blockA / blockB: no blocked heading */
-#define STEER_BLOCKED 0x100 /* returned: the heading is within 5 of a blocked one */
+/* returned: the heading is within 5 of a blocked one */
+#define STEER_BLOCKED 0x100
 #endif
-/* 0x80038638: steers `actor` around `tgt` rather than at it: aims at the point `radius` from it on the side the actor is turning toward and walks that heading (`speed`, turn `turnStep` / `turnThreshold`). Returns the residual |angle error| when lined up within `deadzone` or nothing moved, 0x100 when the heading is within 5 of a blocked one (`blockA` / `blockB`, STEER_NO_BLOCK = none) on the turn side, else the negated MoveActorAlongHeading result. */
-int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face, int deadzone, int speed, int turnStep, int turnThreshold, int blockA, int blockB, int contactRadius, int wallRadius, int flags);
+/* 0x80038638: steers `actor` around `tgt` rather than at it: aims at the point
+ * `radius` from it on the side the actor is turning toward and walks that
+ * heading (`speed`, turn `turnStep` / `turnThreshold`). Returns the residual
+ * |angle error| when lined up within `deadzone` or nothing moved, 0x100 when
+ * the heading is within 5 of a blocked one (`blockA` / `blockB`, STEER_NO_BLOCK
+ * = none) on the turn side, else the negated MoveActorAlongHeading result. */
+int SteerActorAroundPoint(Actor *actor, int *tgt, int radius, int face,
+                          int deadzone, int speed, int turnStep,
+                          int turnThreshold, int blockA, int blockB,
+                          int contactRadius, int wallRadius, int flags);
 
 /* 0x80039e94: Path-follow that turns in place while the heading error exceeds
  * `lim`, then walks; returns 0x100 + node index on arrival. */
 #ifndef PIVOT_TURN_ANY
-#define PIVOT_TURN_ANY 0xFF /* turnGroup: turn without waiting on a group peer */
-/* The `thresh` most callers pass: a node counts as reached within 0x100 (2D). */
+/* turnGroup: turn without waiting on a group peer */
+#define PIVOT_TURN_ANY 0xFF
+/* The `thresh` most callers pass: a node counts as reached within 0x100
+ * (2D). */
 #define PIVOT_ARRIVE_NEAR 0x100
 /* ->subMode while PivotActorAlongPath drives the actor. */
-#define PIVOT_SUB_ARRIVED 0 /* reached a node (or not started): may need to turn */
+/* reached a node (or not started): may need to turn */
+#define PIVOT_SUB_ARRIVED 0
 #define PIVOT_SUB_WALKING 1 /* heading within `lim`: walking to the node */
 #define PIVOT_SUB_TURNING 2 /* turning in place toward the node */
 #endif
-/* 0x80039e94: waypoint path follower: turns in place toward path node `path->cur` (deferred while a walker of `turnGroup` moves) once the heading error exceeds `lim`, else walks to it; on arrival within `thresh` (2D, plus Z with flags bit 8) steps the node forward or back with wrap and returns 0x100 + the new index. */
-int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed, int contactRadius, int step, int lim, int turnGroup, int flags);
+/* 0x80039e94: waypoint path follower: turns in place toward path node
+ * `path->cur` (deferred while a walker of `turnGroup` moves) once the heading
+ * error exceeds `lim`, else walks to it; on arrival within `thresh` (2D, plus Z
+ * with flags bit 8) steps the node forward or back with wrap and returns 0x100
+ * + the new index. */
+int PivotActorAlongPath(Actor *actor, PathData *path, int thresh, int speed,
+                        int contactRadius, int step, int lim, int turnGroup,
+                        int flags);
 
 /* 0x8003a16c: Path-follow steering step with clamped yaw, pitch toward the
- * waypoint, optional contact probe and ground snap; returns 0x100 + index on arrival. */
-int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius, int speed, int contact, int clamp, int limit, int *yawp);
+ * waypoint, optional contact probe and ground snap; returns 0x100 + index on
+ * arrival. */
+int SteerActorAlongWaypoints(Actor *actor, PathData *path, int radius,
+                             int speed, int contact, int clamp, int limit,
+                             int *yawp);
 
 /* 0x8003a420: Ground-walking path follow: clamped turn, matrix-rotated move,
  * ground contact, waypoint advance. */
-int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist, int cap, int contactRadius, int maxTurn, int stallAngle, int *smoothVel);
+int WalkActorAlongWaypoints(Actor *actor, PathData *path, int arriveDist,
+                            int cap, int contactRadius, int maxTurn,
+                            int stallAngle, int *smoothVel);
 
-/* 0x8003abc0: Spawn the drop a broken or flamed actor leaves: its fixed dropKind type, or a rolled extra life / butterfly / Sparx food. */
+/* 0x8003abc0: Spawn the drop a broken or flamed actor leaves: its fixed
+ * dropKind type, or a rolled extra life / butterfly / Sparx food. */
 Actor *SpawnActorDeathDrop(Actor *src, int kind, int *hint, int *alt);
 
-/* 0x8003b0dc: True when any actor of pickup group `group` is not dormant (mode < ACTOR_MODE_DORMANT). */
+/* 0x8003b0dc: True when any actor of pickup group `group` is not dormant (mode
+ * < ACTOR_MODE_DORMANT). */
 int PickupGroupHasLiveActor(int group);
 
-/* 0x8003b854: Bank `value` gems for an actor kill/pickup and set its committed-kill
- * and per-level kill bits, then play the pickup sound on the actor. */
+/* 0x8003b854: Bank `value` gems for an actor kill/pickup and set its
+ * committed-kill and per-level kill bits, then play the pickup sound on the
+ * actor. */
 void CommitActorKillGems(int value, Actor *actor);
 
-/* 0x8003bad0: Turn (yaw/pitch clamped) and move an actor toward a 3D point, with
- * optional sphere collision; returns 1 when the move was adjusted. */
-int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim, int pitchLim, int radius);
+/* 0x8003bad0: Turn (yaw/pitch clamped) and move an actor toward a 3D point,
+ * with optional sphere collision; returns 1 when the move was adjusted. */
+int SteerActorTowardPoint(Actor *actor, int *target, int speed, int yawLim,
+                          int pitchLim, int radius);
 
 /* 0x8003bfc0: Move an actor along a path in fixed-length legs, cross-fading the
  * first steps of each leg with the previous leg vector; re-aims yaw/pitch. */
 #ifndef TWEEN_FLY
-#define TWEEN_FLY 0x04 /* keep each leg's Z step (fly); without it the step is flattened */
+/* keep each leg's Z step (fly); without it the step is flattened */
+#define TWEEN_FLY 0x04
 #define TWEEN_NEXT_LEG 1 /* result: this step finished a leg */
-#define TWEEN_WRAPPED 2  /* result: ... and the cursor wrapped back to node 0 */
+/* result: ... and the cursor wrapped back to node 0 */
+#define TWEEN_WRAPPED 2
 #endif
-/* 0x8003bfc0: moves an actor one sub-step along its waypoint ring, `legFrames` frames per leg, cross-fading the start of each leg with the previous one (`prev`) and re-aiming yaw / pitch along the step; returns 2 when the cursor wraps to node 0, else 1. */
-int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step, int legFrames, int flags);
+/* 0x8003bfc0: moves an actor one sub-step along its waypoint ring, `legFrames`
+ * frames per leg, cross-fading the start of each leg with the previous one
+ * (`prev`) and re-aiming yaw / pitch along the step; returns 2 when the cursor
+ * wraps to node 0, else 1. */
+int TweenActorAlongPath(Actor *actor, PathData *path, int *prev, int *step,
+                        int legFrames, int flags);
 
-/* 0x8003c358: Spell a level name (portal signs) or "RETURN HOME" (level exits) in floating letter actors around a sign. */
+/* 0x8003c358: Spell a level name (portal signs) or "RETURN HOME" (level exits)
+ * in floating letter actors around a sign. */
 #ifndef NAME_LETTERS_RETURN_HOME
-#define NAME_LETTERS_RETURN_HOME 0 /* "RETURN HOME", facing Spyro (level exits) */
-#define NAME_LETTERS_LEVEL       1 /* the sign's level name, along its yaw (portals) */
+/* "RETURN HOME", facing Spyro (level exits) */
+#define NAME_LETTERS_RETURN_HOME 0
+/* the sign's level name, along its yaw (portals) */
+#define NAME_LETTERS_LEVEL 1
 #endif
-/* 0x8003c358: spells a name in floating letter actors on an arc around `sign`: its level's name with NAME_LETTERS_LEVEL (hung off the sign's yaw), else "RETURN HOME" facing Spyro (level exits). Letters are g_pfnLevelSpawnActor ids 0x1AA + (c - 'A'); spaces only advance. */
+/* 0x8003c358: spells a name in floating letter actors on an arc around `sign`:
+ * its level's name with NAME_LETTERS_LEVEL (hung off the sign's yaw), else
+ * "RETURN HOME" facing Spyro (level exits). Letters are g_pfnLevelSpawnActor
+ * ids 0x1AA + (c - 'A'); spaces only advance. */
 void SpawnNameLetterActors(Actor *sign, int named);
 
-/* 0x8003c85c: Convert the bearing from Spyro to `target` into scripted-camera stick requests. */
+/* 0x8003c85c: Convert the bearing from Spyro to `target` into scripted-camera
+ * stick requests. */
 void AimCameraStickTowardPoint(int *target);
 
-/* 0x8004e2e8: If Spyro is within radius + 0x164 of pos (box then sphere test), OR
- * `flags` into g_dwSpyroTriggerEventFlags and return 1; else 0. */
+/* 0x8004e2e8: If Spyro is within radius + 0x164 of pos (box then sphere test),
+ * OR `flags` into g_dwSpyroTriggerEventFlags and return 1; else 0. */
 int RaiseSpyroTriggerInRadius(int *pos, int radius, int flags);
 
 /* 0x80051fec: Build the frame's active-actor pointer list: actors flagged
- * always-active (+0x51) or within their activation radius (+0x52 << 10) of Spyro,
- * plus every member of a pickup group (->group) with any active member. */
+ * always-active (+0x51) or within their activation radius (+0x52 << 10) of
+ * Spyro, plus every member of a pickup group (->group) with any active
+ * member. */
 void BuildActiveActorList(void);
 
-/* 0x800529e4: Recompute an actor's derived state by ACTOR_REFRESH_* bits: COLLISION
- * (1) reloads ->collision (+8) from the current animation frame, GRID (2) relinks the
- * spatial-grid cell (+0x34), MATRIX (4) rebuilds ->mtx from the euler bytes (+0x44). */
+/* 0x800529e4: Recompute an actor's derived state by ACTOR_REFRESH_* bits:
+ * COLLISION (1) reloads ->collision (+8) from the current animation frame, GRID
+ * (2) relinks the spatial-grid cell (+0x34), MATRIX (4) rebuilds ->mtx from the
+ * euler bytes (+0x44). */
 void RefreshActorDerivedState(Actor *actor, int mode);
 
-/* 0x80052d64: World position of attach/mount point `slot` on an actor's model. */
+/* 0x80052d64: World position of attach/mount point `slot` on an actor's
+ * model. */
 void GetActorAttachPoint(Actor *actor, int slot, int *dst);
 
-/* 0x80053570: Claim the next 0x20-byte emit-list record and stamp its class at +1
- * (a full list overwrites a random record). */
+/* 0x80053570: Claim the next 0x20-byte emit-list record and stamp its class at
+ * +1 (a full list overwrites a random record). */
 void *AllocEmitListRecord(int cls);
 
-/* 0x80053608: Release an emit-list record: mark it a hole (-2), or trim the list's
- * tail (-1 terminator) when it was last; pulls the write cursor back. */
+/* 0x80053608: Release an emit-list record: mark it a hole (-2), or trim the
+ * list's tail (-1 terminator) when it was last; pulls the write cursor back. */
 void FreeEmitListRecord(unsigned char *rec);
 
 /* 0x80054578: Refresh the HUD level-gem counter cache and digits. */
@@ -2233,7 +4909,8 @@ void RefreshHudLevelGemCounter(void);
 /* 0x80057380: Trigger-region type byte of the current ground surface, or -1. */
 int GetGroundTriggerRegionType(void);
 
-/* 0x80058ae8: Claim a free world sparkle record (kind 0x11), NULL when all 16 are used. */
+/* 0x80058ae8: Claim a free world sparkle record (kind 0x11), NULL when all 16
+ * are used. */
 void *AllocWorldSparkle(void);
 
 /* 0x80058b60: *p = 0. */
@@ -2243,13 +4920,15 @@ void ClearWord(int *p);
  * snapshot the level tallies into the persistence block. */
 void SetSpawnAnchorFromActor(Actor *actor, int heading);
 
-/* 0x800385bc: Play the level's burst sample (sample bank +0x26) keyed to the actor
- * (positionless for NULL), then BurstActorIntoSparks(actor, sparkLife). */
+/* 0x800385bc: Play the level's burst sample (sample bank +0x26) keyed to the
+ * actor (positionless for NULL), then BurstActorIntoSparks(actor,
+ * sparkLife). */
 void BurstActorWithSound(Actor *actor, int sparkLife);
 
 /* 0x800530c0: Load the actor's matrix/position into the GTE, decode its current
- * mesh frame's packed vertices and emit class-2 spark records (AllocEmitListRecord)
- * at them; `life` (parked in GTE RBK) plus 0..3 random is each spark's Emit.life. */
+ * mesh frame's packed vertices and emit class-2 spark records
+ * (AllocEmitListRecord) at them; `life` (parked in GTE RBK) plus 0..3 random is
+ * each spark's Emit.life. */
 void BurstActorIntoSparks(Actor *actor, int life);
 
 /* 0x80016fd0: Transpose the packed 3x3 short matrix at src into dst (three

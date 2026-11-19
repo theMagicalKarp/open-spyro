@@ -1791,7 +1791,9 @@ L_8002B388:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8002a6fcu: bc = 0; goto L_8002A6FC;
+  case 0x8002a6fcu:
+    bc = 0;
+    goto L_8002A6FC;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("TickWorldChunkAnimations", tgt, entry_ra);

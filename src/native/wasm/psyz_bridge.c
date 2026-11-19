@@ -7,7 +7,8 @@
  * pushed, not pulled: the host asks for the SPU's output between frames
  * (native_audio_pull) and queues it on an SDL audio stream, so no SDL audio
  * thread ever enters the module. The memory-card directory API is a stub
- * until 5.5. Pad input crosses as an export the host calls (psyz_bridge_pads_set).
+ * until 5.5. Pad input crosses as an export the host calls
+ * (psyz_bridge_pads_set).
  */
 
 #include <stdarg.h>
@@ -115,7 +116,7 @@ EXPORT(native_pads_set) void native_pads_set(int port, int len) {
   Psyz_PadsSet(port, bridge_buffer, len);
 }
 
-EXPORT(native_pads_set_kind) int native_pads_set_kind(int port, int channel,
-                                                      int kind) {
+EXPORT(native_pads_set_kind)
+int native_pads_set_kind(int port, int channel, int kind) {
   return (int)Psyz_PadsSetKind(port, channel, (PsyzControllerKind)kind);
 }

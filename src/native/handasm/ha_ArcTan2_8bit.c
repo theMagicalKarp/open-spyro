@@ -194,7 +194,9 @@ L_80016AAC:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800169acu: bc = 0; goto L_800169AC;
+  case 0x800169acu:
+    bc = 0;
+    goto L_800169AC;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ArcTan2_8bit", tgt, entry_ra);

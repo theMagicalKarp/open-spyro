@@ -29,9 +29,7 @@ w2c_env_0x5F_indirect_function_table(struct w2c_env *e) {
 }
 u32 *w2c_env_0x5F_memory_base(struct w2c_env *e) { return &e->memory_base; }
 u32 *w2c_env_0x5F_table_base(struct w2c_env *e) { return &e->table_base; }
-u32 *w2c_env_0x5F_stack_pointer(struct w2c_env *e) {
-  return &e->stack_pointer;
-}
+u32 *w2c_env_0x5F_stack_pointer(struct w2c_env *e) { return &e->stack_pointer; }
 
 static long read_file(const char *path, void *dst, long max) {
   FILE *f = fopen(path, "rb");

@@ -146,7 +146,9 @@ L_80017E4C:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017d7cu: bc = 0; goto L_80017D7C;
+  case 0x80017d7cu:
+    bc = 0;
+    goto L_80017D7C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ComputeStepTowardPoint", tgt, entry_ra);
@@ -154,7 +156,8 @@ dispatch:
   HA_SPILL();
 }
 
-uint32_t ComputeStepTowardPoint(uint32_t p0, uint32_t p1, uint32_t p2, uint32_t p3) {
+uint32_t ComputeStepTowardPoint(uint32_t p0, uint32_t p1, uint32_t p2,
+                                uint32_t p3) {
   HaRegs R;
   ha_enter(&R);
   R.r[4] = p0;

@@ -42,7 +42,9 @@ L_800177C0:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800177c0u: bc = 0; goto L_800177C0;
+  case 0x800177c0u:
+    bc = 0;
+    goto L_800177C0;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ScaleVector3Sat", tgt, entry_ra);

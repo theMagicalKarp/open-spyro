@@ -724,7 +724,9 @@ L_8002B9C4:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8002b4acu: bc = 0; goto L_8002B4AC;
+  case 0x8002b4acu:
+    bc = 0;
+    goto L_8002B4AC;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ResetWorldChunkAnimations", tgt, entry_ra);

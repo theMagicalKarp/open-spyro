@@ -60,7 +60,9 @@ L_800175B8:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x800175b8u: bc = 0; goto L_800175B8;
+  case 0x800175b8u:
+    bc = 0;
+    goto L_800175B8;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("ScaleVector3ByRatio", tgt, entry_ra);

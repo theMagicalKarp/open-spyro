@@ -18,9 +18,10 @@
  *
  * The stone-hill variant: the town-square arm set plus 0x6, the actor-tracking
  * smoke plume (record class 3, which keeps a pointer to the actor's position
- * at +0x18 so the particle follows it).  `effectArg >> 24` is written inline at its
- * three 0xC-arm use sites so it stays a compiler temp and loop.c hoists it out
- * of the loop (scan_loop case 2); a named local would pin it inside the arm.
+ * at +0x18 so the particle follows it).  `effectArg >> 24` is written inline at
+ * its three 0xC-arm use sites so it stays a compiler temp and loop.c hoists it
+ * out of the loop (scan_loop case 2); a named local would pin it inside the
+ * arm.
  *
  * Word-identical (bar branch displacements) to Level2_EmitParticles,
  * Level4_EmitParticles, Level10_EmitParticles and Level28_EmitParticles.
@@ -158,7 +159,8 @@ void Level3_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.fx = EMIT_FX_QUAD;
       rec->u.spark.depthBias = 4;
       rec->u.spark.texIndex = 0;
-      rec->u.spark.vel[0] = ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
+      rec->u.spark.vel[0] =
+          ((count - i) << 12) / 5; /* ORBIT_ANGLE: spread round Spyro */
       break;
     }
     case EMIT_ACTOR_SPARK: {
@@ -170,9 +172,11 @@ void Level3_EmitParticles(int count, int type, int *pos, int effectArg) {
       rec->u.spark.depthBias = 4;
       if (src->type == ACTOR_TYPE_DRAGON_EGG) {
         CopyVector(v1, &src->posX);
-      } else if (src->type == ACTOR_TYPE_KEY || src->type == ACTOR_TYPE_LOOT_VORTEX) {
+      } else if (src->type == ACTOR_TYPE_KEY ||
+                 src->type == ACTOR_TYPE_LOOT_VORTEX) {
         if ((effectArg >> 24) < 6) {
-          RotateVectorByMatrix(src->mtx, &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
+          RotateVectorByMatrix(src->mtx,
+                               &g_anEmitSlotOffsets[(effectArg >> 24) * 3], v1);
           AddVector(v1, v1, &src->posX);
         } else {
           rec->cls = EMIT_CLASS_FADED_QUAD;
@@ -420,7 +424,8 @@ void Level3_EmitParticles(int count, int type, int *pos, int effectArg) {
       VectorToSVectorShr2(rec->u.line.a, pos);
       t = GetRandomU32() & 0xFFF;
       rec->u.line.a[0] = rec->u.line.a[0] + (LookupCosine(t) >> 8);
-      rec->u.line.a[1] = rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
+      rec->u.line.a[1] =
+          rec->u.line.a[1] + (LookupSine(GetRandomU32() & 0x7FF) >> 8);
       u = LookupSine(t);
       rec->u.line.c1[3] = 0x7F;
       rec->u.line.c0[1] = 0x40;
@@ -545,9 +550,9 @@ void Level3_EmitParticles(int count, int type, int *pos, int effectArg) {
  *    inherits the store's LUID, and sched2 emits low-priority stragglers in
  *    LUID order -- the `li` can never precede a straggler from an earlier
  *    source statement.  Moving the fx store up moves the store too (equal
- *    priority stores also come out in source order).  depthBias/lift are the way
- *    out because their `li v0,8` / `sll v0,i,5` producers are chained to
- *    `li v0,48` by v0 reuse, so sched2 holds those stores in place however the
+ *    priority stores also come out in source order).  depthBias/lift are the
+ * way out because their `li v0,8` / `sll v0,i,5` producers are chained to `li
+ * v0,48` by v0 reuse, so sched2 holds those stores in place however the
  *    statements are ordered.  See cookbook A220.
  *  - Arm 0x15's `v` is promoted to function scope and carries 0x30 here, which
  *    is what puts `li v0,48` and `sll v1,i,4` in the original's first two

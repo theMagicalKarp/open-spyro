@@ -70,7 +70,9 @@ L_80017548:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80017548u: bc = 0; goto L_80017548;
+  case 0x80017548u:
+    bc = 0;
+    goto L_80017548;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("CrossProductOfEdges", tgt, entry_ra);

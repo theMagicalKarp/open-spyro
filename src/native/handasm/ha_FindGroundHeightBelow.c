@@ -1396,7 +1396,9 @@ L_8004DF1C:
   goto L_8004D738;
 dispatch:
   switch (tgt) {
-  case 0x8004d5ecu: bc = 0; goto L_8004D5EC;
+  case 0x8004d5ecu:
+    bc = 0;
+    goto L_8004D5EC;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("FindGroundHeightBelow", tgt, entry_ra);

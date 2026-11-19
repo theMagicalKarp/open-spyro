@@ -55,7 +55,9 @@ L_80017750:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x8001771cu: bc = 0; goto L_8001771C;
+  case 0x8001771cu:
+    bc = 0;
+    goto L_8001771C;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("VectorsEqual", tgt, entry_ra);

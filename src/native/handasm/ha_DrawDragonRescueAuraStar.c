@@ -352,7 +352,9 @@ L_80058A44:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80058864u: bc = 0; goto L_80058864;
+  case 0x80058864u:
+    bc = 0;
+    goto L_80058864;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("DrawDragonRescueAuraStar", tgt, entry_ra);

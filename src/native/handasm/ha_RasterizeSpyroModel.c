@@ -3,7 +3,8 @@
 #include "handasm.h"
 #include "handasm_index.h"
 
-/* cluster RasterizeSpyroModel: RasterizeSpyroModel (80023AC4), RasterizeSpyroModel_Tail (800242B8) */
+/* cluster RasterizeSpyroModel: RasterizeSpyroModel (80023AC4),
+ * RasterizeSpyroModel_Tail (800242B8) */
 void ha_RasterizeSpyroModel(HaRegs *R, uint32_t entry) {
   HA_LOCALS();
   uint32_t tgt = entry, entry_ra;
@@ -3456,7 +3457,10 @@ L_80025140:
   /* 800251C8 00F93820 (delay) */
   a3 = a3 + t9;
   if (bc) {
-    { bc = 0; goto L_800251E0; }
+    {
+      bc = 0;
+      goto L_800251E0;
+    }
   }
   /* 800251CC 4810C000 */
   s0 = HA_MFC2(24);
@@ -4490,243 +4494,717 @@ L_800258B0:
   goto dispatch;
 dispatch:
   switch (tgt) {
-  case 0x80023ac4u: bc = 0; goto L_80023AC4;
-  case 0x80024054u: bc = 0; goto L_80024054;
-  case 0x80024058u: bc = 0; goto L_80024058;
-  case 0x8002405cu: bc = 0; goto L_8002405C;
-  case 0x80024060u: bc = 0; goto L_80024060;
-  case 0x80024064u: bc = 0; goto L_80024064;
-  case 0x80024068u: bc = 0; goto L_80024068;
-  case 0x8002406cu: bc = 0; goto L_8002406C;
-  case 0x80024070u: bc = 0; goto L_80024070;
-  case 0x80024074u: bc = 0; goto L_80024074;
-  case 0x80024078u: bc = 0; goto L_80024078;
-  case 0x8002407cu: bc = 0; goto L_8002407C;
-  case 0x80024080u: bc = 0; goto L_80024080;
-  case 0x80024084u: bc = 0; goto L_80024084;
-  case 0x80024088u: bc = 0; goto L_80024088;
-  case 0x8002408cu: bc = 0; goto L_8002408C;
-  case 0x80024090u: bc = 0; goto L_80024090;
-  case 0x80024094u: bc = 0; goto L_80024094;
-  case 0x80024098u: bc = 0; goto L_80024098;
-  case 0x8002409cu: bc = 0; goto L_8002409C;
-  case 0x800240a0u: bc = 0; goto L_800240A0;
-  case 0x800240a4u: bc = 0; goto L_800240A4;
-  case 0x800240a8u: bc = 0; goto L_800240A8;
-  case 0x800240acu: bc = 0; goto L_800240AC;
-  case 0x800240b0u: bc = 0; goto L_800240B0;
-  case 0x800240b4u: bc = 0; goto L_800240B4;
-  case 0x800240b8u: bc = 0; goto L_800240B8;
-  case 0x800240bcu: bc = 0; goto L_800240BC;
-  case 0x800240c0u: bc = 0; goto L_800240C0;
-  case 0x800240c4u: bc = 0; goto L_800240C4;
-  case 0x800240c8u: bc = 0; goto L_800240C8;
-  case 0x800240ccu: bc = 0; goto L_800240CC;
-  case 0x800240d0u: bc = 0; goto L_800240D0;
-  case 0x800240d4u: bc = 0; goto L_800240D4;
-  case 0x800240d8u: bc = 0; goto L_800240D8;
-  case 0x800240dcu: bc = 0; goto L_800240DC;
-  case 0x800240e0u: bc = 0; goto L_800240E0;
-  case 0x800240e4u: bc = 0; goto L_800240E4;
-  case 0x800240e8u: bc = 0; goto L_800240E8;
-  case 0x800240ecu: bc = 0; goto L_800240EC;
-  case 0x800240f0u: bc = 0; goto L_800240F0;
-  case 0x800240f4u: bc = 0; goto L_800240F4;
-  case 0x800240f8u: bc = 0; goto L_800240F8;
-  case 0x800240fcu: bc = 0; goto L_800240FC;
-  case 0x80024100u: bc = 0; goto L_80024100;
-  case 0x80024104u: bc = 0; goto L_80024104;
-  case 0x80024108u: bc = 0; goto L_80024108;
-  case 0x8002410cu: bc = 0; goto L_8002410C;
-  case 0x80024110u: bc = 0; goto L_80024110;
-  case 0x80024114u: bc = 0; goto L_80024114;
-  case 0x80024118u: bc = 0; goto L_80024118;
-  case 0x8002411cu: bc = 0; goto L_8002411C;
-  case 0x80024120u: bc = 0; goto L_80024120;
-  case 0x80024124u: bc = 0; goto L_80024124;
-  case 0x80024128u: bc = 0; goto L_80024128;
-  case 0x8002412cu: bc = 0; goto L_8002412C;
-  case 0x80024130u: bc = 0; goto L_80024130;
-  case 0x80024134u: bc = 0; goto L_80024134;
-  case 0x80024138u: bc = 0; goto L_80024138;
-  case 0x8002413cu: bc = 0; goto L_8002413C;
-  case 0x80024140u: bc = 0; goto L_80024140;
-  case 0x80024144u: bc = 0; goto L_80024144;
-  case 0x80024148u: bc = 0; goto L_80024148;
-  case 0x8002414cu: bc = 0; goto L_8002414C;
-  case 0x80024150u: bc = 0; goto L_80024150;
-  case 0x80024154u: bc = 0; goto L_80024154;
-  case 0x80024158u: bc = 0; goto L_80024158;
-  case 0x8002415cu: bc = 0; goto L_8002415C;
-  case 0x80024160u: bc = 0; goto L_80024160;
-  case 0x80024164u: bc = 0; goto L_80024164;
-  case 0x80024168u: bc = 0; goto L_80024168;
-  case 0x8002416cu: bc = 0; goto L_8002416C;
-  case 0x80024170u: bc = 0; goto L_80024170;
-  case 0x80024174u: bc = 0; goto L_80024174;
-  case 0x80024178u: bc = 0; goto L_80024178;
-  case 0x8002417cu: bc = 0; goto L_8002417C;
-  case 0x80024180u: bc = 0; goto L_80024180;
-  case 0x80024184u: bc = 0; goto L_80024184;
-  case 0x80024188u: bc = 0; goto L_80024188;
-  case 0x8002418cu: bc = 0; goto L_8002418C;
-  case 0x80024190u: bc = 0; goto L_80024190;
-  case 0x80024194u: bc = 0; goto L_80024194;
-  case 0x80024198u: bc = 0; goto L_80024198;
-  case 0x8002419cu: bc = 0; goto L_8002419C;
-  case 0x800241a0u: bc = 0; goto L_800241A0;
-  case 0x800241a4u: bc = 0; goto L_800241A4;
-  case 0x800241a8u: bc = 0; goto L_800241A8;
-  case 0x800241acu: bc = 0; goto L_800241AC;
-  case 0x800241b0u: bc = 0; goto L_800241B0;
-  case 0x800241b4u: bc = 0; goto L_800241B4;
-  case 0x800241b8u: bc = 0; goto L_800241B8;
-  case 0x800241bcu: bc = 0; goto L_800241BC;
-  case 0x800241c0u: bc = 0; goto L_800241C0;
-  case 0x800241c4u: bc = 0; goto L_800241C4;
-  case 0x800241c8u: bc = 0; goto L_800241C8;
-  case 0x800241ccu: bc = 0; goto L_800241CC;
-  case 0x800241d0u: bc = 0; goto L_800241D0;
-  case 0x800241d4u: bc = 0; goto L_800241D4;
-  case 0x800241d8u: bc = 0; goto L_800241D8;
-  case 0x800241dcu: bc = 0; goto L_800241DC;
-  case 0x800241e0u: bc = 0; goto L_800241E0;
-  case 0x800241e4u: bc = 0; goto L_800241E4;
-  case 0x800241e8u: bc = 0; goto L_800241E8;
-  case 0x800241ecu: bc = 0; goto L_800241EC;
-  case 0x800241f0u: bc = 0; goto L_800241F0;
-  case 0x800241f4u: bc = 0; goto L_800241F4;
-  case 0x800241f8u: bc = 0; goto L_800241F8;
-  case 0x800241fcu: bc = 0; goto L_800241FC;
-  case 0x80024200u: bc = 0; goto L_80024200;
-  case 0x80024204u: bc = 0; goto L_80024204;
-  case 0x80024208u: bc = 0; goto L_80024208;
-  case 0x8002420cu: bc = 0; goto L_8002420C;
-  case 0x80024210u: bc = 0; goto L_80024210;
-  case 0x80024214u: bc = 0; goto L_80024214;
-  case 0x80024218u: bc = 0; goto L_80024218;
-  case 0x8002421cu: bc = 0; goto L_8002421C;
-  case 0x80024220u: bc = 0; goto L_80024220;
-  case 0x80024224u: bc = 0; goto L_80024224;
-  case 0x80024228u: bc = 0; goto L_80024228;
-  case 0x8002422cu: bc = 0; goto L_8002422C;
-  case 0x80024230u: bc = 0; goto L_80024230;
-  case 0x80024234u: bc = 0; goto L_80024234;
-  case 0x80024238u: bc = 0; goto L_80024238;
-  case 0x8002423cu: bc = 0; goto L_8002423C;
-  case 0x80024240u: bc = 0; goto L_80024240;
-  case 0x80024244u: bc = 0; goto L_80024244;
-  case 0x80024248u: bc = 0; goto L_80024248;
-  case 0x8002424cu: bc = 0; goto L_8002424C;
-  case 0x80024250u: bc = 0; goto L_80024250;
-  case 0x80024254u: bc = 0; goto L_80024254;
-  case 0x80024258u: bc = 0; goto L_80024258;
-  case 0x8002425cu: bc = 0; goto L_8002425C;
-  case 0x80024260u: bc = 0; goto L_80024260;
-  case 0x80024264u: bc = 0; goto L_80024264;
-  case 0x80024268u: bc = 0; goto L_80024268;
-  case 0x8002426cu: bc = 0; goto L_8002426C;
-  case 0x80024270u: bc = 0; goto L_80024270;
-  case 0x80024274u: bc = 0; goto L_80024274;
-  case 0x80024278u: bc = 0; goto L_80024278;
-  case 0x8002427cu: bc = 0; goto L_8002427C;
-  case 0x80024280u: bc = 0; goto L_80024280;
-  case 0x80024284u: bc = 0; goto L_80024284;
-  case 0x80024288u: bc = 0; goto L_80024288;
-  case 0x8002428cu: bc = 0; goto L_8002428C;
-  case 0x80024290u: bc = 0; goto L_80024290;
-  case 0x80024294u: bc = 0; goto L_80024294;
-  case 0x80024298u: bc = 0; goto L_80024298;
-  case 0x8002429cu: bc = 0; goto L_8002429C;
-  case 0x800242a0u: bc = 0; goto L_800242A0;
-  case 0x800242a4u: bc = 0; goto L_800242A4;
-  case 0x800242a8u: bc = 0; goto L_800242A8;
-  case 0x800242acu: bc = 0; goto L_800242AC;
-  case 0x800242b0u: bc = 0; goto L_800242B0;
-  case 0x800242b4u: bc = 0; goto L_800242B4;
-  case 0x800242b8u: bc = 0; goto L_800242B8;
-  case 0x800242bcu: bc = 0; goto L_800242BC;
-  case 0x800242c0u: bc = 0; goto L_800242C0;
-  case 0x800242c4u: bc = 0; goto L_800242C4;
-  case 0x800242c8u: bc = 0; goto L_800242C8;
-  case 0x800242ccu: bc = 0; goto L_800242CC;
-  case 0x800242d0u: bc = 0; goto L_800242D0;
-  case 0x800242d4u: bc = 0; goto L_800242D4;
-  case 0x800242d8u: bc = 0; goto L_800242D8;
-  case 0x800242dcu: bc = 0; goto L_800242DC;
-  case 0x800242e0u: bc = 0; goto L_800242E0;
-  case 0x800242e4u: bc = 0; goto L_800242E4;
-  case 0x800242e8u: bc = 0; goto L_800242E8;
-  case 0x800242ecu: bc = 0; goto L_800242EC;
-  case 0x800242f0u: bc = 0; goto L_800242F0;
-  case 0x800242f4u: bc = 0; goto L_800242F4;
-  case 0x800242f8u: bc = 0; goto L_800242F8;
-  case 0x800242fcu: bc = 0; goto L_800242FC;
-  case 0x80024300u: bc = 0; goto L_80024300;
-  case 0x80024304u: bc = 0; goto L_80024304;
-  case 0x80024308u: bc = 0; goto L_80024308;
-  case 0x8002430cu: bc = 0; goto L_8002430C;
-  case 0x80024310u: bc = 0; goto L_80024310;
-  case 0x80024314u: bc = 0; goto L_80024314;
-  case 0x80024318u: bc = 0; goto L_80024318;
-  case 0x8002431cu: bc = 0; goto L_8002431C;
-  case 0x80024320u: bc = 0; goto L_80024320;
-  case 0x80024324u: bc = 0; goto L_80024324;
-  case 0x80024328u: bc = 0; goto L_80024328;
-  case 0x8002432cu: bc = 0; goto L_8002432C;
-  case 0x80024330u: bc = 0; goto L_80024330;
-  case 0x80024334u: bc = 0; goto L_80024334;
-  case 0x80024338u: bc = 0; goto L_80024338;
-  case 0x8002433cu: bc = 0; goto L_8002433C;
-  case 0x80024340u: bc = 0; goto L_80024340;
-  case 0x80024344u: bc = 0; goto L_80024344;
-  case 0x80024348u: bc = 0; goto L_80024348;
-  case 0x8002434cu: bc = 0; goto L_8002434C;
-  case 0x80024350u: bc = 0; goto L_80024350;
-  case 0x80024354u: bc = 0; goto L_80024354;
-  case 0x80024358u: bc = 0; goto L_80024358;
-  case 0x8002435cu: bc = 0; goto L_8002435C;
-  case 0x80024360u: bc = 0; goto L_80024360;
-  case 0x80024364u: bc = 0; goto L_80024364;
-  case 0x80024368u: bc = 0; goto L_80024368;
-  case 0x8002436cu: bc = 0; goto L_8002436C;
-  case 0x80024370u: bc = 0; goto L_80024370;
-  case 0x80024374u: bc = 0; goto L_80024374;
-  case 0x80024378u: bc = 0; goto L_80024378;
-  case 0x8002437cu: bc = 0; goto L_8002437C;
-  case 0x80024380u: bc = 0; goto L_80024380;
-  case 0x80024384u: bc = 0; goto L_80024384;
-  case 0x80024388u: bc = 0; goto L_80024388;
-  case 0x8002438cu: bc = 0; goto L_8002438C;
-  case 0x80024390u: bc = 0; goto L_80024390;
-  case 0x80024394u: bc = 0; goto L_80024394;
-  case 0x80024398u: bc = 0; goto L_80024398;
-  case 0x8002439cu: bc = 0; goto L_8002439C;
-  case 0x800243a0u: bc = 0; goto L_800243A0;
-  case 0x800243a4u: bc = 0; goto L_800243A4;
-  case 0x800243a8u: bc = 0; goto L_800243A8;
-  case 0x800243acu: bc = 0; goto L_800243AC;
-  case 0x800243b0u: bc = 0; goto L_800243B0;
-  case 0x800243b4u: bc = 0; goto L_800243B4;
-  case 0x800243b8u: bc = 0; goto L_800243B8;
-  case 0x800243bcu: bc = 0; goto L_800243BC;
-  case 0x800243c0u: bc = 0; goto L_800243C0;
-  case 0x800243c4u: bc = 0; goto L_800243C4;
-  case 0x800243c8u: bc = 0; goto L_800243C8;
-  case 0x800243ccu: bc = 0; goto L_800243CC;
-  case 0x800243d0u: bc = 0; goto L_800243D0;
-  case 0x800243d4u: bc = 0; goto L_800243D4;
-  case 0x800243d8u: bc = 0; goto L_800243D8;
-  case 0x800243dcu: bc = 0; goto L_800243DC;
-  case 0x800243e0u: bc = 0; goto L_800243E0;
-  case 0x800243e4u: bc = 0; goto L_800243E4;
-  case 0x800243e8u: bc = 0; goto L_800243E8;
-  case 0x800243ecu: bc = 0; goto L_800243EC;
-  case 0x800243f0u: bc = 0; goto L_800243F0;
-  case 0x800243f4u: bc = 0; goto L_800243F4;
-  case 0x800243f8u: bc = 0; goto L_800243F8;
-  case 0x800243fcu: bc = 0; goto L_800243FC;
-  case 0x80024400u: bc = 0; goto L_80024400;
+  case 0x80023ac4u:
+    bc = 0;
+    goto L_80023AC4;
+  case 0x80024054u:
+    bc = 0;
+    goto L_80024054;
+  case 0x80024058u:
+    bc = 0;
+    goto L_80024058;
+  case 0x8002405cu:
+    bc = 0;
+    goto L_8002405C;
+  case 0x80024060u:
+    bc = 0;
+    goto L_80024060;
+  case 0x80024064u:
+    bc = 0;
+    goto L_80024064;
+  case 0x80024068u:
+    bc = 0;
+    goto L_80024068;
+  case 0x8002406cu:
+    bc = 0;
+    goto L_8002406C;
+  case 0x80024070u:
+    bc = 0;
+    goto L_80024070;
+  case 0x80024074u:
+    bc = 0;
+    goto L_80024074;
+  case 0x80024078u:
+    bc = 0;
+    goto L_80024078;
+  case 0x8002407cu:
+    bc = 0;
+    goto L_8002407C;
+  case 0x80024080u:
+    bc = 0;
+    goto L_80024080;
+  case 0x80024084u:
+    bc = 0;
+    goto L_80024084;
+  case 0x80024088u:
+    bc = 0;
+    goto L_80024088;
+  case 0x8002408cu:
+    bc = 0;
+    goto L_8002408C;
+  case 0x80024090u:
+    bc = 0;
+    goto L_80024090;
+  case 0x80024094u:
+    bc = 0;
+    goto L_80024094;
+  case 0x80024098u:
+    bc = 0;
+    goto L_80024098;
+  case 0x8002409cu:
+    bc = 0;
+    goto L_8002409C;
+  case 0x800240a0u:
+    bc = 0;
+    goto L_800240A0;
+  case 0x800240a4u:
+    bc = 0;
+    goto L_800240A4;
+  case 0x800240a8u:
+    bc = 0;
+    goto L_800240A8;
+  case 0x800240acu:
+    bc = 0;
+    goto L_800240AC;
+  case 0x800240b0u:
+    bc = 0;
+    goto L_800240B0;
+  case 0x800240b4u:
+    bc = 0;
+    goto L_800240B4;
+  case 0x800240b8u:
+    bc = 0;
+    goto L_800240B8;
+  case 0x800240bcu:
+    bc = 0;
+    goto L_800240BC;
+  case 0x800240c0u:
+    bc = 0;
+    goto L_800240C0;
+  case 0x800240c4u:
+    bc = 0;
+    goto L_800240C4;
+  case 0x800240c8u:
+    bc = 0;
+    goto L_800240C8;
+  case 0x800240ccu:
+    bc = 0;
+    goto L_800240CC;
+  case 0x800240d0u:
+    bc = 0;
+    goto L_800240D0;
+  case 0x800240d4u:
+    bc = 0;
+    goto L_800240D4;
+  case 0x800240d8u:
+    bc = 0;
+    goto L_800240D8;
+  case 0x800240dcu:
+    bc = 0;
+    goto L_800240DC;
+  case 0x800240e0u:
+    bc = 0;
+    goto L_800240E0;
+  case 0x800240e4u:
+    bc = 0;
+    goto L_800240E4;
+  case 0x800240e8u:
+    bc = 0;
+    goto L_800240E8;
+  case 0x800240ecu:
+    bc = 0;
+    goto L_800240EC;
+  case 0x800240f0u:
+    bc = 0;
+    goto L_800240F0;
+  case 0x800240f4u:
+    bc = 0;
+    goto L_800240F4;
+  case 0x800240f8u:
+    bc = 0;
+    goto L_800240F8;
+  case 0x800240fcu:
+    bc = 0;
+    goto L_800240FC;
+  case 0x80024100u:
+    bc = 0;
+    goto L_80024100;
+  case 0x80024104u:
+    bc = 0;
+    goto L_80024104;
+  case 0x80024108u:
+    bc = 0;
+    goto L_80024108;
+  case 0x8002410cu:
+    bc = 0;
+    goto L_8002410C;
+  case 0x80024110u:
+    bc = 0;
+    goto L_80024110;
+  case 0x80024114u:
+    bc = 0;
+    goto L_80024114;
+  case 0x80024118u:
+    bc = 0;
+    goto L_80024118;
+  case 0x8002411cu:
+    bc = 0;
+    goto L_8002411C;
+  case 0x80024120u:
+    bc = 0;
+    goto L_80024120;
+  case 0x80024124u:
+    bc = 0;
+    goto L_80024124;
+  case 0x80024128u:
+    bc = 0;
+    goto L_80024128;
+  case 0x8002412cu:
+    bc = 0;
+    goto L_8002412C;
+  case 0x80024130u:
+    bc = 0;
+    goto L_80024130;
+  case 0x80024134u:
+    bc = 0;
+    goto L_80024134;
+  case 0x80024138u:
+    bc = 0;
+    goto L_80024138;
+  case 0x8002413cu:
+    bc = 0;
+    goto L_8002413C;
+  case 0x80024140u:
+    bc = 0;
+    goto L_80024140;
+  case 0x80024144u:
+    bc = 0;
+    goto L_80024144;
+  case 0x80024148u:
+    bc = 0;
+    goto L_80024148;
+  case 0x8002414cu:
+    bc = 0;
+    goto L_8002414C;
+  case 0x80024150u:
+    bc = 0;
+    goto L_80024150;
+  case 0x80024154u:
+    bc = 0;
+    goto L_80024154;
+  case 0x80024158u:
+    bc = 0;
+    goto L_80024158;
+  case 0x8002415cu:
+    bc = 0;
+    goto L_8002415C;
+  case 0x80024160u:
+    bc = 0;
+    goto L_80024160;
+  case 0x80024164u:
+    bc = 0;
+    goto L_80024164;
+  case 0x80024168u:
+    bc = 0;
+    goto L_80024168;
+  case 0x8002416cu:
+    bc = 0;
+    goto L_8002416C;
+  case 0x80024170u:
+    bc = 0;
+    goto L_80024170;
+  case 0x80024174u:
+    bc = 0;
+    goto L_80024174;
+  case 0x80024178u:
+    bc = 0;
+    goto L_80024178;
+  case 0x8002417cu:
+    bc = 0;
+    goto L_8002417C;
+  case 0x80024180u:
+    bc = 0;
+    goto L_80024180;
+  case 0x80024184u:
+    bc = 0;
+    goto L_80024184;
+  case 0x80024188u:
+    bc = 0;
+    goto L_80024188;
+  case 0x8002418cu:
+    bc = 0;
+    goto L_8002418C;
+  case 0x80024190u:
+    bc = 0;
+    goto L_80024190;
+  case 0x80024194u:
+    bc = 0;
+    goto L_80024194;
+  case 0x80024198u:
+    bc = 0;
+    goto L_80024198;
+  case 0x8002419cu:
+    bc = 0;
+    goto L_8002419C;
+  case 0x800241a0u:
+    bc = 0;
+    goto L_800241A0;
+  case 0x800241a4u:
+    bc = 0;
+    goto L_800241A4;
+  case 0x800241a8u:
+    bc = 0;
+    goto L_800241A8;
+  case 0x800241acu:
+    bc = 0;
+    goto L_800241AC;
+  case 0x800241b0u:
+    bc = 0;
+    goto L_800241B0;
+  case 0x800241b4u:
+    bc = 0;
+    goto L_800241B4;
+  case 0x800241b8u:
+    bc = 0;
+    goto L_800241B8;
+  case 0x800241bcu:
+    bc = 0;
+    goto L_800241BC;
+  case 0x800241c0u:
+    bc = 0;
+    goto L_800241C0;
+  case 0x800241c4u:
+    bc = 0;
+    goto L_800241C4;
+  case 0x800241c8u:
+    bc = 0;
+    goto L_800241C8;
+  case 0x800241ccu:
+    bc = 0;
+    goto L_800241CC;
+  case 0x800241d0u:
+    bc = 0;
+    goto L_800241D0;
+  case 0x800241d4u:
+    bc = 0;
+    goto L_800241D4;
+  case 0x800241d8u:
+    bc = 0;
+    goto L_800241D8;
+  case 0x800241dcu:
+    bc = 0;
+    goto L_800241DC;
+  case 0x800241e0u:
+    bc = 0;
+    goto L_800241E0;
+  case 0x800241e4u:
+    bc = 0;
+    goto L_800241E4;
+  case 0x800241e8u:
+    bc = 0;
+    goto L_800241E8;
+  case 0x800241ecu:
+    bc = 0;
+    goto L_800241EC;
+  case 0x800241f0u:
+    bc = 0;
+    goto L_800241F0;
+  case 0x800241f4u:
+    bc = 0;
+    goto L_800241F4;
+  case 0x800241f8u:
+    bc = 0;
+    goto L_800241F8;
+  case 0x800241fcu:
+    bc = 0;
+    goto L_800241FC;
+  case 0x80024200u:
+    bc = 0;
+    goto L_80024200;
+  case 0x80024204u:
+    bc = 0;
+    goto L_80024204;
+  case 0x80024208u:
+    bc = 0;
+    goto L_80024208;
+  case 0x8002420cu:
+    bc = 0;
+    goto L_8002420C;
+  case 0x80024210u:
+    bc = 0;
+    goto L_80024210;
+  case 0x80024214u:
+    bc = 0;
+    goto L_80024214;
+  case 0x80024218u:
+    bc = 0;
+    goto L_80024218;
+  case 0x8002421cu:
+    bc = 0;
+    goto L_8002421C;
+  case 0x80024220u:
+    bc = 0;
+    goto L_80024220;
+  case 0x80024224u:
+    bc = 0;
+    goto L_80024224;
+  case 0x80024228u:
+    bc = 0;
+    goto L_80024228;
+  case 0x8002422cu:
+    bc = 0;
+    goto L_8002422C;
+  case 0x80024230u:
+    bc = 0;
+    goto L_80024230;
+  case 0x80024234u:
+    bc = 0;
+    goto L_80024234;
+  case 0x80024238u:
+    bc = 0;
+    goto L_80024238;
+  case 0x8002423cu:
+    bc = 0;
+    goto L_8002423C;
+  case 0x80024240u:
+    bc = 0;
+    goto L_80024240;
+  case 0x80024244u:
+    bc = 0;
+    goto L_80024244;
+  case 0x80024248u:
+    bc = 0;
+    goto L_80024248;
+  case 0x8002424cu:
+    bc = 0;
+    goto L_8002424C;
+  case 0x80024250u:
+    bc = 0;
+    goto L_80024250;
+  case 0x80024254u:
+    bc = 0;
+    goto L_80024254;
+  case 0x80024258u:
+    bc = 0;
+    goto L_80024258;
+  case 0x8002425cu:
+    bc = 0;
+    goto L_8002425C;
+  case 0x80024260u:
+    bc = 0;
+    goto L_80024260;
+  case 0x80024264u:
+    bc = 0;
+    goto L_80024264;
+  case 0x80024268u:
+    bc = 0;
+    goto L_80024268;
+  case 0x8002426cu:
+    bc = 0;
+    goto L_8002426C;
+  case 0x80024270u:
+    bc = 0;
+    goto L_80024270;
+  case 0x80024274u:
+    bc = 0;
+    goto L_80024274;
+  case 0x80024278u:
+    bc = 0;
+    goto L_80024278;
+  case 0x8002427cu:
+    bc = 0;
+    goto L_8002427C;
+  case 0x80024280u:
+    bc = 0;
+    goto L_80024280;
+  case 0x80024284u:
+    bc = 0;
+    goto L_80024284;
+  case 0x80024288u:
+    bc = 0;
+    goto L_80024288;
+  case 0x8002428cu:
+    bc = 0;
+    goto L_8002428C;
+  case 0x80024290u:
+    bc = 0;
+    goto L_80024290;
+  case 0x80024294u:
+    bc = 0;
+    goto L_80024294;
+  case 0x80024298u:
+    bc = 0;
+    goto L_80024298;
+  case 0x8002429cu:
+    bc = 0;
+    goto L_8002429C;
+  case 0x800242a0u:
+    bc = 0;
+    goto L_800242A0;
+  case 0x800242a4u:
+    bc = 0;
+    goto L_800242A4;
+  case 0x800242a8u:
+    bc = 0;
+    goto L_800242A8;
+  case 0x800242acu:
+    bc = 0;
+    goto L_800242AC;
+  case 0x800242b0u:
+    bc = 0;
+    goto L_800242B0;
+  case 0x800242b4u:
+    bc = 0;
+    goto L_800242B4;
+  case 0x800242b8u:
+    bc = 0;
+    goto L_800242B8;
+  case 0x800242bcu:
+    bc = 0;
+    goto L_800242BC;
+  case 0x800242c0u:
+    bc = 0;
+    goto L_800242C0;
+  case 0x800242c4u:
+    bc = 0;
+    goto L_800242C4;
+  case 0x800242c8u:
+    bc = 0;
+    goto L_800242C8;
+  case 0x800242ccu:
+    bc = 0;
+    goto L_800242CC;
+  case 0x800242d0u:
+    bc = 0;
+    goto L_800242D0;
+  case 0x800242d4u:
+    bc = 0;
+    goto L_800242D4;
+  case 0x800242d8u:
+    bc = 0;
+    goto L_800242D8;
+  case 0x800242dcu:
+    bc = 0;
+    goto L_800242DC;
+  case 0x800242e0u:
+    bc = 0;
+    goto L_800242E0;
+  case 0x800242e4u:
+    bc = 0;
+    goto L_800242E4;
+  case 0x800242e8u:
+    bc = 0;
+    goto L_800242E8;
+  case 0x800242ecu:
+    bc = 0;
+    goto L_800242EC;
+  case 0x800242f0u:
+    bc = 0;
+    goto L_800242F0;
+  case 0x800242f4u:
+    bc = 0;
+    goto L_800242F4;
+  case 0x800242f8u:
+    bc = 0;
+    goto L_800242F8;
+  case 0x800242fcu:
+    bc = 0;
+    goto L_800242FC;
+  case 0x80024300u:
+    bc = 0;
+    goto L_80024300;
+  case 0x80024304u:
+    bc = 0;
+    goto L_80024304;
+  case 0x80024308u:
+    bc = 0;
+    goto L_80024308;
+  case 0x8002430cu:
+    bc = 0;
+    goto L_8002430C;
+  case 0x80024310u:
+    bc = 0;
+    goto L_80024310;
+  case 0x80024314u:
+    bc = 0;
+    goto L_80024314;
+  case 0x80024318u:
+    bc = 0;
+    goto L_80024318;
+  case 0x8002431cu:
+    bc = 0;
+    goto L_8002431C;
+  case 0x80024320u:
+    bc = 0;
+    goto L_80024320;
+  case 0x80024324u:
+    bc = 0;
+    goto L_80024324;
+  case 0x80024328u:
+    bc = 0;
+    goto L_80024328;
+  case 0x8002432cu:
+    bc = 0;
+    goto L_8002432C;
+  case 0x80024330u:
+    bc = 0;
+    goto L_80024330;
+  case 0x80024334u:
+    bc = 0;
+    goto L_80024334;
+  case 0x80024338u:
+    bc = 0;
+    goto L_80024338;
+  case 0x8002433cu:
+    bc = 0;
+    goto L_8002433C;
+  case 0x80024340u:
+    bc = 0;
+    goto L_80024340;
+  case 0x80024344u:
+    bc = 0;
+    goto L_80024344;
+  case 0x80024348u:
+    bc = 0;
+    goto L_80024348;
+  case 0x8002434cu:
+    bc = 0;
+    goto L_8002434C;
+  case 0x80024350u:
+    bc = 0;
+    goto L_80024350;
+  case 0x80024354u:
+    bc = 0;
+    goto L_80024354;
+  case 0x80024358u:
+    bc = 0;
+    goto L_80024358;
+  case 0x8002435cu:
+    bc = 0;
+    goto L_8002435C;
+  case 0x80024360u:
+    bc = 0;
+    goto L_80024360;
+  case 0x80024364u:
+    bc = 0;
+    goto L_80024364;
+  case 0x80024368u:
+    bc = 0;
+    goto L_80024368;
+  case 0x8002436cu:
+    bc = 0;
+    goto L_8002436C;
+  case 0x80024370u:
+    bc = 0;
+    goto L_80024370;
+  case 0x80024374u:
+    bc = 0;
+    goto L_80024374;
+  case 0x80024378u:
+    bc = 0;
+    goto L_80024378;
+  case 0x8002437cu:
+    bc = 0;
+    goto L_8002437C;
+  case 0x80024380u:
+    bc = 0;
+    goto L_80024380;
+  case 0x80024384u:
+    bc = 0;
+    goto L_80024384;
+  case 0x80024388u:
+    bc = 0;
+    goto L_80024388;
+  case 0x8002438cu:
+    bc = 0;
+    goto L_8002438C;
+  case 0x80024390u:
+    bc = 0;
+    goto L_80024390;
+  case 0x80024394u:
+    bc = 0;
+    goto L_80024394;
+  case 0x80024398u:
+    bc = 0;
+    goto L_80024398;
+  case 0x8002439cu:
+    bc = 0;
+    goto L_8002439C;
+  case 0x800243a0u:
+    bc = 0;
+    goto L_800243A0;
+  case 0x800243a4u:
+    bc = 0;
+    goto L_800243A4;
+  case 0x800243a8u:
+    bc = 0;
+    goto L_800243A8;
+  case 0x800243acu:
+    bc = 0;
+    goto L_800243AC;
+  case 0x800243b0u:
+    bc = 0;
+    goto L_800243B0;
+  case 0x800243b4u:
+    bc = 0;
+    goto L_800243B4;
+  case 0x800243b8u:
+    bc = 0;
+    goto L_800243B8;
+  case 0x800243bcu:
+    bc = 0;
+    goto L_800243BC;
+  case 0x800243c0u:
+    bc = 0;
+    goto L_800243C0;
+  case 0x800243c4u:
+    bc = 0;
+    goto L_800243C4;
+  case 0x800243c8u:
+    bc = 0;
+    goto L_800243C8;
+  case 0x800243ccu:
+    bc = 0;
+    goto L_800243CC;
+  case 0x800243d0u:
+    bc = 0;
+    goto L_800243D0;
+  case 0x800243d4u:
+    bc = 0;
+    goto L_800243D4;
+  case 0x800243d8u:
+    bc = 0;
+    goto L_800243D8;
+  case 0x800243dcu:
+    bc = 0;
+    goto L_800243DC;
+  case 0x800243e0u:
+    bc = 0;
+    goto L_800243E0;
+  case 0x800243e4u:
+    bc = 0;
+    goto L_800243E4;
+  case 0x800243e8u:
+    bc = 0;
+    goto L_800243E8;
+  case 0x800243ecu:
+    bc = 0;
+    goto L_800243EC;
+  case 0x800243f0u:
+    bc = 0;
+    goto L_800243F0;
+  case 0x800243f4u:
+    bc = 0;
+    goto L_800243F4;
+  case 0x800243f8u:
+    bc = 0;
+    goto L_800243F8;
+  case 0x800243fcu:
+    bc = 0;
+    goto L_800243FC;
+  case 0x80024400u:
+    bc = 0;
+    goto L_80024400;
   }
   if (tgt != entry_ra) {
     ha_bad_jump("RasterizeSpyroModel", tgt, entry_ra);
