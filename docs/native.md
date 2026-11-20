@@ -93,12 +93,42 @@ only (`native/CMakeLists.txt`).
 
 `make native-test` builds and runs `native/tests` (a CMake project of its own
 in `build/native-test`, with ASan and UBSan), which needs only a C compiler,
-cmake and the tomlc17 submodule. It covers the host code that has no SDL or
-wasm dependency: `src/native/host/config.c`, the config files, `--set` and the
-`--press` / `--warp` / `--log-level` value formats that `main.c` uses. A
-unit's tests live next to it as `<unit>_test.c` (`src/native/host/config_test.c`),
+cmake and the tomlc17 submodule. It covers the native code that has no SDL or
+wasm dependency:
+
+- `src/native/host/config.c`: the config files, `--set` and the `--press` /
+  `--warp` / `--log-level` value formats that `main.c` uses.
+- `src/native/wasm/libc.c`: the printf family, sscanf, string functions and
+  stdio. The test includes `libc.c` with each libc name renamed to `w_<name>`,
+  so the module's implementation runs beside the host's.
+- `src/native/wasm/memcard.c`: card presence, formatting, the directory and
+  block chains, and reads/writes round-tripped through the `.mcd` image.
+- `src/native/wasm/shim_helpers.c`: the SDK shim's texpage masking of GPU
+  packets, the GTE MulMatrix0 and the CdlGetlocP result `sdk_shim.c` fakes.
+- `src/native/handasm/runtime.c`: the GTE side-effect layer (SXYP, IRGB/ORGB,
+  LZCS/LZCR) over a fake GTE, the R3000 mult/div macros and the hand-asm
+  leaves that touch no memory (hand-asm loads and stores need wasm32
+  addresses).
+- `src/native/host/host_io.c`: the module's file-handle table, the memory-card
+  path copy and the log filter (`imports.c` forwards to it).
+- `src/native/host/script.c`: `--press` hold windows, the scripted buttons on
+  pad 1's report and the `--shot` file names (`main.c`).
+- `src/native/host/audio_format.c`: the sample frames per vblank and the
+  `--wav` header (`audio.c`).
+- `src/native/host/psx_memory.c`: the address-space layout and the KUSEG
+  mirror (`mach_vm_remap` on macOS, a shared memfd on Linux), built only when
+  the wasm2c runtime from `tools/native_setup.sh` is in `build/native-tools`
+  (CI sets it up before the tests).
+
+Where a unit sits next to SDL, PsyZ or wasm2c code, its testable logic lives
+in its own file (`host_io.c`, `script.c`, `audio_format.c`, `shim_helpers.c`)
+and the original file calls it.
+
+A unit's tests live next to it as `<unit>_test.c` (`src/native/host/config_test.c`),
 which `native/tests/CMakeLists.txt` picks up by glob; `native/tests` holds only
-the harness. A test is a `TEST(name)` block with `CHECK`, `CHECK_INT` and
+the harness. The wasm-side tests include their unit rather than link it, and
+implement the `host_*` imports it calls (`host_imports.h` drops the wasm import
+attributes off wasm). A test is a `TEST(name)` block with `CHECK`, `CHECK_INT` and
 `CHECK_STR` (`native/tests/test.h`); `build/native-test/native_tests FILTER`
 runs only the tests whose name contains FILTER.
 

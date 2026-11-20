@@ -7,8 +7,12 @@
 #ifndef OPEN_SPYRO_HOST_IMPORTS_H
 #define OPEN_SPYRO_HOST_IMPORTS_H
 
+#ifdef __wasm__
 #define HOST_IMPORT(name)                                                      \
   __attribute__((import_module("host"), import_name(#name)))
+#else /* native unit tests (native/tests) define these as plain functions */
+#define HOST_IMPORT(name)
+#endif
 
 HOST_IMPORT(write) int host_write(int fd, const void *buf, int len);
 HOST_IMPORT(log) void host_log(int level, const char *msg);

@@ -20,6 +20,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "host_io.h"
 #include "native_host.h"
 
 /* PsyZ backend entry points (sdl3_gpu.c / sdl3_common.h, built natively). */
@@ -161,21 +162,14 @@ void w2c_env_MyPadInit(struct w2c_env *e, u32 mode) {
 /* --- host: libc services -----------------------------------------------------
  */
 
-#define MAX_FILES 32
-static FILE *files[MAX_FILES];
-
 u32 w2c_host_write(struct w2c_host *h, u32 fd, u32 buf, u32 len) {
   (void)h;
   return (u32)fwrite(PTR(buf), 1, len, fd == 2 ? stderr : stdout);
 }
 
 void w2c_host_log(struct w2c_host *h, u32 level, u32 msg) {
-  static const char levels[] = "DIWE";
-
   (void)h;
-  if (level < 4 && (int)level >= native_log_level()) {
-    fprintf(stderr, "[%c]%s\n", levels[level], (const char *)PTR(msg));
-  }
+  host_io_log(stderr, level, native_log_level(), (const char *)PTR(msg));
 }
 
 void w2c_host_exit(struct w2c_host *h, u32 code) {
@@ -190,49 +184,33 @@ u32 w2c_host_now_us(struct w2c_host *h) {
 
 u32 w2c_host_fopen(struct w2c_host *h, u32 path, u32 mode) {
   (void)h;
-  for (int i = 0; i < MAX_FILES; i++) {
-    if (files[i] == NULL) {
-      files[i] = fopen((const char *)PTR(path), (const char *)PTR(mode));
-      return files[i] ? (u32)i : (u32)-1;
-    }
-  }
-  return (u32)-1;
-}
-
-static FILE *file(u32 handle) {
-  return handle < MAX_FILES ? files[handle] : NULL;
+  return (u32)host_io_open((const char *)PTR(path), (const char *)PTR(mode));
 }
 
 u32 w2c_host_fclose(struct w2c_host *h, u32 handle) {
-  FILE *f = file(handle);
-
   (void)h;
-  if (f == NULL) {
-    return (u32)-1;
-  }
-  files[handle] = NULL;
-  return (u32)fclose(f);
+  return (u32)host_io_close(handle);
 }
 u32 w2c_host_fread(struct w2c_host *h, u32 dst, u32 len, u32 handle) {
-  FILE *f = file(handle);
+  FILE *f = host_io_file(handle);
 
   (void)h;
   return f ? (u32)fread(PTR(dst), 1, len, f) : 0;
 }
 u32 w2c_host_fwrite(struct w2c_host *h, u32 src, u32 len, u32 handle) {
-  FILE *f = file(handle);
+  FILE *f = host_io_file(handle);
 
   (void)h;
   return f ? (u32)fwrite(PTR(src), 1, len, f) : 0;
 }
 u32 w2c_host_fseek(struct w2c_host *h, u32 handle, u32 off, u32 whence) {
-  FILE *f = file(handle);
+  FILE *f = host_io_file(handle);
 
   (void)h;
   return f ? (u32)fseek(f, (long)(int)off, (int)whence) : (u32)-1;
 }
 u32 w2c_host_ftell(struct w2c_host *h, u32 handle) {
-  FILE *f = file(handle);
+  FILE *f = host_io_file(handle);
 
   (void)h;
   return f ? (u32)ftell(f) : (u32)-1;
@@ -251,12 +229,7 @@ u32 w2c_host_mkdir(struct w2c_host *h, u32 path) {
   return (u32)mkdir((const char *)PTR(path), 0755);
 }
 u32 w2c_host_card_path(struct w2c_host *h, u32 port, u32 buf, u32 len) {
-  const char *path = native_card_path((int)port);
-
   (void)h;
-  if (path == NULL || strlen(path) >= len) {
-    return 0;
-  }
-  strcpy((char *)PTR(buf), path);
-  return 1;
+  return (u32)host_io_copy_path(native_card_path((int)port), (char *)PTR(buf),
+                                len);
 }

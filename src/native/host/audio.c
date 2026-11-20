@@ -17,12 +17,10 @@
 
 #include <SDL3/SDL.h>
 
+#include "audio_format.h"
 #include "native_host.h"
 
 enum {
-  AUDIO_RATE = 44100, /* PSYZ_SPU_SAMPLE_RATE */
-  AUDIO_CHANNELS = 2,
-  AUDIO_FRAME_BYTES = AUDIO_CHANNELS * (int)sizeof(short),
   AUDIO_LEAD = 2048, /* ~46 ms queued ahead of the device */
   AUDIO_PULL_MAX = 2048,
 };
@@ -34,22 +32,11 @@ static FILE *wav;
 static uint32_t wav_bytes;
 
 static void wav_header(void) {
-  uint32_t riff[11] = {
-      0x46464952,
-      36 + wav_bytes,
-      0x45564157, /* "RIFF" size "WAVE" */
-      0x20746D66,
-      16,                       /* "fmt " */
-      1 | AUDIO_CHANNELS << 16, /* PCM, channels */
-      AUDIO_RATE,
-      AUDIO_RATE * AUDIO_FRAME_BYTES,
-      AUDIO_FRAME_BYTES | 16 << 16, /* block align, bits */
-      0x61746164,
-      wav_bytes, /* "data" size */
-  };
+  uint8_t header[AUDIO_WAV_HEADER];
 
+  audio_wav_header(header, wav_bytes);
   fseek(wav, 0, SEEK_SET);
-  fwrite(riff, sizeof(riff), 1, wav);
+  fwrite(header, sizeof(header), 1, wav);
   fseek(wav, 0, SEEK_END);
 }
 
@@ -106,18 +93,9 @@ static void audio_run(int frames, int discard) {
   }
 }
 
-/* Sample frames in one vblank: 44100 / 59.94 = 735.7, carried. */
-static int native_frames_per_vsync(void) {
-  double want = AUDIO_RATE / 59.94 + vsync_carry;
-  int n = (int)want;
-
-  vsync_carry = want - n;
-  return n;
-}
-
 void native_audio_vsync(void) {
   if (native_fast()) {
-    audio_run(native_frames_per_vsync(), 1);
+    audio_run(audio_frames_per_vsync(&vsync_carry), 1);
     return;
   }
   if (stream == NULL && !audio_failed) {
@@ -126,7 +104,7 @@ void native_audio_vsync(void) {
   if (stream == NULL || SDL_AudioStreamDevicePaused(stream)) {
     /* No device to feed: still run the SPU at real time so voices finish
        (GetSpuVoiceKeyStatus) and streamed audio keeps advancing. */
-    audio_run(native_frames_per_vsync(), 1);
+    audio_run(audio_frames_per_vsync(&vsync_carry), 1);
     return;
   }
   int queued = SDL_GetAudioStreamQueued(stream) / AUDIO_FRAME_BYTES;
