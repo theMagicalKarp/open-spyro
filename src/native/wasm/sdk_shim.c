@@ -23,6 +23,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "shim_helpers.h"
+
 #define SHIM_LOG(...) printf("sdk_shim: " __VA_ARGS__)
 
 /* ---- libc ------------------------------------------------------------------
@@ -85,37 +87,6 @@ DISPENV *InitDefaultDispEnv(DISPENV *env, int x, int y, int w, int h) {
 
 static u_long ot_buf[OT_BUF_WORDS];
 
-/* A textured polygon's texpage halfword (the top of its second UV word)
- * carries the E1 bits 0-8; the GPU ignores the bits above. PsyZ's backends
- * use those bits as private flags (bit 15 = untextured, 13 = polygon,
- * 14 = dither), and the world renderer's texture records set bit 15, so
- * every world polygon past the near detail pass drew untextured. Clear them
- * in each polygon of a packet. The walk stops at the first command whose
- * length it does not know. */
-static void mask_poly_tpages(u_long *cmd, unsigned int len) {
-  unsigned int i = 0;
-
-  while (i < len) {
-    unsigned int code = cmd[i] >> 24;
-    unsigned int n;
-
-    if ((code & 0xE0) == 0x20) { /* polygon */
-      unsigned int verts = code & 0x08 ? 4 : 3;
-      unsigned int tex = (code >> 2) & 1, gouraud = (code >> 4) & 1;
-
-      n = 1 + verts * (1 + tex) + gouraud * (verts - 1);
-      if (tex && i + n <= len) {
-        cmd[i + 4 + gouraud] &= 0x01FFFFFFu;
-      }
-    } else if (code == 0x00 || (code >= 0xE1 && code <= 0xE6)) {
-      n = 1;
-    } else {
-      return;
-    }
-    i += n;
-  }
-}
-
 static void ot_flush(int last) {
   u_long *end = &ot_buf[last];
 
@@ -149,7 +120,7 @@ void Shim_DrawOTag(unsigned int *ot) {
     for (i = 0; i < len; i++) {
       ot_buf[pos + 2 + i] = p[1 + i];
     }
-    mask_poly_tpages(&ot_buf[pos + 2], len);
+    shim_mask_poly_tpages(&ot_buf[pos + 2], len);
     pos += 2 + (int)len;
     if (next == OT_END) {
       break;
@@ -183,28 +154,9 @@ void Shim_SetDrawMode(void *p, int dfe, int dtd, int tpage, RECT *tw) {
 /* ---- libgte -----------------------------------------------------------------
  */
 
-static short sat16(int v) {
-  return v < -0x8000 ? -0x8000 : v > 0x7FFF ? 0x7FFF : (short)v;
-}
-
-/* m2 = m0 * m1 (rotation parts, 4.12 fixed point), as the GTE computes it:
- * each product sum shifted right by 12 and saturated to 16 bits. */
+/* m2 = m0 * m1 (rotation parts), as the GTE computes it. */
 void Shim_MulMatrix0(MATRIX *m0, MATRIX *m1, MATRIX *m2) {
-  MATRIX r;
-  int i, j;
-
-  for (i = 0; i < 3; i++) {
-    for (j = 0; j < 3; j++) {
-      int s = m0->m[i][0] * m1->m[0][j] + m0->m[i][1] * m1->m[1][j] +
-              m0->m[i][2] * m1->m[2][j];
-      r.m[i][j] = sat16(s >> 12);
-    }
-  }
-  for (i = 0; i < 3; i++) {
-    for (j = 0; j < 3; j++) {
-      m2->m[i][j] = r.m[i][j];
-    }
-  }
+  shim_mul_matrix0(m0->m, m1->m, m2->m);
 }
 
 /* ---- libspu -----------------------------------------------------------------
@@ -288,31 +240,18 @@ void *Shim_CdReadCallback(void *func) {
 
 /* libcd's last command byte (CdLastCom). PsyZ never records it, so the shim
  * tracks every command the game issues: TickCdMusicStream only trusts the
- * position in its CdSync result while the last command is CdlGetlocP. */
-static unsigned char cd_last_com;
-
-/* PsyZ does not implement CdlGetlocP. Its result is built from CdlGetlocL
- * (the XA read position while streaming) and handed back by the next
- * CdSync, as the PS1's interrupt would: the game reads only the absolute MSF
- * (bytes 5..7) to keep its music read head, which is where a resume after
- * the pause menu restarts the stream. Not CdControlB: its CdSync copies
- * GetlocL's cached status-only result over the position. */
-static unsigned char cd_getlocp_result[8];
+ * position in its CdSync result while the last command is CdlGetlocP, which
+ * PsyZ does not implement (shim_cd_track builds its result from CdlGetlocL).
+ * Not CdControlB: its CdSync copies GetlocL's cached status-only result over
+ * the position. */
+static ShimCdTrack cd_track;
+_Static_assert(SHIM_CDL_GETLOCP == CdlGetlocP, "libcd CdlGetlocP");
 
 static void cd_track_com(unsigned char com) {
   unsigned char locl[8];
+  int have = com == CdlGetlocP && CdControl(CdlGetlocL, NULL, locl);
 
-  if (com == CdlGetlocP && CdControl(CdlGetlocL, NULL, locl)) {
-    cd_getlocp_result[0] = 1; /* track */
-    cd_getlocp_result[1] = 1; /* index */
-    cd_getlocp_result[2] = locl[0];
-    cd_getlocp_result[3] = locl[1];
-    cd_getlocp_result[4] = locl[2];
-    cd_getlocp_result[5] = locl[0];
-    cd_getlocp_result[6] = locl[1];
-    cd_getlocp_result[7] = locl[2];
-  }
-  cd_last_com = com;
+  shim_cd_track(&cd_track, com, have ? locl : NULL);
 }
 
 int Shim_CdRead(int sectors, u_long *buf, int mode) {
@@ -330,9 +269,7 @@ int Shim_CdRead(int sectors, u_long *buf, int mode) {
 int CallCdSync(int mode, unsigned char *result) {
   int ret = CdSync(mode, result);
 
-  if (result != NULL && cd_last_com == CdlGetlocP) {
-    memcpy(result, cd_getlocp_result, sizeof(cd_getlocp_result));
-  }
+  shim_cd_sync_result(&cd_track, result);
   return ret;
 }
 
@@ -354,7 +291,7 @@ int CdControlForce(unsigned char com, unsigned char *param) {
 
 /* libcd's CdLastCom (0x80063aac, between CdMode and CdLastPos), not a
  * status byte. */
-int GetCdStatusByte(void) { return cd_last_com; }
+int GetCdStatusByte(void) { return cd_track.last_com; }
 
 /* ---- libpad (direct mode) ---------------------------------------------------
  */

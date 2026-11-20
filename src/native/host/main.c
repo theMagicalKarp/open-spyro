@@ -47,6 +47,7 @@
 
 #include "config.h"
 #include "native_host.h"
+#include "script.h"
 #include "tomlc17.h"
 
 /* PsyZ's psyz/video.h (its include/ shadows system headers, so it stays off
@@ -64,10 +65,7 @@ static int run_stub;
 
 enum { MAX_SCRIPT = 64 };
 static int shot_frames[MAX_SCRIPT], n_shots;
-static struct {
-  int frame, hold;
-  unsigned buttons;
-} presses[MAX_SCRIPT];
+static ScriptPress presses[MAX_SCRIPT];
 static int n_presses;
 static struct {
   int frame, level;
@@ -119,12 +117,8 @@ int native_frame_hook(void) {
   for (int i = 0; i < n_shots; i++) {
     if (shot_frames[i] == frames_run) {
       char path[1024];
-      const char *dot = strrchr(screenshot_path, '.');
-      int stem =
-          dot ? (int)(dot - screenshot_path) : (int)strlen(screenshot_path);
 
-      snprintf(path, sizeof(path), "%.*s-%d.bmp", stem, screenshot_path,
-               frames_run);
+      script_shot_path(path, sizeof(path), screenshot_path, frames_run);
       write_screenshot(path);
     }
   }
@@ -137,18 +131,6 @@ int native_frame_hook(void) {
     }
   }
   return frame_limit != 0 && frames_run >= frame_limit;
-}
-
-static unsigned scripted_buttons(void) {
-  unsigned mask = 0;
-
-  for (int i = 0; i < n_presses; i++) {
-    if (frames_run >= presses[i].frame &&
-        frames_run < presses[i].frame + presses[i].hold) {
-      mask |= presses[i].buttons;
-    }
-  }
-  return mask;
 }
 
 /* PsyZ backend (sdl3_gpu.c); RECT is 4 shorts, pixels are RGB555. */
@@ -218,20 +200,13 @@ _Noreturn void native_quit(int code) {
 void Psyz_PadsSet(int port, const char *src, int len) {
   u32 buf = w2c_spyro_native_bridge_buffer(&instance);
   unsigned char *dst = psx_ptr(&env.memory, buf);
-  unsigned scripted = port == 0 ? scripted_buttons() : 0;
 
   if (len > 256) {
     len = 256;
   }
   memcpy(dst, src, (size_t)len);
-  if (scripted != 0 && len >= 4) {
-    if (dst[0] == 0xFF) { /* no host device on the port: plug a digital pad */
-      memset(dst, 0, (size_t)len);
-      dst[1] = 0x41;
-      dst[2] = dst[3] = 0xFF;
-    }
-    dst[2] &= (unsigned char)~(scripted >> 8);
-    dst[3] &= (unsigned char)~scripted;
+  if (port == 0) {
+    script_apply_pad(dst, len, script_buttons(presses, n_presses, frames_run));
   }
   w2c_spyro_native_pads_set(&instance, (u32)port, (u32)len);
 }

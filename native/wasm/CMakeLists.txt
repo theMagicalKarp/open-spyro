@@ -63,6 +63,7 @@ add_library(native_runtime OBJECT
     ${ROOT}/src/native/wasm/libc.c
     ${ROOT}/src/native/wasm/psyz_bridge.c
     ${ROOT}/src/native/wasm/sdk_shim.c
+    ${ROOT}/src/native/wasm/shim_helpers.c
     ${ROOT}/src/native/wasm/memcard.c
     ${ROOT}/src/native/wasm/psyz_fixups.c
     ${ROOT}/src/native/wasm/game_main.c
@@ -99,6 +100,7 @@ target_compile_options(game_c PRIVATE -include ${ROOT}/src/native/wasm/game_prel
 
 # The hand-written asm, translated by `open-spyro native handasm`.
 file(GLOB handasm_sources CONFIGURE_DEPENDS ${ROOT}/src/native/handasm/*.c)
+list(FILTER handasm_sources EXCLUDE REGEX "_test\\.c$") # native/tests
 add_library(handasm OBJECT ${handasm_sources})
 target_compile_options(handasm PRIVATE -O2 -fPIC -fwrapv -fno-strict-aliasing -Wno-everything)
 target_compile_definitions(handasm PRIVATE __psyz)

@@ -127,6 +127,9 @@ add_executable(spyro
     ${ROOT}/src/native/host/config.c
     ${ROOT}/src/native/host/imports.c
     ${ROOT}/src/native/host/audio.c
+    ${ROOT}/src/native/host/audio_format.c
+    ${ROOT}/src/native/host/host_io.c
+    ${ROOT}/src/native/host/script.c
     ${ROOT}/src/native/host/psx_memory.c
     ${TOMLC17}/tomlc17.c
     ${CMAKE_BINARY_DIR}/spyro_w.c
