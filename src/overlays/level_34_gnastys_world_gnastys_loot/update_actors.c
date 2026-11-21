@@ -1893,7 +1893,7 @@ void Level34_UpdateActors(void) {
       CritterState *st = actor->state;
       int speed;
       int *pos;
-      int turn;
+      int turn PORT_INIT(0);
 
       if ((actor->flags & ACTOR_HIT_BY_SPYRO) != 0 &&
           actor->mode != LCRITTER_KNOCKED) {

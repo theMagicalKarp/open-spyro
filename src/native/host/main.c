@@ -39,6 +39,7 @@
  * layer (SDL3 window, GPU backend, pads) runs natively on the host side of the
  * import boundary (imports.c). */
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -48,12 +49,15 @@
 #include "config.h"
 #include "native_host.h"
 #include "script.h"
+#include "stick.h"
 #include "tomlc17.h"
 
 /* PsyZ's psyz/video.h (its include/ shadows system headers, so it stays off
    this file's path): PsyzVsyncMode PSYZ_VSYNC_LIMITLESS. */
 int Psyz_VideoSetVsyncMode(int mode);
 enum { PSYZ_VSYNC_LIMITLESS = 3 };
+/* psyz/input.h's PsyzControllerKind: the pad ids PsyZ reports in byte 1. */
+enum { PSYZ_CTRL_DIGITAL_PAD = 0x41, PSYZ_CTRL_ANALOG_PAD = 0x73 };
 
 static struct w2c_env env;
 static struct w2c_host host;
@@ -71,7 +75,7 @@ static struct {
   int frame, level;
 } warps[MAX_SCRIPT];
 static int n_warps;
-static NativeSettings cfg = {.log_level = 1 /* info */};
+static NativeSettings cfg = NATIVE_SETTINGS_DEFAULT;
 static char default_card[1024];
 
 /* --- import-module context accessors (wasm2c calls these at instantiate) ---
@@ -205,6 +209,7 @@ void Psyz_PadsSet(int port, const char *src, int len) {
     len = 256;
   }
   memcpy(dst, src, (size_t)len);
+  stick_shape_report(dst, len, &cfg.stick[0], &cfg.stick[1]);
   if (port == 0) {
     script_apply_pad(dst, len, script_buttons(presses, n_presses, frames_run));
   }
@@ -386,6 +391,16 @@ int main(int argc, char **argv) {
   wasm2c_spyro_instantiate(&instance, NULL, &env, &host);
   w2c_spyro_0x5F_wasm_apply_data_relocs(&instance);
   w2c_spyro_0x5F_wasm_call_ctors(&instance);
+  /* A DualShock in analog mode: the game calibrates the sticks from its first
+     analog report and steers Spyro with the left one. */
+  Psyz_PadsSetKind(0, 0,
+                   cfg.analog ? PSYZ_CTRL_ANALOG_PAD : PSYZ_CTRL_DIGITAL_PAD);
+  /* Not in the original game: the right stick's X axis turns the camera
+     like L2/R2 (src/native/game/camera/manual_yaw.c), its rates in Q8. */
+  w2c_spyro_native_set_camera_stick(
+      &instance, (u32)cfg.camera_right_stick, (u32)cfg.camera_invert,
+      (u32)lround(cfg.camera_speed * 256), (u32)lround(cfg.camera_boost * 256),
+      (u32)lround(cfg.camera_boost_time * 60 /* VSyncs */));
 
   if (run_stub) {
     ret = (int)w2c_spyro_native_stub_main(&instance, 0);

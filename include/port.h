@@ -20,6 +20,11 @@
  * declaration is volatile. */
 #define PORT_VOLATILE volatile
 
+/* `int x PORT_INIT(v);`: natively x starts at v. For a local the original
+ * reads uninitialized on some path (the PS1 then sees whatever its register or
+ * stack slot last held); wasm clang may fold such a read to anything. */
+#define PORT_INIT(v) = (v)
+
 #else
 
 /* `register type name asm(reg)`: the variable lives in hard register `reg`
@@ -27,6 +32,8 @@
 #define REG_PIN(type, name, reg) register type name asm(reg)
 
 #define PORT_VOLATILE
+
+#define PORT_INIT(v)
 
 #endif
 
