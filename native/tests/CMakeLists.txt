@@ -19,13 +19,18 @@ endif()
 
 set(WASM ${ROOT}/src/native/wasm)
 set(HANDASM ${ROOT}/src/native/handasm)
+set(GAME ${ROOT}/src/native/game)
 
 # A unit's tests live next to it as <unit>_test.c (src/native/host/config_test.c
 # tests config.c); every one is picked up here. The wasm-side units' tests
 # include the unit itself (libc.c renames libc, memcard.c has static state),
-# so only the host and hand-asm units are listed as sources.
+# so only the host and hand-asm units are listed as sources. The native game
+# replacements' tests (src/native/game/<subsystem>/) include their unit too,
+# and see the game headers in include/.
 file(GLOB unit_tests CONFIGURE_DEPENDS
     ${HOST}/*_test.c ${WASM}/*_test.c ${HANDASM}/*_test.c)
+file(GLOB game_unit_tests CONFIGURE_DEPENDS ${GAME}/*/*_test.c)
+list(APPEND unit_tests ${game_unit_tests})
 
 # psx_memory_test.c needs the wasm2c runtime (tools/native_setup.sh); without
 # it, it is left out.
@@ -70,6 +75,7 @@ add_executable(native_tests
     ${HOST}/config.c
     ${HOST}/host_io.c
     ${HOST}/script.c
+    ${HOST}/stick.c
     ${HOST}/audio_format.c
     ${WASM}/shim_helpers.c
     ${HANDASM}/runtime.c
@@ -87,8 +93,12 @@ target_compile_definitions(native_tests PRIVATE
     "TEST_TMPDIR=\"${CMAKE_CURRENT_BINARY_DIR}\"")
 target_compile_options(native_tests PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(native_tests PRIVATE -fsanitize=address,undefined)
+target_link_libraries(native_tests PRIVATE m)
 set_target_properties(native_tests PROPERTIES C_STANDARD 11)
 set_source_files_properties(${TOMLC17}/tomlc17.c ${handasm_leaves} PROPERTIES COMPILE_OPTIONS "-w")
+# The game units' wasm export_name attributes mean nothing on the host.
+set_source_files_properties(${game_unit_tests} PROPERTIES
+    INCLUDE_DIRECTORIES ${ROOT}/include COMPILE_OPTIONS "-Wno-attributes")
 
 enable_testing()
 add_test(NAME native_tests COMMAND native_tests)

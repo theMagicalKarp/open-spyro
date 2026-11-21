@@ -553,7 +553,7 @@ void Level12_UpdateActors(void) {
                                     MOVE_LIFT | MOVE_FOLLOW_FLOOR);
             } else {
               int lim = THIEF_ORBIT_SLACK;
-              int r;
+              int r PORT_INIT(0);
               int a = ArcTan2(st->path->nodes[st->path->cur].x - spy->posX,
                               st->path->nodes[st->path->cur].y - SPY.posY,
                               ATAN_ANGLE8);
@@ -3183,7 +3183,7 @@ void Level12_UpdateActors(void) {
       case VILLAGER_IDLE: {
         int dist;
         int animState;
-        int marker;
+        int marker PORT_INIT(0);
         int range;
 
         dist = ApproxDist2D(&actor->posX, &SPY.posX);

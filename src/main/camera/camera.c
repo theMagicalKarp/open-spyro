@@ -919,6 +919,7 @@ SDATA(g_nCameraManualYawInput, 4);
 /* R1/L1 camera rotate (0x80035f58, 92 bytes): writes +-0x400 to
    g_nCameraManualYawInput, the yaw-drive override AdvanceCameraSpringStep
    consumes. Suppressed by request bit 0x1000 or while the camera is stuck. */
+#ifndef __psyz /* natively: src/native/game/camera/manual_yaw.c */
 void UpdateCameraManualYawInput(void) {
   g_nCameraManualYawInput = 0;
   if (g_dwSpyroRequestMask & SPYRO_RQ_LOCK_ON) {
@@ -933,6 +934,7 @@ void UpdateCameraManualYawInput(void) {
     g_nCameraManualYawInput = 0x400;
   }
 }
+#endif
 
 /* Register-base view of g_anCameraScriptStickIntegrator. */
 

@@ -68,6 +68,22 @@ disc = "/path/to/Spyro.cue"   # --disc; a relative path is relative to this file
 port1 = "card1.mcd"            # --memcard; "none" leaves port A empty
 port2 = "card2.mcd"            # --memcard2
 
+[input]
+analog = true                  # false: pad 1 reports a digital pad
+
+[input.left_stick]             # and [input.right_stick] (radial, deadzone 0.15)
+mode = "original"              # or "radial": the three below
+deadzone = 0.375               # fractions of full deflection
+outer_deadzone = 0.0
+curve = 1.0
+
+[input.camera]
+right_stick = false            # true: the right stick turns the camera
+invert = false
+speed = 1.0
+boost = 1.0
+boost_time = 0.5
+
 [debug]
 fast = false                   # --fast
 log_level = "info"             # --log-level: "debug", "info", "warn", "error" (or d/i/w/e)
@@ -113,6 +129,11 @@ wasm dependency:
   path copy and the log filter (`imports.c` forwards to it).
 - `src/native/host/script.c`: `--press` hold windows, the scripted buttons on
   pad 1's report and the `--shot` file names (`main.c`).
+- `src/native/host/stick.c`: the stick dead zones and curve, checked through
+  a model of the game's stick calibration (`main.c`).
+- `src/native/game/camera/manual_yaw.c`: L2/R2 and the right-stick camera
+  turn, its speed, invert and boost ramp, over the game globals it reads
+  (defined by the test).
 - `src/native/host/audio_format.c`: the sample frames per vblank and the
   `--wav` header (`audio.c`).
 - `src/native/host/psx_memory.c`: the address-space layout and the KUSEG
@@ -121,14 +142,16 @@ wasm dependency:
   (CI sets it up before the tests).
 
 Where a unit sits next to SDL, PsyZ or wasm2c code, its testable logic lives
-in its own file (`host_io.c`, `script.c`, `audio_format.c`, `shim_helpers.c`)
+in its own file (`host_io.c`, `script.c`, `stick.c`, `audio_format.c`, `shim_helpers.c`)
 and the original file calls it.
 
 A unit's tests live next to it as `<unit>_test.c` (`src/native/host/config_test.c`),
 which `native/tests/CMakeLists.txt` picks up by glob; `native/tests` holds only
 the harness. The wasm-side tests include their unit rather than link it, and
 implement the `host_*` imports it calls (`host_imports.h` drops the wasm import
-attributes off wasm). A test is a `TEST(name)` block with `CHECK`, `CHECK_INT` and
+attributes off wasm). The native game replacements' tests
+(`src/native/game/<subsystem>/<unit>_test.c`) include their unit too, with the
+game headers in `include/`, and define the game globals it uses. A test is a `TEST(name)` block with `CHECK`, `CHECK_INT` and
 `CHECK_STR` (`native/tests/test.h`); `build/native-test/native_tests FILTER`
 runs only the tests whose name contains FILTER.
 
@@ -312,9 +335,38 @@ their entry points abort (`src/native/game/load/level_id_stubs.c`).
 
 Pad 1 is the keyboard or the first SDL gamepad (PsyZ's backend): arrows =
 D-pad, X / Z / S / D = Cross / Square / Triangle / Circle, Q / R / W / E =
-L1 / R1 / L2 / R2, Return = Start, Backspace = Select. PsyZ fills the
-direct-mode report buffers on every VBlank; the game's own VSync callback
-(`PollPadAndDistributeInput`) reads them.
+L1 / R1 / L2 / R2, Return = Start, Backspace = Select. Pad 1 reports a
+DualShock in analog mode (id 0x73; `input.analog = false` makes it a digital
+pad, 0x41): the left stick steers Spyro (and the free-look camera) through
+the game's own analog path, which calibrates the stick centre from the first
+analog report and never reads the right stick. The keyboard leaves both
+sticks centred. PsyZ fills the direct-mode report buffers on every VBlank;
+the game's own VSync callback (`PollPadAndDistributeInput`) reads them.
+
+Each stick has a `mode` (`input.left_stick.mode` / `input.right_stick.mode`).
+`"original"`, the left stick's default, passes the report through untouched,
+so the game's own calibration applies: a 0x30-per-axis dead zone around the
+centre it snapshots, linear past that. `"radial"`, the right stick's default,
+shapes the stick on the host before the game sees it
+(`src/native/host/stick.c`): a radial `deadzone`, an `outer_deadzone` (that
+close to the edge reads as full) and a response `curve` (exponent; above 1
+gives finer control near the centre). Those three apply only in radial mode.
+The shaped value is encoded just past the game's dead zone, so the shaped
+deflection reaches the game unchanged and the host's dead zone replaces the
+game's. The left stick's radial default, 0.375, is the original's size. The
+game never reads the right stick, so in `"original"` mode the right-stick
+camera turn gets the raw stick with no dead zone.
+
+`input.camera.right_stick = true` adds what the original lacks: the right
+stick's X axis turns the camera the way L2 / R2 do, in proportion to the
+deflection, with the buttons taking priority; stick right turns the way R2 does, and
+`invert = true` flips that. `speed` scales the rate (1 = the
+L2/R2 rate); held at full deflection it ramps to `boost` times that over
+`boost_time` seconds (boost 1 = no ramp). Moving it counts as input the way L2 / R2 do: it
+restarts the standing camera's 1.5 s countdown before it swings back behind
+Spyro. The camera spring eases every turn
+in and out on its own. It is the native `UpdateCameraManualYawInput`
+(`src/native/game/camera/manual_yaw.c`); L2 / R2 keep the original rate.
 
 For runs without a person at the keyboard, `--press N:BUTTONS[:HOLD]` holds
 buttons (names joined by `+`: `cross+up`) for HOLD VSyncs (default 4) from

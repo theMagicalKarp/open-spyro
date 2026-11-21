@@ -115,10 +115,9 @@ make native-run         # plays the game with spyro.toml
 ```
 
 `make native-run` reads its settings from `spyro.toml` in the repo root, your
-gitignored copy of [`spyro.example.toml`](spyro.example.toml); edit it to
-change how the game runs. Flags in `NATIVE_ARGS` override it, and
-`NATIVE_CONFIG=other.toml` picks another file. The example, every key
-optional:
+gitignored copy of [`spyro.example.toml`](spyro.example.toml); edit it to change
+how the game runs. Flags in `NATIVE_ARGS` override it, and
+`NATIVE_CONFIG=other.toml` picks another file. The example, every key optional:
 
 ```toml
 disc = "iso/Spyro the Dragon (USA).cue"   # your .cue, relative to this file
@@ -127,6 +126,19 @@ disc = "iso/Spyro the Dragon (USA).cue"   # your .cue, relative to this file
 port1 = "card1.mcd"                       # "none" = empty, unset = card1.mcd in the data dir
 # port2 = "card2.mcd"
 
+[input]
+analog = true                             # false: digital pad (sticks ignored)
+
+[input.left_stick]                        # also [input.right_stick]
+deadzone = 0.375                          # 0.375 = the original's; modern pads suit ~0.1
+outer_deadzone = 0.0                      # this close to the edge reads as full
+curve = 1.0                               # response exponent: 1 linear, 2 finer near the centre
+
+[input.camera]
+right_stick = false                       # true: right stick turns the camera (not in the original)
+invert = false                            # true: flip the stick's turn direction
+speed = 1.0                               # 1 = the L2/R2 rate; boost / boost_time ramp it when held full
+
 [debug]
 fast = false                              # true: no 59.94 Hz frame limiter
 log_level = "info"                        # "debug", "info", "warn" or "error"
@@ -134,10 +146,11 @@ log_level = "info"                        # "debug", "info", "warn" or "error"
 
 Controls: arrows = D-pad, X / Z / S / D = Cross / Square / Triangle / Circle, Q
 / R / W / E = L1 / R1 / L2 / R2, Return = Start, Backspace = Select, or the
-first SDL gamepad. Saves go to a `.mcd` card image compatible with DuckStation
-_(the example config's `memcard.port1` puts it at `card1.mcd` in the repo root;
-without one it is `card1.mcd` in `~/Library/Application Support/open-spyro/spyro/`
-on macOS, `~/.local/share/open-spyro/spyro/` on Linux)_. Pass options with
+first SDL gamepad, analog sticks included. Saves go to a `.mcd` card image
+compatible with DuckStation _(the example config's `memcard.port1` puts it at
+`card1.mcd` in the repo root; without one it is `card1.mcd` in
+`~/Library/Application Support/open-spyro/spyro/` on macOS,
+`~/.local/share/open-spyro/spyro/` on Linux)_. Pass options with
 `NATIVE_ARGS="..."`: `--fast`, `--warp N:LEVEL`, scripted `--press` input and
 `--shot` screenshots are covered in [`docs/native.md`](docs/native.md).
 `build/native/spyro --stub` runs a test scene with no disc _(the CI smoke run;

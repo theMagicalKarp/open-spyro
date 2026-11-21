@@ -130,6 +130,7 @@ add_executable(spyro
     ${ROOT}/src/native/host/audio_format.c
     ${ROOT}/src/native/host/host_io.c
     ${ROOT}/src/native/host/script.c
+    ${ROOT}/src/native/host/stick.c
     ${ROOT}/src/native/host/psx_memory.c
     ${TOMLC17}/tomlc17.c
     ${CMAKE_BINARY_DIR}/spyro_w.c
@@ -140,7 +141,7 @@ target_include_directories(spyro PRIVATE
 target_compile_options(spyro PRIVATE -O2)
 set_source_files_properties(${CMAKE_BINARY_DIR}/spyro_w.c PROPERTIES
     COMPILE_OPTIONS "-w")
-target_link_libraries(spyro PRIVATE psyz_platform)
+target_link_libraries(spyro PRIVATE psyz_platform m)
 set_source_files_properties(${ROOT}/src/native/host/imports.c PROPERTIES
     INCLUDE_DIRECTORIES ${PSYZ}/include)
 
