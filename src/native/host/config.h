@@ -10,17 +10,38 @@
 
 #include <stdio.h>
 
+#include "stick.h"
+
 /* Every persistent setting, by its dotted config key (config.c settings). */
 typedef struct NativeSettings {
   const char *disc;    /* disc */
   const char *card[2]; /* memcard.port1, memcard.port2 */
   int fast;            /* debug.fast */
   int log_level;       /* debug.log_level: 0 debug .. 3 error */
+  int analog;          /* input.analog: pad 1 is a DualShock, not digital */
+  StickShape stick[2]; /* input.left_stick.*, input.right_stick.* */
+  /* input.camera.*: the right stick turns the camera (not in the original),
+     at `speed` times the L2/R2 rate; held at full deflection it speeds up to
+     `boost` times that over `boost_time` seconds. */
+  int camera_right_stick;
+  int camera_invert; /* input.camera.invert: stick right turns like L2 */
+  double camera_speed, camera_boost, camera_boost_time;
   /* The config file that set disc, if one did (for its error message). */
   const char *disc_file;
 } NativeSettings;
 
 enum { CONFIG_MAX_FILES = 8 };
+
+/* The settings a run starts from, before any config file. */
+#define NATIVE_SETTINGS_DEFAULT                                                \
+  {                                                                            \
+      .log_level = 1 /* info */,                                               \
+      .analog = 1,                                                             \
+      .stick = {STICK_SHAPE_ORIGINAL, {STICK_MODE_RADIAL, 0.15, 0.0, 1.0}},    \
+      .camera_speed = 1.0,                                                     \
+      .camera_boost = 1.0,                                                     \
+      .camera_boost_time = 0.5,                                                \
+  }
 
 /* Where parse problems and config warnings go; stderr unless changed. */
 extern FILE *config_log;

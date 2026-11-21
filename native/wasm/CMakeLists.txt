@@ -94,6 +94,7 @@ file(GLOB_RECURSE game_sources CONFIGURE_DEPENDS ${ROOT}/src/main/*.c ${ROOT}/sr
 list(FILTER game_sources EXCLUDE REGEX "/src/main/render/(ot|static_regs)\\.c$")
 list(FILTER game_sources EXCLUDE REGEX "/src/overlays/[^/]+/overlay_end\\.c$")
 file(GLOB_RECURSE native_game_sources CONFIGURE_DEPENDS ${ROOT}/src/native/game/*.c)
+list(FILTER native_game_sources EXCLUDE REGEX "_test\\.c$") # native/tests
 add_library(game_c OBJECT ${game_sources} ${native_game_sources})
 game_c(game_c)
 target_compile_options(game_c PRIVATE -include ${ROOT}/src/native/wasm/game_prelude.h)

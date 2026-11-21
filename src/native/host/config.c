@@ -121,17 +121,46 @@ int config_scan_args(int argc, char **argv, const char *paths[CONFIG_MAX_FILES],
 
 /* --- the settings table --- */
 
-enum setting_kind { SET_PATH, SET_BOOL, SET_LOG_LEVEL };
+enum setting_kind {
+  SET_PATH,
+  SET_BOOL,
+  SET_LOG_LEVEL,
+  SET_NUMBER,
+  SET_STICK_MODE
+};
 static const struct setting {
   const char *key;
   enum setting_kind kind;
-  size_t offset; /* into NativeSettings */
+  size_t offset;   /* into NativeSettings */
+  double min, max; /* SET_NUMBER's range */
 } settings[] = {
-    {"disc", SET_PATH, offsetof(NativeSettings, disc)},
-    {"memcard.port1", SET_PATH, offsetof(NativeSettings, card[0])},
-    {"memcard.port2", SET_PATH, offsetof(NativeSettings, card[1])},
-    {"debug.fast", SET_BOOL, offsetof(NativeSettings, fast)},
-    {"debug.log_level", SET_LOG_LEVEL, offsetof(NativeSettings, log_level)},
+/* Every field is given, so -Wextra's missing-initializer check stays quiet. */
+#define SETTING(key, kind, member)                                             \
+  {key, kind, offsetof(NativeSettings, member), 0, 0}
+#define NUMBER(key, member, min, max)                                          \
+  {key, SET_NUMBER, offsetof(NativeSettings, member), min, max}
+#define STICK(name, i)                                                         \
+  SETTING("input." name ".mode", SET_STICK_MODE, stick[i].mode),               \
+      NUMBER("input." name ".deadzone", stick[i].deadzone, 0, 0.9),            \
+      NUMBER("input." name ".outer_deadzone", stick[i].outer_deadzone, 0,      \
+             0.9),                                                             \
+      NUMBER("input." name ".curve", stick[i].curve, 0.1, 5)
+    SETTING("disc", SET_PATH, disc),
+    SETTING("memcard.port1", SET_PATH, card[0]),
+    SETTING("memcard.port2", SET_PATH, card[1]),
+    SETTING("debug.fast", SET_BOOL, fast),
+    SETTING("debug.log_level", SET_LOG_LEVEL, log_level),
+    SETTING("input.analog", SET_BOOL, analog),
+    STICK("left_stick", 0),
+    STICK("right_stick", 1),
+    SETTING("input.camera.right_stick", SET_BOOL, camera_right_stick),
+    SETTING("input.camera.invert", SET_BOOL, camera_invert),
+    NUMBER("input.camera.speed", camera_speed, 0.1, 8),
+    NUMBER("input.camera.boost", camera_boost, 1, 8),
+    NUMBER("input.camera.boost_time", camera_boost_time, 0, 10),
+#undef STICK
+#undef NUMBER
+#undef SETTING
 };
 
 /* Keys the first config format had at the top level: reported with the new
@@ -162,6 +191,14 @@ static const char *setting_want(const struct setting *t) {
     return "true or false";
   case SET_LOG_LEVEL:
     return "\"debug\", \"info\", \"warn\" or \"error\"";
+  case SET_STICK_MODE:
+    return "\"original\" or \"radial\"";
+  case SET_NUMBER: {
+    static char want[64];
+
+    snprintf(want, sizeof(want), "a number from %g to %g", t->min, t->max);
+    return want;
+  }
   }
   return "";
 }
@@ -191,6 +228,25 @@ static int store_setting(NativeSettings *s, const struct setting *t,
     *(int *)field = level;
     return 1;
   }
+  case SET_NUMBER: {
+    char *end;
+    double v = strtod(value, &end);
+
+    if (end == value || *end != '\0' || !(v >= t->min && v <= t->max)) {
+      return 0;
+    }
+    *(double *)field = v;
+    return 1;
+  }
+  case SET_STICK_MODE:
+    if (strcmp(value, "original") == 0) {
+      *(StickMode *)field = STICK_MODE_ORIGINAL;
+    } else if (strcmp(value, "radial") == 0) {
+      *(StickMode *)field = STICK_MODE_RADIAL;
+    } else {
+      return 0;
+    }
+    return 1;
   }
   return 0;
 }
@@ -259,6 +315,17 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
   }
   if (t->kind == SET_BOOL && v.type == TOML_BOOLEAN) {
     value = v.u.boolean ? "true" : "false";
+  } else if (t->kind == SET_NUMBER &&
+             (v.type == TOML_FP64 || v.type == TOML_INT64)) {
+    char *buf = malloc(32);
+
+    if (buf != NULL) {
+      snprintf(buf, 32, "%.17g",
+               v.type == TOML_FP64 ? v.u.fp64 : (double)v.u.int64);
+    }
+    value = buf;
+  } else if (t->kind == SET_NUMBER) {
+    value = NULL;
   } else if (t->kind != SET_BOOL && v.type == TOML_STRING) {
     value = t->kind == SET_PATH ? config_relative_path(file, v.u.s) : v.u.s;
     if (value == v.u.s) {
