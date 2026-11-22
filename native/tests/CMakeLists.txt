@@ -9,6 +9,7 @@
 
 cmake_minimum_required(VERSION 3.21)
 project(open_spyro_native_tests C)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(ROOT ${CMAKE_CURRENT_SOURCE_DIR}/../..)
 set(HOST ${ROOT}/src/native/host)
@@ -73,6 +74,7 @@ add_executable(native_tests
     test_main.c
     ${unit_tests}
     ${HOST}/config.c
+    ${HOST}/diag_stats.c
     ${HOST}/host_io.c
     ${HOST}/script.c
     ${HOST}/stick.c

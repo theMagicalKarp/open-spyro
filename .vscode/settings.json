@@ -1,5 +1,14 @@
 {
-    "files.associations": {
-        "*.c.wip": "c"
-    }
+  "files.associations": {
+    "*.c.wip": "c"
+  },
+  // C IntelliSense is clangd, fed by compile_commands.json (`make compdb`).
+  // The Microsoft C/C++ engine would fight it with its own guesses.
+  "C_Cpp.intelliSenseEngine": "disabled",
+  "clangd.arguments": [
+    "--compile-commands-dir=${workspaceFolder}",
+    "--background-index",
+    "--header-insertion=never"
+  ],
+  "cmake.sourceDirectory": "/Users/rsheehy/code/open-spyro/native"
 }

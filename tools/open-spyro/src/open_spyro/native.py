@@ -287,3 +287,40 @@ def gate(savestate: Path, binary: Path) -> None:
     if failures:
         raise SystemExit(f"gate: FAIL ({failures} mismatches)")
     print("gate: PASS")
+
+
+# ---- compdb ------------------------------------------------------------------
+# Headers that need their includer's typedefs: left to clangd, which borrows the
+# command of a file that includes them.
+_TEXTUAL_HEADERS = {
+    "include/flight_actor_states.h",
+    "include/level_actor_states.h",
+    "include/level_update_actors.h",
+}
+
+
+def compdb(databases: list[Path], output: Path) -> int:
+    """Merge CMake compile databases into one, plus entries for the game headers.
+
+    The game headers get the game-C command (ILP32, -DM2CTX, the prelude);
+    clangd would otherwise guess a host command for them. Returns the entry count.
+    """
+    import json
+
+    root = repo_root()
+    entries: list[dict] = []
+    for db in databases:
+        entries += json.loads(db.read_text())
+    game = next(e for e in entries if "/src/main/" in e["file"])
+    head = game["command"].split(" -o ", 1)[0]
+    headers = sorted(
+        p
+        for pattern in ("include/*.h", "src/main/*/*.h", "src/overlays/*/*.h")
+        for p in root.glob(pattern)
+        if p.relative_to(root).as_posix() not in _TEXTUAL_HEADERS
+    )
+    entries += [
+        {"directory": game["directory"], "file": str(h), "command": f"{head} {h}"} for h in headers
+    ]
+    output.write_text(json.dumps(entries, indent=2) + "\n")
+    return len(entries)

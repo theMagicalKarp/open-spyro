@@ -20,6 +20,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "diag.h"
 #include "host_io.h"
 #include "native_host.h"
 
@@ -147,6 +148,13 @@ u32 w2c_env_Psyz_VideoVSync(struct w2c_env *e, u32 mode) {
   }
   if (native_fast() && (int)mode == -1) {
     return (u32)native_frames_run();
+  }
+  if ((int)mode != -1 && mode != 1) {
+    u64 start = SDL_GetTicksNS();
+    u32 ret = (u32)Psyz_VideoVSync((int)mode);
+
+    diag_vsync(start, SDL_GetTicksNS());
+    return ret;
   }
   return (u32)Psyz_VideoVSync((int)mode);
 }

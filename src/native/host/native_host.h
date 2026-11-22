@@ -24,7 +24,12 @@ w2c_spyro *native_instance(void);
 
 /* Called once per VSync; nonzero ends the run (the --frames limit). */
 int native_frame_hook(void);
-_Noreturn void native_quit(int code);
+#ifdef __cplusplus
+[[noreturn]]
+#else
+_Noreturn
+#endif
+void native_quit(int code);
 int native_log_level(void);
 /* --fast: no frame limiter, and VSync(-1) counts blocking VSyncs instead of
    wall time, so game time advances one vblank per VSync (deterministic). */
