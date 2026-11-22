@@ -15,10 +15,10 @@ OPEN_SPYRO := $(UVRUN) -- open-spyro
 # header in the repo (src/, include/, native/); the generated hand-asm
 # translation (src/native/handasm) is formatted by its generator.
 CLANG_FORMAT := $(UVRUN) -- clang-format
-CFMT_SRC     := $(shell find src include native -name '*.[ch]')
+CFMT_SRC     := $(shell find src include native -name '*.[ch]' -o -name '*.cpp')
 CFMT_WIP     := $(shell find src -name '*.c.wip')
 
-.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check wad iso progress lint lint-py lint-c fmt fmt-py fmt-c clean native native-run native-gate native-test
+.PHONY: help setup setup-iso docker shell verify-toolchain extract split build verify check wad iso progress lint lint-py lint-c fmt fmt-py fmt-c clean native native-run native-gate native-test compdb
 
 help: ## Print this help (default target)
 	@echo "open-spyro — make targets:"
@@ -43,6 +43,7 @@ help: ## Print this help (default target)
 	@echo "  native       Build the native executable: macOS arm64, Linux arm64/x86_64 (build/native/spyro; needs tools/native_setup.sh)"
 	@echo "  native-run   Run it with spyro.toml (NATIVE_ARGS=\"--frames 300 --screenshot out.bmp\" to pass options)"
 	@echo "  native-test  Build + run the native host unit tests (build/native-test; needs only a C compiler + cmake)"
+	@echo "  compdb       Write compile_commands.json (all C: game, overlays, native) for clangd / editors"
 	@echo "  native-gate  ILP32 gate: native level load vs a DuckStation savestate (SAVESTATE=path.sav)"
 
 setup: ## Build the matching toolchain
@@ -123,7 +124,8 @@ fmt-c: ## Auto-format all C sources + headers + parked .c.wip attempts (clang-fo
 # ---- native port ------------------------------------------------------------
 # Everything lives under build/native/; the PS1 build is untouched. PsyZ is the
 # external/psyz submodule (its own submodules are not needed); the config-file
-# parser is the external/tomlc17 submodule.
+# parser is the external/tomlc17 submodule, the diagnostics overlay the
+# external/imgui + external/implot submodules.
 NATIVE_BUILD := build/native
 NATIVE_ARGS  ?=
 # Bounded: a bare -j is unlimited under cmake's Makefile generator.
@@ -136,6 +138,8 @@ NATIVE_CONFIG ?= spyro.toml
 native: ## Build the native executable (macOS arm64, Linux arm64/x86_64) (build/native/spyro)
 	@test -f external/psyz/psyz/CMakeLists.txt || git submodule update --init external/psyz
 	@test -f external/tomlc17/src/tomlc17.c || git submodule update --init external/tomlc17
+	@test -f external/imgui/imgui.cpp || git submodule update --init external/imgui
+	@test -f external/implot/implot.cpp || git submodule update --init external/implot
 	cmake -S native -B $(NATIVE_BUILD) -DCMAKE_BUILD_TYPE=Release >/dev/null
 	cmake --build $(NATIVE_BUILD) -j $(NATIVE_JOBS)
 
@@ -148,6 +152,20 @@ native-test: ## Build + run the native host unit tests (native/tests; no wasm to
 	cmake -S native/tests -B build/native-test -DCMAKE_BUILD_TYPE=Debug >/dev/null
 	cmake --build build/native-test -j $(NATIVE_JOBS)
 	ctest --test-dir build/native-test --output-on-failure
+
+# compile_commands.json for clangd / editor IntelliSense: the wasm build compiles
+# every game + overlay file with clang (-DM2CTX __psyz, include/ asm/), the host
+# build the native runtime, native-test the unit tests. Configure-only (no build).
+compdb: ## Write compile_commands.json (game, overlays, native) for clangd / editors
+	@test -f external/psyz/psyz/CMakeLists.txt || git submodule update --init external/psyz
+	@test -f external/tomlc17/src/tomlc17.c || git submodule update --init external/tomlc17
+	@test -f external/imgui/imgui.cpp || git submodule update --init external/imgui
+	@test -f external/implot/implot.cpp || git submodule update --init external/implot
+	cmake -S native -B $(NATIVE_BUILD) -DCMAKE_BUILD_TYPE=Release >/dev/null
+	cmake --build $(NATIVE_BUILD) --target wasm_modules-configure >/dev/null
+	cmake -S native/tests -B build/native-test -DCMAKE_BUILD_TYPE=Debug >/dev/null
+	$(OPEN_SPYRO) native compdb $(NATIVE_BUILD)/wasm/compile_commands.json \
+	  $(NATIVE_BUILD)/compile_commands.json build/native-test/compile_commands.json
 
 native-gate: native ## ILP32 gate: native level load vs PS1 RAM in SAVESTATE (a DuckStation .sav)
 	@test -n "$(SAVESTATE)" || { echo "usage: make native-gate SAVESTATE=path/to/state.sav (taken in a level)"; exit 2; }

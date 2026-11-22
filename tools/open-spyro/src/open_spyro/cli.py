@@ -260,6 +260,17 @@ def native_handasm(
     handasm.run(out)
 
 
+@native_app.command("compdb")
+def native_compdb(
+    databases: Annotated[list[Path], typer.Argument(help="CMake compile_commands.json files")],
+    output: Annotated[Path, typer.Option("-o", "--output", help="merged database")] = Path(
+        "compile_commands.json"
+    ),
+) -> None:
+    """Merge compile databases (+ game headers) for clangd / editors."""
+    print(f"{output}: {native.compdb(databases, output)} entries")
+
+
 @native_app.command("gate")
 def native_gate(
     savestate: Annotated[Path, typer.Argument(help="DuckStation savestate taken in a level")],

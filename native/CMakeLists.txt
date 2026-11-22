@@ -16,7 +16,10 @@
 # never reads anything here.
 
 cmake_minimum_required(VERSION 3.21)
-project(open_spyro_native C)
+project(open_spyro_native C CXX)
+# compile_commands.json for editors (`make compdb` merges it with the wasm and
+# test builds' into the repo root).
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # CMake 4.5+ only (ExternalProject install prefix); older CMake (Ubuntu 24.04
 # ships 3.28) keeps the old behaviour, which this build does not depend on.
 if(POLICY CMP0225)
@@ -39,6 +42,9 @@ set(ROOT ${CMAKE_CURRENT_SOURCE_DIR}/..)
 set(PSYZ ${ROOT}/external/psyz/psyz)
 # tomlc17: the TOML parser for the host's config file (main.c).
 set(TOMLC17 ${ROOT}/external/tomlc17/src)
+# Dear ImGui + ImPlot: the diagnostics overlay (src/native/host/diag.cpp).
+set(IMGUI ${ROOT}/external/imgui)
+set(IMPLOT ${ROOT}/external/implot)
 set(TOOLS ${ROOT}/build/native-tools)
 set(WASI_SDK ${TOOLS}/wasi-sdk-34.0 CACHE PATH "wasi-sdk install")
 set(WASM2C_RT ${TOOLS}/wasm2c-runtime CACHE PATH "wasm2c runtime sources")
@@ -59,6 +65,9 @@ endif()
 if(NOT EXISTS ${TOMLC17}/tomlc17.c)
   message(FATAL_ERROR "tomlc17 missing: git submodule update --init external/tomlc17")
 endif()
+if(NOT EXISTS ${IMGUI}/imgui.cpp OR NOT EXISTS ${IMPLOT}/implot.cpp)
+  message(FATAL_ERROR "ImGui/ImPlot missing: git submodule update --init external/imgui external/implot")
+endif()
 
 # --- 1. wasm modules ----------------------------------------------------------
 include(ExternalProject)
@@ -70,7 +79,10 @@ ExternalProject_Add(wasm_modules
         -DCMAKE_TOOLCHAIN_FILE=${WASI_SDK}/share/cmake/wasi-sdk-p1.cmake
         -DWASI_SDK_PREFIX=${WASI_SDK}
         -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
     BUILD_ALWAYS ON
+    # wasm_modules-configure: `make compdb` configures without building.
+    STEP_TARGETS configure
     INSTALL_COMMAND ""
     BUILD_BYPRODUCTS ${WASM_BIN}/spyro.wasm ${WASM_BIN}/gate.wasm)
 
@@ -121,10 +133,30 @@ target_compile_options(psyz_platform PRIVATE -O2 -w)
 target_link_libraries(psyz_platform PUBLIC SDL3::SDL3)
 set_target_properties(psyz_platform PROPERTIES C_STANDARD 11)
 
-# --- 3. executables -----------------------------------------------------------
+# --- 3. Dear ImGui + ImPlot, for the diagnostics overlay -----------------------
+# The SDL3 platform and SDL_GPU renderer backends (SPIR-V on Vulkan, MSL or
+# metallib on Metal).
+add_library(imgui STATIC
+    ${IMGUI}/imgui.cpp
+    ${IMGUI}/imgui_draw.cpp
+    ${IMGUI}/imgui_tables.cpp
+    ${IMGUI}/imgui_widgets.cpp
+    ${IMGUI}/backends/imgui_impl_sdl3.cpp
+    ${IMGUI}/backends/imgui_impl_sdlgpu3.cpp
+    ${IMPLOT}/implot.cpp
+    ${IMPLOT}/implot_items.cpp)
+target_include_directories(imgui PUBLIC ${IMGUI} ${IMGUI}/backends ${IMPLOT})
+target_compile_definitions(imgui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
+target_compile_options(imgui PRIVATE -O2 -w)
+target_link_libraries(imgui PUBLIC SDL3::SDL3)
+set_target_properties(imgui PROPERTIES CXX_STANDARD 17)
+
+# --- 4. executables -----------------------------------------------------------
 add_executable(spyro
     ${ROOT}/src/native/host/main.c
     ${ROOT}/src/native/host/config.c
+    ${ROOT}/src/native/host/diag.cpp
+    ${ROOT}/src/native/host/diag_stats.c
     ${ROOT}/src/native/host/imports.c
     ${ROOT}/src/native/host/audio.c
     ${ROOT}/src/native/host/audio_format.c
@@ -141,7 +173,7 @@ target_include_directories(spyro PRIVATE
 target_compile_options(spyro PRIVATE -O2)
 set_source_files_properties(${CMAKE_BINARY_DIR}/spyro_w.c PROPERTIES
     COMPILE_OPTIONS "-w")
-target_link_libraries(spyro PRIVATE psyz_platform m)
+target_link_libraries(spyro PRIVATE psyz_platform imgui m)
 set_source_files_properties(${ROOT}/src/native/host/imports.c PROPERTIES
     INCLUDE_DIRECTORIES ${PSYZ}/include)
 

@@ -150,6 +150,7 @@ static const struct setting {
     SETTING("memcard.port2", SET_PATH, card[1]),
     SETTING("debug.fast", SET_BOOL, fast),
     SETTING("debug.log_level", SET_LOG_LEVEL, log_level),
+    SETTING("debug.overlay", SET_BOOL, overlay),
     SETTING("input.analog", SET_BOOL, analog),
     STICK("left_stick", 0),
     STICK("right_stick", 1),

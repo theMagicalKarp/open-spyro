@@ -205,6 +205,8 @@ TEST(set_each_kind) {
   CHECK_INT(s.fast, 0);
   CHECK_INT(config_set(&s, "--set", "debug.log_level", "w"), 0);
   CHECK_INT(s.log_level, 2);
+  CHECK_INT(config_set(&s, "--set", "debug.overlay", "true"), 0);
+  CHECK_INT(s.overlay, 1);
   CHECK_INT(config_set(&s, "--set", "input.analog", "false"), 0);
   CHECK_INT(s.analog, 0);
   CHECK_INT(config_set(&s, "--set", "input.camera.right_stick", "true"), 0);

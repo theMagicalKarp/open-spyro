@@ -32,3 +32,4 @@ boost_time = 0.5    # ... over this many seconds
 [debug]
 fast = false       # true: no 59.94 Hz frame limiter
 log_level = "info" # "debug", "info", "warn" or "error"
+overlay = false    # true: start with the FPS overlay shown (` / L3+R3)

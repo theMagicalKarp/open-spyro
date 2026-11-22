@@ -27,7 +27,7 @@ Linux needs a Vulkan driver (Mesa's `mesa-vulkan-drivers` includes the
 
 ```sh
 tools/native_setup.sh            # wasi-sdk + wasm2c (pinned, into build/native-tools) + SDL3/cmake (Homebrew on macOS)
-git submodule update --init external/psyz external/tomlc17   # `make native` does this too; PsyZ's own submodules are not needed
+git submodule update --init external/psyz external/tomlc17 external/imgui external/implot   # `make native` does this too; PsyZ's own submodules are not needed
 make native                      # -> build/native/spyro (+ build/native/gate)
 cp spyro.example.toml spyro.toml # then set its `disc` to your .cue
 make native-run NATIVE_ARGS="--frames 300 --screenshot out.bmp"   # with spyro.toml (its `disc` key names the .cue)
@@ -87,6 +87,7 @@ boost_time = 0.5
 [debug]
 fast = false                   # --fast
 log_level = "info"             # --log-level: "debug", "info", "warn", "error" (or d/i/w/e)
+overlay = false                # start with the diagnostics overlay shown
 ```
 
 Every key is optional. Each setting has a dotted name, its table and key
@@ -136,13 +137,15 @@ wasm dependency:
   (defined by the test).
 - `src/native/host/audio_format.c`: the sample frames per vblank and the
   `--wav` header (`audio.c`).
+- `src/native/host/diag_stats.c`: the diagnostics overlay's frame rate and
+  frame-time averages, frame-time history and state names (`diag.cpp`).
 - `src/native/host/psx_memory.c`: the address-space layout and the KUSEG
   mirror (`mach_vm_remap` on macOS, a shared memfd on Linux), built only when
   the wasm2c runtime from `tools/native_setup.sh` is in `build/native-tools`
   (CI sets it up before the tests).
 
 Where a unit sits next to SDL, PsyZ or wasm2c code, its testable logic lives
-in its own file (`host_io.c`, `script.c`, `stick.c`, `audio_format.c`, `shim_helpers.c`)
+in its own file (`host_io.c`, `script.c`, `stick.c`, `audio_format.c`, `diag_stats.c`, `shim_helpers.c`)
 and the original file calls it.
 
 A unit's tests live next to it as `<unit>_test.c` (`src/native/host/config_test.c`),
@@ -342,6 +345,20 @@ the game's own analog path, which calibrates the stick centre from the first
 analog report and never reads the right stick. The keyboard leaves both
 sticks centred. PsyZ fills the direct-mode report buffers on every VBlank;
 the game's own VSync callback (`PollPadAndDistributeInput`) reads them.
+
+Backtick (`` ` ``), or L3 + R3 on a gamepad (click one stick while holding the other in),
+shows and hides the diagnostics overlay (`src/native/host/diag.cpp`, not in
+the original): presented FPS, a graph of the last 240 frames' rates, the mean
+and longest time between presents, the time the game ran between blocking
+VSyncs, the VSync count, `g_nGamestate` and `g_nActiveLevelId`; the averages
+refresh every half second. `debug.overlay = true` starts it shown. It is a
+[Dear ImGui](https://github.com/ocornut/imgui) panel with an
+[ImPlot](https://github.com/epezent/implot) graph (both MIT, the
+`external/imgui` and `external/implot` submodules), drawn through PsyZ's
+SDL_GPU overlay hooks with ImGui's SDL_GPU backend (Metal or Vulkan), in the
+system's monospace font (SF Mono, else DejaVu Sans Mono, else ImGui's own).
+If ImGui can't start, the frame rate goes in the window title instead. PsyZ's own keys stay: F4
+fullscreen, F6 the VRAM view, Escape quits.
 
 Each stick has a `mode` (`input.left_stick.mode` / `input.right_stick.mode`).
 `"original"`, the left stick's default, passes the report through untouched,

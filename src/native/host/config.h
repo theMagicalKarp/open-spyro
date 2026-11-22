@@ -18,6 +18,7 @@ typedef struct NativeSettings {
   const char *card[2]; /* memcard.port1, memcard.port2 */
   int fast;            /* debug.fast */
   int log_level;       /* debug.log_level: 0 debug .. 3 error */
+  int overlay;         /* debug.overlay: start with the diagnostics shown */
   int analog;          /* input.analog: pad 1 is a DualShock, not digital */
   StickShape stick[2]; /* input.left_stick.*, input.right_stick.* */
   /* input.camera.*: the right stick turns the camera (not in the original),

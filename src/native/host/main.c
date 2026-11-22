@@ -26,11 +26,11 @@
  * or its first letter.
  *
  * The persistent settings have dotted keys (disc, memcard.port1/port2,
- * debug.fast, debug.log_level; the settings table in config.c). They can come
- * from TOML config files: config.toml in the user's data directory if it
- * exists, or each --config PATH in order (later files override earlier
- * ones; each must exist); --no-config reads none. Relative paths in a file
- * are relative to it, and unknown keys are warned about and ignored. Flags
+ * debug.fast, debug.log_level, debug.overlay; the settings table in config.c).
+ * They can come from TOML config files: config.toml in the user's data
+ * directory if it exists, or each --config PATH in order (later files override
+ * earlier ones; each must exist); --no-config reads none. Relative paths in a
+ * file are relative to it, and unknown keys are warned about and ignored. Flags
  * override the files: --set KEY=VALUE sets any key, and --disc, --memcard,
  * --memcard2, --fast and --log-level are short forms of it.
  *
@@ -47,6 +47,7 @@
 #include <SDL3/SDL.h>
 
 #include "config.h"
+#include "diag.h"
 #include "native_host.h"
 #include "script.h"
 #include "stick.h"
@@ -384,6 +385,7 @@ int main(int argc, char **argv) {
 
   /* GOT.mem imports resolve to PS1 addresses (spyro_w_got.c) and need no
      context. */
+  diag_init(cfg.overlay);
   if (cfg.fast) {
     /* Applied when the backend configures VSync at init. */
     Psyz_VideoSetVsyncMode(PSYZ_VSYNC_LIMITLESS);

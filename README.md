@@ -109,7 +109,7 @@ Prerequisites: **[uv](https://docs.astral.sh/uv/)**, plus
 
 ```sh
 tools/native_setup.sh   # pinned wasi-sdk + wasm2c (+ SDL3: Homebrew on macOS, system or pinned build on Linux)
-make native             # -> build/native/spyro (fetches the external/psyz + external/tomlc17 submodules)
+make native             # -> build/native/spyro (fetches the external/psyz, tomlc17, imgui + implot submodules)
 cp spyro.example.toml spyro.toml   # then set `disc` in it to your .cue
 make native-run         # plays the game with spyro.toml
 ```
@@ -155,6 +155,15 @@ compatible with DuckStation _(the example config's `memcard.port1` puts it at
 `--shot` screenshots are covered in [`docs/native.md`](docs/native.md).
 `build/native/spyro --stub` runs a test scene with no disc _(the CI smoke run;
 set `SDL_VIDEODRIVER=offscreen` on a Linux machine with no display)_.
+
+#### Editor IntelliSense
+
+`make compdb` (after `tools/native_setup.sh`; configures, does not build)
+writes a gitignored `compile_commands.json` covering every C file: game and
+overlay C with the flags the native build compiles them with, plus the host
+runtime and unit tests. Any clangd-based editor picks it up; in VS Code, install
+the recommended clangd extension (`.vscode/` turns off the Microsoft C/C++
+IntelliSense engine so the two do not conflict). Rerun it after adding a file.
 
 ### PS1 matching build
 
@@ -224,7 +233,7 @@ instruction rather than just the diff hunks.
 | `src/`        | matched C: `main/<subsystem>/*.c` _(main EXE)_, `overlays/<segment>/*.c`                                                                                                     |
 | `src/native/` | native-only code: `host/` _(SDL3 host, memory map, audio)_, `wasm/` _(SDK shim, libc, memcard)_, `game/` _(native replacements)_, `handasm/` _(translated hand-written asm)_ |
 | `native/`     | CMake for the native build _(wasm module, host executable, ILP32 gate)_                                                                                                      |
-| `external/`   | `psyz/` - PsyZ submodule _(PSY-Q SDK reimplementation for the native build)_                                                                                                 |
+| `external/`   | `psyz/` - PsyZ submodule _(PSY-Q SDK reimplementation for the native build)_; `tomlc17/`, `imgui/`, `implot/` _(config parser, diagnostics overlay)_                         |
 | `asm/`        | nonmatching `.s` _(`INCLUDE_ASM` targets)_ + extracted data `.s`                                                                                                             |
 | `include/`    | `types.h`, `funcs.h`, `globals.h` _(seeded by the one-time Ghidra import)_, `port.h` _(PS1/native differences)_                                                              |
 | `assets/`     | passthrough binaries _(WAD, STR, Crash demo, license)_                                                                                                                       |
