@@ -3,15 +3,18 @@
 #
 # Driven by `make setup`. Idempotent: re-running skips work already done.
 # Everything provisioned here is gitignored (see .gitignore) — we never commit
-# the compiler or the cloned tool repos. gcc 2.7.2 is built FROM SOURCE inside
-# the Docker image (tools/Dockerfile), not fetched as a prebuilt binary.
+# the compiler or the cloned tool repos. gcc 2.7.2 cc1 is the pinned decompals
+# old-gcc release binary, fetched and sha256-checked inside the Docker image
+# (tools/Dockerfile, which owns that pin).
 #
 # Phases (run all, or one by name):
 #   tools      clone maspsx at its pinned commit
 #   iso        clone + cmake-build mkpsxiso (host-native dumpsxiso + mkpsxiso)
 #   python     create the uv venv (splat/spimdisasm + open-spyro CLI)
-#   docker     build the matching Docker image (tools/Dockerfile); this is where
-#              gcc 2.7.2 cc1 is compiled from source
+#   docker     build the matching Docker image (tools/Dockerfile), which
+#              fetches the pinned gcc 2.7.2 cc1
+#   ensure     build the image only if it is missing or stale (run by
+#              docker_env.sh before every in-image step)
 #
 #   tools/setup.sh            # tools + iso + python + docker
 #   tools/setup.sh docker     # just one phase
@@ -20,11 +23,7 @@ set -euo pipefail
 
 # ============================ LOCKED PINS ====================================
 # Bump deliberately — a toolchain change can break every prior byte-match.
-# gcc 2.7.2 cc1 is built from source in the Docker image (tools/Dockerfile) from
-# this pinned commit of the decompals/mips-gcc-2.7.2 tree. Proven codegen-
-# equivalent via the earliest toolchain spike.
-GCC272_SRC_URL="https://github.com/decompals/mips-gcc-2.7.2.git"
-GCC272_SRC_SHA="e6271f14b095d7d8b2638c2b5e07d0d5cd05bc14"
+# gcc 2.7.2 cc1 is pinned in tools/Dockerfile (GCC272_REL_URL + sha256), not here.
 
 MASPSX_URL="https://github.com/mkst/maspsx.git"
 MASPSX_SHA="42b862c988fe7a13fe4e7ac0ebec90ed6b9fb763"
@@ -121,14 +120,67 @@ phase_docker() {
     warn "start Docker Desktop, then: make docker"
     return
   fi
+  build_image
+}
+
+# The image's inputs: the Dockerfile, the split-group requirements it exports from
+# uv.lock (same flags as tools/Dockerfile, so dev-only lock churn doesn't count),
+# the console-script entrypoint, and the build args. Stamped on the image as a
+# label so `ensure` can spot a stale image. The baked open-spyro source is
+# excluded — builds run it from the mounted repo via PYTHONPATH.
+DOCKER_FP_LABEL="open-spyro.fingerprint"
+docker_fingerprint() {
+  command -v uv >/dev/null 2>&1 || die "uv not found — install from https://docs.astral.sh/uv/"
+  {
+    cat tools/Dockerfile
+    uv export --project tools/open-spyro --frozen --no-hashes --no-emit-project \
+      --no-default-groups --group split --no-header
+    sed -n '/^\[project\.scripts\]/,/^\[/p' tools/open-spyro/pyproject.toml
+    printf '%s\n' "$MASPSX_SHA"
+  } | shasum -a1 | awk '{print $1}'
+}
+
+build_image() {
   log "building $DOCKER_IMAGE (linux/amd64) from tools/Dockerfile"
-  log "  (this compiles gcc 2.7.2 cc1 from source — first build takes a few minutes)"
+  log "  (first build takes a few minutes)"
   docker build --platform linux/amd64 \
-    --build-arg GCC272_SRC_URL="$GCC272_SRC_URL" \
-    --build-arg GCC272_SRC_SHA="$GCC272_SRC_SHA" \
     --build-arg MASPSX_SHA="$MASPSX_SHA" \
+    --label "$DOCKER_FP_LABEL=$(docker_fingerprint)" \
     -t "$DOCKER_IMAGE" -f tools/Dockerfile tools/
   log "image built: $DOCKER_IMAGE"
+}
+
+image_label() {
+  docker image inspect -f "{{ index .Config.Labels \"$DOCKER_FP_LABEL\" }}" "$DOCKER_IMAGE" 2>/dev/null
+}
+
+# Silent when the image is current; builds it when missing or stale. Unlike
+# phase_docker, a missing docker/daemon is fatal: the caller needs the image.
+# The fast path is one `docker image inspect`; the docker/daemon checks only run
+# when that fails or the image needs a build.
+DOCKER_LOCK="${TMPDIR:-/tmp}"; DOCKER_LOCK="${DOCKER_LOCK%/}/open-spyro-matchenv.lock"
+phase_ensure() {
+  local want
+  want=$(docker_fingerprint)
+  [ "$(image_label || true)" = "$want" ] && return 0
+  command -v docker >/dev/null 2>&1 || die "docker not installed"
+  docker info >/dev/null 2>&1 || die "docker daemon not running — start Docker Desktop and retry"
+  # Serialise concurrent callers (e.g. two `make` runs) so only one builds; the
+  # others wait, then re-check the label. mkdir is atomic and needs no flock.
+  if ! mkdir "$DOCKER_LOCK" 2>/dev/null; then
+    log "waiting for another image build (stale lock? rmdir $DOCKER_LOCK)"
+    until mkdir "$DOCKER_LOCK" 2>/dev/null; do sleep 5; done
+  fi
+  trap 'rmdir "$DOCKER_LOCK" 2>/dev/null || true' EXIT
+  local have
+  if ! have=$(image_label); then
+    log "$DOCKER_IMAGE not built"
+  elif [ "$have" != "$want" ]; then
+    log "$DOCKER_IMAGE is stale (tools/Dockerfile, split-group deps or a pin changed)"
+  else
+    return 0
+  fi
+  build_image
 }
 
 # ---- in-image verification (toolchain exit criteria) -------------------------
@@ -155,7 +207,8 @@ case "${1:-all}" in
   python) phase_python ;;
   docker) phase_docker ;;
   verify) phase_verify ;;
+  ensure) phase_ensure; exit 0 ;;
   all)    phase_tools; phase_iso; phase_python; phase_docker ;;
-  *) die "unknown phase: $1 (try: tools | iso | python | docker | verify | all)" ;;
+  *) die "unknown phase: $1 (try: tools | iso | python | docker | ensure | verify | all)" ;;
 esac
 log "done: ${1:-all}"

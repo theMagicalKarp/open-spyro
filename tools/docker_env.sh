@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # tools/docker_env.sh — drop into the matching environment with the repo mounted.
-# Requires `make setup` (or `make docker`) to have built the image first.
+# Builds the image first if it is missing or stale (tools/setup.sh ensure).
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+bash "$ROOT/tools/setup.sh" ensure
 # Allocate a TTY only when attached to one, so `make build` (non-interactive,
 # e.g. CI) works while `make shell` stays interactive.
 tty_flag=""
