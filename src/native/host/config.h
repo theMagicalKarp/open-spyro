@@ -87,8 +87,9 @@ int config_set(NativeSettings *s, const char *flag, const char *key,
 const char *config_relative_path(const char *config_file, const char *path);
 
 /* Applies the TOML file PATH. A missing file is an error unless OPTIONAL
-   (then it is no config). Nonzero (reported) if it cannot be read or parsed
-   or a value is invalid; unknown keys are only warned about. */
+   (then it is no config). Nonzero (reported) if it cannot be read or parsed,
+   or has an unknown key or table or a value of the wrong type or range;
+   every such key is reported, not only the first. */
 int config_load_file(NativeSettings *s, const char *path, int optional);
 
 /* Applies TOML source TEXT as if read from the file NAME. */

@@ -469,20 +469,69 @@ TEST(load_later_file_overrides) {
   CHECK_INT(s.fast, 0);
 }
 
-TEST(load_unknown_keys_warn) {
+TEST(load_unknown_keys_fail) {
   NativeSettings s = fresh();
   const char *log;
 
   log_capture();
-  CHECK_INT(config_load_string(&s, "x.toml",
-                               "fast = true\n"
-                               "[debug]\n"
-                               "speed = 2\n"),
-            0);
+  CHECK(config_load_string(&s, "x.toml",
+                           "fast = true\n"
+                           "[debug]\n"
+                           "speed = 2\n") != 0);
   CHECK_INT(s.fast, 0);
+  /* Every bad key is reported, not only the first. */
   log = log_text();
-  CHECK(strstr(log, "x.toml:1: unknown key fast (ignored)") != NULL);
-  CHECK(strstr(log, "x.toml:3: unknown key debug.speed (ignored)") != NULL);
+  CHECK(strstr(log, "x.toml:1: unknown key fast\n") != NULL);
+  CHECK(strstr(log, "x.toml:3: unknown key debug.speed\n") != NULL);
+}
+
+TEST(load_unknown_tables_fail) {
+  NativeSettings s = fresh();
+
+  log_capture();
+  CHECK(config_load_string(&s, "x.toml", "[video]\nscale = 2\n") != 0);
+  CHECK(strstr(log_text(), "x.toml:1: unknown table video\n") != NULL);
+  log_capture();
+  CHECK(config_load_string(&s, "x.toml", "[input.analog.middle]\nmode = 1\n") !=
+        0);
+  CHECK(strstr(log_text(), "unknown table input.analog.middle") != NULL);
+}
+
+/* A table where a value goes, and a value where a table goes. */
+TEST(load_table_value_mixups_fail) {
+  NativeSettings s = fresh();
+
+  log_capture();
+  CHECK(config_load_string(&s, "x.toml", "[disc]\npath = \"a.cue\"\n") != 0);
+  CHECK(strstr(log_text(), "x.toml:1: disc must be a string") != NULL);
+  log_capture();
+  CHECK(config_load_string(&s, "x.toml", "debug = true\n") != 0);
+  CHECK(strstr(log_text(), "x.toml:1: debug must be a table") != NULL);
+  log_capture();
+  CHECK(config_load_string(&s, "x.toml", "[input]\nanalog = \"left\"\n") != 0);
+  CHECK(strstr(log_text(), "x.toml:2: input.analog must be a table") != NULL);
+  log_capture();
+  CHECK(config_load_string(&s, "x.toml", "[[debug]]\nfast = true\n") != 0);
+  CHECK(strstr(log_text(), "debug must be a table, not an array of tables\n") !=
+        NULL);
+  CHECK(s.disc == NULL);
+}
+
+/* The good keys around a bad one still parse; the run stops either way. */
+TEST(load_reports_wrong_types_and_unknown_keys_together) {
+  NativeSettings s = fresh();
+  const char *log;
+
+  log_capture();
+  CHECK(config_load_string(&s, "x.toml",
+                           "[debug]\n"
+                           "fast = \"yes\"\n"
+                           "overlay = true\n"
+                           "turbo = 1\n") != 0);
+  log = log_text();
+  CHECK(strstr(log, "x.toml:2: debug.fast must be true or false") != NULL);
+  CHECK(strstr(log, "x.toml:4: unknown key debug.turbo") != NULL);
+  CHECK_INT(s.overlay, 1);
 }
 
 TEST(load_wrong_types_fail) {
