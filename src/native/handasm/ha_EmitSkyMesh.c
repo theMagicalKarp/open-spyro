@@ -169,7 +169,8 @@ L_8004EC8C:
   /* 8004ECC0 00411022 */
   v0 = v0 - at;
   /* 8004ECC4 1840FFE4 */
-  bc = ((int32_t)v0 <= 0);
+  /* native patch (EmitSkyMesh): sky segment too near the camera plane */
+  bc = ((int32_t)v0 + (int32_t)at <= VIEW_NARROW((int32_t)at));
   /* 8004ECC8 20640001 (delay) */
   a0 = v1 + 0x1u;
   if (bc) {

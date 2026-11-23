@@ -233,6 +233,31 @@ _X_HI = [
 ]
 
 
+def _sky_near(func: str, addr: int, word: int) -> BranchPatch:
+    """A sky segment skipped when its centre is within its radius of the
+    camera plane (``blez v0`` on v0 = z - r, r in at): the sky has no near
+    clipping, so those would project vertices from behind the camera, and at
+    4:3 they were never on screen. A wider view sees past the old edges into
+    segments beside the camera, so the margin shrinks with it (VIEW_NARROW,
+    exact at 4:3)."""
+    return BranchPatch(
+        func,
+        addr,
+        word,
+        "(int32_t)v0 + (int32_t)at <= VIEW_NARROW((int32_t)at)",
+        "sky segment too near the camera plane",
+    )
+
+
+# The world sky, its fogged copy, and the portal skies (two segment walks).
+_SKY_NEAR = [
+    ("EmitSkyMesh", 0x8004ECC4, 0x1840FFE4),
+    ("EmitSkyMeshFogged", 0x8004F0E0, 0x1840FFEE),
+    ("EmitPortalSky", 0x8004F588, 0x1840FFEE),
+    ("EmitPortalSky", 0x8005030C, 0x1840FFEE),
+]
+
+
 PATCHES: list[Patch | BranchPatch] = [
     Patch(
         "RenderWorldChunks",
@@ -346,4 +371,5 @@ if (bc)
         "a0 = HA_LBU(fp + 87u);",
     ),
     *(_x_hi(*args) for args in _X_HI),
+    *(_sky_near(*args) for args in _SKY_NEAR),
 ]

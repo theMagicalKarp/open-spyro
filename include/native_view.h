@@ -47,6 +47,11 @@ void NativeMenuSideStrips(void);
 #define VIEW_X0_HI (VIEW_X0 * 0x10000)
 #define VIEW_X1_HI_REL ((VIEW_X1 - SCREEN_W) * 0x10000)
 
+/* A near-plane margin R scaled down as the view widens (R at 4:3): a test
+   that keeps out objects within R of the camera plane, because at 4:3 they
+   were off screen, keeps out fewer of those the wider view does show. */
+#define VIEW_NARROW(r) ((int)((long long)(r) * (SCREEN_W / 2) / VIEW_HALF_W))
+
 /* A sphere cull's radius term against the side planes 4|x| = 3kz (k =
    VIEW_HALF_W / 256), from the 4:3 one: it scales with the plane normal's
    length, sqrt(16 + 9k^2) / 5. Exactly V at 4:3. */

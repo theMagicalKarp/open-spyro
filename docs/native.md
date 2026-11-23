@@ -435,9 +435,10 @@ so a run at 21:9 drifts from the same run at 4:3 after a while.
 of a widened view. Comparing a run with it against one without shows what
 a cull still drops at the edges. PsyZ draws primitives of any width, so
 polygons spanning the whole canvas are not dropped.
-Known issue: the flight levels' sky domes don't cover the top corners the
-4:3 view never shows, so at 21:9 the clear colour shows there while Spyro
-banks. Wider views also emit more primitives than the original 4:3 ones,
+The sky's segment walks skip segments close to the camera plane, which the
+4:3 view never showed; that margin shrinks as the view widens, or the
+strips' top corners would show the clear colour. Known issue: wider views
+also emit more primitives than the original 4:3 ones,
 into the same per-frame primitive buffer (0x1C000 bytes, carved from the top
 of the PS1's RAM): when it fills, the rest of that frame's polygons are
 dropped. A sweep of every level, spinning the camera, found this at 21:9 in
