@@ -20,6 +20,9 @@ typedef struct NativeSettings {
   int log_level;       /* debug.log_level: 0 debug .. 3 error */
   int overlay;         /* debug.overlay: start with the diagnostics shown */
   int start_level;     /* debug.start.level: level id to boot into, 0 = off */
+  /* debug.cull_margin: game pixels the side culls reach past each edge of a
+     widened view, to show what they drop (0 = the view itself). */
+  int cull_margin;
   int analog;          /* input.pad: 1 "analog" (a DualShock), 0 "digital" */
   StickShape stick[2]; /* input.analog.left.*, input.analog.right.* */
   /* input.camera.*: mode "analog" (camera_analog = 1) lets the right stick
@@ -29,6 +32,16 @@ typedef struct NativeSettings {
   int camera_analog;
   int camera_invert; /* input.camera.invert: stick right turns like L2 */
   double camera_speed, camera_boost, camera_boost_time;
+  /* video.internal_resolution: the render scale, 1..8, or 0 for the window
+     size over the canvas; 1 keeps PsyZ's PS1 display mode. */
+  int internal_res;
+  /* video.aspect: the view's width over its height, 4:3 (the original) to
+     8:3 (PsyZ's widest canvas), wider showing more of the world at the
+     sides; 0 for the window's. */
+  double aspect;
+  /* video.hud: 0 "center" (the original's 4:3 layout), 1 "edges" (the side
+     counters at a widened view's edges). */
+  int hud_edges;
   /* The config file that set disc, if one did (for its error message). */
   const char *disc_file;
 } NativeSettings;
@@ -44,6 +57,8 @@ enum { CONFIG_MAX_FILES = 8 };
       .camera_speed = 1.0,                                                     \
       .camera_boost = 1.0,                                                     \
       .camera_boost_time = 0.5,                                                \
+      .internal_res = 1,                                                       \
+      .aspect = 4.0 / 3.0,                                                     \
   }
 
 /* Where parse problems and config warnings go; stderr unless changed. */
@@ -67,6 +82,19 @@ int config_level_valid(int level);
 
 /* --warp N:LEVEL; nonzero if the form is wrong or N is not positive. */
 int config_parse_warp(const char *arg, int *frame, int *level);
+
+/* video.aspect's range: the original 4:3, up to the 1024-wide canvas PsyZ
+   can draw (8:3 at 240 lines). */
+#define CONFIG_ASPECT_MIN (4.0 / 3.0)
+#define CONFIG_ASPECT_MAX (8.0 / 3.0)
+
+/* "auto" (0), "W:H" or a number, as width over height, into *ASPECT;
+   nonzero if malformed or outside CONFIG_ASPECT_MIN..MAX. */
+int config_parse_aspect(const char *s, double *aspect);
+
+/* The canvas width to ask PsyZ for at 240 lines and ASPECT (window
+   pixels: 320 is 4:3, a 512x240 canvas), clamped to the range above. */
+int config_aspect_request_width(double aspect);
 
 /* Whether ARG is a flag other than --config that takes the next argument. */
 int config_takes_value(const char *arg);

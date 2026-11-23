@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster RasterizeSpritePrimQueue: RasterizeSpritePrimQueue (80022A2C) */
 void ha_RasterizeSpritePrimQueue(HaRegs *R, uint32_t entry) {
@@ -286,21 +287,21 @@ L_80022B08:
 L_80022C04:
   /* 80022C04 8FC4001C */
   a0 = HA_LW(fp + 28u);
-  /* 80022C08 2066004D */
-  a2 = v1 + 0x4du;
-  /* 80022C0C 20A5FF9A */
-  a1 = a1 + 0xffffff9au;
-  /* 80022C10 00052880 */
-  a1 = a1 << 2;
-  /* 80022C14 00A62822 */
-  a1 = a1 - a2;
-  /* 80022C18 00063040 */
+  /* native patch (RasterizeSpritePrimQueue): sphere wholly past a side edge:
+   * skipped */
+  /* 80022C08 2066004D (replaced) */
+  /* 80022C0C 20A5FF9A (replaced) */
+  /* 80022C10 00052880 (replaced) */
+  /* 80022C14 00A62822 (replaced) */
+  /* 80022C18 00063040 (replaced) */
+  /* 80022C1C 00A62822 (replaced) */
+  /* 80022C20 04A1FFB9 (replaced) */
+  /* 80022C24 02D5B020 (replaced) */
+  a2 = v1 + 0x4D;
+  a1 = (uint32_t)(4 * (int32_t)a1 - VIEW_WIDEN(3 * (int32_t)v1) -
+                  VIEW_SPHERE(4 * (int32_t)(0x66) + 3 * (int32_t)(0x4D)));
   a2 = a2 << 1;
-  /* 80022C1C 00A62822 */
-  a1 = a1 - a2;
-  /* 80022C20 04A1FFB9 */
-  bc = ((int32_t)a1 >= 0);
-  /* 80022C24 02D5B020 (delay) */
+  bc = (int32_t)a1 >= 0;
   s6 = s6 + s5;
   if (bc) {
     goto L_80022B08;
@@ -367,21 +368,21 @@ L_80022C54:
   /* 80022C7C 00012822 */
   a1 = 0u - at;
 L_80022C80:
-  /* 80022C80 2066FFB3 */
-  a2 = v1 + 0xffffffb3u;
-  /* 80022C84 20A50066 */
-  a1 = a1 + 0x66u;
-  /* 80022C88 00052880 */
-  a1 = a1 << 2;
-  /* 80022C8C 00A62822 */
-  a1 = a1 - a2;
-  /* 80022C90 00063040 */
+  /* native patch (RasterizeSpritePrimQueue): sphere reaches past a side edge:
+   * clipped path */
+  /* 80022C80 2066FFB3 (replaced) */
+  /* 80022C84 20A50066 (replaced) */
+  /* 80022C88 00052880 (replaced) */
+  /* 80022C8C 00A62822 (replaced) */
+  /* 80022C90 00063040 (replaced) */
+  /* 80022C94 00A62822 (replaced) */
+  /* 80022C98 04A1000C (replaced) */
+  /* 80022C9C 93C40057 (replaced) */
+  a2 = v1 - 0x4D;
+  a1 = (uint32_t)(4 * (int32_t)a1 - VIEW_WIDEN(3 * (int32_t)v1) +
+                  VIEW_SPHERE(4 * (int32_t)(0x66) + 3 * (int32_t)(0x4D)));
   a2 = a2 << 1;
-  /* 80022C94 00A62822 */
-  a1 = a1 - a2;
-  /* 80022C98 04A1000C */
-  bc = ((int32_t)a1 >= 0);
-  /* 80022C9C 93C40057 (delay) */
+  bc = (int32_t)a1 >= 0;
   a0 = HA_LBU(fp + 87u);
   if (bc) {
     goto L_80022CCC;
@@ -936,7 +937,9 @@ L_8002309C:
   v1 = v1 | 0x2u;
 L_800230A8:
   /* 800230A8 1C800002 */
-  bc = ((int32_t)a0 > 0);
+  /* native patch (RasterizeSpritePrimQueue): screen x against the view's left
+   * edge */
+  bc = ((int32_t)a0 > VIEW_X0_HI);
   /* 800230AC 00902022 (delay) */
   a0 = a0 - s0;
   if (bc) {
@@ -946,7 +949,9 @@ L_800230A8:
   v1 = v1 | 0x4u;
 L_800230B4:
   /* 800230B4 04800002 */
-  bc = ((int32_t)a0 < 0);
+  /* native patch (RasterizeSpritePrimQueue): screen x against the view's right
+   * edge */
+  bc = ((int32_t)a0 < VIEW_X1_HI_REL);
   /* 800230B8 AE6201FC (delay) */
   HA_SW(s3 + 508u, v0);
   if (bc) {

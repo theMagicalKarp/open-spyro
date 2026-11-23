@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster RasterizeSpyroModel: RasterizeSpyroModel (80023AC4),
  * RasterizeSpyroModel_Tail (800242B8) */
@@ -627,14 +628,18 @@ L_80023EE0:
   /* 80023F68 00812822 */
   a1 = a0 - at;
   /* 80023F6C 18A00650 */
-  bc = ((int32_t)a1 <= 0);
+  /* native patch (RasterizeSpyroModel): Spyro past the right side plane: not
+   * drawn */
+  bc = (VIEW_WIDEN((int32_t)a0) - (int32_t)at <= 0);
   /* 80023F70 00812820 (delay) */
   a1 = a0 + at;
   if (bc) {
     goto L_800258B0;
   }
   /* 80023F74 18A0064E */
-  bc = ((int32_t)a1 <= 0);
+  /* native patch (RasterizeSpyroModel): Spyro past the left side plane: not
+   * drawn */
+  bc = (VIEW_WIDEN((int32_t)a0) + (int32_t)at <= 0);
   /* 80023F78 00822822 (delay) */
   a1 = a0 - v0;
   if (bc) {

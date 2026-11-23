@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster EmitPortalSky: EmitPortalSky (8004F4BC), ClipAndEmitPortalSkyTriangle
  * (8004F7E8), ClipAndEmitPortalSkyTriangle_Tail (8004F8EC),
@@ -124,7 +125,8 @@ L_8004F544:
   /* 8004F584 00411022 */
   v0 = v0 - at;
   /* 8004F588 1840FFEE */
-  bc = ((int32_t)v0 <= 0);
+  /* native patch (EmitPortalSky): sky segment too near the camera plane */
+  bc = ((int32_t)v0 + (int32_t)at <= VIEW_NARROW((int32_t)at));
   /* 8004F58C 20640001 (delay) */
   a0 = v1 + 0x1u;
   if (bc) {
@@ -2078,7 +2080,8 @@ L_800502C8:
   /* 80050308 00411022 */
   v0 = v0 - at;
   /* 8005030C 1840FFEE */
-  bc = ((int32_t)v0 <= 0);
+  /* native patch (EmitPortalSky): sky segment too near the camera plane */
+  bc = ((int32_t)v0 + (int32_t)at <= VIEW_NARROW((int32_t)at));
   /* 80050310 20640001 (delay) */
   a0 = v1 + 0x1u;
   if (bc) {

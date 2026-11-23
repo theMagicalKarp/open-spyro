@@ -1,6 +1,7 @@
 /* src/native/host/main.c — the native executable's entry point.
  *
- *   spyro --disc game.cue [--frames N] [--screenshot out.bmp] [--shot N]...
+ *   spyro --disc game.cue [--frames N] [--screenshot out.bmp]
+ *         [--capture out.bmp] [--shot N]... [--internal-res N] [--aspect A]
  *         [--press N:BUTTONS[:HOLD]]... [--warp N:LEVEL]... [--fast]
  *         [--wav out.wav] [--memcard card.mcd] [--memcard2 card.mcd]
  *         [--log-level debug|info|warn|error]
@@ -13,13 +14,18 @@
  * and data are read from it. --stub instead runs the stub test scene (a
  * spinning triangle through PsyZ), which needs no disc. --frames ends the run
  * after N VSyncs; --screenshot then writes all of VRAM (1024x512, both display
- * buffers) as a BMP, for checking a run headlessly. --shot N also writes one
- * at VSync N, next to --screenshot (out-N.bmp). --press holds pad 1 buttons
- * (BUTTONS: names joined by '+', e.g. start, cross+up) for HOLD VSyncs
- * (default 4) from VSync N, on top of the keyboard / gamepad. --warp starts
- * a load of level id LEVEL (10 = Artisans, 11 = Stone Hill, ...) at VSync N,
- * or as soon as gameplay resumes after it. --fast runs without the 59.94 Hz
- * frame limiter. --wav writes the sound output to a WAV file as well.
+ * buffers) as a BMP, for checking a run headlessly; --capture writes the
+ * displayed frame as the window shows it (at the internal resolution, and the
+ * whole canvas in PsyZ's native mode). --shot N also writes them at VSync N,
+ * next to each path (out-N.bmp). --internal-res N is short for
+ * --set video.internal_resolution=N, --aspect A for --set video.aspect=A
+ * (4:3, 16:9, 21:9, any W:H up to 8:3, or auto for the window's). --press holds
+ * pad 1 buttons (BUTTONS: names joined by '+', e.g. start, cross+up) for HOLD
+ * VSyncs (default 4) from VSync N, on top of the keyboard / gamepad. --warp
+ * starts a load of level id LEVEL (10 = Artisans, 11 = Stone Hill, ...) at
+ * VSync N, or as soon as gameplay resumes after it. --fast runs without
+ * the 59.94 Hz frame limiter. --wav writes the sound output to a WAV file as
+ * well.
  * --memcard / --memcard2 insert a raw 128 KiB card image (.mcd, created on
  * the first save) in port A / B; port A defaults to card1.mcd in the user's
  * data directory, "none" leaves the port empty. --log-level takes the word
@@ -28,7 +34,8 @@
  * The persistent settings have dotted keys (disc, memcard.port1/port2,
  * debug.fast, debug.log_level, debug.overlay, debug.start.level (boot
  * straight into that level id with a fresh game, showing nothing before it is
- * in play); the settings table in config.c).
+ * in play), video.internal_resolution, video.aspect, video.hud; the settings
+ * table in config.c).
  * They can come from TOML config files: config.toml in the user's data
  * directory if it exists, or each --config PATH in order (later files override
  * earlier ones; each must exist); --no-config reads none. Relative paths in a
@@ -55,13 +62,27 @@
 #include "stick.h"
 #include "tomlc17.h"
 
-/* PsyZ's psyz/video.h (its include/ shadows system headers, so it stays off
-   this file's path): PsyzVsyncMode PSYZ_VSYNC_LIMITLESS. */
+/* PsyZ's psyz/video.h and psyz/types.h (its include/ shadows system headers,
+   so it stays off this file's path). */
+typedef struct {
+  int w, h;
+} PsyzSize;
+typedef struct {
+  int sx, sy, ex, ey;
+} PsyzRect;
 int Psyz_VideoSetVsyncMode(int mode);
 int Psyz_VideoVSync(int mode);
 /* PsyZ's src/draw.h: GP1 display enable (hidden frames keep it off). */
 void Draw_DisplayEnable(unsigned int on);
 enum { PSYZ_VSYNC_AUTO = 0, PSYZ_VSYNC_LIMITLESS = 3 };
+int Psyz_VideoSetResolution(PsyzSize size);
+int Psyz_VideoSimulateDisplay(PsyzSize size);
+int Psyz_VideoSetAnchor(int anchor);
+enum { PSYZ_ANCHOR_CENTER = 0 };
+int Psyz_VideoSetInternalResolution(unsigned multiplier);
+unsigned Psyz_VideoGetInternalResolution(void);
+unsigned char *Psyz_VideoAllocCapturedFrame(int *w, int *h);
+PsyzRect Psyz_VideoGetDrawArea(void);
 /* psyz/input.h's PsyzControllerKind: the pad ids PsyZ reports in byte 1. */
 enum { PSYZ_CTRL_DIGITAL_PAD = 0x41, PSYZ_CTRL_ANALOG_PAD = 0x73 };
 
@@ -71,6 +92,7 @@ static w2c_spyro instance;
 static int frame_limit;
 static int frames_run;
 static const char *screenshot_path;
+static const char *capture_path;
 static int run_stub;
 
 enum { MAX_SCRIPT = 64 };
@@ -131,7 +153,125 @@ const char *native_card_path(int port) {
 }
 int native_frames_run(void) { return frames_run; }
 
+/* The canvas PsyZ's native mode is asked for, or 0x0 for its PS1 mode. */
+static PsyzSize video_request;
+
+/* PsyZ's native mode keeps an upload over the framebuffer inside its canvas,
+   and a 24-bit image (the boot splash screens) is 1.5 times the framebuffer's
+   width in VRAM: its right third would be lost. PsyZ presents 24-bit images
+   from VRAM anyway, so its PS1 mode stands in while one is displayed. */
+static int showing_rgb24;
+void native_display_mode(int rgb24) {
+  showing_rgb24 = rgb24;
+  Psyz_VideoSetResolution(rgb24 ? (PsyzSize){0, 0} : video_request);
+}
+
+/* The view's width over its height: 4:3 in PsyZ's PS1 mode, which also
+   stands in while a 24-bit boot image is shown. */
+double native_view_aspect(void) {
+  return video_request.w > 0 && !showing_rgb24 ? video_request.w / 240.0
+                                               : 4.0 / 3.0;
+}
+
+/* The window's size in pixels: asked for once it exists, then kept up to
+   date by its resize events (native_window_resized), so the per-frame auto
+   settings don't query SDL every frame. */
+static int window_w, window_h;
+void native_window_resized(int w, int h) {
+  if (w > 0 && h > 0) {
+    window_w = w;
+    window_h = h;
+  }
+}
+
+static int window_size(int *w, int *h) {
+  if (window_w == 0) {
+    int count;
+    SDL_Window **windows = SDL_GetWindows(&count);
+
+    if (windows != NULL && count > 0 &&
+        SDL_GetWindowSizeInPixels(windows[0], w, h)) {
+      native_window_resized(*w, *h);
+    }
+    SDL_free(windows);
+  }
+  *w = window_w;
+  *h = window_h;
+  return window_w > 0;
+}
+
+/* Native mode at WIDTH x 240 at the display aspect (320 is 4:3: a 512x240
+   canvas, the framebuffer's own size; wider is more of the world at the
+   sides, the framebuffer centred in it). Native mode presents at whole
+   multiples of the display it is given (and fits that to the window the
+   same way), leaving borders in most windows; told the display is 32 times
+   the request, larger than any window, it scales the frame to fit the
+   window at the canvas's aspect. */
+static void set_video_request(int width) {
+  if (video_request.w == width) {
+    return;
+  }
+  video_request = (PsyzSize){width, 240};
+  Psyz_VideoSimulateDisplay(
+      (PsyzSize){video_request.w * 32, video_request.h * 32});
+  if (!showing_rgb24) {
+    Psyz_VideoSetResolution(video_request);
+  }
+}
+
+/* video.aspect = auto: the window's aspect, within the range PsyZ can draw.
+   Applied here, between frames. */
+static void update_auto_aspect(void) {
+  int w, h;
+
+  if (window_size(&w, &h)) {
+    set_video_request(config_aspect_request_width((double)w / h));
+  }
+}
+
+/* video.internal_resolution = 0: enough scale for the window's height, or
+   for its width at the view's aspect, so the fit to the window shrinks
+   rather than blurs. */
+static void update_auto_internal_res(void) {
+  int w, h, fit;
+
+  if (!window_size(&w, &h)) {
+    return;
+  }
+  fit = (int)(w / native_view_aspect());
+  fit = h < fit ? h : fit;
+  fit = (fit + 239) / 240;
+  Psyz_VideoSetInternalResolution(fit < 1 ? 1 : fit > 8 ? 8 : (unsigned)fit);
+}
+
+/* F5 (diag.cpp): the next internal resolution in 1, 2, 4, 8, taken over from
+   auto. Applied by the next frame hook, between frames; from PsyZ's PS1
+   mode (1x at 4:3) it first switches to its native mode, where it scales. */
+static unsigned pending_internal_res;
+void native_cycle_internal_res(void) {
+  unsigned cur = Psyz_VideoGetInternalResolution(), next = 1;
+
+  while (next <= cur && next < 8) {
+    next *= 2;
+  }
+  pending_internal_res = cur >= 8 ? 1 : next;
+}
+
+static void apply_pending_internal_res(void) {
+  if (pending_internal_res == 0) {
+    return;
+  }
+  if (video_request.w == 0) {
+    Psyz_VideoSetAnchor(PSYZ_ANCHOR_CENTER);
+    set_video_request(320);
+  }
+  cfg.internal_res = (int)pending_internal_res;
+  Psyz_VideoSetInternalResolution(pending_internal_res);
+  pending_internal_res = 0;
+}
+
 static void write_screenshot(const char *path);
+static void write_capture(const char *path);
 
 /* The skip is over: frames are shown again and, unless --fast, the run goes
    back to real time with VSync(-1) carrying on from the VSync count. */
@@ -145,13 +285,59 @@ static void end_skip_intro(void) {
 }
 
 int native_frame_hook(void) {
+  static unsigned logged_res;
+  static PsyzRect logged_area;
+
   frames_run++;
+  if (cfg.aspect == 0) {
+    update_auto_aspect();
+  }
+  apply_pending_internal_res();
+  if (cfg.internal_res == 0) {
+    update_auto_internal_res();
+  }
+  if (Psyz_VideoGetInternalResolution() != logged_res) {
+    logged_res = Psyz_VideoGetInternalResolution();
+    printf("native: internal resolution %ux\n", logged_res);
+  }
+  if (video_request.w > 0 && !showing_rgb24) {
+    PsyzRect a = Psyz_VideoGetDrawArea();
+
+    if (a.sx != logged_area.sx || a.ex != logged_area.ex ||
+        a.sy != logged_area.sy || a.ey != logged_area.ey) {
+      logged_area = a;
+      printf("native: view %dx%d, x %d..%d y %d..%d\n", a.ex - a.sx,
+             a.ey - a.sy, a.sx, a.ex, a.sy, a.ey);
+      /* The game's culls and full-screen draws widen to it (native_view.h),
+         from the next frame on. Only its 512-wide framebuffer is wider than
+         4:3 (the boot screens' are narrower, and draw nothing to widen).
+         debug.cull_margin only reaches past a widened view's edges: at 4:3
+         the view stays the framebuffer, as the original's. */
+      if (a.sx <= 0 && a.ex >= 512) {
+        int margin = a.sx < 0 ? cfg.cull_margin : 0;
+
+        if (a.sx + a.ex != 512) {
+          /* native_view.h takes the view as centred on the framebuffer (the
+             culls widen by its half-width from x = 256). */
+          fprintf(stderr, "native: view x %d..%d is not centred on 0..512\n",
+                  a.sx, a.ex);
+        }
+        w2c_spyro_native_set_view(&instance, (u32)a.sx, (u32)a.ex, (u32)margin);
+      }
+    }
+  }
   for (int i = 0; i < n_shots; i++) {
     if (shot_frames[i] == frames_run) {
       char path[1024];
 
-      script_shot_path(path, sizeof(path), screenshot_path, frames_run);
-      write_screenshot(path);
+      if (screenshot_path != NULL) {
+        script_shot_path(path, sizeof(path), screenshot_path, frames_run);
+        write_screenshot(path);
+      }
+      if (capture_path != NULL) {
+        script_shot_path(path, sizeof(path), capture_path, frames_run);
+        write_capture(path);
+      }
     }
   }
   for (int i = 0; i < n_warps; i++) {
@@ -196,47 +382,80 @@ static void put32(FILE *f, unsigned v) {
   fwrite(b, 1, 4, f);
 }
 
-static void write_screenshot(const char *path) {
-  enum { W = 1024, H = 512 };
-  static unsigned short vram[W * H];
-  VramRect r = {0, 0, W, H};
-  FILE *f;
+/* A 24-bit top-down BMP of W x H pixels, RGB888 rows of RGB. */
+static void write_bmp(const char *path, int w, int h,
+                      const unsigned char *rgb) {
+  unsigned stride = ((unsigned)w * 3 + 3) & ~3u;
+  static const unsigned char pad[3];
+  FILE *f = fopen(path, "wb");
 
-  Draw_StoreImage(&r, (unsigned long *)vram);
-  Draw_ExequeSync();
-  f = fopen(path, "wb");
   if (f == NULL) {
     perror(path);
     return;
   }
   fwrite("BM", 1, 2, f);
-  put32(f, 54 + W * H * 3);
+  put32(f, 54 + stride * h);
   put32(f, 0);
   put32(f, 54);
   put32(f, 40);
-  put32(f, W);
-  put32(f, (unsigned)-H); /* top-down rows */
+  put32(f, w);
+  put32(f, (unsigned)-h); /* top-down rows */
   put32(f, 1 | (24 << 16));
   put32(f, 0);
-  put32(f, W * H * 3);
+  put32(f, stride * h);
   put32(f, 2835);
   put32(f, 2835);
   put32(f, 0);
   put32(f, 0);
-  for (int i = 0; i < W * H; i++) {
-    unsigned p = vram[i];
-    unsigned char bgr[3] = {((p >> 10) & 31) << 3, ((p >> 5) & 31) << 3,
-                            (p & 31) << 3};
+  for (int y = 0; y < h; y++) {
+    for (int x = 0; x < w; x++) {
+      const unsigned char *p = &rgb[((size_t)y * w + x) * 3];
+      unsigned char bgr[3] = {p[2], p[1], p[0]};
 
-    fwrite(bgr, 1, 3, f);
+      fwrite(bgr, 1, 3, f);
+    }
+    fwrite(pad, 1, stride - (unsigned)w * 3, f);
   }
   fclose(f);
-  printf("native: wrote %s\n", path);
+  printf("native: wrote %s (%dx%d)\n", path, w, h);
+}
+
+static void write_screenshot(const char *path) {
+  enum { W = 1024, H = 512 };
+  static unsigned short vram[W * H];
+  static unsigned char rgb[W * H * 3];
+  VramRect r = {0, 0, W, H};
+
+  Draw_StoreImage(&r, (unsigned long *)vram);
+  Draw_ExequeSync();
+  for (int i = 0; i < W * H; i++) {
+    unsigned p = vram[i];
+
+    rgb[i * 3 + 0] = (p & 31) << 3;
+    rgb[i * 3 + 1] = ((p >> 5) & 31) << 3;
+    rgb[i * 3 + 2] = ((p >> 10) & 31) << 3;
+  }
+  write_bmp(path, W, H, rgb);
+}
+
+static void write_capture(const char *path) {
+  int w, h;
+  unsigned char *rgb = Psyz_VideoAllocCapturedFrame(&w, &h);
+
+  if (rgb == NULL) {
+    fprintf(stderr, "native: cannot capture the frame for %s\n", path);
+    return;
+  }
+  write_bmp(path, w, h, rgb);
+  free(rgb);
 }
 
 _Noreturn void native_quit(int code) {
   if (screenshot_path != NULL) {
     write_screenshot(screenshot_path);
+  }
+  if (capture_path != NULL) {
+    write_capture(capture_path);
   }
   native_audio_close();
   printf("native: exit %d after %d frames\n", code, frames_run);
@@ -280,7 +499,8 @@ int StoreImage(void *rect, void *p) {
 
 static void usage(void) {
   fprintf(stderr, "usage: spyro [--disc game.cue | --stub] [--frames N] "
-                  "[--screenshot out.bmp] [--shot N]... "
+                  "[--screenshot out.bmp] [--capture out.bmp] [--shot N]... "
+                  "[--internal-res N] [--aspect 4:3|16:9|21:9|W:H|auto] "
                   "[--press N:BUTTONS[:HOLD]]... [--warp N:LEVEL]... "
                   "[--fast] [--wav out.wav] [--memcard card.mcd] "
                   "[--memcard2 card.mcd] [--log-level debug|info|warn|error] "
@@ -355,6 +575,12 @@ int main(int argc, char **argv) {
       run_stub = 1;
     } else if (strcmp(argv[i], "--screenshot") == 0 && i + 1 < argc) {
       screenshot_path = argv[++i];
+    } else if (strcmp(argv[i], "--capture") == 0 && i + 1 < argc) {
+      capture_path = argv[++i];
+    } else if (strcmp(argv[i], "--internal-res") == 0 && i + 1 < argc) {
+      set_from_flag("--internal-res", "video.internal_resolution", argv[++i]);
+    } else if (strcmp(argv[i], "--aspect") == 0 && i + 1 < argc) {
+      set_from_flag("--aspect", "video.aspect", argv[++i]);
     } else if (strcmp(argv[i], "--shot") == 0 && i + 1 < argc &&
                n_shots < MAX_SCRIPT) {
       shot_frames[n_shots++] = atoi(argv[++i]);
@@ -397,7 +623,7 @@ int main(int argc, char **argv) {
   }
 
   if ((!run_stub && cfg.disc == NULL) ||
-      (n_shots > 0 && screenshot_path == NULL)) {
+      (n_shots > 0 && screenshot_path == NULL && capture_path == NULL)) {
     usage();
   }
   if (!run_stub) {
@@ -436,6 +662,19 @@ int main(int argc, char **argv) {
     /* Applied when the backend configures VSync at init. */
     Psyz_VideoSetVsyncMode(PSYZ_VSYNC_LIMITLESS);
   }
+  /* Stored until the backend exists, then applied on each Present. PsyZ only
+     scales in its native mode (a canvas of its own, which capture reads), and
+     only draws wider than 4:3 there, so anything but 1x at 4:3 asks for one.
+     Its own auto scale would then always be 1x (set_video_request), so auto
+     (0) is worked out here from the window. */
+  Psyz_VideoSetInternalResolution(
+      cfg.internal_res == 0 ? 1 : (unsigned)cfg.internal_res);
+  if (cfg.internal_res != 1 || cfg.aspect == 0 ||
+      config_aspect_request_width(cfg.aspect) != 320) {
+    Psyz_VideoSetAnchor(PSYZ_ANCHOR_CENTER);
+    set_video_request(
+        cfg.aspect == 0 ? 320 : config_aspect_request_width(cfg.aspect));
+  }
   wasm2c_spyro_instantiate(&instance, NULL, &env, &host);
   w2c_spyro_0x5F_wasm_apply_data_relocs(&instance);
   w2c_spyro_0x5F_wasm_call_ctors(&instance);
@@ -445,6 +684,7 @@ int main(int argc, char **argv) {
                    cfg.analog ? PSYZ_CTRL_ANALOG_PAD : PSYZ_CTRL_DIGITAL_PAD);
   /* Not in the original game: the right stick's X axis turns the camera
      like L2/R2 (src/native/game/camera/manual_yaw.c), its rates in Q8. */
+  w2c_spyro_native_set_hud(&instance, (u32)cfg.hud_edges);
   w2c_spyro_native_set_camera_stick(
       &instance, (u32)cfg.camera_analog, (u32)cfg.camera_invert,
       (u32)lround(cfg.camera_speed * 256), (u32)lround(cfg.camera_boost * 256),

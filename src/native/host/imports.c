@@ -56,8 +56,11 @@ void w2c_env_Draw_DisplayVerticalRange(struct w2c_env *e, u32 a, u32 b) {
   Draw_DisplayVerticalRange(a, b);
 }
 void w2c_env_Draw_SetDisplayMode(struct w2c_env *e, u32 mode) {
+  DisplayMode *m = (DisplayMode *)PTR(mode); /* unsigned int bitfields */
+
   (void)e;
-  Draw_SetDisplayMode((DisplayMode *)PTR(mode)); /* unsigned int bitfields */
+  native_display_mode(m->rgb24);
+  Draw_SetDisplayMode(m);
 }
 void w2c_env_Draw_SetTexpageMode(struct w2c_env *e, u32 p) {
   ParamDrawTexpageMode m;

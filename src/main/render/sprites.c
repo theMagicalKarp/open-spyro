@@ -7,6 +7,7 @@
 #include "gpu_prim.h"
 #include "level_id.h"
 #include "main_shared.h"
+#include "native_view.h"
 #include "vecmath.h"
 
 /* The queue tail is re-read from the global at every field access. */
@@ -626,10 +627,10 @@ void DrawCinematicLetterbox(void) {
   q->code = code;
   h = g_nLetterboxBarHeight;
   q->tag = tag;
-  q->x0 = 0;
-  q->x1 = SCREEN_W;
-  q->x2 = 0;
-  q->x3 = SCREEN_W;
+  q->x0 = VIEW_X0;
+  q->x1 = VIEW_X1;
+  q->x2 = VIEW_X0;
+  q->x3 = VIEW_X1;
   q->y0 = 0;
   q->y1 = 0;
   q->r0 = 0;
@@ -645,10 +646,10 @@ void DrawCinematicLetterbox(void) {
   q->y2 = SCREEN_H;
   q->y3 = SCREEN_H;
   q->tag = tag;
-  q->x0 = 0;
-  q->x1 = SCREEN_W;
-  q->x2 = 0;
-  q->x3 = SCREEN_W;
+  q->x0 = VIEW_X0;
+  q->x1 = VIEW_X1;
+  q->x2 = VIEW_X0;
+  q->x3 = VIEW_X1;
   q->r0 = 0;
   q->g0 = 0;
   q->b0 = 0;
@@ -701,11 +702,11 @@ void DrawFullscreenTint(int abr, int r, int g, int b) {
   prim->poly.code = (GPU_CODE_POLY_F4 | GPU_SEMI_TRANS);
   prim->poly.y0 = DRAW_Y;
   prim->poly.y1 = DRAW_Y;
-  prim->poly.x0 = 0;
-  prim->poly.x1 = SCREEN_W;
-  prim->poly.x2 = 0;
+  prim->poly.x0 = VIEW_X0;
+  prim->poly.x1 = VIEW_X1;
+  prim->poly.x2 = VIEW_X0;
   prim->poly.y2 = DRAW_Y + DRAW_H;
-  prim->poly.x3 = SCREEN_W;
+  prim->poly.x3 = VIEW_X1;
   prim->poly.y3 = DRAW_Y + DRAW_H;
   prim->poly.r0 = r;
   prim->poly.g0 = g;
@@ -809,6 +810,9 @@ void EnqueueHudSprites(void) {
   int rect[3];
   int spare[4];
 
+#ifdef __psyz
+  NativeHudAnchor();
+#endif
   if (g_nFlightLevelActive == 0) {
     slot = g_apSpritePrimQueue;
     if (*slot != 0) {
@@ -836,6 +840,9 @@ void EnqueueHudSprites(void) {
                 g_nHudLevelGemCachedCount);
         rec = g_pSpriteRecordWriteCursor;
         rect[0] = 0x5A;
+#ifdef __psyz
+        rect[0] += NativeHudLeftDx();
+#endif
         rect[1] = 0x24;
         rect[2] = 0xB40;
         BuildTextSpriteChain((char *)scratch, rect, 0x1C, TINT_HUD);

@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <string.h>
 
 #include "config.h"
@@ -124,6 +125,9 @@ TEST(takes_value) {
   CHECK(config_takes_value("--disc"));
   CHECK(config_takes_value("--set"));
   CHECK(config_takes_value("--log-level"));
+  CHECK(config_takes_value("--capture"));
+  CHECK(config_takes_value("--internal-res"));
+  CHECK(config_takes_value("--aspect"));
   CHECK(!config_takes_value("--fast"));
   CHECK(!config_takes_value("--stub"));
   CHECK(!config_takes_value("--config")); /* scanned on its own */
@@ -243,6 +247,18 @@ TEST(stick_mode) {
         0);
 }
 
+TEST(cull_margin) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.cull_margin, 0);
+  CHECK_INT(config_set(&s, "--set", "debug.cull_margin", "64"), 0);
+  CHECK_INT(s.cull_margin, 64);
+  log_capture();
+  CHECK(config_set(&s, "--set", "debug.cull_margin", "257") != 0);
+  CHECK(config_set(&s, "--set", "debug.cull_margin", "-1") != 0);
+  CHECK_INT(s.cull_margin, 64);
+}
+
 TEST(start_level) {
   NativeSettings s = fresh();
 
@@ -308,6 +324,90 @@ TEST(set_number_range) {
   CHECK(s.camera_boost == 1.0);
 }
 
+TEST(internal_resolution) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.internal_res, 1);
+  CHECK_INT(config_set(&s, "--set", "video.internal_resolution", "4"), 0);
+  CHECK_INT(s.internal_res, 4);
+  CHECK_INT(config_set(&s, "--set", "video.internal_resolution", "0"), 0);
+  CHECK_INT(s.internal_res, 0);
+  CHECK_INT(config_set(&s, "--set", "video.internal_resolution", "8"), 0);
+  CHECK_INT(s.internal_res, 8);
+  log_capture();
+  CHECK(config_set(&s, "--set", "video.internal_resolution", "9") != 0);
+  CHECK(strstr(log_text(), "video.internal_resolution must be a whole number "
+                           "from 0 to 8") != NULL);
+  CHECK(config_set(&s, "--set", "video.internal_resolution", "2.5") != 0);
+  CHECK(config_set(&s, "--set", "video.internal_resolution", "-1") != 0);
+  CHECK(config_set(&s, "--set", "video.internal_resolution", "") != 0);
+  CHECK_INT(s.internal_res, 8);
+  CHECK_INT(
+      config_load_string(&s, "x.toml", "[video]\ninternal_resolution = 2\n"),
+      0);
+  CHECK_INT(s.internal_res, 2);
+  CHECK(config_load_string(&s, "x.toml",
+                           "[video]\ninternal_resolution = 2.0\n") != 0);
+  CHECK(config_load_string(&s, "x.toml",
+                           "[video]\ninternal_resolution = \"2\"\n") != 0);
+  CHECK_INT(s.internal_res, 2);
+}
+
+TEST(parse_aspect) {
+  double a = -1;
+
+  CHECK_INT(config_parse_aspect("auto", &a), 0);
+  CHECK(a == 0);
+  CHECK_INT(config_parse_aspect("4:3", &a), 0);
+  CHECK(fabs(a - 4.0 / 3.0) < 1e-12);
+  CHECK_INT(config_parse_aspect("16:9", &a), 0);
+  CHECK(fabs(a - 16.0 / 9.0) < 1e-12);
+  CHECK_INT(config_parse_aspect("21:9", &a), 0);
+  CHECK(fabs(a - 21.0 / 9.0) < 1e-12);
+  CHECK_INT(config_parse_aspect("2560:1080", &a), 0);
+  CHECK_INT(config_parse_aspect("8:3", &a), 0);
+  CHECK_INT(config_parse_aspect("2.35", &a), 0);
+  CHECK(a == 2.35);
+  CHECK(config_parse_aspect("5:4", &a) != 0);  /* narrower than 4:3 */
+  CHECK(config_parse_aspect("32:9", &a) != 0); /* wider than the canvas */
+  CHECK(config_parse_aspect("16:", &a) != 0);
+  CHECK(config_parse_aspect(":9", &a) != 0);
+  CHECK(config_parse_aspect("16:0", &a) != 0);
+  CHECK(config_parse_aspect("16:9x", &a) != 0);
+  CHECK(config_parse_aspect("", &a) != 0);
+  CHECK(config_parse_aspect("wide", &a) != 0);
+  CHECK(a == 2.35);
+}
+
+/* The width asked of PsyZ at height 240: 4:3 -> 320 (a 512 canvas), 16:9 ->
+   427 (688), 21:9 -> 560 (896), 64:27 -> 569 (912); clamped to 4:3..8:3. */
+TEST(aspect_request_width) {
+  CHECK_INT(config_aspect_request_width(4.0 / 3.0), 320);
+  CHECK_INT(config_aspect_request_width(16.0 / 9.0), 427);
+  CHECK_INT(config_aspect_request_width(21.0 / 9.0), 560);
+  CHECK_INT(config_aspect_request_width(64.0 / 27.0), 569);
+  CHECK_INT(config_aspect_request_width(8.0 / 3.0), 640);
+  CHECK_INT(config_aspect_request_width(1.0), 320);
+  CHECK_INT(config_aspect_request_width(4.0), 640);
+}
+
+TEST(aspect_setting) {
+  NativeSettings s = fresh();
+
+  CHECK(fabs(s.aspect - 4.0 / 3.0) < 1e-12);
+  CHECK_INT(config_set(&s, "--set", "video.aspect", "21:9"), 0);
+  CHECK(fabs(s.aspect - 21.0 / 9.0) < 1e-12);
+  log_capture();
+  CHECK(config_set(&s, "--aspect", "video.aspect", "1:1") != 0);
+  CHECK(strstr(log_text(), "--aspect: video.aspect must be \"auto\" or a "
+                           "width:height from 4:3 to 8:3") != NULL);
+  CHECK(fabs(s.aspect - 21.0 / 9.0) < 1e-12);
+  CHECK_INT(config_load_string(&s, "x.toml", "[video]\naspect = \"auto\"\n"),
+            0);
+  CHECK(s.aspect == 0);
+  CHECK(config_load_string(&s, "x.toml", "[video]\naspect = 1.78\n") != 0);
+}
+
 /* A range's ends are in it. */
 TEST(set_number_range_inclusive) {
   NativeSettings s = fresh();
@@ -356,6 +456,19 @@ TEST(stick_range) {
                            "[input.analog.right]\nrange = [\"0\", 1]\n") != 0);
   CHECK(config_load_string(&s, "y.toml",
                            "[input.analog.right]\nrange = 0.1\n") != 0);
+}
+
+TEST(hud_setting) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.hud_edges, 0);
+  CHECK_INT(config_load_string(&s, "x.toml", "[video]\nhud = \"edges\"\n"), 0);
+  CHECK_INT(s.hud_edges, 1);
+  log_capture();
+  CHECK(config_set(&s, "--set", "video.hud", "left") != 0);
+  CHECK(strstr(log_text(), "video.hud must be \"center\" or \"edges\"") !=
+        NULL);
+  CHECK_INT(s.hud_edges, 1);
 }
 
 TEST(camera_mode_rejects_bool) {
@@ -489,8 +602,8 @@ TEST(load_unknown_tables_fail) {
   NativeSettings s = fresh();
 
   log_capture();
-  CHECK(config_load_string(&s, "x.toml", "[video]\nscale = 2\n") != 0);
-  CHECK(strstr(log_text(), "x.toml:1: unknown table video\n") != NULL);
+  CHECK(config_load_string(&s, "x.toml", "[audio]\nvolume = 2\n") != 0);
+  CHECK(strstr(log_text(), "x.toml:1: unknown table audio\n") != NULL);
   log_capture();
   CHECK(config_load_string(&s, "x.toml", "[input.analog.middle]\nmode = 1\n") !=
         0);

@@ -6,6 +6,7 @@
 #include "gpu_prim.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "native_view.h"
 #include "pad.h"
 #include "pad_buttons.h"
 #include "portal.h"
@@ -500,8 +501,8 @@ void UpdateGameplayCamera(void) {
   }
   if (g_nCameraCurrentMode < 0 ||
       (ProjectWorldPointGTEUnscaled(d, g_anSpyroWorldPos),
-       (unsigned)(d[0] - (CAM_ONSCREEN_MARGIN_X + 1)) <
-               SCREEN_W - 2 * CAM_ONSCREEN_MARGIN_X - 1 &&
+       (unsigned)(d[0] - VIEW_X0 - (CAM_ONSCREEN_MARGIN_X + 1)) <
+               VIEW_W - 2 * CAM_ONSCREEN_MARGIN_X - 1 &&
            (unsigned)(d[1] - (CAM_ONSCREEN_MARGIN_Y + 1)) <
                SCREEN_H - 2 * CAM_ONSCREEN_MARGIN_Y - 1 &&
            !far)) {

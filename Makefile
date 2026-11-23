@@ -104,10 +104,11 @@ progress: ## Regenerate the C-match progress report (PROGRESS.md + badge + map)
 
 lint: lint-py lint-c ## Lint + type-check everything (Python + C) — mirrors the CI lint job
 
-lint-py: ## Lint + type-check the Python tooling (ruff + ty)
+lint-py: ## Lint, type-check + test the Python tooling (ruff + ty + pytest)
 	cd tools/open-spyro && uv run --group split ruff check .
 	cd tools/open-spyro && uv run --group split ruff format --check .
 	cd tools/open-spyro && uv run --group split ty check
+	cd tools/open-spyro && uv run --group split pytest -q
 
 lint-c: ## Check all C + parked .c.wip formatting (clang-format --dry-run --Werror)
 	$(CLANG_FORMAT) --dry-run --Werror $(CFMT_SRC) $(CFMT_WIP)
