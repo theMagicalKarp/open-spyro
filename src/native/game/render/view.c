@@ -2,6 +2,8 @@
  * the host whenever video.aspect's canvas changes. Not in the original game:
  * there the screen is always the framebuffer. */
 
+#include "gamestate.h"
+#include "globals.h"
 #include "native_view.h"
 
 int g_nNativeViewX0 = 0, g_nNativeViewX1 = SCREEN_W;
@@ -42,5 +44,24 @@ __attribute__((export_name("native_set_view"))) void native_set_view(int x0,
             1280);
   if (VIEW_HALF_W == SCREEN_W / 2) {
     g_nNativeViewSphereQ12 = 1 << 12;
+  }
+}
+
+void NativeMenuSideStrips(void) {
+  if (VIEW_X0 == 0) {
+    return;
+  }
+  switch (g_nGamestate) {
+  case GS_PAUSE_MENU:
+  case GS_INVENTORY:
+  case GS_UNUSED_6:
+  case GS_FLIGHT_RESULTS:
+  case GS_MENU_TRANSITION:
+    /* GamestateDraw sets the fog colour again on the next gameplay frame. */
+    g_FrameDrawEnv0.r0 = g_FrameDrawEnv0.g0 = g_FrameDrawEnv0.b0 = 0;
+    g_FrameDrawEnv1.r0 = g_FrameDrawEnv1.g0 = g_FrameDrawEnv1.b0 = 0;
+    break;
+  default:
+    break;
   }
 }

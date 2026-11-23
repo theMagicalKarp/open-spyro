@@ -16,6 +16,7 @@
 #include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "native_view.h"
 #include "pause_menu.h"
 #include "save_menu.h"
 #include "title_state.h"
@@ -2734,6 +2735,9 @@ void GamestateDraw(void) {
   BuildCameraViewMatrix();
 
   if (g_nGamestate != GS_GAMEPLAY) {
+#ifdef __psyz
+    NativeMenuSideStrips();
+#endif
     if (g_nGamestate == GS_LEVEL_LOAD) {
       LevelTransition_Draw();
     } else if (g_nGamestate == GS_PAUSE_MENU) {

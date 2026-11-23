@@ -16,6 +16,10 @@
 extern int g_nNativeViewX0, g_nNativeViewX1, g_nNativeViewSphereQ12;
 #define VIEW_X0 g_nNativeViewX0
 #define VIEW_X1 g_nNativeViewX1
+/* The menu states draw a captured 4:3 frame as their backdrop: with a
+   widened view, clear to black around it instead of the world's fog colour
+   (render/view.c). */
+void NativeMenuSideStrips(void);
 #else
 #define VIEW_X0 0
 #define VIEW_X1 SCREEN_W
