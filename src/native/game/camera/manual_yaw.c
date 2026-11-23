@@ -31,7 +31,7 @@ native_set_camera_stick(int on, int inv, int speed, int boost, int ramp) {
 }
 
 /* The right stick's turn drive: proportional to the X deflection (shaped by
- * the host, input.right_stick.*) times the speed; held at full deflection the
+ * the host, input.analog.right.*) times the speed; held at full deflection the
  * speed ramps up to boost times itself over boost_vsyncs. */
 static int StickYawDrive(int x) {
   int rate = speed_q8;

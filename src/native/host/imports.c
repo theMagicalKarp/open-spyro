@@ -146,13 +146,23 @@ u32 w2c_env_Psyz_VideoVSync(struct w2c_env *e, u32 mode) {
     }
     native_audio_vsync();
   }
-  if (native_fast() && (int)mode == -1) {
-    return (u32)native_frames_run();
+  if ((int)mode == -1) {
+    return native_fast() ? (u32)native_frames_run()
+                         : (u32)(Psyz_VideoVSync(-1) + native_vsync_offset());
   }
-  if ((int)mode != -1 && mode != 1) {
-    u64 start = SDL_GetTicksNS();
-    u32 ret = (u32)Psyz_VideoVSync((int)mode);
+  if (mode != 1) {
+    u64 start;
+    u32 ret;
 
+    if (native_hiding_frames()) {
+      /* Still presented, so PsyZ submits the frame's GPU work and polls
+         events, but with the display off it shows black (the game's own GP1
+         display writes can turn it back on, so it is forced off each time). */
+      Draw_DisplayEnable(0);
+      return (u32)Psyz_VideoVSync((int)mode);
+    }
+    start = SDL_GetTicksNS();
+    ret = (u32)Psyz_VideoVSync((int)mode);
     diag_vsync(start, SDL_GetTicksNS());
     return ret;
   }

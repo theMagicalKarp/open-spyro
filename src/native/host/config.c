@@ -74,6 +74,10 @@ int config_parse_press(const char *arg, int *frame, unsigned *buttons,
   return 0;
 }
 
+int config_level_valid(int level) {
+  return level >= 10 && level <= 64 && level % 10 <= 5;
+}
+
 int config_parse_warp(const char *arg, int *frame, int *level) {
   const char *b = strchr(arg, ':');
 
@@ -121,29 +125,39 @@ int config_scan_args(int argc, char **argv, const char *paths[CONFIG_MAX_FILES],
 
 /* --- the settings table --- */
 
+/* SET_CHOICE values, in the order of the enum or int they are stored as. */
+static const char *const stick_modes[] = {"original", "radial", NULL};
+static const char *const pad_modes[] = {"digital", "analog", NULL};
+static const char *const camera_modes[] = {"original", "analog", NULL};
+
 enum setting_kind {
   SET_PATH,
   SET_BOOL,
   SET_LOG_LEVEL,
   SET_NUMBER,
-  SET_STICK_MODE
+  SET_CHOICE,
+  SET_LEVEL,
+  SET_RANGE
 };
 static const struct setting {
   const char *key;
   enum setting_kind kind;
   size_t offset;   /* into NativeSettings */
   double min, max; /* SET_NUMBER's range */
+  /* SET_CHOICE's values, NULL-terminated: the field (an int or enum) holds
+     the index of the one chosen. */
+  const char *const *choices;
 } settings[] = {
 /* Every field is given, so -Wextra's missing-initializer check stays quiet. */
 #define SETTING(key, kind, member)                                             \
-  {key, kind, offsetof(NativeSettings, member), 0, 0}
+  {key, kind, offsetof(NativeSettings, member), 0, 0, NULL}
 #define NUMBER(key, member, min, max)                                          \
-  {key, SET_NUMBER, offsetof(NativeSettings, member), min, max}
+  {key, SET_NUMBER, offsetof(NativeSettings, member), min, max, NULL}
+#define CHOICE(key, member, choices)                                           \
+  {key, SET_CHOICE, offsetof(NativeSettings, member), 0, 0, choices}
 #define STICK(name, i)                                                         \
-  SETTING("input." name ".mode", SET_STICK_MODE, stick[i].mode),               \
-      NUMBER("input." name ".deadzone", stick[i].deadzone, 0, 0.9),            \
-      NUMBER("input." name ".outer_deadzone", stick[i].outer_deadzone, 0,      \
-             0.9),                                                             \
+  CHOICE("input." name ".mode", stick[i].mode, stick_modes),                   \
+      SETTING("input." name ".range", SET_RANGE, stick[i].range),              \
       NUMBER("input." name ".curve", stick[i].curve, 0.1, 5)
     SETTING("disc", SET_PATH, disc),
     SETTING("memcard.port1", SET_PATH, card[0]),
@@ -151,28 +165,19 @@ static const struct setting {
     SETTING("debug.fast", SET_BOOL, fast),
     SETTING("debug.log_level", SET_LOG_LEVEL, log_level),
     SETTING("debug.overlay", SET_BOOL, overlay),
-    SETTING("input.analog", SET_BOOL, analog),
-    STICK("left_stick", 0),
-    STICK("right_stick", 1),
-    SETTING("input.camera.right_stick", SET_BOOL, camera_right_stick),
+    SETTING("debug.start.level", SET_LEVEL, start_level),
+    CHOICE("input.pad", analog, pad_modes),
+    STICK("analog.left", 0),
+    STICK("analog.right", 1),
+    CHOICE("input.camera.mode", camera_analog, camera_modes),
     SETTING("input.camera.invert", SET_BOOL, camera_invert),
     NUMBER("input.camera.speed", camera_speed, 0.1, 8),
     NUMBER("input.camera.boost", camera_boost, 1, 8),
     NUMBER("input.camera.boost_time", camera_boost_time, 0, 10),
 #undef STICK
+#undef CHOICE
 #undef NUMBER
 #undef SETTING
-};
-
-/* Keys the first config format had at the top level: reported with the new
-   key instead of as unknown. */
-static const struct {
-  const char *old, *key;
-} renamed_keys[] = {
-    {"fast", "debug.fast"},
-    {"log_level", "debug.log_level"},
-    {"memcard", "memcard.port1"},
-    {"memcard2", "memcard.port2"},
 };
 
 static const struct setting *find_setting(const char *key) {
@@ -192,8 +197,23 @@ static const char *setting_want(const struct setting *t) {
     return "true or false";
   case SET_LOG_LEVEL:
     return "\"debug\", \"info\", \"warn\" or \"error\"";
-  case SET_STICK_MODE:
-    return "\"original\" or \"radial\"";
+  case SET_CHOICE: {
+    static char want[128];
+    size_t n = 0;
+
+    want[0] = '\0';
+    for (int i = 0; t->choices[i] != NULL && n < sizeof(want); i++) {
+      const char *sep = i == 0 ? "" : t->choices[i + 1] == NULL ? " or " : ", ";
+
+      n += (size_t)snprintf(want + n, sizeof(want) - n, "%s\"%s\"", sep,
+                            t->choices[i]);
+    }
+    return want;
+  }
+  case SET_LEVEL:
+    return "0 or a level id (10 Artisans .. 64 Gnasty's Loot)";
+  case SET_RANGE:
+    return "[inner, outer] with 0 <= inner < outer <= 1";
   case SET_NUMBER: {
     static char want[64];
 
@@ -239,15 +259,55 @@ static int store_setting(NativeSettings *s, const struct setting *t,
     *(double *)field = v;
     return 1;
   }
-  case SET_STICK_MODE:
-    if (strcmp(value, "original") == 0) {
-      *(StickMode *)field = STICK_MODE_ORIGINAL;
-    } else if (strcmp(value, "radial") == 0) {
-      *(StickMode *)field = STICK_MODE_RADIAL;
-    } else {
+  case SET_LEVEL: {
+    char *end;
+    long v = strtol(value, &end, 10);
+
+    if (end == value || *end != '\0' ||
+        (v != 0 && !config_level_valid((int)v))) {
       return 0;
     }
+    *(int *)field = (int)v;
     return 1;
+  }
+  case SET_RANGE: {
+    /* "inner,outer", optionally in brackets and spaced: [0.1, 0.95] */
+    static const char blank[] = " \t";
+    double v[2];
+    const char *p = value + strspn(value, blank);
+    int bracket = *p == '[';
+    char *end;
+
+    p += bracket;
+    for (int i = 0; i < 2; i++) {
+      v[i] = strtod(p, &end);
+      if (end == p) {
+        return 0;
+      }
+      p = end + strspn(end, blank);
+      if (i == 0 && *p++ != ',') {
+        return 0;
+      }
+    }
+    if (bracket && *p++ != ']') {
+      return 0;
+    }
+    p += strspn(p, blank);
+    if (*p != '\0' || !(v[0] >= 0 && v[0] < v[1] && v[1] <= 1)) {
+      return 0;
+    }
+    ((double *)field)[0] = v[0];
+    ((double *)field)[1] = v[1];
+    return 1;
+  }
+  case SET_CHOICE:
+    for (int i = 0; t->choices[i] != NULL; i++) {
+      if (strcmp(value, t->choices[i]) == 0) {
+        *(int *)field = i;
+        return 1;
+      }
+    }
+    return 0;
   }
   return 0;
 }
@@ -300,16 +360,9 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
                         toml_datum_t v) {
   const struct setting *t = find_setting(key);
   const char *value = NULL;
+  char buf[64]; /* a number or range, formatted for store_setting */
 
   if (t == NULL) {
-    for (size_t i = 0; i < sizeof(renamed_keys) / sizeof(renamed_keys[0]);
-         i++) {
-      if (strcmp(renamed_keys[i].old, key) == 0) {
-        fprintf(LOG, "native: %s:%d: %s is now %s (ignored)\n", file, v.lineno,
-                key, renamed_keys[i].key);
-        return 0;
-      }
-    }
     fprintf(LOG, "native: %s:%d: unknown key %s (ignored)\n", file, v.lineno,
             key);
     return 0;
@@ -318,20 +371,36 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
     value = v.u.boolean ? "true" : "false";
   } else if (t->kind == SET_NUMBER &&
              (v.type == TOML_FP64 || v.type == TOML_INT64)) {
-    char *buf = malloc(32);
-
-    if (buf != NULL) {
-      snprintf(buf, 32, "%.17g",
-               v.type == TOML_FP64 ? v.u.fp64 : (double)v.u.int64);
-    }
+    snprintf(buf, sizeof(buf), "%.17g",
+             v.type == TOML_FP64 ? v.u.fp64 : (double)v.u.int64);
     value = buf;
-  } else if (t->kind == SET_NUMBER) {
+  } else if (t->kind == SET_LEVEL && v.type == TOML_INT64) {
+    snprintf(buf, sizeof(buf), "%lld", (long long)v.u.int64);
+    value = buf;
+  } else if (t->kind == SET_RANGE && v.type == TOML_ARRAY &&
+             v.u.arr.size == 2) {
+    double e[2];
+
+    for (int i = 0; i < 2; i++) {
+      toml_datum_t d = v.u.arr.elem[i];
+
+      e[i] = d.type == TOML_FP64    ? d.u.fp64
+             : d.type == TOML_INT64 ? (double)d.u.int64
+                                    : -1.0; /* rejected by store_setting */
+    }
+    snprintf(buf, sizeof(buf), "%.17g,%.17g", e[0], e[1]);
+    value = buf;
+  } else if (t->kind == SET_NUMBER || t->kind == SET_LEVEL ||
+             t->kind == SET_RANGE) {
     value = NULL;
-  } else if (t->kind != SET_BOOL && v.type == TOML_STRING) {
-    value = t->kind == SET_PATH ? config_relative_path(file, v.u.s) : v.u.s;
+  } else if (t->kind == SET_PATH && v.type == TOML_STRING) {
+    /* The settings point at a path, so it outlives the parse result. */
+    value = config_relative_path(file, v.u.s);
     if (value == v.u.s) {
       value = keep(value);
     }
+  } else if (t->kind != SET_BOOL && v.type == TOML_STRING) {
+    value = v.u.s; /* parsed into the setting, not kept */
   }
   if (value == NULL || !store_setting(s, t, value)) {
     fprintf(LOG, "native: %s:%d: %s must be %s\n", file, v.lineno, key,

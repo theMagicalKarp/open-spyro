@@ -19,12 +19,14 @@ typedef struct NativeSettings {
   int fast;            /* debug.fast */
   int log_level;       /* debug.log_level: 0 debug .. 3 error */
   int overlay;         /* debug.overlay: start with the diagnostics shown */
-  int analog;          /* input.analog: pad 1 is a DualShock, not digital */
-  StickShape stick[2]; /* input.left_stick.*, input.right_stick.* */
-  /* input.camera.*: the right stick turns the camera (not in the original),
-     at `speed` times the L2/R2 rate; held at full deflection it speeds up to
-     `boost` times that over `boost_time` seconds. */
-  int camera_right_stick;
+  int start_level;     /* debug.start.level: level id to boot into, 0 = off */
+  int analog;          /* input.pad: 1 "analog" (a DualShock), 0 "digital" */
+  StickShape stick[2]; /* input.analog.left.*, input.analog.right.* */
+  /* input.camera.*: mode "analog" (camera_analog = 1) lets the right stick
+     turn the camera (not in the original), at `speed` times the L2/R2 rate;
+     held at full deflection it speeds up to `boost` times that over
+     `boost_time` seconds. */
+  int camera_analog;
   int camera_invert; /* input.camera.invert: stick right turns like L2 */
   double camera_speed, camera_boost, camera_boost_time;
   /* The config file that set disc, if one did (for its error message). */
@@ -38,7 +40,7 @@ enum { CONFIG_MAX_FILES = 8 };
   {                                                                            \
       .log_level = 1 /* info */,                                               \
       .analog = 1,                                                             \
-      .stick = {STICK_SHAPE_ORIGINAL, {STICK_MODE_RADIAL, 0.15, 0.0, 1.0}},    \
+      .stick = {STICK_SHAPE_ORIGINAL, {STICK_MODE_RADIAL, {0.15, 1.0}, 1.0}},  \
       .camera_speed = 1.0,                                                     \
       .camera_boost = 1.0,                                                     \
       .camera_boost_time = 0.5,                                                \
@@ -58,6 +60,10 @@ int config_parse_buttons(const char *s, unsigned *mask);
    2 (reported) on an unknown button. */
 int config_parse_press(const char *arg, int *frame, unsigned *buttons,
                        int *hold);
+
+/* Whether LEVEL is a level id (world * 10 + n: worlds 1..6, n 0..5, but
+   Gnasty's world has no 65). */
+int config_level_valid(int level);
 
 /* --warp N:LEVEL; nonzero if the form is wrong or N is not positive. */
 int config_parse_warp(const char *arg, int *frame, int *level);

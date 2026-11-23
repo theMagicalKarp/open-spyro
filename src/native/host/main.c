@@ -26,7 +26,9 @@
  * or its first letter.
  *
  * The persistent settings have dotted keys (disc, memcard.port1/port2,
- * debug.fast, debug.log_level, debug.overlay; the settings table in config.c).
+ * debug.fast, debug.log_level, debug.overlay, debug.start.level (boot
+ * straight into that level id with a fresh game, showing nothing before it is
+ * in play); the settings table in config.c).
  * They can come from TOML config files: config.toml in the user's data
  * directory if it exists, or each --config PATH in order (later files override
  * earlier ones; each must exist); --no-config reads none. Relative paths in a
@@ -56,7 +58,10 @@
 /* PsyZ's psyz/video.h (its include/ shadows system headers, so it stays off
    this file's path): PsyzVsyncMode PSYZ_VSYNC_LIMITLESS. */
 int Psyz_VideoSetVsyncMode(int mode);
-enum { PSYZ_VSYNC_LIMITLESS = 3 };
+int Psyz_VideoVSync(int mode);
+/* PsyZ's src/draw.h: GP1 display enable (hidden frames keep it off). */
+void Draw_DisplayEnable(unsigned int on);
+enum { PSYZ_VSYNC_AUTO = 0, PSYZ_VSYNC_LIMITLESS = 3 };
 /* psyz/input.h's PsyzControllerKind: the pad ids PsyZ reports in byte 1. */
 enum { PSYZ_CTRL_DIGITAL_PAD = 0x41, PSYZ_CTRL_ANALOG_PAD = 0x73 };
 
@@ -77,6 +82,15 @@ static struct {
 } warps[MAX_SCRIPT];
 static int n_warps;
 static NativeSettings cfg = NATIVE_SETTINGS_DEFAULT;
+/* debug.start.level: from boot until the level is in play (1 until the
+   title hands off, 2 while the level loads) the run is --fast and nothing is
+   shown or heard, and the story intro's fly-over is cut short, so the game
+   opens on the level. */
+static int skipping_intro;
+/* Fast VSyncs a skip may take before it gives up and shows the run (a normal
+   one takes a few hundred). */
+enum { SKIP_INTRO_MAX_VSYNCS = 60 * 60 };
+static int vsync_offset;
 static char default_card[1024];
 
 /* --- import-module context accessors (wasm2c calls these at instantiate) ---
@@ -94,7 +108,9 @@ u32 *w2c_env_0x5F_stack_pointer(struct w2c_env *e) { return &e->stack_pointer; }
 wasm_rt_memory_t *native_memory(void) { return &env.memory; }
 w2c_spyro *native_instance(void) { return &instance; }
 int native_log_level(void) { return cfg.log_level; }
-int native_fast(void) { return cfg.fast; }
+int native_fast(void) { return cfg.fast || skipping_intro; }
+int native_vsync_offset(void) { return vsync_offset; }
+int native_hiding_frames(void) { return skipping_intro != 0; }
 
 /* Port A defaults to card1.mcd in the per-user data directory
    (~/Library/Application Support/open-spyro/spyro/); "none" removes it. */
@@ -117,6 +133,17 @@ int native_frames_run(void) { return frames_run; }
 
 static void write_screenshot(const char *path);
 
+/* The skip is over: frames are shown again and, unless --fast, the run goes
+   back to real time with VSync(-1) carrying on from the VSync count. */
+static void end_skip_intro(void) {
+  skipping_intro = 0;
+  Draw_DisplayEnable(1);
+  if (!cfg.fast) {
+    vsync_offset = frames_run - Psyz_VideoVSync(-1);
+    Psyz_VideoSetVsyncMode(PSYZ_VSYNC_AUTO);
+  }
+}
+
 int native_frame_hook(void) {
   frames_run++;
   for (int i = 0; i < n_shots; i++) {
@@ -134,6 +161,24 @@ int native_frame_hook(void) {
              frames_run);
       warps[i].frame = 0;
     }
+  }
+  if (skipping_intro == 1 &&
+      w2c_spyro_native_start_level(&instance, (u32)cfg.start_level) != 0) {
+    printf("native: start level %d at VSync %d\n", cfg.start_level, frames_run);
+    skipping_intro = 2;
+  } else if (skipping_intro == 2) {
+    w2c_spyro_native_skip_intro_fly(&instance);
+  }
+  if (skipping_intro == 2 && w2c_spyro_native_in_gameplay(&instance)) {
+    printf("native: level %d in play at VSync %d\n", cfg.start_level,
+           frames_run);
+    end_skip_intro();
+  } else if (skipping_intro != 0 && frames_run >= SKIP_INTRO_MAX_VSYNCS) {
+    fprintf(stderr,
+            "native: debug.start.level %d not in play after %d VSyncs; "
+            "showing the run\n",
+            cfg.start_level, frames_run);
+    end_skip_intro();
   }
   return frame_limit != 0 && frames_run >= frame_limit;
 }
@@ -386,7 +431,8 @@ int main(int argc, char **argv) {
   /* GOT.mem imports resolve to PS1 addresses (spyro_w_got.c) and need no
      context. */
   diag_init(cfg.overlay);
-  if (cfg.fast) {
+  skipping_intro = !run_stub && cfg.start_level != 0;
+  if (native_fast()) {
     /* Applied when the backend configures VSync at init. */
     Psyz_VideoSetVsyncMode(PSYZ_VSYNC_LIMITLESS);
   }
@@ -400,7 +446,7 @@ int main(int argc, char **argv) {
   /* Not in the original game: the right stick's X axis turns the camera
      like L2/R2 (src/native/game/camera/manual_yaw.c), its rates in Q8. */
   w2c_spyro_native_set_camera_stick(
-      &instance, (u32)cfg.camera_right_stick, (u32)cfg.camera_invert,
+      &instance, (u32)cfg.camera_analog, (u32)cfg.camera_invert,
       (u32)lround(cfg.camera_speed * 256), (u32)lround(cfg.camera_boost * 256),
       (u32)lround(cfg.camera_boost_time * 60 /* VSyncs */));
 

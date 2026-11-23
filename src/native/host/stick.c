@@ -38,17 +38,17 @@ static unsigned char axis_out(double v) {
 void stick_shape(unsigned char *x, unsigned char *y, const StickShape *shape) {
   double fx = axis_in(*x), fy = axis_in(*y);
   double m = hypot(fx, fy);
-  double span = 1.0 - shape->deadzone - shape->outer_deadzone;
+  double inner = shape->range[0], span = shape->range[1] - inner;
   double out;
 
   if (shape->mode == STICK_MODE_ORIGINAL) {
     return;
   }
-  if (m <= shape->deadzone || m == 0.0) {
+  if (m <= inner || m == 0.0) {
     *x = *y = CENTRE;
     return;
   }
-  out = span > 0.0 ? (m - shape->deadzone) / span : 1.0;
+  out = span > 0.0 ? (m - inner) / span : 1.0;
   if (out > 1.0) {
     out = 1.0;
   }

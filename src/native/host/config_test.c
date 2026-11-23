@@ -207,14 +207,16 @@ TEST(set_each_kind) {
   CHECK_INT(s.log_level, 2);
   CHECK_INT(config_set(&s, "--set", "debug.overlay", "true"), 0);
   CHECK_INT(s.overlay, 1);
-  CHECK_INT(config_set(&s, "--set", "input.analog", "false"), 0);
+  CHECK_INT(config_set(&s, "--set", "input.pad", "digital"), 0);
   CHECK_INT(s.analog, 0);
-  CHECK_INT(config_set(&s, "--set", "input.camera.right_stick", "true"), 0);
-  CHECK_INT(s.camera_right_stick, 1);
+  CHECK_INT(config_set(&s, "--set", "input.pad", "analog"), 0);
+  CHECK_INT(s.analog, 1);
+  CHECK_INT(config_set(&s, "--set", "input.camera.mode", "analog"), 0);
+  CHECK_INT(s.camera_analog, 1);
   CHECK_INT(config_set(&s, "--set", "input.camera.invert", "true"), 0);
   CHECK_INT(s.camera_invert, 1);
-  CHECK_INT(config_set(&s, "--set", "input.left_stick.deadzone", "0.1"), 0);
-  CHECK(s.stick[0].deadzone == 0.1);
+  CHECK_INT(config_set(&s, "--set", "input.analog.left.range", "0.1,0.95"), 0);
+  CHECK(s.stick[0].range[0] == 0.1 && s.stick[0].range[1] == 0.95);
   CHECK_INT(config_set(&s, "--set", "input.camera.speed", "2"), 0);
   CHECK(s.camera_speed == 2.0);
 }
@@ -224,36 +226,84 @@ TEST(stick_mode) {
 
   CHECK_INT(s.stick[0].mode, STICK_MODE_ORIGINAL);
   CHECK_INT(s.stick[1].mode, STICK_MODE_RADIAL);
-  CHECK_INT(config_set(&s, "--set", "input.left_stick.mode", "radial"), 0);
+  CHECK_INT(config_set(&s, "--set", "input.analog.left.mode", "radial"), 0);
   CHECK_INT(s.stick[0].mode, STICK_MODE_RADIAL);
-  CHECK_INT(config_set(&s, "--set", "input.right_stick.mode", "original"), 0);
+  CHECK_INT(config_set(&s, "--set", "input.analog.right.mode", "original"), 0);
   CHECK_INT(s.stick[1].mode, STICK_MODE_ORIGINAL);
   log_capture();
-  CHECK(config_set(&s, "--set", "input.left_stick.mode", "round") != 0);
-  CHECK(strstr(log_text(), "input.left_stick.mode must be \"original\" or "
+  CHECK(config_set(&s, "--set", "input.analog.left.mode", "round") != 0);
+  CHECK(strstr(log_text(), "input.analog.left.mode must be \"original\" or "
                            "\"radial\"") != NULL);
   CHECK_INT(s.stick[0].mode, STICK_MODE_RADIAL);
   CHECK_INT(config_load_string(&s, "x.toml",
-                               "[input.left_stick]\nmode = \"original\"\n"),
+                               "[input.analog.left]\nmode = \"original\"\n"),
             0);
   CHECK_INT(s.stick[0].mode, STICK_MODE_ORIGINAL);
-  CHECK(config_load_string(&s, "y.toml", "[input.left_stick]\nmode = 1\n") !=
+  CHECK(config_load_string(&s, "y.toml", "[input.analog.left]\nmode = 1\n") !=
         0);
+}
+
+TEST(start_level) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.start_level, 0);
+  CHECK_INT(config_set(&s, "--set", "debug.start.level", "21"), 0);
+  CHECK_INT(s.start_level, 21);
+  CHECK_INT(config_set(&s, "--set", "debug.start.level", "0"), 0);
+  CHECK_INT(s.start_level, 0);
+  log_capture();
+  CHECK(config_set(&s, "--set", "debug.start.level", "65") != 0);
+  CHECK(strstr(log_text(), "debug.start.level must be 0 or a level id") !=
+        NULL);
+  CHECK(config_set(&s, "--set", "debug.start.level", "9") != 0);
+  CHECK(config_set(&s, "--set", "debug.start.level", "16") != 0);
+  CHECK(config_set(&s, "--set", "debug.start.level", "21x") != 0);
+  CHECK_INT(s.start_level, 0);
+  CHECK_INT(config_load_string(&s, "x.toml", "[debug.start]\nlevel = 64\n"), 0);
+  CHECK_INT(s.start_level, 64);
+  CHECK(config_load_string(&s, "y.toml", "[debug.start]\nlevel = \"21\"\n") !=
+        0);
+  CHECK_INT(config_load_string(&s, "z.toml", "[debug.start]\nlevel = 0\n"), 0);
+  CHECK_INT(s.start_level, 0);
+}
+
+/* A rejected start_level keeps the one already set. */
+TEST(start_level_rejected_keeps_previous) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(config_set(&s, "--set", "debug.start.level", "35"), 0);
+  log_capture();
+  CHECK(config_set(&s, "--set", "debug.start.level", "-1") != 0);
+  CHECK(config_set(&s, "--set", "debug.start.level", "") != 0);
+  CHECK_INT(s.start_level, 35);
+}
+
+TEST(level_valid) {
+  CHECK_INT(config_level_valid(10), 1);
+  CHECK_INT(config_level_valid(15), 1);
+  CHECK_INT(config_level_valid(60), 1);
+  CHECK_INT(config_level_valid(64), 1);
+  CHECK_INT(config_level_valid(0), 0);
+  CHECK_INT(config_level_valid(-1), 0);
+  CHECK_INT(config_level_valid(9), 0);
+  CHECK_INT(config_level_valid(16), 0);
+  CHECK_INT(config_level_valid(65), 0);
+  CHECK_INT(config_level_valid(70), 0);
 }
 
 TEST(set_number_range) {
   NativeSettings s = fresh();
 
   log_capture();
-  CHECK(config_set(&s, "--set", "input.right_stick.deadzone", "0.95") != 0);
-  CHECK(strstr(log_text(), "input.right_stick.deadzone must be a number from "
-                           "0 to 0.9") != NULL);
+  CHECK(config_set(&s, "--set", "input.analog.left.curve", "6") != 0);
+  CHECK(strstr(log_text(), "input.analog.left.curve must be a number from "
+                           "0.1 to 5") != NULL);
   CHECK(config_set(&s, "--set", "input.camera.speed", "fast") != 0);
   CHECK(config_set(&s, "--set", "input.camera.speed", "2x") != 0);
   CHECK(config_set(&s, "--set", "input.camera.speed", "") != 0);
   CHECK(config_set(&s, "--set", "input.camera.speed", "nan") != 0);
   CHECK(config_set(&s, "--set", "input.camera.boost", "0.5") != 0);
-  CHECK(s.stick[1].deadzone == 0.15);
+  CHECK(s.stick[0].curve == 1.0);
   CHECK(s.camera_speed == 1.0);
   CHECK(s.camera_boost == 1.0);
 }
@@ -262,14 +312,60 @@ TEST(set_number_range) {
 TEST(set_number_range_inclusive) {
   NativeSettings s = fresh();
 
-  CHECK_INT(config_set(&s, "--set", "input.right_stick.deadzone", "0"), 0);
-  CHECK(s.stick[1].deadzone == 0.0);
-  CHECK_INT(config_set(&s, "--set", "input.right_stick.deadzone", "0.9"), 0);
-  CHECK(s.stick[1].deadzone == 0.9);
-  CHECK_INT(config_set(&s, "--set", "input.left_stick.curve", "0.1"), 0);
+  CHECK_INT(config_set(&s, "--set", "input.analog.left.curve", "0.1"), 0);
   CHECK(s.stick[0].curve == 0.1);
   CHECK_INT(config_set(&s, "--set", "input.camera.boost_time", "10"), 0);
   CHECK(s.camera_boost_time == 10.0);
+}
+
+TEST(stick_range) {
+  NativeSettings s = fresh();
+
+  CHECK(s.stick[0].range[0] == 0.375 && s.stick[0].range[1] == 1.0);
+  CHECK(s.stick[1].range[0] == 0.15 && s.stick[1].range[1] == 1.0);
+  CHECK_INT(config_set(&s, "--set", "input.analog.right.range", "[0, 1]"), 0);
+  CHECK(s.stick[1].range[0] == 0.0 && s.stick[1].range[1] == 1.0);
+  CHECK_INT(
+      config_set(&s, "--set", "input.analog.right.range", " [ 0.2 ,0.8 ] "), 0);
+  CHECK(s.stick[1].range[0] == 0.2 && s.stick[1].range[1] == 0.8);
+  CHECK_INT(
+      config_set(&s, "--set", "input.analog.right.range", "\t0.3,\t0.7\t"), 0);
+  CHECK(s.stick[1].range[0] == 0.3 && s.stick[1].range[1] == 0.7);
+  CHECK_INT(config_set(&s, "--set", "input.analog.right.range", "0.2,0.8"), 0);
+  log_capture();
+  CHECK(config_set(&s, "--set", "input.analog.right.range", "0.5,0.5") != 0);
+  CHECK(strstr(log_text(), "input.analog.right.range must be [inner, outer] "
+                           "with 0 <= inner < outer <= 1") != NULL);
+  CHECK(config_set(&s, "--set", "input.analog.right.range", "0.9,0.1") != 0);
+  CHECK(config_set(&s, "--set", "input.analog.right.range", "-0.1,0.5") != 0);
+  CHECK(config_set(&s, "--set", "input.analog.right.range", "0.1,1.5") != 0);
+  CHECK(config_set(&s, "--set", "input.analog.right.range", "0.1") != 0);
+  CHECK(config_set(&s, "--set", "input.analog.right.range", "[0.1,0.5") != 0);
+  CHECK(config_set(&s, "--set", "input.analog.right.range", "0.1,0.5]") != 0);
+  CHECK(config_set(&s, "--set", "input.analog.right.range", "0.1,0.5,0.9") !=
+        0);
+  CHECK(config_set(&s, "--set", "input.analog.right.range", "nan,0.5") != 0);
+  CHECK(s.stick[1].range[0] == 0.2 && s.stick[1].range[1] == 0.8);
+  CHECK_INT(config_load_string(&s, "x.toml",
+                               "[input.analog.right]\nrange = [0, 1]\n"),
+            0);
+  CHECK(s.stick[1].range[0] == 0.0 && s.stick[1].range[1] == 1.0);
+  CHECK(config_load_string(&s, "y.toml",
+                           "[input.analog.right]\nrange = [0.1]\n") != 0);
+  CHECK(config_load_string(&s, "y.toml",
+                           "[input.analog.right]\nrange = [\"0\", 1]\n") != 0);
+  CHECK(config_load_string(&s, "y.toml",
+                           "[input.analog.right]\nrange = 0.1\n") != 0);
+}
+
+TEST(camera_mode_rejects_bool) {
+  NativeSettings s = fresh();
+
+  log_capture();
+  CHECK(config_set(&s, "--set", "input.camera.mode", "true") != 0);
+  CHECK(strstr(log_text(), "input.camera.mode must be \"original\" or "
+                           "\"analog\"") != NULL);
+  CHECK_INT(s.camera_analog, 0);
 }
 
 TEST(load_numbers) {
@@ -277,10 +373,10 @@ TEST(load_numbers) {
 
   log_capture();
   CHECK_INT(config_load_string(&s, "x.toml",
-                               "[input.left_stick]\ndeadzone = 0.2\n"
+                               "[input.analog.left]\nrange = [0.2, 0.9]\n"
                                "curve = 2\n[input.camera]\nboost = 2.5\n"),
             0);
-  CHECK(s.stick[0].deadzone == 0.2);
+  CHECK(s.stick[0].range[0] == 0.2 && s.stick[0].range[1] == 0.9);
   CHECK(s.stick[0].curve == 2.0);
   CHECK(s.camera_boost == 2.5);
   CHECK(config_load_string(&s, "y.toml", "[input.camera]\nspeed = \"2\"\n") !=
@@ -373,7 +469,7 @@ TEST(load_later_file_overrides) {
   CHECK_INT(s.fast, 0);
 }
 
-TEST(load_unknown_and_renamed_keys_warn) {
+TEST(load_unknown_keys_warn) {
   NativeSettings s = fresh();
   const char *log;
 
@@ -385,7 +481,7 @@ TEST(load_unknown_and_renamed_keys_warn) {
             0);
   CHECK_INT(s.fast, 0);
   log = log_text();
-  CHECK(strstr(log, "x.toml:1: fast is now debug.fast (ignored)") != NULL);
+  CHECK(strstr(log, "x.toml:1: unknown key fast (ignored)") != NULL);
   CHECK(strstr(log, "x.toml:3: unknown key debug.speed (ignored)") != NULL);
 }
 

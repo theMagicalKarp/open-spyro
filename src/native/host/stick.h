@@ -1,5 +1,5 @@
-/* src/native/host/stick.h — analog stick shaping (input.left_stick.*,
- * input.right_stick.*): dead zones and a response curve, applied to pad
+/* src/native/host/stick.h — analog stick shaping (input.analog.left.*,
+ * input.analog.right.*): dead zones and a response curve, applied to pad
  * reports before the game reads them.
  *
  * Kept free of SDL and the wasm module so it builds into the host unit tests
@@ -18,16 +18,17 @@ typedef enum StickMode {
    STICK_MODE_RADIAL only. */
 typedef struct StickShape {
   StickMode mode;
-  double deadzone;       /* below this the stick reads centred */
-  double outer_deadzone; /* within this of the edge it reads full */
+  /* input.<stick>.range: [inner, outer] radii; below inner the stick reads
+     centred, from outer on it reads full, and between it scales linearly. */
+  double range[2];
   double curve; /* response exponent: 1 linear, > 1 finer near centre */
 } StickShape;
 
 /* The original game's feel: the bytes reach the game's own calibration
    unchanged, which ignores 0x30 of 0x80 per axis around the centre it
-   snapshots and is linear past that. The radial values are the original's
-   dead zone size, for when the mode is switched to radial. */
-#define STICK_SHAPE_ORIGINAL {STICK_MODE_ORIGINAL, 0.375, 0.0, 1.0}
+   snapshots and is linear past that. The radial range starts at the
+   original's dead zone size, for when the mode is switched to radial. */
+#define STICK_SHAPE_ORIGINAL {STICK_MODE_ORIGINAL, {0.375, 1.0}, 1.0}
 
 /* Shapes one stick's two report bytes (0x80 = centre) in place; a no-op in
    STICK_MODE_ORIGINAL. In STICK_MODE_RADIAL the output is encoded for the

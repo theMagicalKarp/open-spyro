@@ -69,16 +69,15 @@ port1 = "card1.mcd"            # --memcard; "none" leaves port A empty
 port2 = "card2.mcd"            # --memcard2
 
 [input]
-analog = true                  # false: pad 1 reports a digital pad
+pad = "analog"                 # "digital": pad 1 reports a digital pad
 
-[input.left_stick]             # and [input.right_stick] (radial, deadzone 0.15)
-mode = "original"              # or "radial": the three below
-deadzone = 0.375               # fractions of full deflection
-outer_deadzone = 0.0
+[input.analog.left]            # and [input.analog.right] (radial, [0.15, 1.0])
+mode = "original"              # or "radial": the two below
+range = [0.375, 1.0]           # [inner, outer], fractions of full deflection
 curve = 1.0
 
 [input.camera]
-right_stick = false            # true: the right stick turns the camera
+mode = "original"              # "analog": the right stick turns the camera
 invert = false
 speed = 1.0
 boost = 1.0
@@ -88,6 +87,9 @@ boost_time = 0.5
 fast = false                   # --fast
 log_level = "info"             # --log-level: "debug", "info", "warn", "error" (or d/i/w/e)
 overlay = false                # start with the diagnostics overlay shown
+
+[debug.start]                  # the state a run starts in
+level = 0                      # a level id: boot straight into it, 0 = title screen
 ```
 
 Every key is optional. Each setting has a dotted name, its table and key
@@ -135,6 +137,10 @@ wasm dependency:
 - `src/native/game/camera/manual_yaw.c`: L2/R2 and the right-stick camera
   turn, its speed, invert and boost ramp, over the game globals it reads
   (defined by the test).
+- `src/native/game/debug/warp.c`: when `--warp` and `debug.start.level` may
+  leave the current state and what they hand the game, the story-intro
+  fly-over cut, over stubs for the game calls (`funcs.h` is kept out, since
+  its struct size checks are 32-bit only).
 - `src/native/host/audio_format.c`: the sample frames per vblank and the
   `--wav` header (`audio.c`).
 - `src/native/host/diag_stats.c`: the diagnostics overlay's frame rate and
@@ -339,7 +345,7 @@ their entry points abort (`src/native/game/load/level_id_stubs.c`).
 Pad 1 is the keyboard or the first SDL gamepad (PsyZ's backend): arrows =
 D-pad, X / Z / S / D = Cross / Square / Triangle / Circle, Q / R / W / E =
 L1 / R1 / L2 / R2, Return = Start, Backspace = Select. Pad 1 reports a
-DualShock in analog mode (id 0x73; `input.analog = false` makes it a digital
+DualShock in analog mode (id 0x73; `input.pad = "digital"` makes it a digital
 pad, 0x41): the left stick steers Spyro (and the free-look camera) through
 the game's own analog path, which calibrates the stick centre from the first
 analog report and never reads the right stick. The keyboard leaves both
@@ -360,21 +366,22 @@ system's monospace font (SF Mono, else DejaVu Sans Mono, else ImGui's own).
 If ImGui can't start, the frame rate goes in the window title instead. PsyZ's own keys stay: F4
 fullscreen, F6 the VRAM view, Escape quits.
 
-Each stick has a `mode` (`input.left_stick.mode` / `input.right_stick.mode`).
+Each stick has a `mode` (`input.analog.left.mode` / `input.analog.right.mode`).
 `"original"`, the left stick's default, passes the report through untouched,
 so the game's own calibration applies: a 0x30-per-axis dead zone around the
 centre it snapshots, linear past that. `"radial"`, the right stick's default,
 shapes the stick on the host before the game sees it
-(`src/native/host/stick.c`): a radial `deadzone`, an `outer_deadzone` (that
-close to the edge reads as full) and a response `curve` (exponent; above 1
-gives finer control near the centre). Those three apply only in radial mode.
+(`src/native/host/stick.c`): a radial `range = [inner, outer]` (below inner
+the stick reads centred, from outer on it reads full, linear between) and a
+response `curve` (exponent; above 1 gives finer control near the centre).
+Those two apply only in radial mode.
 The shaped value is encoded just past the game's dead zone, so the shaped
 deflection reaches the game unchanged and the host's dead zone replaces the
-game's. The left stick's radial default, 0.375, is the original's size. The
+game's. The left stick's radial inner default, 0.375, is the original's size. The
 game never reads the right stick, so in `"original"` mode the right-stick
 camera turn gets the raw stick with no dead zone.
 
-`input.camera.right_stick = true` adds what the original lacks: the right
+`input.camera.mode = "analog"` adds what the original lacks: the right
 stick's X axis turns the camera the way L2 / R2 do, in proportion to the
 deflection, with the buttons taking priority; stick right turns the way R2 does, and
 `invert = true` flips that. `speed` scales the rate (1 = the
@@ -400,7 +407,17 @@ time advances one vblank per VSync, so a run is deterministic and a few
 seconds long. `--warp N:LEVEL` starts a load of level id LEVEL (10 =
 Artisans, 21 = Dry Canyon, ...) at VSync N, or once gameplay resumes after
 it, with the teardown the dev level select runs
-(`src/native/game/debug/warp.c`). `--wav out.wav` writes the sound output to
+(`src/native/game/debug/warp.c`). `debug.start.level = LEVEL` (or
+`--set debug.start.level=LEVEL`) instead boots into a level: once the title
+screen's scene has loaded, it takes the title's load-game exit into LEVEL
+with a fresh game (no memory-card save loaded), with no pad input needed.
+Until the level is in play nothing is shown or heard and the run is
+`--fast`; the boot screens' VSyncs are presented with the display held off
+(black, but the GPU work is still submitted), and the story intro's
+fly-over is cut short (`native_skip_intro_fly`), so the game opens on the
+level a fraction of a second after launch. It then drops back to real time,
+with `VSync(-1)` carrying on from the VSync count.
+`--wav out.wav` writes the sound output to
 a file as well.
 
 ## The SDK
