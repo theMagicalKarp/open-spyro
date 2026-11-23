@@ -244,7 +244,7 @@ static void update_auto_resolution_scale(void) {
   Psyz_VideoSetInternalResolution(fit < 1 ? 1 : fit > 8 ? 8 : (unsigned)fit);
 }
 
-/* F5 (diag.cpp): the next resolution scale in 1, 2, 4, 8, taken over from
+/* = key (diag.cpp): the next resolution scale in 1, 2, 4, 8, taken over from
    auto. Applied by the next frame hook, between frames; from PsyZ's PS1
    mode (1x at 4:3) it first switches to its native mode, where it scales. */
 static unsigned pending_resolution_scale;

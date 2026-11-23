@@ -370,8 +370,8 @@ refresh every half second. `debug.overlay = true` starts it shown. It is a
 `external/imgui` and `external/implot` submodules), drawn through PsyZ's
 SDL_GPU overlay hooks with ImGui's SDL_GPU backend (Metal or Vulkan), in the
 system's monospace font (SF Mono, else DejaVu Sans Mono, else ImGui's own).
-If ImGui can't start, the frame rate goes in the window title instead. F5
-steps `video.resolution_scale` through 1x, 2x, 4x and 8x (then back to
+If ImGui can't start, the frame rate goes in the window title instead. The
+`=` key steps `video.resolution_scale` through 1x, 2x, 4x and 8x (then back to
 1x) between frames, taking over from auto; the overlay's `res scale` row shows the
 current one. From 1x at 4:3 it first moves PsyZ from its PS1 display mode to
 its native one, where it scales. PsyZ's own keys stay: F4

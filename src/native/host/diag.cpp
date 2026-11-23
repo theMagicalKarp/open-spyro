@@ -210,7 +210,7 @@ static void on_event(const SDL_Event *e) {
       !e->key.repeat) {
     toggle();
   } else if (e->type == SDL_EVENT_KEY_DOWN &&
-             e->key.scancode == SDL_SCANCODE_F5 && !e->key.repeat) {
+             e->key.scancode == SDL_SCANCODE_EQUALS && !e->key.repeat) {
     native_cycle_resolution_scale();
   } else if (e->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN &&
              stick_bit(e->gbutton.button) != 0) {
@@ -349,7 +349,7 @@ static void draw_panel(void) {
     row("vsync", "%d", native_frames_run());
     row("state", "%d (%s)", gamestate, diag_stats_gamestate_name(gamestate));
     row("level id", "%d", read_game_int(ACTIVE_LEVEL_ADDR));
-    row("res scale", "%ux (F5)", Psyz_VideoGetInternalResolution());
+    row("res scale", "%ux", Psyz_VideoGetInternalResolution());
     ImGui::EndTable();
     rows_width = ImGui::GetItemRectSize().x;
   }

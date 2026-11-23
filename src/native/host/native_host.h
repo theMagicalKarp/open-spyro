@@ -46,7 +46,7 @@ int native_frames_run(void);
 void native_display_mode(int rgb24);
 /* The game view's width over its height (video.aspect, resolved). */
 double native_view_aspect(void);
-/* F5: step video.resolution_scale to the next of 1, 2, 4, 8 (after 8,
+/* = key: step video.resolution_scale to the next of 1, 2, 4, 8 (after 8,
    back to 1), from the next frame on. */
 void native_cycle_resolution_scale(void);
 /* From the window's resize events: its new size in pixels. */
