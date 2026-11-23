@@ -8,28 +8,29 @@ port1 = "card1.mcd" # "none" = empty, unset = card1.mcd in the data dir
 # port2 = "card2.mcd"
 
 [input]
-analog = true # false: pad 1 is a digital pad (sticks ignored)
+pad = "analog" # "digital": pad 1 is a digital pad (sticks ignored)
 
-[input.left_stick]
+[input.analog.left]
 mode = "original"    # the game's own per-axis dead zone; "radial" uses the rest
-deadzone = 0.375     # radial only, fractions of full deflection; pads suit ~0.1
-outer_deadzone = 0.0 # radial only: this close to the edge reads as full
+range = [0.375, 1.0] # radial only: stick radius scaled to 0..full; pads suit ~[0.1, 0.95]
 curve = 1.0          # radial only: exponent, 1 linear, 2 finer near the centre
 
-[input.right_stick] # read only by input.camera.right_stick
-mode = "radial"     # "original": the game's own per-axis dead zone
-deadzone = 0.15
-outer_deadzone = 0.0
+[input.analog.right] # read only by input.camera.mode = "analog"
+mode = "radial"      # "original": the game's own per-axis dead zone
+range = [0.15, 1.0]
 curve = 1.0
 
-[input.camera]
-right_stick = false # true: right stick turns the camera (not in the original)
-invert = false      # true: stick right turns the other way
-speed = 1.0         # turn rate at full deflection, 1 = the L2/R2 rate
-boost = 1.0         # held at full deflection, speed up to this times speed
-boost_time = 0.5    # ... over this many seconds
+[input.camera] # the right-stick camera turn (not in the original); L2/R2 are unchanged
+mode = "original" # "analog": the right stick also turns the camera
+invert = false    # true: stick right turns the other way
+speed = 1.0       # turn rate at full deflection, 1 = the L2/R2 rate
+boost = 1.0       # held at full deflection, speed up to this times speed
+boost_time = 0.5  # ... over this many seconds
 
 [debug]
 fast = false       # true: no 59.94 Hz frame limiter
 log_level = "info" # "debug", "info", "warn" or "error"
-overlay = false    # true: start with the FPS overlay shown (` / L3+R3)
+overlay = false    # true: start with the diagnostics overlay shown (` / L3+R3)
+
+[debug.start] # the state a run starts in
+level = 0 # a level id: boot straight into it (21 = Dry Canyon), 0 = title

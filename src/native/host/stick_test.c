@@ -22,7 +22,7 @@ static int game_axis(unsigned char raw) {
   return 0;
 }
 
-static const StickShape linear = {STICK_MODE_RADIAL, 0.0, 0.0, 1.0};
+static const StickShape linear = {STICK_MODE_RADIAL, {0.0, 1.0}, 1.0};
 
 TEST(stick_centre_stays_centred) {
   unsigned char x = 0x80, y = 0x80;
@@ -33,7 +33,7 @@ TEST(stick_centre_stays_centred) {
 }
 
 TEST(stick_deadzone_is_radial) {
-  StickShape s = {STICK_MODE_RADIAL, 0.2, 0.0, 1.0};
+  StickShape s = {STICK_MODE_RADIAL, {0.2, 1.0}, 1.0};
   unsigned char x = 0x80 + 20, y = 0x80 + 20; /* |(0.157, 0.157)| = 0.22 */
 
   stick_shape(&x, &y, &s);
@@ -63,15 +63,15 @@ TEST(stick_linear_passes_through_game_calibration) {
 TEST(stick_full_deflection_reaches_full) {
   unsigned char x = 0xFF, y = 0x80;
 
-  stick_shape(&x, &y, &(StickShape){STICK_MODE_RADIAL, 0.375, 0.0, 1.0});
+  stick_shape(&x, &y, &(StickShape){STICK_MODE_RADIAL, {0.375, 1.0}, 1.0});
   CHECK(game_axis(x) >= 126);
   x = 0x00, y = 0x80;
-  stick_shape(&x, &y, &(StickShape){STICK_MODE_RADIAL, 0.375, 0.0, 1.0});
+  stick_shape(&x, &y, &(StickShape){STICK_MODE_RADIAL, {0.375, 1.0}, 1.0});
   CHECK(game_axis(x) <= -126);
 }
 
-TEST(stick_outer_deadzone_saturates) {
-  StickShape s = {STICK_MODE_RADIAL, 0.0, 0.2, 1.0};
+TEST(stick_range_outer_saturates) {
+  StickShape s = {STICK_MODE_RADIAL, {0.0, 0.8}, 1.0};
   unsigned char x = 0x80 + 0x66, y = 0x80; /* 0.80 */
 
   stick_shape(&x, &y, &s);
@@ -79,7 +79,7 @@ TEST(stick_outer_deadzone_saturates) {
 }
 
 TEST(stick_curve_softens_small_deflections) {
-  StickShape s = {STICK_MODE_RADIAL, 0.0, 0.0, 2.0};
+  StickShape s = {STICK_MODE_RADIAL, {0.0, 1.0}, 2.0};
   unsigned char x = 0x80 + 64, y = 0x80; /* 0.5 -> 0.25 */
 
   stick_shape(&x, &y, &s);
@@ -89,7 +89,7 @@ TEST(stick_curve_softens_small_deflections) {
 TEST(stick_report_only_shapes_analog_pads) {
   unsigned char digital[8] = {0, 0x41, 0xFF, 0xFF, 0x90, 0x90, 0x90, 0x90};
   unsigned char analog[8] = {0, 0x73, 0xFF, 0xFF, 0x90, 0x80, 0x80, 0x90};
-  StickShape big = {STICK_MODE_RADIAL, 0.5, 0.0, 1.0};
+  StickShape big = {STICK_MODE_RADIAL, {0.5, 1.0}, 1.0};
 
   stick_shape_report(digital, 8, &big, &big);
   CHECK_INT(digital[4], 0x90);
@@ -100,7 +100,7 @@ TEST(stick_report_only_shapes_analog_pads) {
 
 /* The radial shaping scales both axes alike, so the direction survives. */
 TEST(stick_diagonal_keeps_direction) {
-  StickShape s = {STICK_MODE_RADIAL, 0.2, 0.0, 1.0};
+  StickShape s = {STICK_MODE_RADIAL, {0.2, 1.0}, 1.0};
   unsigned char x = 0x80 + 90, y = 0x80 - 30;
 
   stick_shape(&x, &y, &s);
@@ -109,7 +109,7 @@ TEST(stick_diagonal_keeps_direction) {
 }
 
 TEST(stick_y_axis_shaped_like_x) {
-  StickShape s = {STICK_MODE_RADIAL, 0.375, 0.0, 1.0};
+  StickShape s = {STICK_MODE_RADIAL, {0.375, 1.0}, 1.0};
   unsigned char x = 0x80, y = 0xFF;
 
   stick_shape(&x, &y, &s);
@@ -123,7 +123,7 @@ TEST(stick_y_axis_shaped_like_x) {
 TEST(stick_report_ignores_short_and_bad_reports) {
   unsigned char short_[8] = {0, 0x73, 0xFF, 0xFF, 0x90, 0x90, 0x90, 0x90};
   unsigned char failed[8] = {0xFF, 0x73, 0xFF, 0xFF, 0x90, 0x90, 0x90, 0x90};
-  StickShape big = {STICK_MODE_RADIAL, 0.5, 0.0, 1.0};
+  StickShape big = {STICK_MODE_RADIAL, {0.5, 1.0}, 1.0};
 
   stick_shape_report(short_, 7, &big, &big);
   CHECK_INT(short_[4], 0x90);

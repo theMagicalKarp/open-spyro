@@ -34,6 +34,12 @@ int native_log_level(void);
 /* --fast: no frame limiter, and VSync(-1) counts blocking VSyncs instead of
    wall time, so game time advances one vblank per VSync (deterministic). */
 int native_fast(void);
+/* Added to PsyZ's wall-time VSync(-1) when not fast, so the count carries on
+   from the VSyncs run when a fast start ends (debug.start.level). */
+int native_vsync_offset(void);
+/* debug.start.level: blocking VSyncs are not shown until the level is in
+   play. */
+int native_hiding_frames(void);
 int native_frames_run(void);
 
 /* audio.c: runs the SPU and feeds the output device; once per blocking

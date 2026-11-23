@@ -127,15 +127,14 @@ port1 = "card1.mcd"                       # "none" = empty, unset = card1.mcd in
 # port2 = "card2.mcd"
 
 [input]
-analog = true                             # false: digital pad (sticks ignored)
+pad = "analog"                            # "digital": a digital pad (sticks ignored)
 
-[input.left_stick]                        # also [input.right_stick]
-deadzone = 0.375                          # 0.375 = the original's; modern pads suit ~0.1
-outer_deadzone = 0.0                      # this close to the edge reads as full
+[input.analog.left]                       # also [input.analog.right]
+range = [0.375, 1.0]                      # below inner reads centred, from outer full; pads suit ~[0.1, 0.95]
 curve = 1.0                               # response exponent: 1 linear, 2 finer near the centre
 
 [input.camera]
-right_stick = false                       # true: right stick turns the camera (not in the original)
+mode = "original"                         # "analog": right stick turns the camera (not in the original)
 invert = false                            # true: flip the stick's turn direction
 speed = 1.0                               # 1 = the L2/R2 rate; boost / boost_time ramp it when held full
 
