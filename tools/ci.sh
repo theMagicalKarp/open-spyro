@@ -48,7 +48,9 @@ echo "::endgroup::"
 echo "::group::progress report (must be 100% matched)"
 # --require-full fails the job if any game function is still linked from
 # original asm (INCLUDE_ASM) instead of matched C.
-$OPEN_SPYRO progress --require-full
+# build/report.json is the objdiff-format report recomp.fyi reads from the
+# SCUS_942.28_report artifact (uploaded by ci.yml on main).
+$OPEN_SPYRO progress --require-full --objdiff-report build/report.json
 echo "::endgroup::"
 
 echo "ci: OK — build byte-reproduces recorded SHA-1s; game code 100% matched"

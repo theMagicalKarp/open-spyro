@@ -48,9 +48,16 @@ def _progress(
             help="exit non-zero unless every game function is matched from C (100.00%)",
         ),
     ] = False,
+    objdiff_report: Annotated[
+        Path | None,
+        typer.Option(
+            "--objdiff-report",
+            help="also write an objdiff-format report here (e.g. build/report.json)",
+        ),
+    ] = None,
 ) -> None:
     """Regenerate the C-match progress report (PROGRESS.md + badge)."""
-    if not progress.run() and require_full:
+    if not progress.run(objdiff_report) and require_full:
         raise typer.Exit(1)
 
 

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://recomp.fyi/schema/v1.json",
+  "game": "Spyro the Dragon",
+  "wikidata": "Q858391",
+  "system": "PS1",
+  "type": ["decomp", "port"],
+  "status": "playable",
+  "project": "open-spyro",
+  "original": {
+    "region": "USA",
+    "serial": "SCUS-94228",
+    "sha1": "84e3728ab94720d0873e2514adf4aade4935e0c5"
+  },
+  "approach": "Byte-matching decompilation, compiled to wasm32 and wasm2c'd back to C to run natively on PsyZ with an SDL3 backend",
+  "targets": ["macOS", "Linux"],
+  "toolchain": ["Splat", "PsyZ", "wasm2c", "SDL3"],
+  "maintainers": [
+    { "name": "Robert Sheehy", "link": "https://github.com/theMagicalKarp" }
+  ],
+  "notes": "The main executable, all 37 overlays and WAD.WAD rebuild byte-identical from 100% matched C. The native build boots the title, plays the opening cutscene and loads and plays all 35 levels with sound, XA music and memory-card saves on macOS arm64 and Linux arm64/x86_64. Physics parity with the PS1 is still being checked.",
+  "help": ["Physics parity testing against the PS1", "Windows support"],
+  "tags": ["matching", "psy-q"]
+}
