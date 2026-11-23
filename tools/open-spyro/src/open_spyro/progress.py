@@ -46,6 +46,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from open_spyro import objdiff_report as objdiff_report_mod
 from open_spyro.c_layout import function_files
 from open_spyro.paths import repo_root
 
@@ -526,8 +527,12 @@ def render_md(records: list[dict[str, Any]], summary: dict[str, dict[str, dict[s
     return "\n".join(lines)
 
 
-def run() -> bool:
-    """Regenerate the report; return True when every game function is matched."""
+def run(objdiff_report: Path | None = None) -> bool:
+    """Regenerate the report; return True when every game function is matched.
+
+    With ``objdiff_report``, also write an objdiff-format report there
+    (``open_spyro.objdiff_report``) — needs a completed build for the ld maps.
+    """
     repo = repo_root()
     out_json = repo / "progress.json"
     out_md = repo / "PROGRESS.md"
@@ -582,6 +587,13 @@ def run() -> bool:
         f"({sum(r['size'] for r in unsplit):,} bytes)"
     )
     print(f"  wrote {out_md.relative_to(repo)}, {out_json.relative_to(repo)}")
+    if objdiff_report is not None:
+        m = objdiff_report_mod.write(repo, records, objdiff_report)
+        print(
+            f"  wrote {objdiff_report} (objdiff v{objdiff_report_mod.REPORT_VERSION}): "
+            f"code {m['matched_code_percent']:.2f}%, data {m['matched_data_percent']:.2f}% "
+            f"({int(m['matched_data']):,}/{int(m['total_data']):,} bytes from C)"
+        )
 
     unmatched = [r for r in game if r["status"] != "matched"]
     for r in unmatched:
