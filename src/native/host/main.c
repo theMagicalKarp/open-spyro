@@ -1,7 +1,7 @@
 /* src/native/host/main.c — the native executable's entry point.
  *
  *   spyro --disc game.cue [--frames N] [--screenshot out.bmp]
- *         [--capture out.bmp] [--shot N]... [--internal-res N] [--aspect A]
+ *         [--capture out.bmp] [--shot N]... [--resolution-scale N] [--aspect A]
  *         [--press N:BUTTONS[:HOLD]]... [--warp N:LEVEL]... [--fast]
  *         [--wav out.wav] [--memcard card.mcd] [--memcard2 card.mcd]
  *         [--log-level debug|info|warn|error]
@@ -15,17 +15,17 @@
  * spinning triangle through PsyZ), which needs no disc. --frames ends the run
  * after N VSyncs; --screenshot then writes all of VRAM (1024x512, both display
  * buffers) as a BMP, for checking a run headlessly; --capture writes the
- * displayed frame as the window shows it (at the internal resolution, and the
+ * displayed frame as the window shows it (at the scaled resolution, and the
  * whole canvas in PsyZ's native mode). --shot N also writes them at VSync N,
- * next to each path (out-N.bmp). --internal-res N is short for
- * --set video.internal_resolution=N, --aspect A for --set video.aspect=A
- * (4:3, 16:9, 21:9, any W:H up to 8:3, or auto for the window's). --press holds
- * pad 1 buttons (BUTTONS: names joined by '+', e.g. start, cross+up) for HOLD
- * VSyncs (default 4) from VSync N, on top of the keyboard / gamepad. --warp
- * starts a load of level id LEVEL (10 = Artisans, 11 = Stone Hill, ...) at
- * VSync N, or as soon as gameplay resumes after it. --fast runs without
- * the 59.94 Hz frame limiter. --wav writes the sound output to a WAV file as
- * well.
+ * next to each path (out-N.bmp). --resolution-scale N is short for
+ * --set video.resolution_scale=N, --aspect A for --set video.aspect=A
+ * (4:3, 16:9, 21:9, any W:H up to 8:3, or auto for the window's);
+ * --resolution-scale takes 1..8 or auto. --press holds pad 1 buttons (BUTTONS:
+ * names joined by '+', e.g. start, cross+up) for HOLD VSyncs (default 4) from
+ * VSync N, on top of the keyboard / gamepad. --warp starts a load of level id
+ * LEVEL (10 = Artisans, 11 = Stone Hill, ...) at VSync N, or as soon as
+ * gameplay resumes after it. --fast runs without the 59.94 Hz frame limiter.
+ * --wav writes the sound output to a WAV file as well.
  * --memcard / --memcard2 insert a raw 128 KiB card image (.mcd, created on
  * the first save) in port A / B; port A defaults to card1.mcd in the user's
  * data directory, "none" leaves the port empty. --log-level takes the word
@@ -34,7 +34,7 @@
  * The persistent settings have dotted keys (disc, memcard.port1/port2,
  * debug.fast, debug.log_level, debug.overlay, debug.start.level (boot
  * straight into that level id with a fresh game, showing nothing before it is
- * in play), video.internal_resolution, video.aspect, video.hud; the settings
+ * in play), video.resolution_scale, video.aspect, video.hud; the settings
  * table in config.c).
  * They can come from TOML config files: config.toml in the user's data
  * directory if it exists, or each --config PATH in order (later files override
@@ -229,10 +229,10 @@ static void update_auto_aspect(void) {
   }
 }
 
-/* video.internal_resolution = 0: enough scale for the window's height, or
+/* video.resolution_scale = "auto": enough scale for the window's height, or
    for its width at the view's aspect, so the fit to the window shrinks
    rather than blurs. */
-static void update_auto_internal_res(void) {
+static void update_auto_resolution_scale(void) {
   int w, h, fit;
 
   if (!window_size(&w, &h)) {
@@ -244,30 +244,30 @@ static void update_auto_internal_res(void) {
   Psyz_VideoSetInternalResolution(fit < 1 ? 1 : fit > 8 ? 8 : (unsigned)fit);
 }
 
-/* F5 (diag.cpp): the next internal resolution in 1, 2, 4, 8, taken over from
+/* F5 (diag.cpp): the next resolution scale in 1, 2, 4, 8, taken over from
    auto. Applied by the next frame hook, between frames; from PsyZ's PS1
    mode (1x at 4:3) it first switches to its native mode, where it scales. */
-static unsigned pending_internal_res;
-void native_cycle_internal_res(void) {
+static unsigned pending_resolution_scale;
+void native_cycle_resolution_scale(void) {
   unsigned cur = Psyz_VideoGetInternalResolution(), next = 1;
 
   while (next <= cur && next < 8) {
     next *= 2;
   }
-  pending_internal_res = cur >= 8 ? 1 : next;
+  pending_resolution_scale = cur >= 8 ? 1 : next;
 }
 
-static void apply_pending_internal_res(void) {
-  if (pending_internal_res == 0) {
+static void apply_pending_resolution_scale(void) {
+  if (pending_resolution_scale == 0) {
     return;
   }
   if (video_request.w == 0) {
     Psyz_VideoSetAnchor(PSYZ_ANCHOR_CENTER);
     set_video_request(320);
   }
-  cfg.internal_res = (int)pending_internal_res;
-  Psyz_VideoSetInternalResolution(pending_internal_res);
-  pending_internal_res = 0;
+  cfg.resolution_scale = (int)pending_resolution_scale;
+  Psyz_VideoSetInternalResolution(pending_resolution_scale);
+  pending_resolution_scale = 0;
 }
 
 static void write_screenshot(const char *path);
@@ -292,13 +292,13 @@ int native_frame_hook(void) {
   if (cfg.aspect == 0) {
     update_auto_aspect();
   }
-  apply_pending_internal_res();
-  if (cfg.internal_res == 0) {
-    update_auto_internal_res();
+  apply_pending_resolution_scale();
+  if (cfg.resolution_scale == 0) {
+    update_auto_resolution_scale();
   }
   if (Psyz_VideoGetInternalResolution() != logged_res) {
     logged_res = Psyz_VideoGetInternalResolution();
-    printf("native: internal resolution %ux\n", logged_res);
+    printf("native: resolution scale %ux\n", logged_res);
   }
   if (video_request.w > 0 && !showing_rgb24) {
     PsyzRect a = Psyz_VideoGetDrawArea();
@@ -500,7 +500,7 @@ int StoreImage(void *rect, void *p) {
 static void usage(void) {
   fprintf(stderr, "usage: spyro [--disc game.cue | --stub] [--frames N] "
                   "[--screenshot out.bmp] [--capture out.bmp] [--shot N]... "
-                  "[--internal-res N] [--aspect 4:3|16:9|21:9|W:H|auto] "
+                  "[--resolution-scale N] [--aspect 4:3|16:9|21:9|W:H|auto] "
                   "[--press N:BUTTONS[:HOLD]]... [--warp N:LEVEL]... "
                   "[--fast] [--wav out.wav] [--memcard card.mcd] "
                   "[--memcard2 card.mcd] [--log-level debug|info|warn|error] "
@@ -577,8 +577,8 @@ int main(int argc, char **argv) {
       screenshot_path = argv[++i];
     } else if (strcmp(argv[i], "--capture") == 0 && i + 1 < argc) {
       capture_path = argv[++i];
-    } else if (strcmp(argv[i], "--internal-res") == 0 && i + 1 < argc) {
-      set_from_flag("--internal-res", "video.internal_resolution", argv[++i]);
+    } else if (strcmp(argv[i], "--resolution-scale") == 0 && i + 1 < argc) {
+      set_from_flag("--resolution-scale", "video.resolution_scale", argv[++i]);
     } else if (strcmp(argv[i], "--aspect") == 0 && i + 1 < argc) {
       set_from_flag("--aspect", "video.aspect", argv[++i]);
     } else if (strcmp(argv[i], "--shot") == 0 && i + 1 < argc &&
@@ -668,8 +668,8 @@ int main(int argc, char **argv) {
      Its own auto scale would then always be 1x (set_video_request), so auto
      (0) is worked out here from the window. */
   Psyz_VideoSetInternalResolution(
-      cfg.internal_res == 0 ? 1 : (unsigned)cfg.internal_res);
-  if (cfg.internal_res != 1 || cfg.aspect == 0 ||
+      cfg.resolution_scale == 0 ? 1 : (unsigned)cfg.resolution_scale);
+  if (cfg.resolution_scale != 1 || cfg.aspect == 0 ||
       config_aspect_request_width(cfg.aspect) != 320) {
     Psyz_VideoSetAnchor(PSYZ_ANCHOR_CENTER);
     set_video_request(

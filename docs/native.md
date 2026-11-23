@@ -36,7 +36,7 @@ make native-run NATIVE_ARGS="--frames 1900 --screenshot out.bmp --press 1300:sta
 make native-run NATIVE_ARGS="--fast --memcard none --frames 4400 --screenshot out.bmp \
   --press 1300:start --press 1400:start --press 1550:cross --press 1650:cross \
   --press 2300:start --warp 3400:21 --shot 3990"   # Dry Canyon, unthrottled
-make native-run NATIVE_ARGS="--frames 1900 --capture out.bmp --internal-res 4 \
+make native-run NATIVE_ARGS="--frames 1900 --capture out.bmp --resolution-scale 4 \
   --press 1300:start --press 1400:start --shot 1550"   # the displayed frame at 4x (2048x960)
 build/native/spyro --stub --frames 60    # no disc: a spinning-triangle test scene
 make native-gate SAVESTATE=~/Library/Application\ Support/DuckStation/savestates/<state>.sav
@@ -86,7 +86,7 @@ boost = 1.0
 boost_time = 0.5
 
 [video]
-internal_resolution = 1        # --internal-res: render scale 1..8, 0 = auto
+resolution_scale = 1           # --resolution-scale: render scale 1..8, or "auto"
 aspect = "4:3"                 # --aspect: "16:9", "21:9", "W:H" up to 8:3, "auto"
 hud = "center"                 # "edges": the side counters at a wide view's edges
 
@@ -105,7 +105,7 @@ Every key is optional. Each setting has a dotted name, its table and key
 the command line (`--set debug.log_level=debug`; a relative path there is
 relative to the working directory). The older flags are short forms of
 `--set`: `--disc`, `--memcard`, `--memcard2`, `--fast`, `--log-level`,
-`--internal-res` and `--aspect`.
+`--resolution-scale` and `--aspect`.
 The per-run flags (`--frames`, `--press`, `--shot`, `--warp`,
 `--screenshot`, `--capture`, `--wav`) have no config key. The settings are one table in
 `src/native/host/config.c` (`settings[]`), which the config files, `--set` and
@@ -371,8 +371,8 @@ refresh every half second. `debug.overlay = true` starts it shown. It is a
 SDL_GPU overlay hooks with ImGui's SDL_GPU backend (Metal or Vulkan), in the
 system's monospace font (SF Mono, else DejaVu Sans Mono, else ImGui's own).
 If ImGui can't start, the frame rate goes in the window title instead. F5
-steps `video.internal_resolution` through 1x, 2x, 4x and 8x (then back to
-1x) between frames, taking over from auto; the overlay's `res` row shows the
+steps `video.resolution_scale` through 1x, 2x, 4x and 8x (then back to
+1x) between frames, taking over from auto; the overlay's `res scale` row shows the
 current one. From 1x at 4:3 it first moves PsyZ from its PS1 display mode to
 its native one, where it scales. PsyZ's own keys stay: F4
 fullscreen, F6 the VRAM view, Escape quits.
@@ -407,11 +407,11 @@ For runs without a person at the keyboard, `--press N:BUTTONS[:HOLD]` holds
 buttons (names joined by `+`: `cross+up`) for HOLD VSyncs (default 4) from
 VSync N, and `--shot N` writes a VRAM screenshot at VSync N next to
 `--screenshot` (`out-N.bmp`). `--capture out.bmp` writes the displayed
-frame instead of VRAM, at the internal resolution (and with `--shot`, one
+frame instead of VRAM, at the scaled resolution (and with `--shot`, one
 next to it per shot too); the two can be given together.
 
-`video.internal_resolution` (`--internal-res N`) renders at N times
-512x240, 1 to 8, or 0 for the window size over the game's size. Anything
+`video.resolution_scale` (`--resolution-scale N`) renders at N times
+512x240, 1 to 8, or `"auto"` for the window size over the game's size. Anything
 but 1 puts PsyZ in its native display mode (a 512x240 canvas of its own,
 centred), which is where it scales; 1, the default, keeps the PS1 display
 path. Either way the frame fills the window at 4:3 (PsyZ's native mode

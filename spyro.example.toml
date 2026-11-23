@@ -28,9 +28,9 @@ boost = 1.0       # held at full deflection, speed up to this times speed
 boost_time = 0.5  # ... over this many seconds
 
 [video]
-internal_resolution = 1 # render scale 1..8; 0 = auto (window size); 1 = PS1 display
-aspect = "4:3"          # "16:9", "21:9", any "W:H" up to 8:3, or "auto" (the window's)
-hud = "center"          # or "edges": wide views put the gem and lives counters at the sides
+resolution_scale = 1 # render scale 1..8, or "auto" (window size); 1 = PS1 display
+aspect = "4:3"       # "16:9", "21:9", any "W:H" up to 8:3, or "auto" (the window's)
+hud = "center"       # or "edges": wide views put the gem and lives counters at the sides
 
 [debug]
 fast = false       # true: no 59.94 Hz frame limiter

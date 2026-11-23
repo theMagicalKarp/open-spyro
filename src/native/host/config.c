@@ -129,9 +129,20 @@ int config_aspect_request_width(double aspect) {
 
 int config_takes_value(const char *arg) {
   static const char *const flags[] = {
-      "--frames",    "--set",     "--disc",         "--screenshot", "--shot",
-      "--press",     "--warp",    "--memcard",      "--memcard2",   "--wav",
-      "--log-level", "--capture", "--internal-res", "--aspect",
+      "--frames",
+      "--set",
+      "--disc",
+      "--screenshot",
+      "--shot",
+      "--press",
+      "--warp",
+      "--memcard",
+      "--memcard2",
+      "--wav",
+      "--log-level",
+      "--capture",
+      "--resolution-scale",
+      "--aspect",
   };
 
   for (size_t i = 0; i < sizeof(flags) / sizeof(flags[0]); i++) {
@@ -178,13 +189,15 @@ enum setting_kind {
   SET_CHOICE,
   SET_LEVEL,
   SET_RANGE,
-  SET_ASPECT
+  SET_ASPECT,
+  SET_RESOLUTION_SCALE
 };
 static const struct setting {
   const char *key;
   enum setting_kind kind;
-  size_t offset;   /* into NativeSettings */
-  double min, max; /* SET_NUMBER's and SET_INT's range */
+  size_t offset; /* into NativeSettings */
+  double min,
+      max; /* SET_NUMBER's, SET_INT's and SET_RESOLUTION_SCALE's range */
   /* SET_CHOICE's values, NULL-terminated: the field (an int or enum) holds
      the index of the one chosen. */
   const char *const *choices;
@@ -218,7 +231,8 @@ static const struct setting {
     NUMBER("input.camera.speed", camera_speed, 0.1, 8),
     NUMBER("input.camera.boost", camera_boost, 1, 8),
     NUMBER("input.camera.boost_time", camera_boost_time, 0, 10),
-    INTEGER("video.internal_resolution", internal_res, 0, 8),
+    {"video.resolution_scale", SET_RESOLUTION_SCALE,
+     offsetof(NativeSettings, resolution_scale), 1, 8, NULL},
     SETTING("video.aspect", SET_ASPECT, aspect),
     CHOICE("video.hud", hud_edges, hud_modes),
 #undef STICK
@@ -264,6 +278,8 @@ static const char *setting_want(const struct setting *t) {
     return "[inner, outer] with 0 <= inner < outer <= 1";
   case SET_ASPECT:
     return "\"auto\" or a width:height from 4:3 to 8:3 (\"16:9\")";
+  case SET_RESOLUTION_SCALE:
+    return "\"auto\" or a whole number from 1 to 8";
   case SET_NUMBER:
   case SET_INT: {
     static char want[64];
@@ -323,6 +339,12 @@ static int store_setting(NativeSettings *s, const struct setting *t,
     *(int *)field = (int)v;
     return 1;
   }
+  case SET_RESOLUTION_SCALE:
+    if (strcmp(value, "auto") == 0) {
+      *(int *)field = 0;
+      return 1;
+    }
+    /* fall through: a whole number, 1..8 */
   case SET_INT: {
     char *end;
     long v = strtol(value, &end, 10);
@@ -456,7 +478,8 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
     snprintf(buf, sizeof(buf), "%.17g",
              v.type == TOML_FP64 ? v.u.fp64 : (double)v.u.int64);
     value = buf;
-  } else if ((t->kind == SET_LEVEL || t->kind == SET_INT) &&
+  } else if ((t->kind == SET_LEVEL || t->kind == SET_INT ||
+              t->kind == SET_RESOLUTION_SCALE) &&
              v.type == TOML_INT64) {
     snprintf(buf, sizeof(buf), "%lld", (long long)v.u.int64);
     value = buf;
@@ -474,7 +497,9 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
     snprintf(buf, sizeof(buf), "%.17g,%.17g", e[0], e[1]);
     value = buf;
   } else if (t->kind == SET_NUMBER || t->kind == SET_LEVEL ||
-             t->kind == SET_INT || t->kind == SET_RANGE) {
+             t->kind == SET_INT || t->kind == SET_RANGE ||
+             (t->kind == SET_RESOLUTION_SCALE &&
+              !(v.type == TOML_STRING && strcmp(v.u.s, "auto") == 0))) {
     value = NULL;
   } else if (t->kind == SET_PATH && v.type == TOML_STRING) {
     /* The settings point at a path, so it outlives the parse result. */

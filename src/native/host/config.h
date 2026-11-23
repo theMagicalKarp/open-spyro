@@ -32,9 +32,9 @@ typedef struct NativeSettings {
   int camera_analog;
   int camera_invert; /* input.camera.invert: stick right turns like L2 */
   double camera_speed, camera_boost, camera_boost_time;
-  /* video.internal_resolution: the render scale, 1..8, or 0 for the window
-     size over the canvas; 1 keeps PsyZ's PS1 display mode. */
-  int internal_res;
+  /* video.resolution_scale: the render scale, 1..8, or 0 ("auto") for the
+     window size over the canvas; 1 keeps PsyZ's PS1 display mode. */
+  int resolution_scale;
   /* video.aspect: the view's width over its height, 4:3 (the original) to
      8:3 (PsyZ's widest canvas), wider showing more of the world at the
      sides; 0 for the window's. */
@@ -57,7 +57,7 @@ enum { CONFIG_MAX_FILES = 8 };
       .camera_speed = 1.0,                                                     \
       .camera_boost = 1.0,                                                     \
       .camera_boost_time = 0.5,                                                \
-      .internal_res = 1,                                                       \
+      .resolution_scale = 1,                                                   \
       .aspect = 4.0 / 3.0,                                                     \
   }
 

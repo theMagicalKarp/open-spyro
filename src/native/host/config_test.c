@@ -126,7 +126,7 @@ TEST(takes_value) {
   CHECK(config_takes_value("--set"));
   CHECK(config_takes_value("--log-level"));
   CHECK(config_takes_value("--capture"));
-  CHECK(config_takes_value("--internal-res"));
+  CHECK(config_takes_value("--resolution-scale"));
   CHECK(config_takes_value("--aspect"));
   CHECK(!config_takes_value("--fast"));
   CHECK(!config_takes_value("--stub"));
@@ -324,33 +324,40 @@ TEST(set_number_range) {
   CHECK(s.camera_boost == 1.0);
 }
 
-TEST(internal_resolution) {
+TEST(resolution_scale) {
   NativeSettings s = fresh();
 
-  CHECK_INT(s.internal_res, 1);
-  CHECK_INT(config_set(&s, "--set", "video.internal_resolution", "4"), 0);
-  CHECK_INT(s.internal_res, 4);
-  CHECK_INT(config_set(&s, "--set", "video.internal_resolution", "0"), 0);
-  CHECK_INT(s.internal_res, 0);
-  CHECK_INT(config_set(&s, "--set", "video.internal_resolution", "8"), 0);
-  CHECK_INT(s.internal_res, 8);
+  CHECK_INT(s.resolution_scale, 1);
+  CHECK_INT(config_set(&s, "--set", "video.resolution_scale", "4"), 0);
+  CHECK_INT(s.resolution_scale, 4);
+  CHECK_INT(config_set(&s, "--set", "video.resolution_scale", "auto"), 0);
+  CHECK_INT(s.resolution_scale, 0);
+  CHECK_INT(config_set(&s, "--set", "video.resolution_scale", "8"), 0);
+  CHECK_INT(s.resolution_scale, 8);
   log_capture();
-  CHECK(config_set(&s, "--set", "video.internal_resolution", "9") != 0);
-  CHECK(strstr(log_text(), "video.internal_resolution must be a whole number "
-                           "from 0 to 8") != NULL);
-  CHECK(config_set(&s, "--set", "video.internal_resolution", "2.5") != 0);
-  CHECK(config_set(&s, "--set", "video.internal_resolution", "-1") != 0);
-  CHECK(config_set(&s, "--set", "video.internal_resolution", "") != 0);
-  CHECK_INT(s.internal_res, 8);
-  CHECK_INT(
-      config_load_string(&s, "x.toml", "[video]\ninternal_resolution = 2\n"),
-      0);
-  CHECK_INT(s.internal_res, 2);
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "9") != 0);
+  CHECK(strstr(log_text(),
+               "video.resolution_scale must be \"auto\" or a whole number "
+               "from 1 to 8") != NULL);
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "0") != 0);
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "2.5") != 0);
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "-1") != 0);
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "") != 0);
+  CHECK_INT(s.resolution_scale, 8);
+  CHECK_INT(config_load_string(&s, "x.toml", "[video]\nresolution_scale = 2\n"),
+            0);
+  CHECK_INT(s.resolution_scale, 2);
+  CHECK(config_load_string(&s, "x.toml", "[video]\nresolution_scale = 2.0\n") !=
+        0);
   CHECK(config_load_string(&s, "x.toml",
-                           "[video]\ninternal_resolution = 2.0\n") != 0);
-  CHECK(config_load_string(&s, "x.toml",
-                           "[video]\ninternal_resolution = \"2\"\n") != 0);
-  CHECK_INT(s.internal_res, 2);
+                           "[video]\nresolution_scale = \"2\"\n") != 0);
+  CHECK(config_load_string(&s, "x.toml", "[video]\nresolution_scale = 0\n") !=
+        0);
+  CHECK_INT(s.resolution_scale, 2);
+  CHECK_INT(config_load_string(&s, "x.toml",
+                               "[video]\nresolution_scale = \"auto\"\n"),
+            0);
+  CHECK_INT(s.resolution_scale, 0);
 }
 
 TEST(parse_aspect) {
