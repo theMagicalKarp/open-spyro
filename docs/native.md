@@ -99,14 +99,12 @@ relative to the working directory). The older flags are short forms of
 `--set`: `--disc`, `--memcard`, `--memcard2`, `--fast` and `--log-level`.
 The per-run flags (`--frames`, `--press`, `--shot`, `--warp`,
 `--screenshot`, `--wav`) have no config key. The settings are one table in
-`src/native/host/main.c` (`settings[]`), which the config files, `--set` and
+`src/native/host/config.c` (`settings[]`), which the config files, `--set` and
 the short flags all go through; a new setting is one row there. A malformed
-file, or a key with the wrong type, stops the run with the file and line; an
-unknown key is reported and ignored. The first format's top-level keys
-(`fast`, `log_level`, `memcard`, `memcard2`) are reported with their new
-names and ignored. The parser is [tomlc17](https://github.com/cktan/tomlc17)
-(MIT), the `external/tomlc17` submodule, compiled into the host executable
-only (`native/CMakeLists.txt`).
+file, an unknown key or table, or a value of the wrong type or out of range
+stops the run, with every bad key reported by file and line. The parser is
+[tomlc17](https://github.com/cktan/tomlc17) (MIT), the `external/tomlc17`
+submodule, compiled into the host executable only (`native/CMakeLists.txt`).
 
 ### Unit tests
 

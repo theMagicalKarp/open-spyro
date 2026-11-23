@@ -356,6 +356,18 @@ static const char *keep(const char *s) {
   return p ? strcpy(p, s) : s;
 }
 
+/* Whether some setting's key is under the table KEY ("input.analog"). */
+static int is_table(const char *key) {
+  size_t n = strlen(key);
+
+  for (size_t i = 0; i < sizeof(settings) / sizeof(settings[0]); i++) {
+    if (strncmp(settings[i].key, key, n) == 0 && settings[i].key[n] == '.') {
+      return 1;
+    }
+  }
+  return 0;
+}
+
 static int config_value(NativeSettings *s, const char *file, const char *key,
                         toml_datum_t v) {
   const struct setting *t = find_setting(key);
@@ -363,9 +375,14 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
   char buf[64]; /* a number or range, formatted for store_setting */
 
   if (t == NULL) {
-    fprintf(LOG, "native: %s:%d: unknown key %s (ignored)\n", file, v.lineno,
-            key);
-    return 0;
+    if (is_table(key)) {
+      /* [[key]] parses as an array of tables. */
+      fprintf(LOG, "native: %s:%d: %s must be a table%s\n", file, v.lineno, key,
+              v.type == TOML_ARRAY ? ", not an array of tables" : "");
+    } else {
+      fprintf(LOG, "native: %s:%d: unknown key %s\n", file, v.lineno, key);
+    }
+    return 1;
   }
   if (t->kind == SET_BOOL && v.type == TOML_BOOLEAN) {
     value = v.u.boolean ? "true" : "false";
@@ -413,23 +430,33 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
   return 0;
 }
 
-/* Applies every value in TABLE, PREFIX naming the table ("" at the top). */
+/* Applies every value in TABLE, PREFIX naming the table ("" at the top).
+   Goes on past a bad key, so a file's problems are all reported at once. */
 static int config_table(NativeSettings *s, const char *file, const char *prefix,
                         toml_datum_t table) {
+  int err = 0;
+
   for (int i = 0; i < table.u.tab.size; i++) {
     char key[256];
     toml_datum_t v = table.u.tab.value[i];
-    int err;
+    const struct setting *t;
 
     snprintf(key, sizeof(key), "%s%s%s", prefix, prefix[0] ? "." : "",
              table.u.tab.key[i]);
-    err = v.type == TOML_TABLE ? config_table(s, file, key, v)
-                               : config_value(s, file, key, v);
-    if (err) {
-      return err;
+    if (v.type != TOML_TABLE) {
+      err |= config_value(s, file, key, v);
+    } else if (is_table(key)) {
+      err |= config_table(s, file, key, v);
+    } else if ((t = find_setting(key)) != NULL) {
+      fprintf(LOG, "native: %s:%d: %s must be %s\n", file, v.lineno, key,
+              setting_want(t));
+      err = 1;
+    } else {
+      fprintf(LOG, "native: %s:%d: unknown table %s\n", file, v.lineno, key);
+      err = 1;
     }
   }
-  return 0;
+  return err;
 }
 
 static int apply(NativeSettings *s, const char *name, toml_result_t r) {
