@@ -379,8 +379,8 @@ TEST(parse_aspect) {
   CHECK(a == 2.35);
 }
 
-/* PLAN.md's table: 4:3 -> 320 (a 512 canvas), 16:9 -> 427 (688), 21:9 ->
-   560 (896), 64:27 -> 569 (912); clamped to 4:3..8:3. */
+/* The width asked of PsyZ at height 240: 4:3 -> 320 (a 512 canvas), 16:9 ->
+   427 (688), 21:9 -> 560 (896), 64:27 -> 569 (912); clamped to 4:3..8:3. */
 TEST(aspect_request_width) {
   CHECK_INT(config_aspect_request_width(4.0 / 3.0), 320);
   CHECK_INT(config_aspect_request_width(16.0 / 9.0), 427);

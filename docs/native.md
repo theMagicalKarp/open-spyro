@@ -437,7 +437,11 @@ a cull still drops at the edges. PsyZ draws primitives of any width, so
 polygons spanning the whole canvas are not dropped.
 Known issue: the flight levels' sky domes don't cover the top corners the
 4:3 view never shows, so at 21:9 the clear colour shows there while Spyro
-banks.
+banks. Wider views also emit more primitives than the original 4:3 ones,
+into the same per-frame primitive buffer (0x1C000 bytes, carved from the top
+of the PS1's RAM): when it fills, the rest of that frame's polygons are
+dropped. A sweep of every level, spinning the camera, found this at 21:9 in
+level 53 and at 8:3 in levels 50 and 53, and nowhere at 4:3.
 Geometry still snaps to the 512x240 grid at any scale: the GTE returns
 whole-pixel screen coordinates, and removing the jitter needs subpixel
 vertices through PsyZ's GTE and packet path (a PGXP-style change in the
