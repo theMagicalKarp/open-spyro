@@ -208,6 +208,7 @@ static const struct setting {
     SETTING("debug.log_level", SET_LOG_LEVEL, log_level),
     SETTING("debug.overlay", SET_BOOL, overlay),
     SETTING("debug.start.level", SET_LEVEL, start_level),
+    INTEGER("debug.cull_margin", cull_margin, 0, 256),
     CHOICE("input.pad", analog, pad_modes),
     STICK("analog.left", 0),
     STICK("analog.right", 1),

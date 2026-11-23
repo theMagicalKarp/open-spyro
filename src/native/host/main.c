@@ -266,7 +266,8 @@ int native_frame_hook(void) {
          from the next frame on. Only its 512-wide framebuffer is wider than
          4:3 (the boot screens' are narrower, and draw nothing to widen). */
       if (a.sx <= 0 && a.ex >= 512) {
-        w2c_spyro_native_set_view(&instance, (u32)a.sx, (u32)a.ex);
+        w2c_spyro_native_set_view(&instance, (u32)(a.sx - cfg.cull_margin),
+                                  (u32)(a.ex + cfg.cull_margin));
       }
     }
   }

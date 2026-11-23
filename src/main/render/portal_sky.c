@@ -2,6 +2,7 @@
 #include "globals.h"
 #include "gpu_prim.h"
 #include "match_asm.h"
+#include "native_view.h"
 #include "portal.h"
 #include "types.h"
 #include "vecmath.h"
@@ -224,7 +225,8 @@ void DrawPortalsAndSky(void) {
         sumX += g_aPortalRingScreenPts[k].x;
         sumY += g_aPortalRingScreenPts[k].y;
         g_nPortalOtDepthBin += g_aPortalRingScreenPts[k].z;
-        if ((unsigned int)(g_aPortalRingScreenPts[k].x - 1) < SCREEN_W - 1 &&
+        if ((unsigned int)(g_aPortalRingScreenPts[k].x - VIEW_X0 - 1) <
+                VIEW_W - 1 &&
             (unsigned int)(g_aPortalRingScreenPts[k].y - 1) < SCREEN_H - 1 &&
             g_aPortalRingScreenPts[k].z > 0) {
           flags = 1;
@@ -246,8 +248,8 @@ void DrawPortalsAndSky(void) {
         if (yk < minY) {
           minY = yk;
         }
-        if ((g_aPortalRingScreenPts[j].x < SCREEN_W || xk < SCREEN_W) &&
-            (g_aPortalRingScreenPts[j].x > 0 || xk > 0) &&
+        if ((g_aPortalRingScreenPts[j].x < VIEW_X1 || xk < VIEW_X1) &&
+            (g_aPortalRingScreenPts[j].x > VIEW_X0 || xk > VIEW_X0) &&
             (g_aPortalRingScreenPts[j].y < SCREEN_H || yk < SCREEN_H) &&
             (g_aPortalRingScreenPts[j].y > 0 || yk > 0)) {
           dx = g_aPortalRingScreenPts[j].x - xk;
@@ -297,10 +299,10 @@ void DrawPortalsAndSky(void) {
         if (g_nPortalOtDepthBin >= 0x800) {
           g_nPortalOtDepthBin = 0x7ff;
         }
-        if ((minX < SCREEN_W && minY < SCREEN_H && maxX > 0 && maxY > 0 &&
+        if ((minX < VIEW_X1 && minY < SCREEN_H && maxX > VIEW_X0 && maxY > 0 &&
              g_nPortalOtDepthBin > 0 && nEdges != 0) ||
-            (minX <= 0 && minY <= 0 && maxX >= SCREEN_W && maxY >= SCREEN_H &&
-             g_nPortalOtDepthBin > 0)) {
+            (minX <= VIEW_X0 && minY <= 0 && maxX >= VIEW_X1 &&
+             maxY >= SCREEN_H && g_nPortalOtDepthBin > 0)) {
           flags |= 2;
         } else {
           flags = 0;
@@ -325,14 +327,14 @@ void DrawPortalsAndSky(void) {
           } while (0);
         } while (0);
         if (flags != 0) {
-          if (minX < 0) {
-            minX = 0;
+          if (minX < VIEW_X0) {
+            minX = VIEW_X0;
           }
           if (minY < 0) {
             minY = 0;
           }
-          if (maxX > SCREEN_W) {
-            maxX = SCREEN_W;
+          if (maxX > VIEW_X1) {
+            maxX = VIEW_X1;
           }
           if (maxY > SCREEN_H) {
             maxY = SCREEN_H;
@@ -358,8 +360,8 @@ void DrawPortalsAndSky(void) {
         }
 
         if (dist < PORTAL_NEAR_RANGE) {
-          minX = SCREEN_W;
-          maxX = 0;
+          minX = VIEW_X1;
+          maxX = VIEW_X0;
           minY = SCREEN_H;
           maxY = 0;
           flags = 0;
@@ -414,17 +416,17 @@ void DrawPortalsAndSky(void) {
                 }
               }
             }
-            if ((unsigned int)(g_aPortalRingScreenPts[k].x - 1) <
-                    SCREEN_W - 1 &&
+            if ((unsigned int)(g_aPortalRingScreenPts[k].x - VIEW_X0 - 1) <
+                    VIEW_W - 1 &&
                 (unsigned int)(g_aPortalRingScreenPts[k].y - 1) <
                     SCREEN_H - 1 &&
                 g_aPortalRingScreenPts[k].z > 0) {
               flags = 1;
             }
-            if ((g_aPortalRingScreenPts[j].x < SCREEN_W ||
-                 g_aPortalRingScreenPts[k].x < SCREEN_W) &&
-                (g_aPortalRingScreenPts[j].x > 0 ||
-                 g_aPortalRingScreenPts[k].x > 0) &&
+            if ((g_aPortalRingScreenPts[j].x < VIEW_X1 ||
+                 g_aPortalRingScreenPts[k].x < VIEW_X1) &&
+                (g_aPortalRingScreenPts[j].x > VIEW_X0 ||
+                 g_aPortalRingScreenPts[k].x > VIEW_X0) &&
                 (g_aPortalRingScreenPts[j].y < SCREEN_H ||
                  g_aPortalRingScreenPts[k].y < SCREEN_H) &&
                 (g_aPortalRingScreenPts[j].y > 0 ||
@@ -449,10 +451,10 @@ void DrawPortalsAndSky(void) {
             }
           }
 
-          if ((minX < SCREEN_W && minY < SCREEN_H && maxX > 0 && maxY > 0 &&
-               g_nPortalOtDepthBin > 0 && nEdges != 0) ||
-              (minX <= 0 && minY <= 0 && maxX >= SCREEN_W && maxY >= SCREEN_H &&
-               g_nPortalOtDepthBin > 0)) {
+          if ((minX < VIEW_X1 && minY < SCREEN_H && maxX > VIEW_X0 &&
+               maxY > 0 && g_nPortalOtDepthBin > 0 && nEdges != 0) ||
+              (minX <= VIEW_X0 && minY <= 0 && maxX >= VIEW_X1 &&
+               maxY >= SCREEN_H && g_nPortalOtDepthBin > 0)) {
             flags |= 2;
           } else {
             flags = 0;
@@ -479,14 +481,14 @@ void DrawPortalsAndSky(void) {
             }
           }
           if (flags != 0) {
-            if (minX < 0) {
-              minX = 0;
+            if (minX < VIEW_X0) {
+              minX = VIEW_X0;
             }
             if (minY < 0) {
               minY = 0;
             }
-            if (maxX > SCREEN_W) {
-              maxX = SCREEN_W;
+            if (maxX > VIEW_X1) {
+              maxX = VIEW_X1;
             }
             if (maxY > SCREEN_H) {
               maxY = SCREEN_H;

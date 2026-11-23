@@ -46,7 +46,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from open_spyro.handasm_patches import PATCHES, Patch
+from open_spyro.handasm_patches import PATCHES, BranchPatch, Patch
 from open_spyro.paths import repo_root
 
 OUT_DIR = "src/native/handasm"
@@ -439,7 +439,7 @@ class Cluster:
     insns: dict[int, Insn] = field(default_factory=dict)
     labels: set[int] = field(default_factory=set)
     dispatch: set[int] = field(default_factory=set)
-    patches: list[Patch] = field(default_factory=list)
+    patches: list[Patch | BranchPatch] = field(default_factory=list)
 
     def owns(self, a: int) -> bool:
         return a in self.insns
@@ -565,16 +565,34 @@ def find_labels(cl: Cluster) -> None:
 _GOTO = re.compile(r"\bL_([0-9A-F]{8})\b")
 
 
-def check_patches(cl: Cluster) -> dict[int, Patch]:
-    """CL's patches by start address, after the rules in handasm_patches.py
-    (labels must be known: run after find_labels)."""
+def check_patches(cl: Cluster) -> tuple[dict[int, Patch], dict[int, BranchPatch]]:
+    """CL's range patches by start address and branch patches by address,
+    after the rules in handasm_patches.py (labels must be known: run after
+    find_labels)."""
 
     def fail(p: Patch, msg: str) -> SystemExit:
         return SystemExit(f"handasm: patch {p.func} {p.start:08X}..{p.end:08X}: {msg}")
 
     by_start: dict[int, Patch] = {}
+    branches: dict[int, BranchPatch] = {}
     covered: set[int] = set()
+    for b in cl.patches:
+        if not isinstance(b, BranchPatch):
+            continue
+        ins = cl.insns.get(b.addr)
+        where = f"handasm: branch patch {b.func} {b.addr:08X}"
+        if ins is None:
+            raise SystemExit(f"{where}: not in cluster {cl.name}")
+        if ins.word != b.expect:
+            raise SystemExit(f"{where}: stale: the asm there is now {ins.word:08X}")
+        if ins.kind not in ("branch", "branch_link"):
+            raise SystemExit(f"{where}: not a conditional branch")
+        if b.addr in branches:
+            raise SystemExit(f"{where}: patched twice")
+        branches[b.addr] = b
     for p in cl.patches:
+        if isinstance(p, BranchPatch):
+            continue
         if p.start % 4 or p.end % 4 or p.end <= p.start:
             raise fail(p, "not a range of whole instructions")
         span = range(p.start, p.end, 4)
@@ -608,8 +626,11 @@ def check_patches(cl: Cluster) -> dict[int, Patch]:
             prev = cl.insns.get(t - 4)
             if prev is not None and prev.kind:
                 raise fail(p, f"goto {m.group(0)}: a delay slot")
+        hit = [a for a in branches if a in span]
+        if hit:
+            raise fail(p, f"overlaps the branch patch at {hit[0]:08X}")
         by_start[p.start] = p
-    return by_start
+    return by_start, branches
 
 
 def emit_patch(p: Patch, cl: Cluster) -> list[str]:
@@ -690,7 +711,7 @@ def emit_transfer(ctx: Ctx, cl: Cluster, ins: Insn) -> list[str]:
 
 def emit_cluster(ctx: Ctx, cl: Cluster) -> str:  # noqa: C901
     find_labels(cl)
-    patches = check_patches(cl)
+    patches, branches = check_patches(cl)
     addrs = sorted(cl.insns)
     body: list[str] = []
     k = 0
@@ -733,7 +754,11 @@ def emit_cluster(ctx: Ctx, cl: Cluster) -> str:  # noqa: C901
                         f"handasm: {cl.name}: load-delay hazard after delay slot {a + 4:08X}"
                     )
             pre = []
-            if ins.kind == "branch" or ins.kind == "branch_link":
+            if a in branches:
+                bp = branches[a]
+                body.append(f"  /* native patch ({bp.func}): {bp.why} */")
+                pre.append(f"bc = ({bp.cond});")
+            elif ins.kind == "branch" or ins.kind == "branch_link":
                 pre.append(f"bc = ({ins.cond});")
             elif ins.kind == "jr":
                 pre.append(f"tgt = {R(ins.reg)};")
@@ -871,12 +896,13 @@ def clang_format(files: list[Path], style: Path) -> None:
     subprocess.run([tool, f"--style=file:{style}", "-i", *map(str, files)], check=True)
 
 
-def assign_patches(clusters: list[Cluster], patches: list[Patch]) -> None:
+def assign_patches(clusters: list[Cluster], patches: list[Patch | BranchPatch]) -> None:
     """Hands each patch to the cluster holding its start."""
     for p in patches:
-        cl = next((c for c in clusters if c.owns(p.start)), None)
+        at = p.addr if isinstance(p, BranchPatch) else p.start
+        cl = next((c for c in clusters if c.owns(at)), None)
         if cl is None:
-            raise SystemExit(f"handasm: patch {p.func} {p.start:08X}: not in any hand-asm cluster")
+            raise SystemExit(f"handasm: patch {p.func} {at:08X}: not in any hand-asm cluster")
         cl.patches.append(p)
 
 

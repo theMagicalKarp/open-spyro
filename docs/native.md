@@ -93,6 +93,7 @@ aspect = "4:3"                 # --aspect: "16:9", "21:9", "W:H" up to 8:3, "aut
 fast = false                   # --fast
 log_level = "info"             # --log-level: "debug", "info", "warn", "error" (or d/i/w/e)
 overlay = false                # start with the diagnostics overlay shown
+cull_margin = 0                # widened views: cull this many pixels past each side
 
 [debug.start]                  # the state a run starts in
 level = 0                      # a level id: boot straight into it, 0 = title screen
@@ -421,11 +422,22 @@ again as a texture, so it only ever sees the 512x240 copy.
 `"auto"` for the window's, followed as it is resized. It asks PsyZ's native
 mode for a canvas wider than the 512x240 framebuffer, at the same height and
 the same projection, centred on it (688 wide at 16:9, x -88..600; 896 at
-21:9), and the run logs the view's game-coordinate bounds. The game still
-culls to its 4:3 edges, so for now the extra width shows only what crosses
-them (sky, ground, large walls) over the clear colour; widening those culls
-is the work in `PLAN.md`. PsyZ draws primitives of any width, so polygons
-spanning the whole canvas are not dropped.
+21:9), and the run logs the view's game-coordinate bounds. The game's
+side culls, hand-written asm tuned to the 4:3 edges, are widened to the view
+by native patches to the hand-asm translation
+(`tools/open-spyro/src/open_spyro/handasm_patches.py`, `include/native_view.h`):
+the world chunks, actors, sprites, sky, particles, billboards and the portal
+skies' clip rect (`portal_sky.c`). The per-zone visibility lists don't depend
+on the view's width, so nothing is missing at the new edges. Actors in the
+wider strips count as drawn, which the game uses to decide what to animate,
+so a run at 21:9 drifts from the same run at 4:3 after a while.
+`debug.cull_margin = N` makes the culls reach N game pixels past each side
+of a widened view. Comparing a run with it against one without shows what
+a cull still drops at the edges. PsyZ draws primitives of any width, so
+polygons spanning the whole canvas are not dropped.
+Known issue: the flight levels' sky domes don't cover the top corners the
+4:3 view never shows, so at 21:9 the clear colour shows there while Spyro
+banks.
 Geometry still snaps to the 512x240 grid at any scale: the GTE returns
 whole-pixel screen coordinates, and removing the jitter needs subpixel
 vertices through PsyZ's GTE and packet path (a PGXP-style change in the

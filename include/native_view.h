@@ -36,6 +36,13 @@ extern int g_nNativeViewX0, g_nNativeViewX1, g_nNativeViewSphereQ12;
    the GTE's -1024..1023) at 4:3. */
 #define VIEW_X_OUTSIDE(sxy) ((short)(sxy) < VIEW_X0 || (short)(sxy) >= VIEW_X1)
 
+/* The view's x edges for a GTE screen x held in a word's high half (sxy
+   << 16), the outcode tests' form: x > 0 as (x << 16) > VIEW_X0_HI, and x
+   < SCREEN_W as (x << 16) - (SCREEN_W << 16) < VIEW_X1_HI_REL. Both 0 at
+   4:3. */
+#define VIEW_X0_HI (VIEW_X0 * 0x10000)
+#define VIEW_X1_HI_REL ((VIEW_X1 - SCREEN_W) * 0x10000)
+
 /* A sphere cull's radius term against the side planes 4|x| = 3kz (k =
    VIEW_HALF_W / 256), from the 4:3 one: it scales with the plane normal's
    length, sqrt(16 + 9k^2) / 5. Exactly V at 4:3. */

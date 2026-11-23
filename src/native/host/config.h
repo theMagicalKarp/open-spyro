@@ -20,6 +20,9 @@ typedef struct NativeSettings {
   int log_level;       /* debug.log_level: 0 debug .. 3 error */
   int overlay;         /* debug.overlay: start with the diagnostics shown */
   int start_level;     /* debug.start.level: level id to boot into, 0 = off */
+  /* debug.cull_margin: game pixels the side culls reach past each edge of a
+     widened view, to show what they drop (0 = the view itself). */
+  int cull_margin;
   int analog;          /* input.pad: 1 "analog" (a DualShock), 0 "digital" */
   StickShape stick[2]; /* input.analog.left.*, input.analog.right.* */
   /* input.camera.*: mode "analog" (camera_analog = 1) lets the right stick

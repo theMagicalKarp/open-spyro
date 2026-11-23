@@ -5,7 +5,7 @@ from __future__ import annotations
 import pytest
 
 from open_spyro.handasm import Cluster, Ctx, Func, assign_patches, decode, emit_cluster
-from open_spyro.handasm_patches import Patch
+from open_spyro.handasm_patches import BranchPatch, Patch
 
 BASE = 0x80000100
 
@@ -35,7 +35,7 @@ WORDS = [
 ]
 
 
-def cluster(*patches: Patch) -> Cluster:
+def cluster(*patches: Patch | BranchPatch) -> Cluster:
     f = Func("Test", BASE, list(WORDS))
     cl = Cluster("Test", [f])
     for k, w in enumerate(WORDS):
@@ -52,7 +52,7 @@ def patch(
     return Patch("Test", start, end, expect, c, "test")
 
 
-def emit(*patches: Patch) -> str:
+def emit(*patches: Patch | BranchPatch) -> str:
     return emit_cluster(Ctx({}, {}, {}), cluster(*patches))
 
 
@@ -111,3 +111,35 @@ def test_overlapping_patches() -> None:
 def test_patch_outside_every_cluster() -> None:
     with pytest.raises(SystemExit, match="not in any hand-asm cluster"):
         cluster(patch(BASE + 0x100, BASE + 0x104, expect=(0,)))
+
+
+def branch(
+    addr: int = BASE + 8, cond: str = "(int32_t)t1 > 7", expect: int | None = None
+) -> BranchPatch:
+    if expect is None:
+        expect = WORDS[(addr - BASE) // 4]
+    return BranchPatch("Test", addr, expect, cond, "test")
+
+
+def test_branch_condition_replaced() -> None:
+    text = emit(branch())
+    assert "native patch (Test): test" in text
+    assert "bc = ((int32_t)t1 > 7);" in text
+    assert "/* 8000010C 240A0001 (delay) */" in text  # the delay slot stays literal
+    assert "goto L_80000118;" in text
+    assert "(int32_t)t1 >= 0" not in text
+
+
+def test_branch_patch_must_be_a_branch() -> None:
+    with pytest.raises(SystemExit, match="not a conditional branch"):
+        emit(branch(BASE + 4))
+
+
+def test_stale_branch_patch() -> None:
+    with pytest.raises(SystemExit, match="stale: the asm there is now"):
+        emit(branch(expect=0x12345678))
+
+
+def test_branch_patch_inside_a_range() -> None:
+    with pytest.raises(SystemExit, match="overlaps the branch patch at 80000108"):
+        emit(branch(), patch(BASE + 4, BASE + 0x10))

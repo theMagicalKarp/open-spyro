@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster EmitSkyMeshFogged: EmitSkyMeshFogged (8004F000) */
 void ha_EmitSkyMeshFogged(HaRegs *R, uint32_t entry) {
@@ -401,7 +402,8 @@ L_8004F2CC:
   a0 = a0 + 0x2u;
 L_8004F2D8:
   /* 8004F2D8 1CA00002 */
-  bc = ((int32_t)a1 > 0);
+  /* native patch (EmitSkyMeshFogged): screen x against the view's left edge */
+  bc = ((int32_t)a1 > VIEW_X0_HI);
   /* 8004F2DC 00AF2822 (delay) */
   a1 = a1 - t7;
   if (bc) {
@@ -411,7 +413,8 @@ L_8004F2D8:
   a0 = a0 + 0x4u;
 L_8004F2E4:
   /* 8004F2E4 04A00002 */
-  bc = ((int32_t)a1 < 0);
+  /* native patch (EmitSkyMeshFogged): screen x against the view's right edge */
+  bc = ((int32_t)a1 < VIEW_X1_HI_REL);
   /* 8004F2E8 22310004 (delay) */
   s1 = s1 + 0x4u;
   if (bc) {

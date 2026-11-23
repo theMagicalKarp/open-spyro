@@ -2616,7 +2616,8 @@ L_80026AB4:
   v0 = v0 + 0x2u;
 L_80026AC0:
   /* 80026AC0 1C600002 */
-  bc = ((int32_t)v1 > 0);
+  /* native patch (RenderWorldChunks): screen x against the view's left edge */
+  bc = ((int32_t)v1 > VIEW_X0_HI);
   /* 80026AC4 006B1822 (delay) */
   v1 = v1 - t3;
   if (bc) {
@@ -2626,7 +2627,8 @@ L_80026AC0:
   v0 = v0 + 0x4u;
 L_80026ACC:
   /* 80026ACC 04600002 */
-  bc = ((int32_t)v1 < 0);
+  /* native patch (RenderWorldChunks): screen x against the view's right edge */
+  bc = ((int32_t)v1 < VIEW_X1_HI_REL);
   /* 80026AD0 A705FFFE (delay) */
   HA_SH(t8 - 2u, a1);
   if (bc) {
@@ -5038,7 +5040,8 @@ L_80027AF8:
   a0 = a0 | 0x2000u;
 L_80027B04:
   /* 80027B04 1C400002 */
-  bc = ((int32_t)v0 > 0);
+  /* native patch (RenderWorldChunks): screen x against the view's left edge */
+  bc = ((int32_t)v0 > VIEW_X0_HI);
   /* 80027B08 004C1022 (delay) */
   v0 = v0 - t4;
   if (bc) {
@@ -5048,7 +5051,8 @@ L_80027B04:
   a0 = a0 | 0x4000u;
 L_80027B10:
   /* 80027B10 04400002 */
-  bc = ((int32_t)v0 < 0);
+  /* native patch (RenderWorldChunks): screen x against the view's right edge */
+  bc = ((int32_t)v0 < VIEW_X1_HI_REL);
   /* 80027B14 AD03FFE0 (delay) */
   HA_SW(t0 - 32u, v1);
   if (bc) {
@@ -6059,7 +6063,8 @@ L_80028214:
   a0 = a0 | 0x2000u;
 L_80028220:
   /* 80028220 1C400002 */
-  bc = ((int32_t)v0 > 0);
+  /* native patch (RenderWorldChunks): screen x against the view's left edge */
+  bc = ((int32_t)v0 > VIEW_X0_HI);
   /* 80028224 004C1022 (delay) */
   v0 = v0 - t4;
   if (bc) {
@@ -6069,7 +6074,8 @@ L_80028220:
   a0 = a0 | 0x4000u;
 L_8002822C:
   /* 8002822C 04400002 */
-  bc = ((int32_t)v0 < 0);
+  /* native patch (RenderWorldChunks): screen x against the view's right edge */
+  bc = ((int32_t)v0 < VIEW_X1_HI_REL);
   /* 80028230 AD03FFE0 (delay) */
   HA_SW(t0 - 32u, v1);
   if (bc) {
@@ -7558,7 +7564,8 @@ L_80028CF0:
   a0 = a0 | 0x2000u;
 L_80028CFC:
   /* 80028CFC 1C400002 */
-  bc = ((int32_t)v0 > 0);
+  /* native patch (RenderWorldChunks): screen x against the view's left edge */
+  bc = ((int32_t)v0 > VIEW_X0_HI);
   /* 80028D00 004C1022 (delay) */
   v0 = v0 - t4;
   if (bc) {
@@ -7568,7 +7575,8 @@ L_80028CFC:
   a0 = a0 | 0x4000u;
 L_80028D08:
   /* 80028D08 04400002 */
-  bc = ((int32_t)v0 < 0);
+  /* native patch (RenderWorldChunks): screen x against the view's right edge */
+  bc = ((int32_t)v0 < VIEW_X1_HI_REL);
   /* 80028D0C AD03FFE0 (delay) */
   HA_SW(t0 - 32u, v1);
   if (bc) {
@@ -9505,7 +9513,8 @@ L_80029A4C:
   a0 = a0 | 0x2000u;
 L_80029A58:
   /* 80029A58 1C400002 */
-  bc = ((int32_t)v0 > 0);
+  /* native patch (RenderWorldChunks): screen x against the view's left edge */
+  bc = ((int32_t)v0 > VIEW_X0_HI);
   /* 80029A5C 004C1022 (delay) */
   v0 = v0 - t4;
   if (bc) {
@@ -9515,7 +9524,8 @@ L_80029A58:
   a0 = a0 | 0x4000u;
 L_80029A64:
   /* 80029A64 04400002 */
-  bc = ((int32_t)v0 < 0);
+  /* native patch (RenderWorldChunks): screen x against the view's right edge */
+  bc = ((int32_t)v0 < VIEW_X1_HI_REL);
   /* 80029A68 AD03FFE0 (delay) */
   HA_SW(t0 - 32u, v1);
   if (bc) {
@@ -10764,7 +10774,8 @@ L_8002A310:
   t0 = t0 | 0x2u;
 L_8002A31C:
   /* 8002A31C 1CE00002 */
-  bc = ((int32_t)a3 > 0);
+  /* native patch (RenderWorldChunks): screen x against the view's left edge */
+  bc = ((int32_t)a3 > VIEW_X0_HI);
   /* 8002A320 00E53822 (delay) */
   a3 = a3 - a1;
   if (bc) {
@@ -10774,7 +10785,8 @@ L_8002A31C:
   t0 = t0 | 0x4u;
 L_8002A328:
   /* 8002A328 04E00002 */
-  bc = ((int32_t)a3 < 0);
+  /* native patch (RenderWorldChunks): screen x against the view's right edge */
+  bc = ((int32_t)a3 < VIEW_X1_HI_REL);
   /* 8002A32C 20210010 (delay) */
   at = at + 0x10u;
   if (bc) {
@@ -11015,7 +11027,8 @@ L_8002A4DC:
   t0 = t0 | 0x2u;
 L_8002A4E8:
   /* 8002A4E8 1CE00002 */
-  bc = ((int32_t)a3 > 0);
+  /* native patch (RenderWorldChunks): screen x against the view's left edge */
+  bc = ((int32_t)a3 > VIEW_X0_HI);
   /* 8002A4EC 00E53822 (delay) */
   a3 = a3 - a1;
   if (bc) {
@@ -11025,7 +11038,8 @@ L_8002A4E8:
   t0 = t0 | 0x4u;
 L_8002A4F4:
   /* 8002A4F4 04E00002 */
-  bc = ((int32_t)a3 < 0);
+  /* native patch (RenderWorldChunks): screen x against the view's right edge */
+  bc = ((int32_t)a3 < VIEW_X1_HI_REL);
   /* 8002A4F8 20210010 (delay) */
   at = at + 0x10u;
   if (bc) {

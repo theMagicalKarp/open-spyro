@@ -247,6 +247,18 @@ TEST(stick_mode) {
         0);
 }
 
+TEST(cull_margin) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.cull_margin, 0);
+  CHECK_INT(config_set(&s, "--set", "debug.cull_margin", "64"), 0);
+  CHECK_INT(s.cull_margin, 64);
+  log_capture();
+  CHECK(config_set(&s, "--set", "debug.cull_margin", "257") != 0);
+  CHECK(config_set(&s, "--set", "debug.cull_margin", "-1") != 0);
+  CHECK_INT(s.cull_margin, 64);
+}
+
 TEST(start_level) {
   NativeSettings s = fresh();
 

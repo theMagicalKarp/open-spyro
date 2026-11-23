@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster DrawWorldRotatingBillboards: DrawWorldRotatingBillboards (800584C4)
  */
@@ -234,7 +235,9 @@ L_800585A8:
     goto L_80058814;
   }
   /* 8005864C 18A00071 */
-  bc = ((int32_t)a1 <= 0);
+  /* native patch (DrawWorldRotatingBillboards): screen x against the view's
+   * left edge */
+  bc = ((int32_t)a1 <= VIEW_X0_HI);
   /* 80058650 3C080200 (delay) */
   t0 = 0x2000000u;
   if (bc) {
@@ -243,7 +246,9 @@ L_800585A8:
   /* 80058654 00A82822 */
   a1 = a1 - t0;
   /* 80058658 04A1006E */
-  bc = ((int32_t)a1 >= 0);
+  /* native patch (DrawWorldRotatingBillboards): screen x against the view's
+   * right edge */
+  bc = ((int32_t)a1 >= VIEW_X1_HI_REL);
   /* 8005865C 3C054000 (delay) */
   a1 = 0x40000000u;
   if (bc) {
