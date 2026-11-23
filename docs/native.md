@@ -36,6 +36,8 @@ make native-run NATIVE_ARGS="--frames 1900 --screenshot out.bmp --press 1300:sta
 make native-run NATIVE_ARGS="--fast --memcard none --frames 4400 --screenshot out.bmp \
   --press 1300:start --press 1400:start --press 1550:cross --press 1650:cross \
   --press 2300:start --warp 3400:21 --shot 3990"   # Dry Canyon, unthrottled
+make native-run NATIVE_ARGS="--frames 1900 --capture out.bmp --internal-res 4 \
+  --press 1300:start --press 1400:start --shot 1550"   # the displayed frame at 4x (2048x960)
 build/native/spyro --stub --frames 60    # no disc: a spinning-triangle test scene
 make native-gate SAVESTATE=~/Library/Application\ Support/DuckStation/savestates/<state>.sav
 make native-test                 # host unit tests (native/tests): C compiler + cmake only
@@ -83,6 +85,10 @@ speed = 1.0
 boost = 1.0
 boost_time = 0.5
 
+[video]
+internal_resolution = 1        # --internal-res: render scale 1..8, 0 = auto
+aspect = "4:3"                 # --aspect: "16:9", "21:9", "W:H" up to 8:3, "auto"
+
 [debug]
 fast = false                   # --fast
 log_level = "info"             # --log-level: "debug", "info", "warn", "error" (or d/i/w/e)
@@ -96,9 +102,10 @@ Every key is optional. Each setting has a dotted name, its table and key
 (`memcard.port1`, `debug.fast`), and `--set KEY=VALUE` sets any of them from
 the command line (`--set debug.log_level=debug`; a relative path there is
 relative to the working directory). The older flags are short forms of
-`--set`: `--disc`, `--memcard`, `--memcard2`, `--fast` and `--log-level`.
+`--set`: `--disc`, `--memcard`, `--memcard2`, `--fast`, `--log-level`,
+`--internal-res` and `--aspect`.
 The per-run flags (`--frames`, `--press`, `--shot`, `--warp`,
-`--screenshot`, `--wav`) have no config key. The settings are one table in
+`--screenshot`, `--capture`, `--wav`) have no config key. The settings are one table in
 `src/native/host/config.c` (`settings[]`), which the config files, `--set` and
 the short flags all go through; a new setting is one row there. A malformed
 file, an unknown key or table, or a value of the wrong type or out of range
@@ -393,7 +400,36 @@ in and out on its own. It is the native `UpdateCameraManualYawInput`
 For runs without a person at the keyboard, `--press N:BUTTONS[:HOLD]` holds
 buttons (names joined by `+`: `cross+up`) for HOLD VSyncs (default 4) from
 VSync N, and `--shot N` writes a VRAM screenshot at VSync N next to
-`--screenshot` (`out-N.bmp`). A VSync here is a blocking one: the game runs
+`--screenshot` (`out-N.bmp`). `--capture out.bmp` writes the displayed
+frame instead of VRAM, at the internal resolution (and with `--shot`, one
+next to it per shot too); the two can be given together.
+
+`video.internal_resolution` (`--internal-res N`) renders at N times
+512x240, 1 to 8, or 0 for the window size over the game's size. Anything
+but 1 puts PsyZ in its native display mode (a 512x240 canvas of its own,
+centred), which is where it scales; 1, the default, keeps the PS1 display
+path. Either way the frame fills the window at 4:3 (PsyZ's native mode
+alone would only scale by whole multiples; the host reports a display
+larger than any window so it fits it instead), and auto picks the
+smallest scale at least as tall as that fit. At 1x the two modes capture the same frame, up to a few pixels one
+5-bit step apart in 3D scenes (gouraud interpolation rounding).
+The pause and menu backdrops stay at 1x under a scaled HUD and menu: the
+game reads the frame back into RAM (`StoreImage`, `MoveImage`) and draws it
+again as a texture, so it only ever sees the 512x240 copy.
+`video.aspect` (`--aspect`) widens the view: `"16:9"`, `"21:9"`, any
+`"W:H"` from 4:3 to 8:3 (PsyZ's widest canvas, 1024 game pixels), or
+`"auto"` for the window's, followed as it is resized. It asks PsyZ's native
+mode for a canvas wider than the 512x240 framebuffer, at the same height and
+the same projection, centred on it (688 wide at 16:9, x -88..600; 896 at
+21:9), and the run logs the view's game-coordinate bounds. The game still
+culls to its 4:3 edges, so for now the extra width shows only what crosses
+them (sky, ground, large walls) over the clear colour; widening those culls
+is the work in `PLAN.md`. PsyZ draws primitives of any width, so polygons
+spanning the whole canvas are not dropped.
+Geometry still snaps to the 512x240 grid at any scale: the GTE returns
+whole-pixel screen coordinates, and removing the jitter needs subpixel
+vertices through PsyZ's GTE and packet path (a PGXP-style change in the
+`external/psyz` submodule, not done). A VSync here is a blocking one: the game runs
 one frame per two. The title flyby lasts until VSync ~1300 on a cold boot;
 Start skips it, a second Start opens the memory-card check. A card changes
 the menus that follow, so scripted runs pass `--memcard none` (or a scratch

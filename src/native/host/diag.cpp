@@ -42,7 +42,10 @@ void Psyz_SetTitle(const char *str);
 #define GAMESTATE_ADDR 0x800757d8u
 #define ACTIVE_LEVEL_ADDR 0x8007596cu
 
-static const float MARGIN = 8;     /* points from the window's corner */
+static const float MARGIN = 8; /* points from the game image's corner */
+/* The game leaves the top 8 of its 240 lines black (a ~224-line picture),
+   so the panel starts below that band. */
+static const float GAME_TOP_BAND = 8.0f / 240.0f;
 static const float FONT_SIZE = 12; /* the panel's text */
 static const float GRAPH_FPS = 70; /* the graph's height, unless exceeded */
 static const ImVec2 GRAPH_SIZE(170, 40); /* until the rows are measured */
@@ -294,10 +297,30 @@ static void draw_graph(void) {
   ImPlot::EndPlot();
 }
 
+/* The top-left corner of the game's picture inside the window, past PsyZ's
+   bars and the game's own black top band. */
+static ImVec2 game_origin(void) {
+  ImVec2 win = ImGui::GetIO().DisplaySize;
+  /* PsyZ fits the game to the window at the view's aspect, centred, with
+     black bars on the other axis (FitGameToWindow / GetCanvasPresentRect). */
+  float aspect = (float)native_view_aspect();
+  float h;
+
+  if (win.x <= 0 || win.y <= 0) {
+    return ImVec2(0, 0);
+  }
+  if (win.x / win.y > aspect) {
+    return ImVec2((win.x - win.y * aspect) / 2, win.y * GAME_TOP_BAND);
+  }
+  h = win.x / aspect;
+  return ImVec2(0, (win.y - h) / 2 + h * GAME_TOP_BAND);
+}
+
 static void draw_panel(void) {
   int gamestate = read_game_int(GAMESTATE_ADDR);
+  ImVec2 origin = game_origin();
 
-  ImGui::SetNextWindowPos(ImVec2(MARGIN, MARGIN));
+  ImGui::SetNextWindowPos(ImVec2(origin.x + MARGIN, origin.y + MARGIN));
   ImGui::Begin(
       "##diag", NULL,
       ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
@@ -314,10 +337,10 @@ static void draw_panel(void) {
     ImGui::TextDisabled("fps");
     ImGui::TableNextColumn();
     ImGui::TextColored(rate_color(stats.fps), "%.1f", stats.fps);
-    row("frame", "%.2f ms  (max %.2f)", stats.frame_ms, stats.frame_max_ms);
+    row("frame", "%.2f ms (max %.2f)", stats.frame_ms, stats.frame_max_ms);
     row("game", "%.2f ms", stats.game_ms);
     row("vsync", "%d", native_frames_run());
-    row("state", "%d  %s", gamestate, diag_stats_gamestate_name(gamestate));
+    row("state", "%d (%s)", gamestate, diag_stats_gamestate_name(gamestate));
     row("level id", "%d", read_game_int(ACTIVE_LEVEL_ADDR));
     ImGui::EndTable();
     rows_width = ImGui::GetItemRectSize().x;

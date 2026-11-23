@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster RenderWorldChunks: RenderWorldChunks (800258F0) */
 void ha_RenderWorldChunks(HaRegs *R, uint32_t entry) {
@@ -262,21 +263,20 @@ L_80025A30:
   /* 80025AA8 00063022 */
   a2 = 0u - a2;
 L_80025AAC:
-  /* 80025AAC 00CB0822 */
-  at = a2 - t3;
-  /* 80025AB0 00010880 */
-  at = at << 2;
-  /* 80025AB4 00021840 */
+  /* native patch (RenderWorldChunks): chunk wholly past a side edge: skipped */
+  /* 80025AAC 00CB0822 (replaced) */
+  /* 80025AB0 00010880 (replaced) */
+  /* 80025AB4 00021840 (replaced) */
+  /* 80025AB8 00431020 (replaced) */
+  /* 80025ABC 00220822 (replaced) */
+  /* 80025AC0 0421FFCE (replaced) */
+  /* 80025AC4 000A68C2 (replaced) */
   v1 = v0 << 1;
-  /* 80025AB8 00431020 */
   v0 = v0 + v1;
-  /* 80025ABC 00220822 */
-  at = at - v0;
-  /* 80025AC0 0421FFCE */
-  bc = ((int32_t)at >= 0);
-  /* 80025AC4 000A68C2 (delay) */
+  at = (uint32_t)((int32_t)(4 * (int32_t)a2 - VIEW_WIDEN(3 * (int32_t)t0)) -
+                  VIEW_SPHERE(4 * (int32_t)t3 + 3 * (int32_t)t4));
   t5 = t2 >> 3;
-  if (bc) {
+  if ((int32_t)at >= 0) {
     goto L_800259FC;
   }
   /* 80025AC8 014D6822 */
@@ -323,21 +323,22 @@ L_80025AE8:
   if (bc) {
     goto L_80025B4C;
   }
-  /* 80025B0C 00CB0820 */
-  at = a2 + t3;
-  /* 80025B10 010C1022 */
+  /* native patch (RenderWorldChunks): chunk wholly inside both side edges (with
+   * the vertical test after it) */
+  /* 80025B0C 00CB0820 (replaced) */
+  /* 80025B10 010C1022 (replaced) */
+  /* 80025B14 00010880 (replaced) */
+  /* 80025B18 00021840 (replaced) */
+  /* 80025B1C 00431020 (replaced) */
+  /* 80025B20 00220822 (replaced) */
+  /* 80025B24 04210009 (replaced) */
+  /* 80025B28 00ED0820 (replaced) */
   v0 = t0 - t4;
-  /* 80025B14 00010880 */
-  at = at << 2;
-  /* 80025B18 00021840 */
   v1 = v0 << 1;
-  /* 80025B1C 00431020 */
   v0 = v0 + v1;
-  /* 80025B20 00220822 */
-  at = at - v0;
-  /* 80025B24 04210009 */
-  bc = ((int32_t)at >= 0);
-  /* 80025B28 00ED0820 (delay) */
+  bc = (int32_t)(4 * (int32_t)a2 - VIEW_WIDEN(3 * (int32_t)t0)) +
+           VIEW_SPHERE(4 * (int32_t)t3 + 3 * (int32_t)t4) >=
+       0;
   at = a3 + t5;
   if (bc) {
     goto L_80025B4C;
@@ -1469,10 +1470,12 @@ L_8002631C:
   /* 8002632C 20840001 */
   a0 = a0 + 0x1u;
 L_80026330:
-  /* 80026330 04A00002 */
-  bc = ((int32_t)a1 < 0);
-  /* 80026334 3045FE00 (delay) */
-  a1 = v0 & 0xfe00u;
+  /* native patch (RenderWorldChunks): a vertex's x outcode: outside the view,
+   * not 0..511 */
+  /* 80026330 04A00002 (replaced) */
+  /* 80026334 3045FE00 (replaced) */
+  bc = (int32_t)a1 < 0;
+  a1 = VIEW_X_OUTSIDE(v0) ? v0 & 0xFE00u : 0u;
   if (bc) {
     goto L_8002633C;
   }
@@ -2413,10 +2416,12 @@ L_80026930:
   /* 80026988 20420001 */
   v0 = v0 + 0x1u;
 L_8002698C:
-  /* 8002698C 04600002 */
-  bc = ((int32_t)v1 < 0);
-  /* 80026990 3083FE00 (delay) */
-  v1 = a0 & 0xfe00u;
+  /* native patch (RenderWorldChunks): a vertex's x outcode: outside the view,
+   * not 0..511 */
+  /* 8002698C 04600002 (replaced) */
+  /* 80026990 3083FE00 (replaced) */
+  bc = (int32_t)v1 < 0;
+  v1 = VIEW_X_OUTSIDE(a0) ? a0 & 0xFE00u : 0u;
   if (bc) {
     goto L_80026998;
   }
@@ -2671,10 +2676,12 @@ L_80026AF8:
   /* 80026B14 20420001 */
   v0 = v0 + 0x1u;
 L_80026B18:
-  /* 80026B18 04600002 */
-  bc = ((int32_t)v1 < 0);
-  /* 80026B1C 3083FE00 (delay) */
-  v1 = a0 & 0xfe00u;
+  /* native patch (RenderWorldChunks): a vertex's x outcode: outside the view,
+   * not 0..511 */
+  /* 80026B18 04600002 (replaced) */
+  /* 80026B1C 3083FE00 (replaced) */
+  bc = (int32_t)v1 < 0;
+  v1 = VIEW_X_OUTSIDE(a0) ? a0 & 0xFE00u : 0u;
   if (bc) {
     goto L_80026B24;
   }

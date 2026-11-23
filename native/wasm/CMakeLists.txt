@@ -105,7 +105,7 @@ list(FILTER handasm_sources EXCLUDE REGEX "_test\\.c$") # native/tests
 add_library(handasm OBJECT ${handasm_sources})
 target_compile_options(handasm PRIVATE -O2 -fPIC -fwrapv -fno-strict-aliasing -Wno-everything)
 target_compile_definitions(handasm PRIVATE __psyz)
-target_include_directories(handasm PRIVATE ${ROOT}/src/native/handasm)
+target_include_directories(handasm PRIVATE ${ROOT}/src/native/handasm ${ROOT}/include)
 
 add_executable(spyro
     $<TARGET_OBJECTS:psyz_core> $<TARGET_OBJECTS:native_runtime>

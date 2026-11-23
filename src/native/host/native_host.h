@@ -41,6 +41,11 @@ int native_vsync_offset(void);
    play. */
 int native_hiding_frames(void);
 int native_frames_run(void);
+/* Before each display mode change reaches PsyZ: whether the new mode shows a
+   24-bit image. */
+void native_display_mode(int rgb24);
+/* The game view's width over its height (video.aspect, resolved). */
+double native_view_aspect(void);
 
 /* audio.c: runs the SPU and feeds the output device; once per blocking
    VSync. */

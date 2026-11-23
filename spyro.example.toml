@@ -27,6 +27,10 @@ speed = 1.0       # turn rate at full deflection, 1 = the L2/R2 rate
 boost = 1.0       # held at full deflection, speed up to this times speed
 boost_time = 0.5  # ... over this many seconds
 
+[video]
+internal_resolution = 1 # render scale 1..8; 0 = auto (window size); 1 = PS1 display
+aspect = "4:3"          # "16:9", "21:9", any "W:H" up to 8:3, or "auto" (the window's)
+
 [debug]
 fast = false       # true: no 59.94 Hz frame limiter
 log_level = "info" # "debug", "info", "warn" or "error"

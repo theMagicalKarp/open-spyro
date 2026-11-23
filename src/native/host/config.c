@@ -6,6 +6,7 @@
  * --memcard, ...) are aliases for --set. Relative paths in a file are
  * relative to it. */
 
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,11 +90,48 @@ int config_parse_warp(const char *arg, int *frame, int *level) {
   return 0;
 }
 
+int config_parse_aspect(const char *s, double *aspect) {
+  char *end;
+  double w, h = 1;
+
+  if (strcmp(s, "auto") == 0) {
+    *aspect = 0;
+    return 0;
+  }
+  w = strtod(s, &end);
+  if (end == s) {
+    return 1;
+  }
+  if (*end == ':') {
+    const char *hs = end + 1;
+
+    h = strtod(hs, &end);
+    if (end == hs) {
+      return 1;
+    }
+  }
+  if (*end != '\0' || !(w > 0 && h > 0)) {
+    return 1;
+  }
+  w /= h;
+  if (w < CONFIG_ASPECT_MIN - 1e-9 || w > CONFIG_ASPECT_MAX + 1e-9) {
+    return 1;
+  }
+  *aspect = w;
+  return 0;
+}
+
+int config_aspect_request_width(double aspect) {
+  int w = (int)lround(240 * aspect);
+
+  return w < 320 ? 320 : w > 640 ? 640 : w;
+}
+
 int config_takes_value(const char *arg) {
   static const char *const flags[] = {
-      "--frames",   "--set",   "--disc",      "--screenshot",
-      "--shot",     "--press", "--warp",      "--memcard",
-      "--memcard2", "--wav",   "--log-level",
+      "--frames",    "--set",     "--disc",         "--screenshot", "--shot",
+      "--press",     "--warp",    "--memcard",      "--memcard2",   "--wav",
+      "--log-level", "--capture", "--internal-res", "--aspect",
   };
 
   for (size_t i = 0; i < sizeof(flags) / sizeof(flags[0]); i++) {
@@ -135,15 +173,17 @@ enum setting_kind {
   SET_BOOL,
   SET_LOG_LEVEL,
   SET_NUMBER,
+  SET_INT,
   SET_CHOICE,
   SET_LEVEL,
-  SET_RANGE
+  SET_RANGE,
+  SET_ASPECT
 };
 static const struct setting {
   const char *key;
   enum setting_kind kind;
   size_t offset;   /* into NativeSettings */
-  double min, max; /* SET_NUMBER's range */
+  double min, max; /* SET_NUMBER's and SET_INT's range */
   /* SET_CHOICE's values, NULL-terminated: the field (an int or enum) holds
      the index of the one chosen. */
   const char *const *choices;
@@ -153,6 +193,8 @@ static const struct setting {
   {key, kind, offsetof(NativeSettings, member), 0, 0, NULL}
 #define NUMBER(key, member, min, max)                                          \
   {key, SET_NUMBER, offsetof(NativeSettings, member), min, max, NULL}
+#define INTEGER(key, member, min, max)                                         \
+  {key, SET_INT, offsetof(NativeSettings, member), min, max, NULL}
 #define CHOICE(key, member, choices)                                           \
   {key, SET_CHOICE, offsetof(NativeSettings, member), 0, 0, choices}
 #define STICK(name, i)                                                         \
@@ -174,8 +216,11 @@ static const struct setting {
     NUMBER("input.camera.speed", camera_speed, 0.1, 8),
     NUMBER("input.camera.boost", camera_boost, 1, 8),
     NUMBER("input.camera.boost_time", camera_boost_time, 0, 10),
+    INTEGER("video.internal_resolution", internal_res, 0, 8),
+    SETTING("video.aspect", SET_ASPECT, aspect),
 #undef STICK
 #undef CHOICE
+#undef INTEGER
 #undef NUMBER
 #undef SETTING
 };
@@ -214,10 +259,15 @@ static const char *setting_want(const struct setting *t) {
     return "0 or a level id (10 Artisans .. 64 Gnasty's Loot)";
   case SET_RANGE:
     return "[inner, outer] with 0 <= inner < outer <= 1";
-  case SET_NUMBER: {
+  case SET_ASPECT:
+    return "\"auto\" or a width:height from 4:3 to 8:3 (\"16:9\")";
+  case SET_NUMBER:
+  case SET_INT: {
     static char want[64];
 
-    snprintf(want, sizeof(want), "a number from %g to %g", t->min, t->max);
+    snprintf(want, sizeof(want), "%s from %g to %g",
+             t->kind == SET_INT ? "a whole number" : "a number", t->min,
+             t->max);
     return want;
   }
   }
@@ -270,6 +320,18 @@ static int store_setting(NativeSettings *s, const struct setting *t,
     *(int *)field = (int)v;
     return 1;
   }
+  case SET_INT: {
+    char *end;
+    long v = strtol(value, &end, 10);
+
+    if (end == value || *end != '\0' || v < t->min || v > t->max) {
+      return 0;
+    }
+    *(int *)field = (int)v;
+    return 1;
+  }
+  case SET_ASPECT:
+    return config_parse_aspect(value, (double *)field) == 0;
   case SET_RANGE: {
     /* "inner,outer", optionally in brackets and spaced: [0.1, 0.95] */
     static const char blank[] = " \t";
@@ -391,7 +453,8 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
     snprintf(buf, sizeof(buf), "%.17g",
              v.type == TOML_FP64 ? v.u.fp64 : (double)v.u.int64);
     value = buf;
-  } else if (t->kind == SET_LEVEL && v.type == TOML_INT64) {
+  } else if ((t->kind == SET_LEVEL || t->kind == SET_INT) &&
+             v.type == TOML_INT64) {
     snprintf(buf, sizeof(buf), "%lld", (long long)v.u.int64);
     value = buf;
   } else if (t->kind == SET_RANGE && v.type == TOML_ARRAY &&
@@ -408,7 +471,7 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
     snprintf(buf, sizeof(buf), "%.17g,%.17g", e[0], e[1]);
     value = buf;
   } else if (t->kind == SET_NUMBER || t->kind == SET_LEVEL ||
-             t->kind == SET_RANGE) {
+             t->kind == SET_INT || t->kind == SET_RANGE) {
     value = NULL;
   } else if (t->kind == SET_PATH && v.type == TOML_STRING) {
     /* The settings point at a path, so it outlives the parse result. */
