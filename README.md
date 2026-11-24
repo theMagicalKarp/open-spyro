@@ -77,10 +77,9 @@ _(main EXE + 37 overlays)_. Full report in [`PROGRESS.md`](PROGRESS.md).</sup>
 - **[TheMobyCollective/spyro-1](https://github.com/TheMobyCollective/spyro-1)**
   is a matching decompilation of the same executable. It rebuilds the original
   PS1 executable _(`PSX.EXE`, the same file as `SCUS_942.28`)_ and stops there:
-  it does not produce a native port. open-spyro
-  is an independent decompilation that keeps the same byte-matching guarantee,
-  but treats it as the foundation for a source port: the matched C is also the
-  code the native build compiles.
+  it does not produce a native port. open-spyro is an independent decompilation
+  that keeps the same byte-matching guarantee, but treats it as the foundation
+  for a source port: the matched C is also the code the native build compiles.
 - **[tyscorp/openpete](https://github.com/tyscorp/openpete)** is a PC port of
   the Spyro trilogy built by **static recompilation**: it machine-translates the
   original MIPS code to C at build time, with a replacement PSY-Q library and a
@@ -116,8 +115,8 @@ Prerequisites: **[uv](https://docs.astral.sh/uv/)**, plus
 
 - **macOS (Apple Silicon):** [Homebrew](https://brew.sh/) and the Xcode command
   line tools. The setup script installs cmake through Homebrew.
-- **Linux:** a C/C++ compiler, cmake, curl and SDL3's build dependencies, plus
-  a Vulkan driver _(Mesa's `mesa-vulkan-drivers` works)_. On Debian/Ubuntu the
+- **Linux:** a C/C++ compiler, cmake, curl and SDL3's build dependencies, plus a
+  Vulkan driver _(Mesa's `mesa-vulkan-drivers` works)_. On Debian/Ubuntu the
   setup script prints the `apt install` line it needs.
 
 ```sh
@@ -133,12 +132,12 @@ analog-stick tuning, camera and debug options, all documented in
 override it _(`--fast`, `--warp`, scripted `--press` input, `--shot`
 screenshots; see [`docs/native.md`](docs/native.md))_.
 
-| Keyboard           | PS1 pad                            |
-| ------------------ | ---------------------------------- |
-| Arrows             | D-pad                              |
-| X / Z / S / D      | Cross / Square / Triangle / Circle |
-| Q / R / W / E      | L1 / R1 / L2 / R2                  |
-| Return / Backspace | Start / Select                     |
+| Keyboard               | PS1 pad                            |
+| ---------------------- | ---------------------------------- |
+| W A S D, arrows        | D-pad                              |
+| K or Space / J / I / L | Cross / Square / Triangle / Circle |
+| Q / E / U / O          | L1 / R1 / L2 / R2                  |
+| Return / Backspace     | Start / Select                     |
 
 The first SDL gamepad works too, analog sticks included. Saves go to a
 DuckStation-compatible `.mcd` card image: `card1.mcd` in the repo root with the
