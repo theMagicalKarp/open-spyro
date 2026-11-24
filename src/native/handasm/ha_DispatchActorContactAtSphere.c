@@ -1222,8 +1222,8 @@ uint32_t DispatchActorContactAtSphere(uint32_t p0, uint32_t p1, uint32_t p2,
   R.r[5] = p1;
   R.r[6] = p2;
   R.r[7] = p3;
-  HA_SW(R.r[29] + 32u, p4);
-  HA_SW(R.r[29] + 36u, p5);
+  HA_SW(R.r[29] + 16u, p4);
+  HA_SW(R.r[29] + 20u, p5);
   ha_DispatchActorContactAtSphere(&R, 0x8004e3c8u);
   ha_leave(&R);
   return R.r[2];

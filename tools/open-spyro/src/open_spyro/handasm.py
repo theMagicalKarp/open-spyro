@@ -868,7 +868,7 @@ def emit_wrapper(ctx: Ctx, f: Func, cl: Cluster) -> str | None:
         if k < 4:
             lines.append(f"  R.r[{4 + k}] = p{k};")
         else:
-            lines.append(f"  HA_SW(R.r[29] + {16 + 4 * k}u, p{k});")
+            lines.append(f"  HA_SW(R.r[29] + {16 + 4 * (k - 4)}u, p{k});")
     lines.append(f"  ha_{cl.name}(&R, {f.addr:#010x}u);")
     lines.append("  ha_leave(&R);")
     if results:
