@@ -13,10 +13,10 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@v8.1.0
 
       - name: ruff check
         working-directory: tools/open-spyro
@@ -43,13 +43,13 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
+        uses: docker/setup-buildx-action@v4.1.0
 
       - name: Build Matching Image
-        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
+        uses: docker/build-push-action@v7.2.0
         with:
           context: tools
           file: tools/Dockerfile
@@ -67,7 +67,7 @@ jobs:
       # recomp.fyi reads matched-code/data progress from this artifact daily.
       - name: Upload progress report
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: SCUS_942.28_report
           path: build/report.json
@@ -93,15 +93,15 @@ jobs:
       contents: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
         with:
           submodules: true # external/psyz, tomlc17, imgui, implot; PsyZ's own submodules are not needed
 
       - name: Set up uv
-        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        uses: astral-sh/setup-uv@v8.1.0
 
       - name: Cache native toolchain
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        uses: actions/cache@v6.1.0
         with:
           path: build/native-tools
           key: native-tools-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('tools/native_setup.sh') }}
@@ -138,7 +138,7 @@ jobs:
 
       - name: Upload smoke screenshot
         if: always()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: native-smoke-${{ matrix.host }}
           path: |

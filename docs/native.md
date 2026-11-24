@@ -17,16 +17,19 @@ run).
 ## Setup and use
 
 Supported hosts: macOS on Apple Silicon (Homebrew), and Linux on arm64 or
-x86_64. On Linux, `tools/native_setup.sh` uses the system SDL3 when
-`pkg-config` finds one and otherwise builds the pinned SDL3 release into
-`build/native-tools/sdl3`; it names the Debian/Ubuntu packages it needs
-(`LINUX_PACKAGES`) if a tool is missing. Rendering uses SDL_GPU on Vulkan, so
+x86_64. `tools/native_setup.sh` builds the pinned SDL3 release as a static
+library into `build/native-tools/sdl3`, and `build/native/spyro` links it in:
+the executable needs only what the OS ships (libSystem, libc++ and system
+frameworks on macOS; glibc plus the X11/Wayland, Vulkan and audio libraries
+SDL3 loads at runtime on Linux, where libstdc++ is linked statically too). On
+Linux it names the Debian/Ubuntu packages it needs (`LINUX_PACKAGES`) if a
+tool is missing. Rendering uses SDL_GPU on Vulkan, so
 Linux needs a Vulkan driver (Mesa's `mesa-vulkan-drivers` includes the
 `lavapipe` software one). With no display, set `SDL_VIDEODRIVER=offscreen`
 (the CI smoke runs do).
 
 ```sh
-tools/native_setup.sh            # wasi-sdk + wasm2c (pinned, into build/native-tools) + SDL3/cmake (Homebrew on macOS)
+tools/native_setup.sh            # wasi-sdk + wasm2c (pinned, into build/native-tools) + static SDL3 (pinned) + cmake (Homebrew on macOS)
 git submodule update --init external/psyz external/tomlc17 external/imgui external/implot   # `make native` does this too; PsyZ's own submodules are not needed
 make native                      # -> build/native/spyro (+ build/native/gate)
 cp spyro.example.toml spyro.toml # then set its `disc` to your .cue

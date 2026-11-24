@@ -14,9 +14,10 @@
 #              build/native-tools/wabt-<ver>/bin, with its runtime sources
 #              (wasm-rt-impl.c etc.) in build/native-tools/wasm2c-runtime; one
 #              source tarball for both keeps them at the same version
-#   sdl3       host video/audio/input backend for PsyZ: Homebrew on macOS; on
-#              Linux the system's if pkg-config finds one, else built from the
-#              pinned source release into build/native-tools/sdl3
+#   sdl3       host video/audio/input backend for PsyZ, built as a static
+#              library from the pinned source release into
+#              build/native-tools/sdl3 (system packages ship only the shared
+#              library); the native executable links it in
 #   cmake      PsyZ / native build driver: Homebrew on macOS; on Linux the
 #              system's (see LINUX_PACKAGES)
 #
@@ -39,13 +40,13 @@ WABT_SRC_ASSET="wabt-${WABT_VERSION}.tar.xz"
 WABT_SRC_SHA256="a76cda3c174a43097863a07fc0b0c202f770f53e21806ea2636f167d1ffb1e30"
 WABT_SRC_URL="https://github.com/WebAssembly/wabt/releases/download/${WABT_VERSION}/${WABT_SRC_ASSET}"
 
-# Linux only, when no system SDL3 is found (the version Homebrew ships).
+# Built static on every host (the version Homebrew ships).
 SDL3_VERSION="3.4.16"
 SDL3_SRC_ASSET="SDL3-${SDL3_VERSION}.tar.gz"
 SDL3_SRC_SHA256="7322236cd12090c3eb40b9728be4d49c76f66ad17d04369584d4ecad5cf77c68"
 SDL3_SRC_URL="https://github.com/libsdl-org/SDL/releases/download/release-${SDL3_VERSION}/${SDL3_SRC_ASSET}"
 
-BREW_FORMULAE=(sdl3 cmake)
+BREW_FORMULAE=(cmake)
 # Debian/Ubuntu packages the Linux build needs (compiler, cmake, and SDL3's
 # X11/Wayland/audio development headers for the source build).
 LINUX_PACKAGES="build-essential clang cmake curl xz-utils pkg-config \
@@ -114,13 +115,10 @@ install_brew() {
   done
 }
 
-install_sdl3_linux() {
-  if pkg-config --exists sdl3 2>/dev/null; then
-    log "sdl3: system $(pkg-config --modversion sdl3)"
-    return
-  fi
-  if [ "$(cat "$SDL3_DIR/VERSION" 2>/dev/null)" = "$SDL3_VERSION" ]; then
-    log "sdl3 $SDL3_VERSION already at $SDL3_DIR"
+install_sdl3() {
+  # The stamp names the link kind too, so an older shared build is rebuilt.
+  if [ "$(cat "$SDL3_DIR/VERSION" 2>/dev/null)" = "$SDL3_VERSION static" ]; then
+    log "sdl3 $SDL3_VERSION (static) already at $SDL3_DIR"
     return
   fi
   mkdir -p "$TOOLS_DIR"
@@ -133,13 +131,13 @@ install_sdl3_linux() {
   rm -rf "$src" "$SDL3_DIR"
   mkdir -p "$src"
   tar -xzf "$tarball" -C "$src" --strip-components=1
-  log "building SDL3 $SDL3_VERSION (needs: $LINUX_PACKAGES)"
+  log "building SDL3 $SDL3_VERSION (static)"
   cmake -S "$src" -B "$src/build" -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_INSTALL_PREFIX="$SDL3_DIR" -DSDL_SHARED=ON -DSDL_STATIC=OFF \
+    -DCMAKE_INSTALL_PREFIX="$SDL3_DIR" -DSDL_SHARED=OFF -DSDL_STATIC=ON \
     -DSDL_TESTS=OFF -DSDL_EXAMPLES=OFF >/dev/null
   cmake --build "$src/build" -j "$JOBS" >/dev/null
   cmake --install "$src/build" >/dev/null
-  echo "$SDL3_VERSION" > "$SDL3_DIR/VERSION"
+  echo "$SDL3_VERSION static" > "$SDL3_DIR/VERSION"
   rm -rf "$src" "$tarball"
 }
 
@@ -250,7 +248,8 @@ EOF
 preflight
 case "${1:-all}" in
   all)
-    if [ "$OS" = Darwin ]; then install_brew; else install_sdl3_linux; fi
+    [ "$OS" != Darwin ] || install_brew
+    install_sdl3
     install_wasi_sdk; install_wabt; check ;;
   check) check ;;
   *) die "usage: tools/native_setup.sh [all|check]" ;;
