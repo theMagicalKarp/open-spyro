@@ -83,9 +83,9 @@ _(main EXE + 37 overlays)_. Full report in [`PROGRESS.md`](PROGRESS.md).</sup>
 - **[tyscorp/openpete](https://github.com/tyscorp/openpete)** is a PC port of
   the Spyro trilogy built by **static recompilation**: it machine-translates the
   original MIPS code to C at build time, with a replacement PSY-Q library and a
-  Vulkan renderer. open-spyro instead ports human-readable decompiled C (only
-  the small set of hand-written asm routines is translated), focuses on Spyro 1,
-  and aims for a platform layer that reaches beyond PC _(e.g. the browser)_.
+  Vulkan renderer. open-spyro instead ports human-readable decompiled C _(only
+  the small set of hand-written asm routines is translated)_, focuses on Spyro 1,
+  and aims for a platform layer that reaches beyond PC.
 
 ## Getting started
 
