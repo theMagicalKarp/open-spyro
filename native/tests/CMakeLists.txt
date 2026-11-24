@@ -76,6 +76,7 @@ add_executable(native_tests
     ${HOST}/config.c
     ${HOST}/diag_stats.c
     ${HOST}/host_io.c
+    ${HOST}/keymap.c
     ${HOST}/script.c
     ${HOST}/stick.c
     ${HOST}/audio_format.c

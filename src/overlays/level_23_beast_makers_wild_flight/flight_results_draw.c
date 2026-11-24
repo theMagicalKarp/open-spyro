@@ -9,6 +9,7 @@
 #include "level_sfx.h"
 #include "level_spawn_actor.h"
 #include "main_shared.h"
+#include "native_view.h"
 
 /* Level23_DrawFlightRaceTime (0x8007B4B0, level_23_beast_makers_wild_flight
  * overlay, 476 bytes).
@@ -294,6 +295,9 @@ void Level23_FlightResults_Draw(void) {
     LINE->r0 = 0;
     LINE->g0 = 0;
     LINE->b0 = 0;
+#ifdef __psyz
+    NativeStretchBackdrop((PolyFT4 *)p - (MENU_BACKDROP_STRIPS - 1));
+#endif
     AddPrimToOT(next);
     g_pPrimBufferWriteCursor = p + 0x38;
     if (g_nSubMenuCursor < FLIGHT_REVEAL_TIME_BOARD) {

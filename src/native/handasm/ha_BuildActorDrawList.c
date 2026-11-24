@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster BuildActorDrawList: BuildActorDrawList (8001F158) */
 void ha_BuildActorDrawList(HaRegs *R, uint32_t entry) {
@@ -260,21 +261,21 @@ L_8001F1E8:
   /* 8001F304 00015022 */
   t2 = 0u - at;
 L_8001F308:
-  /* 8001F308 00675820 */
+  /* native patch (BuildActorDrawList): sphere wholly past a side edge: skipped
+   */
+  /* 8001F308 00675820 (replaced) */
+  /* 8001F30C 01465022 (replaced) */
+  /* 8001F310 000A5080 (replaced) */
+  /* 8001F314 014B5022 (replaced) */
+  /* 8001F318 000B5840 (replaced) */
+  /* 8001F31C 014B5022 (replaced) */
+  /* 8001F320 0541FFB1 (replaced) */
+  /* 8001F324 8FAB001C (replaced) */
   t3 = v1 + a3;
-  /* 8001F30C 01465022 */
-  t2 = t2 - a2;
-  /* 8001F310 000A5080 */
-  t2 = t2 << 2;
-  /* 8001F314 014B5022 */
-  t2 = t2 - t3;
-  /* 8001F318 000B5840 */
+  t2 = (uint32_t)(4 * (int32_t)t2 - VIEW_WIDEN(3 * (int32_t)v1) -
+                  VIEW_SPHERE(4 * (int32_t)(a2) + 3 * (int32_t)(a3)));
   t3 = t3 << 1;
-  /* 8001F31C 014B5022 */
-  t2 = t2 - t3;
-  /* 8001F320 0541FFB1 */
-  bc = ((int32_t)t2 >= 0);
-  /* 8001F324 8FAB001C (delay) */
+  bc = (int32_t)t2 >= 0;
   t3 = HA_LW(sp + 28u);
   if (bc) {
     goto L_8001F1E8;
@@ -364,21 +365,22 @@ L_8001F388:
   /* 8001F3AC 00015022 */
   t2 = 0u - at;
 L_8001F3B0:
-  /* 8001F3B0 00675822 */
+  /* native patch (BuildActorDrawList): sphere reaches past a side edge: clipped
+   * path */
+  /* 8001F3B0 00675822 (replaced) */
+  /* 8001F3B4 01465020 (replaced) */
+  /* 8001F3B8 000A5080 (replaced) */
+  /* 8001F3BC 014B5022 (replaced) */
+  /* 8001F3C0 000B5840 (replaced) */
+  /* 8001F3C4 014B5022 (replaced) */
+  /* 8001F3C8 0541000D (replaced) */
+  /* 8001F3CC 00000000 (replaced) */
   t3 = v1 - a3;
-  /* 8001F3B4 01465020 */
-  t2 = t2 + a2;
-  /* 8001F3B8 000A5080 */
-  t2 = t2 << 2;
-  /* 8001F3BC 014B5022 */
-  t2 = t2 - t3;
-  /* 8001F3C0 000B5840 */
+  t2 = (uint32_t)(4 * (int32_t)t2 - VIEW_WIDEN(3 * (int32_t)v1) +
+                  VIEW_SPHERE(4 * (int32_t)(a2) + 3 * (int32_t)(a3)));
   t3 = t3 << 1;
-  /* 8001F3C4 014B5022 */
-  t2 = t2 - t3;
-  /* 8001F3C8 0541000D */
-  bc = ((int32_t)t2 >= 0);
-  /* 8001F3CC 00000000 (delay) */
+  bc = (int32_t)t2 >= 0;
+
   if (bc) {
     goto L_8001F400;
   }

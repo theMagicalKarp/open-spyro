@@ -36,13 +36,14 @@ Psyz_OverlayInit_SDL3GPU(PsyzOverlayInitCB_SDL3GPU cb);
 PsyzOverlayRenderCB_SDL3GPU
 Psyz_OverlayRender_SDL3GPU(PsyzOverlayRenderCB_SDL3GPU cb);
 void Psyz_SetTitle(const char *str);
+unsigned Psyz_VideoGetInternalResolution(void);
 }
 
 /* The game's g_nGamestate and g_nActiveLevelId (include/globals.h). */
 #define GAMESTATE_ADDR 0x800757d8u
 #define ACTIVE_LEVEL_ADDR 0x8007596cu
 
-static const float MARGIN = 8;     /* points from the window's corner */
+static const float MARGIN = 8;     /* points from the game image's corner */
 static const float FONT_SIZE = 12; /* the panel's text */
 static const float GRAPH_FPS = 70; /* the graph's height, unless exceeded */
 static const ImVec2 GRAPH_SIZE(170, 40); /* until the rows are measured */
@@ -199,9 +200,15 @@ static void on_event(const SDL_Event *e) {
     ImGui::GetIO().SetAppAcceptingEvents(shown != 0);
     ImGui_ImplSDL3_ProcessEvent(e);
   }
+  if (e->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+    native_window_resized(e->window.data1, e->window.data2);
+  }
   if (e->type == SDL_EVENT_KEY_DOWN && e->key.scancode == SDL_SCANCODE_GRAVE &&
       !e->key.repeat) {
     toggle();
+  } else if (e->type == SDL_EVENT_KEY_DOWN &&
+             e->key.scancode == SDL_SCANCODE_EQUALS && !e->key.repeat) {
+    native_cycle_resolution_scale();
   } else if (e->type == SDL_EVENT_GAMEPAD_BUTTON_DOWN &&
              stick_bit(e->gbutton.button) != 0) {
     if (e->gbutton.which != sticks_pad) {
@@ -294,10 +301,33 @@ static void draw_graph(void) {
   ImPlot::EndPlot();
 }
 
+/* The top-left corner of the game's picture inside the window, past PsyZ's
+   bars and the game's own black top band. */
+static ImVec2 game_origin(void) {
+  ImVec2 win = ImGui::GetIO().DisplaySize;
+  /* PsyZ fits the game to the window at the view's aspect, centred, with
+     black bars on the other axis (FitGameToWindow / GetCanvasPresentRect). */
+  float aspect = (float)native_view_aspect();
+  /* The game's black top band, when the view shows it: the panel starts
+     below it. */
+  float band = (float)native_view_top_band();
+  float h;
+
+  if (win.x <= 0 || win.y <= 0) {
+    return ImVec2(0, 0);
+  }
+  if (win.x / win.y > aspect) {
+    return ImVec2((win.x - win.y * aspect) / 2, win.y * band);
+  }
+  h = win.x / aspect;
+  return ImVec2(0, (win.y - h) / 2 + h * band);
+}
+
 static void draw_panel(void) {
   int gamestate = read_game_int(GAMESTATE_ADDR);
+  ImVec2 origin = game_origin();
 
-  ImGui::SetNextWindowPos(ImVec2(MARGIN, MARGIN));
+  ImGui::SetNextWindowPos(ImVec2(origin.x + MARGIN, origin.y + MARGIN));
   ImGui::Begin(
       "##diag", NULL,
       ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize |
@@ -314,11 +344,12 @@ static void draw_panel(void) {
     ImGui::TextDisabled("fps");
     ImGui::TableNextColumn();
     ImGui::TextColored(rate_color(stats.fps), "%.1f", stats.fps);
-    row("frame", "%.2f ms  (max %.2f)", stats.frame_ms, stats.frame_max_ms);
+    row("frame", "%.2f ms (max %.2f)", stats.frame_ms, stats.frame_max_ms);
     row("game", "%.2f ms", stats.game_ms);
     row("vsync", "%d", native_frames_run());
-    row("state", "%d  %s", gamestate, diag_stats_gamestate_name(gamestate));
+    row("state", "%d (%s)", gamestate, diag_stats_gamestate_name(gamestate));
     row("level id", "%d", read_game_int(ACTIVE_LEVEL_ADDR));
+    row("res scale", "%ux", Psyz_VideoGetInternalResolution());
     ImGui::EndTable();
     rows_width = ImGui::GetItemRectSize().x;
   }

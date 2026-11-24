@@ -27,10 +27,34 @@ speed = 1.0       # turn rate at full deflection, 1 = the L2/R2 rate
 boost = 1.0       # held at full deflection, speed up to this times speed
 boost_time = 0.5  # ... over this many seconds
 
+[input.keyboard] # pad 1's keys: a key name or up to 4 of them, [] for none
+up = ["w", "up"]
+left = ["a", "left"]
+down = ["s", "down"]
+right = ["d", "right"]
+cross = ["k", "space"]
+square = "j"
+circle = "l"
+triangle = "i"
+l1 = "q"
+r1 = "e"
+l2 = "u"
+r2 = "o"
+start = "return"
+select = "backspace"
+l3 = []
+r3 = []
+
+[video]
+resolution_scale = 1 # render scale 1..8, or "auto" (window size); 1 = PS1 display
+aspect = "4:3"       # "16:9", "21:9", any "W:H" up to 8:3, or "auto" (the window's)
+hud = "center"       # or "edges": wide views put the gem and lives counters at the sides
+
 [debug]
 fast = false       # true: no 59.94 Hz frame limiter
 log_level = "info" # "debug", "info", "warn" or "error"
 overlay = false    # true: start with the diagnostics overlay shown (` / L3+R3)
+cull_margin = 0    # wider than 4:3: culls reach this many pixels past each side
 
 [debug.start] # the state a run starts in
 level = 0 # a level id: boot straight into it (21 = Dry Canyon), 0 = title

@@ -6,6 +6,7 @@
  * --memcard, ...) are aliases for --set. Relative paths in a file are
  * relative to it. */
 
+#include <math.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -89,11 +90,61 @@ int config_parse_warp(const char *arg, int *frame, int *level) {
   return 0;
 }
 
+int config_parse_aspect(const char *s, double *aspect) {
+  char *end;
+  double w, h = 1;
+
+  if (strcmp(s, "auto") == 0) {
+    *aspect = 0;
+    return 0;
+  }
+  w = strtod(s, &end);
+  if (end == s) {
+    return 1;
+  }
+  if (*end == ':') {
+    const char *hs = end + 1;
+
+    h = strtod(hs, &end);
+    if (end == hs) {
+      return 1;
+    }
+  }
+  if (*end != '\0' || !(w > 0 && h > 0)) {
+    return 1;
+  }
+  w /= h;
+  if (w < CONFIG_ASPECT_MIN - 1e-9 || w > CONFIG_ASPECT_MAX + 1e-9) {
+    return 1;
+  }
+  *aspect = w;
+  return 0;
+}
+
+int config_aspect_request_width(double aspect) {
+  /* A multiple of 5, so the canvas is a whole number of game pixels (8 per
+     5): PsyZ presents nothing for a canvas it has to round. */
+  int w = 5 * (int)lround(CONFIG_VIEW_LINES * aspect / 5);
+
+  return w < 320 ? 320 : w > 640 ? 640 : w;
+}
+
 int config_takes_value(const char *arg) {
   static const char *const flags[] = {
-      "--frames",   "--set",   "--disc",      "--screenshot",
-      "--shot",     "--press", "--warp",      "--memcard",
-      "--memcard2", "--wav",   "--log-level",
+      "--frames",
+      "--set",
+      "--disc",
+      "--screenshot",
+      "--shot",
+      "--press",
+      "--warp",
+      "--memcard",
+      "--memcard2",
+      "--wav",
+      "--log-level",
+      "--capture",
+      "--resolution-scale",
+      "--aspect",
   };
 
   for (size_t i = 0; i < sizeof(flags) / sizeof(flags[0]); i++) {
@@ -129,21 +180,27 @@ int config_scan_args(int argc, char **argv, const char *paths[CONFIG_MAX_FILES],
 static const char *const stick_modes[] = {"original", "radial", NULL};
 static const char *const pad_modes[] = {"digital", "analog", NULL};
 static const char *const camera_modes[] = {"original", "analog", NULL};
+static const char *const hud_modes[] = {"center", "edges", NULL};
 
 enum setting_kind {
   SET_PATH,
   SET_BOOL,
   SET_LOG_LEVEL,
   SET_NUMBER,
+  SET_INT,
   SET_CHOICE,
   SET_LEVEL,
-  SET_RANGE
+  SET_RANGE,
+  SET_ASPECT,
+  SET_RESOLUTION_SCALE,
+  SET_KEYS
 };
 static const struct setting {
   const char *key;
   enum setting_kind kind;
-  size_t offset;   /* into NativeSettings */
-  double min, max; /* SET_NUMBER's range */
+  size_t offset; /* into NativeSettings */
+  double min,
+      max; /* SET_NUMBER's, SET_INT's and SET_RESOLUTION_SCALE's range */
   /* SET_CHOICE's values, NULL-terminated: the field (an int or enum) holds
      the index of the one chosen. */
   const char *const *choices;
@@ -153,12 +210,15 @@ static const struct setting {
   {key, kind, offsetof(NativeSettings, member), 0, 0, NULL}
 #define NUMBER(key, member, min, max)                                          \
   {key, SET_NUMBER, offsetof(NativeSettings, member), min, max, NULL}
+#define INTEGER(key, member, min, max)                                         \
+  {key, SET_INT, offsetof(NativeSettings, member), min, max, NULL}
 #define CHOICE(key, member, choices)                                           \
   {key, SET_CHOICE, offsetof(NativeSettings, member), 0, 0, choices}
 #define STICK(name, i)                                                         \
   CHOICE("input." name ".mode", stick[i].mode, stick_modes),                   \
       SETTING("input." name ".range", SET_RANGE, stick[i].range),              \
       NUMBER("input." name ".curve", stick[i].curve, 0.1, 5)
+#define KEYS(button, i) SETTING("input.keyboard." button, SET_KEYS, keyboard[i])
     SETTING("disc", SET_PATH, disc),
     SETTING("memcard.port1", SET_PATH, card[0]),
     SETTING("memcard.port2", SET_PATH, card[1]),
@@ -166,6 +226,7 @@ static const struct setting {
     SETTING("debug.log_level", SET_LOG_LEVEL, log_level),
     SETTING("debug.overlay", SET_BOOL, overlay),
     SETTING("debug.start.level", SET_LEVEL, start_level),
+    INTEGER("debug.cull_margin", cull_margin, 0, 256),
     CHOICE("input.pad", analog, pad_modes),
     STICK("analog.left", 0),
     STICK("analog.right", 1),
@@ -174,8 +235,30 @@ static const struct setting {
     NUMBER("input.camera.speed", camera_speed, 0.1, 8),
     NUMBER("input.camera.boost", camera_boost, 1, 8),
     NUMBER("input.camera.boost_time", camera_boost_time, 0, 10),
+    KEYS("l2", 0),
+    KEYS("r2", 1),
+    KEYS("l1", 2),
+    KEYS("r1", 3),
+    KEYS("triangle", 4),
+    KEYS("circle", 5),
+    KEYS("cross", 6),
+    KEYS("square", 7),
+    KEYS("select", 8),
+    KEYS("l3", 9),
+    KEYS("r3", 10),
+    KEYS("start", 11),
+    KEYS("up", 12),
+    KEYS("right", 13),
+    KEYS("down", 14),
+    KEYS("left", 15),
+    {"video.resolution_scale", SET_RESOLUTION_SCALE,
+     offsetof(NativeSettings, resolution_scale), 1, 8, NULL},
+    SETTING("video.aspect", SET_ASPECT, aspect),
+    CHOICE("video.hud", hud_edges, hud_modes),
+#undef KEYS
 #undef STICK
 #undef CHOICE
+#undef INTEGER
 #undef NUMBER
 #undef SETTING
 };
@@ -214,10 +297,20 @@ static const char *setting_want(const struct setting *t) {
     return "0 or a level id (10 Artisans .. 64 Gnasty's Loot)";
   case SET_RANGE:
     return "[inner, outer] with 0 <= inner < outer <= 1";
-  case SET_NUMBER: {
+  case SET_ASPECT:
+    return "\"auto\" or a width:height from 4:3 to 8:3 (\"16:9\")";
+  case SET_RESOLUTION_SCALE:
+    return "\"auto\" or a whole number from 1 to 8";
+  case SET_KEYS:
+    return "a key name or an array of up to 4 (\"k\", [\"k\", \"space\"], [] "
+           "for none), not escape, f4, f6, grave or equals";
+  case SET_NUMBER:
+  case SET_INT: {
     static char want[64];
 
-    snprintf(want, sizeof(want), "a number from %g to %g", t->min, t->max);
+    snprintf(want, sizeof(want), "%s from %g to %g",
+             t->kind == SET_INT ? "a whole number" : "a number", t->min,
+             t->max);
     return want;
   }
   }
@@ -270,6 +363,24 @@ static int store_setting(NativeSettings *s, const struct setting *t,
     *(int *)field = (int)v;
     return 1;
   }
+  case SET_RESOLUTION_SCALE:
+    if (strcmp(value, "auto") == 0) {
+      *(int *)field = 0;
+      return 1;
+    }
+    /* fall through: a whole number, 1..8 */
+  case SET_INT: {
+    char *end;
+    long v = strtol(value, &end, 10);
+
+    if (end == value || *end != '\0' || v < t->min || v > t->max) {
+      return 0;
+    }
+    *(int *)field = (int)v;
+    return 1;
+  }
+  case SET_ASPECT:
+    return config_parse_aspect(value, (double *)field) == 0;
   case SET_RANGE: {
     /* "inner,outer", optionally in brackets and spaced: [0.1, 0.95] */
     static const char blank[] = " \t";
@@ -298,6 +409,37 @@ static int store_setting(NativeSettings *s, const struct setting *t,
     }
     ((double *)field)[0] = v[0];
     ((double *)field)[1] = v[1];
+    return 1;
+  }
+  case SET_KEYS: {
+    /* Key names split by commas (a TOML array arrives joined): "k, space";
+       "" unbinds the button. */
+    static const char blank[] = " \t";
+    unsigned char keys[KEYMAP_KEYS] = {0};
+    const char *p = value + strspn(value, blank);
+    int n = 0;
+
+    while (*p != '\0') {
+      size_t len = strcspn(p, ", \t");
+      int key = keymap_key(p, (int)len);
+
+      if (key == 0 || keymap_reserved(key) || n == KEYMAP_KEYS) {
+        return 0;
+      }
+      keys[n++] = (unsigned char)key;
+      p += len;
+      p += strspn(p, blank);
+      if (*p == ',') {
+        p++;
+        p += strspn(p, blank);
+        if (*p == '\0') {
+          return 0;
+        }
+      } else if (*p != '\0') {
+        return 0;
+      }
+    }
+    memcpy(field, keys, sizeof(keys));
     return 1;
   }
   case SET_CHOICE:
@@ -372,7 +514,7 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
                         toml_datum_t v) {
   const struct setting *t = find_setting(key);
   const char *value = NULL;
-  char buf[64]; /* a number or range, formatted for store_setting */
+  char buf[128]; /* a number, range or key list, formatted for store_setting */
 
   if (t == NULL) {
     if (is_table(key)) {
@@ -391,7 +533,9 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
     snprintf(buf, sizeof(buf), "%.17g",
              v.type == TOML_FP64 ? v.u.fp64 : (double)v.u.int64);
     value = buf;
-  } else if (t->kind == SET_LEVEL && v.type == TOML_INT64) {
+  } else if ((t->kind == SET_LEVEL || t->kind == SET_INT ||
+              t->kind == SET_RESOLUTION_SCALE) &&
+             v.type == TOML_INT64) {
     snprintf(buf, sizeof(buf), "%lld", (long long)v.u.int64);
     value = buf;
   } else if (t->kind == SET_RANGE && v.type == TOML_ARRAY &&
@@ -407,8 +551,24 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
     }
     snprintf(buf, sizeof(buf), "%.17g,%.17g", e[0], e[1]);
     value = buf;
+  } else if (t->kind == SET_KEYS && v.type == TOML_ARRAY) {
+    size_t n = 0;
+
+    buf[0] = '\0';
+    value = buf;
+    for (int i = 0; i < v.u.arr.size && value != NULL; i++) {
+      toml_datum_t d = v.u.arr.elem[i];
+
+      if (d.type != TOML_STRING || strchr(d.u.s, ',') != NULL ||
+          (n += (size_t)snprintf(buf + n, sizeof(buf) - n, "%s%s", i ? "," : "",
+                                 d.u.s)) >= sizeof(buf)) {
+        value = NULL;
+      }
+    }
   } else if (t->kind == SET_NUMBER || t->kind == SET_LEVEL ||
-             t->kind == SET_RANGE) {
+             t->kind == SET_INT || t->kind == SET_RANGE ||
+             (t->kind == SET_RESOLUTION_SCALE &&
+              !(v.type == TOML_STRING && strcmp(v.u.s, "auto") == 0))) {
     value = NULL;
   } else if (t->kind == SET_PATH && v.type == TOML_STRING) {
     /* The settings point at a path, so it outlives the parse result. */

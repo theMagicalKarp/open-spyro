@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster EmitSecondaryActorPrimitives: EmitSecondaryActorPrimitives
  * (80020F34), StoreAndRestoreStaticRegs (800229E8) */
@@ -766,7 +767,9 @@ L_80021444:
   s0 = s0 | 0x2u;
 L_80021450:
   /* 80021450 1DC00002 */
-  bc = ((int32_t)t6 > 0);
+  /* native patch (EmitSecondaryActorPrimitives): screen x against the view's
+   * left edge */
+  bc = ((int32_t)t6 > VIEW_X0_HI);
   /* 80021454 01D97022 (delay) */
   t6 = t6 - t9;
   if (bc) {
@@ -776,7 +779,9 @@ L_80021450:
   s0 = s0 | 0x4u;
 L_8002145C:
   /* 8002145C 05C00002 */
-  bc = ((int32_t)t6 < 0);
+  /* native patch (EmitSecondaryActorPrimitives): screen x against the view's
+   * right edge */
+  bc = ((int32_t)t6 < VIEW_X1_HI_REL);
   /* 80021460 00000000 (delay) */
   if (bc) {
     goto L_80021468;
@@ -946,7 +951,9 @@ L_8002156C:
   s0 = s0 | 0x2u;
 L_80021578:
   /* 80021578 1DC00002 */
-  bc = ((int32_t)t6 > 0);
+  /* native patch (EmitSecondaryActorPrimitives): screen x against the view's
+   * left edge */
+  bc = ((int32_t)t6 > VIEW_X0_HI);
   /* 8002157C 01D97022 (delay) */
   t6 = t6 - t9;
   if (bc) {
@@ -956,7 +963,9 @@ L_80021578:
   s0 = s0 | 0x4u;
 L_80021584:
   /* 80021584 05C00002 */
-  bc = ((int32_t)t6 < 0);
+  /* native patch (EmitSecondaryActorPrimitives): screen x against the view's
+   * right edge */
+  bc = ((int32_t)t6 < VIEW_X1_HI_REL);
   /* 80021588 31A60001 (delay) */
   a2 = t5 & 0x1u;
   if (bc) {

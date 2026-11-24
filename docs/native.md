@@ -36,6 +36,8 @@ make native-run NATIVE_ARGS="--frames 1900 --screenshot out.bmp --press 1300:sta
 make native-run NATIVE_ARGS="--fast --memcard none --frames 4400 --screenshot out.bmp \
   --press 1300:start --press 1400:start --press 1550:cross --press 1650:cross \
   --press 2300:start --warp 3400:21 --shot 3990"   # Dry Canyon, unthrottled
+make native-run NATIVE_ARGS="--frames 1900 --capture out.bmp --resolution-scale 4 \
+  --press 1300:start --press 1400:start --shot 1550"   # the displayed frame at 4x (2048x960)
 build/native/spyro --stub --frames 60    # no disc: a spinning-triangle test scene
 make native-gate SAVESTATE=~/Library/Application\ Support/DuckStation/savestates/<state>.sav
 make native-test                 # host unit tests (native/tests): C compiler + cmake only
@@ -83,10 +85,19 @@ speed = 1.0
 boost = 1.0
 boost_time = 0.5
 
+[input.keyboard]               # pad 1's keys: a name or up to 4, [] for none
+cross = ["k", "space"]         # (each button; the defaults are below)
+
+[video]
+resolution_scale = 1           # --resolution-scale: render scale 1..8, or "auto"
+aspect = "4:3"                 # --aspect: "16:9", "21:9", "W:H" up to 8:3, "auto"
+hud = "center"                 # "edges": the side counters at a wide view's edges
+
 [debug]
 fast = false                   # --fast
 log_level = "info"             # --log-level: "debug", "info", "warn", "error" (or d/i/w/e)
 overlay = false                # start with the diagnostics overlay shown
+cull_margin = 0                # widened views: cull this many pixels past each side
 
 [debug.start]                  # the state a run starts in
 level = 0                      # a level id: boot straight into it, 0 = title screen
@@ -96,9 +107,10 @@ Every key is optional. Each setting has a dotted name, its table and key
 (`memcard.port1`, `debug.fast`), and `--set KEY=VALUE` sets any of them from
 the command line (`--set debug.log_level=debug`; a relative path there is
 relative to the working directory). The older flags are short forms of
-`--set`: `--disc`, `--memcard`, `--memcard2`, `--fast` and `--log-level`.
+`--set`: `--disc`, `--memcard`, `--memcard2`, `--fast`, `--log-level`,
+`--resolution-scale` and `--aspect`.
 The per-run flags (`--frames`, `--press`, `--shot`, `--warp`,
-`--screenshot`, `--wav`) have no config key. The settings are one table in
+`--screenshot`, `--capture`, `--wav`) have no config key. The settings are one table in
 `src/native/host/config.c` (`settings[]`), which the config files, `--set` and
 the short flags all go through; a new setting is one row there. A malformed
 file, an unknown key or table, or a value of the wrong type or out of range
@@ -340,9 +352,18 @@ their entry points abort (`src/native/game/load/level_id_stubs.c`).
 
 ## Input and headless runs
 
-Pad 1 is the keyboard or the first SDL gamepad (PsyZ's backend): arrows =
-D-pad, X / Z / S / D = Cross / Square / Triangle / Circle, Q / R / W / E =
-L1 / R1 / L2 / R2, Return = Start, Backspace = Select. Pad 1 reports a
+Pad 1 is the keyboard or the first SDL gamepad (PsyZ's backend). The
+keyboard follows DuckStation's layout, with the camera turn moved next to
+the face buttons: W A S D (or the arrows) = D-pad, I / J / K / L =
+Triangle / Square / Cross / Circle (Space is a second Cross, for jump),
+Q / E = L1 / R1, U / O = L2 / R2, Return = Start, Backspace = Select; L3
+and R3 are unbound. `input.keyboard.<button>` (`cross`, `l2`, `up`, ...)
+rebinds one: a key name (`"k"`, `"space"`, `"f1"`, `"kp_4"`, `"lshift"`, `"up"`)
+or an array of up to four, `[]` for none (`--set input.keyboard.cross=k,space`).
+Escape, F4, F6, `` ` `` and `=` are the host's and can't be bound. PsyZ's
+own keyboard table is fixed, so the host rebuilds pad 1's buttons from the
+gamepad and these bindings in `Psyz_PadsSet` (`src/native/host/main.c`,
+names in `keymap.c`). Pad 1 reports a
 DualShock in analog mode (id 0x73; `input.pad = "digital"` makes it a digital
 pad, 0x41): the left stick steers Spyro (and the free-look camera) through
 the game's own analog path, which calibrates the stick centre from the first
@@ -361,7 +382,11 @@ refresh every half second. `debug.overlay = true` starts it shown. It is a
 `external/imgui` and `external/implot` submodules), drawn through PsyZ's
 SDL_GPU overlay hooks with ImGui's SDL_GPU backend (Metal or Vulkan), in the
 system's monospace font (SF Mono, else DejaVu Sans Mono, else ImGui's own).
-If ImGui can't start, the frame rate goes in the window title instead. PsyZ's own keys stay: F4
+If ImGui can't start, the frame rate goes in the window title instead. The
+`=` key steps `video.resolution_scale` through 1x, 2x, 4x and 8x (then back to
+1x) between frames, taking over from auto; the overlay's `res scale` row shows the
+current one. From 1x at 4:3 it first moves PsyZ from its PS1 display mode to
+its native one, where it scales. PsyZ's own keys stay: F4
 fullscreen, F6 the VRAM view, Escape quits.
 
 Each stick has a `mode` (`input.analog.left.mode` / `input.analog.right.mode`).
@@ -393,7 +418,99 @@ in and out on its own. It is the native `UpdateCameraManualYawInput`
 For runs without a person at the keyboard, `--press N:BUTTONS[:HOLD]` holds
 buttons (names joined by `+`: `cross+up`) for HOLD VSyncs (default 4) from
 VSync N, and `--shot N` writes a VRAM screenshot at VSync N next to
-`--screenshot` (`out-N.bmp`). A VSync here is a blocking one: the game runs
+`--screenshot` (`out-N.bmp`). `--capture out.bmp` writes the displayed
+frame instead of VRAM, at the scaled resolution (and with `--shot`, one
+next to it per shot too); the two can be given together.
+
+`video.resolution_scale` (`--resolution-scale N`) renders at N times
+512x240, 1 to 8, or `"auto"` for the window size over the game's size. Anything
+but 1 puts PsyZ in its native display mode (a 512x224 canvas of its own,
+centred), which is where it scales; 1, the default, keeps the PS1 display
+path. The game draws only rows 8..232 of its 240 (`DRAW_Y`, `DRAW_H`; a
+TV's overscan hid the black lines above and below), so the native canvas
+crops them, while the PS1 path shows all 240 at 4:3. Either way the frame
+fills the window at the view's aspect (PsyZ's native mode
+alone would only scale by whole multiples; the host reports a display
+larger than any window so it fits it instead), and auto picks the
+smallest scale at least as tall as that fit. At 1x the two modes capture the same frame, up to a few pixels one
+5-bit step apart in 3D scenes (gouraud interpolation rounding).
+The pause and menu backdrops stay at 1x under a scaled HUD and menu: the
+game reads the frame back into RAM (`StoreImage`, `MoveImage`) and draws it
+again as a texture, so it only ever sees the 512x240 copy.
+`video.aspect` (`--aspect`) widens the view: `"16:9"`, `"21:9"`, any
+`"W:H"` from 4:3 to 8:3, or `"auto"` for the window's, followed as it is
+resized. It is the aspect of the cropped 224-line picture, never narrower
+than the 512-wide framebuffer (so `"4:3"` is about 1.43:1), and rounded so
+the canvas is a whole number of game pixels (PsyZ presents nothing for a
+canvas it has to round). A fixed aspect also opens the window at it (at
+PsyZ's height, or narrower and shorter if that would be wider than the
+display), so the picture fills it without bars; resizing it afterwards is
+left alone. The `=` key's first step out of the PS1 path (1x at `"4:3"`)
+refits the window the same way, as the cropped canvas is wider. It asks PsyZ's native mode for a
+canvas wider than the framebuffer, at the same projection, centred on it
+(640 wide at 16:9, x -64..576; 840 at 21:9), and the run logs the view's
+game-coordinate bounds. The game's
+side culls, hand-written asm tuned to the 4:3 edges, are widened to the view
+by native patches to the hand-asm translation
+(`tools/open-spyro/src/open_spyro/handasm_patches.py`, `include/native_view.h`):
+the world chunks, actors, sprites, sky, particles, billboards and the portal
+skies' clip rect (`portal_sky.c`). The per-zone visibility lists don't depend
+on the view's width, so nothing is missing at the new edges. Actors in the
+wider strips count as drawn, which the game uses to decide what to animate,
+so a run at 21:9 drifts from the same run at 4:3 after a while.
+`debug.cull_margin = N` makes the culls reach N game pixels past each side
+of a widened view. Comparing a run with it against one without shows what
+a cull still drops at the edges. PsyZ draws primitives of any width, so
+polygons spanning the whole canvas are not dropped.
+The sky's segment walks skip segments close to the camera plane, which the
+4:3 view never showed; that margin shrinks as the view widens, or the
+strips' top corners would show the clear colour. Spyro's own model has a
+45-degree side cull, wider than 4:3 but narrower than 16:9, widened the same
+way. Wider views emit more primitives than the original 4:3 ones, more than
+the per-frame primitive buffers carved from the top of the PS1's RAM hold
+(0x1C000 bytes, and 0x13000 in the cutscene layout, whose overflow limit is
+not even their end: the intro cutscene at 21:9 wrote over the OT and
+crashed). So the native build gives each frame a 512 KiB buffer above the
+PS1's 2 MiB instead (`NATIVE_PRIM_BUFFER_BASE` in `include/frame_db.h`,
+in the dev-kit RAM native memory maps; OT links are 24-bit, so they reach
+it), and the carved ones go unused. Levels 50 and 53 at 8:3 and the intro
+cutscene at 21:9, which filled the original buffers, no longer do.
+The 2D screens (title, menus, pause, inventory, the cutscene text) stay in
+the centred 4:3 area, and so does the HUD unless `video.hud = "edges"`.
+With it, the gem counter and the egg row move out to the view's left edge
+and the lives counter (its butterflies with it) and the key to its right
+one, at the original's distance from the 4:3 edge; the dragon counter stays
+centred. The HUD's icon records and egg rects are laid out at their 4:3
+rest positions (`InitHudCounters`); the native build shifts them by the
+view's edges after that and again whenever the view changes
+(`NativeHudAnchor`, in `src/native/game/render/view.c`), along with the
+all-gems total's text and the egg counter's sparkle burst. Flight levels
+keep their own HUD as laid out. The frozen grey backdrop behind the
+pause, inventory and flight-results screens spans the whole view: the game
+reads it back from the 512-wide framebuffer, so its capture frame squeezes
+camera x by 512 / the view's width (`NativeMenuBackdrop`, in
+`src/native/game/render/view.c`) and the backdrop's four quads stretch it
+back over the view (`NativeStretchBackdrop`). It needs no extra VRAM, at
+the cost of horizontal detail (0.74x at 16:9). The remaining `SCREEN_W` uses in game C are
+the framebuffer's own clears and copies, which stay 512 wide.
+Checked at 21:9 against 4:3: the hubs, a normal level, a flight level, a
+boss, the title screen and its menus, the intro cutscene, a dragon rescue,
+pause and inventory, the attract demo, a death with its fade and respawn,
+and the game-over screen. Scripted runs of the first level of each
+world (Stone Hill, Dry Canyon, Alpine Ridge, Terrace Village, Dark Passage,
+Gnorc Cove) at 21:9 showed nothing missing at the edges. A camera
+spin in the Artisans hub and turns in Sunny Flight, each run with
+`debug.cull_margin = 64` and without, differ only where the margin changes
+what the game animates: actors and Sparx out of step, and a smoke trail one
+puff longer, since an actor just past the edge emits only while it counts as
+drawn (as at the 4:3 edge in the original). No geometry or actor pops in at
+the edges. Known issue: cutscenes were framed
+for 4:3, so characters can stand half in the new strips beside the shot
+(the intro's dragons do).
+Geometry still snaps to the 512x240 grid at any scale: the GTE returns
+whole-pixel screen coordinates, and removing the jitter needs subpixel
+vertices through PsyZ's GTE and packet path (a PGXP-style change in the
+`external/psyz` submodule, not done). A VSync here is a blocking one: the game runs
 one frame per two. The title flyby lasts until VSync ~1300 on a cold boot;
 Start skips it, a second Start opens the memory-card check. A card changes
 the menus that follow, so scripted runs pass `--memcard none` (or a scratch

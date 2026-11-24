@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster DrawWorldSparkleParticles: DrawWorldSparkleParticles (800580F4) */
 void ha_DrawWorldSparkleParticles(HaRegs *R, uint32_t entry) {
@@ -297,7 +298,9 @@ L_800582DC:
   /* 800582DC 20A9FE00 */
   t1 = a1 + 0xfffffe00u;
   /* 800582E0 05200002 */
-  bc = ((int32_t)t1 < 0);
+  /* native patch (DrawWorldSparkleParticles): screen x against the view's right
+   * edge */
+  bc = ((int32_t)t1 < CULL_X1 - SCREEN_W);
   /* 800582E4 00000000 (delay) */
   if (bc) {
     goto L_800582EC;
@@ -306,7 +309,9 @@ L_800582DC:
   t7 = t7 | 0x4u;
 L_800582EC:
   /* 800582EC 1CA00002 */
-  bc = ((int32_t)a1 > 0);
+  /* native patch (DrawWorldSparkleParticles): screen x against the view's left
+   * edge */
+  bc = ((int32_t)a1 > CULL_X0);
   /* 800582F0 00000000 (delay) */
   if (bc) {
     goto L_800582F8;
@@ -405,7 +410,9 @@ L_80058394:
   /* 80058394 214DFE00 */
   t5 = t2 + 0xfffffe00u;
   /* 80058398 05A00002 */
-  bc = ((int32_t)t5 < 0);
+  /* native patch (DrawWorldSparkleParticles): screen x against the view's right
+   * edge */
+  bc = ((int32_t)t5 < CULL_X1 - SCREEN_W);
   /* 8005839C 3153FFFF (delay) */
   s3 = t2 & 0xffffu;
   if (bc) {
@@ -415,7 +422,9 @@ L_80058394:
   s2 = s2 | 0x4u;
 L_800583A4:
   /* 800583A4 1D400002 */
-  bc = ((int32_t)t2 > 0);
+  /* native patch (DrawWorldSparkleParticles): screen x against the view's left
+   * edge */
+  bc = ((int32_t)t2 > CULL_X0);
   /* 800583A8 026C9825 (delay) */
   s3 = s3 | t4;
   if (bc) {
@@ -484,7 +493,9 @@ L_80058414:
   /* 80058414 214DFE00 */
   t5 = t2 + 0xfffffe00u;
   /* 80058418 05A00002 */
-  bc = ((int32_t)t5 < 0);
+  /* native patch (DrawWorldSparkleParticles): screen x against the view's right
+   * edge */
+  bc = ((int32_t)t5 < CULL_X1 - SCREEN_W);
   /* 8005841C 3156FFFF (delay) */
   s6 = t2 & 0xffffu;
   if (bc) {
@@ -494,7 +505,9 @@ L_80058414:
   s5 = s5 | 0x4u;
 L_80058424:
   /* 80058424 1D400002 */
-  bc = ((int32_t)t2 > 0);
+  /* native patch (DrawWorldSparkleParticles): screen x against the view's left
+   * edge */
+  bc = ((int32_t)t2 > CULL_X0);
   /* 80058428 02CCB025 (delay) */
   s6 = s6 | t4;
   if (bc) {

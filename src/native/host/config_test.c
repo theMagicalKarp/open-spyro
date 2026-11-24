@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 #include <string.h>
 
 #include "config.h"
@@ -124,6 +125,9 @@ TEST(takes_value) {
   CHECK(config_takes_value("--disc"));
   CHECK(config_takes_value("--set"));
   CHECK(config_takes_value("--log-level"));
+  CHECK(config_takes_value("--capture"));
+  CHECK(config_takes_value("--resolution-scale"));
+  CHECK(config_takes_value("--aspect"));
   CHECK(!config_takes_value("--fast"));
   CHECK(!config_takes_value("--stub"));
   CHECK(!config_takes_value("--config")); /* scanned on its own */
@@ -243,6 +247,82 @@ TEST(stick_mode) {
         0);
 }
 
+TEST(keyboard_defaults) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.keyboard[6][0], KEY_LETTER('k')); /* cross */
+  CHECK_INT(s.keyboard[6][1], KEY_SPACE);
+  CHECK_INT(s.keyboard[0][0], KEY_LETTER('u'));  /* l2 */
+  CHECK_INT(s.keyboard[12][0], KEY_LETTER('w')); /* up */
+  CHECK_INT(s.keyboard[12][1], KEY_UP);
+  CHECK_INT(s.keyboard[9][0], 0); /* l3 */
+}
+
+TEST(keyboard_set) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(config_set(&s, "--set", "input.keyboard.cross", "x"), 0);
+  CHECK_INT(s.keyboard[6][0], KEY_LETTER('x'));
+  CHECK_INT(s.keyboard[6][1], 0);
+  CHECK_INT(config_set(&s, "--set", "input.keyboard.l2", " 1 , kp_4,lshift"),
+            0);
+  CHECK_INT(s.keyboard[0][0], KEY_1);
+  CHECK_INT(s.keyboard[0][1], KEY_KP_1 + 3);
+  CHECK_INT(s.keyboard[0][2], KEY_LSHIFT);
+  CHECK_INT(s.keyboard[0][3], 0);
+  CHECK_INT(config_set(&s, "--set", "input.keyboard.l2", ""), 0);
+  CHECK_INT(s.keyboard[0][0], 0);
+  log_capture();
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "jump") != 0);
+  CHECK(strstr(log_text(), "input.keyboard.cross must be a key name") != NULL);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "escape") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "grave") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "k space") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "k,") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "a,b,c,d,e") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.jump", "k") != 0);
+  CHECK_INT(s.keyboard[6][0], KEY_LETTER('x'));
+}
+
+TEST(keyboard_toml) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(config_load_string(&s, "x.toml",
+                               "[input.keyboard]\n"
+                               "cross = [\"k\", \"space\", \"kp_2\"]\n"
+                               "square = \"j\"\n"
+                               "l3 = []\n"
+                               "start = [\"return\"]\n"),
+            0);
+  CHECK_INT(s.keyboard[6][0], KEY_LETTER('k'));
+  CHECK_INT(s.keyboard[6][1], KEY_SPACE);
+  CHECK_INT(s.keyboard[6][2], KEY_KP_1 + 1);
+  CHECK_INT(s.keyboard[7][0], KEY_LETTER('j'));
+  CHECK_INT(s.keyboard[9][0], 0);
+  CHECK_INT(s.keyboard[11][0], KEY_RETURN);
+  log_capture();
+  CHECK(config_load_string(&s, "y.toml",
+                           "[input.keyboard]\ncross = [\"k\", 1]\n"
+                           "circle = 5\nl1 = [\"a,b\"]\njump = \"k\"\n") != 0);
+  CHECK(strstr(log_text(), "y.toml:2: input.keyboard.cross must be") != NULL);
+  CHECK(strstr(log_text(), "y.toml:3: input.keyboard.circle must be") != NULL);
+  CHECK(strstr(log_text(), "y.toml:4: input.keyboard.l1 must be") != NULL);
+  CHECK(strstr(log_text(), "y.toml:5: unknown key input.keyboard.jump") !=
+        NULL);
+}
+
+TEST(cull_margin) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.cull_margin, 0);
+  CHECK_INT(config_set(&s, "--set", "debug.cull_margin", "64"), 0);
+  CHECK_INT(s.cull_margin, 64);
+  log_capture();
+  CHECK(config_set(&s, "--set", "debug.cull_margin", "257") != 0);
+  CHECK(config_set(&s, "--set", "debug.cull_margin", "-1") != 0);
+  CHECK_INT(s.cull_margin, 64);
+}
+
 TEST(start_level) {
   NativeSettings s = fresh();
 
@@ -308,6 +388,99 @@ TEST(set_number_range) {
   CHECK(s.camera_boost == 1.0);
 }
 
+TEST(resolution_scale) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.resolution_scale, 1);
+  CHECK_INT(config_set(&s, "--set", "video.resolution_scale", "4"), 0);
+  CHECK_INT(s.resolution_scale, 4);
+  CHECK_INT(config_set(&s, "--set", "video.resolution_scale", "auto"), 0);
+  CHECK_INT(s.resolution_scale, 0);
+  CHECK_INT(config_set(&s, "--set", "video.resolution_scale", "8"), 0);
+  CHECK_INT(s.resolution_scale, 8);
+  log_capture();
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "9") != 0);
+  CHECK(strstr(log_text(),
+               "video.resolution_scale must be \"auto\" or a whole number "
+               "from 1 to 8") != NULL);
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "0") != 0);
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "2.5") != 0);
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "-1") != 0);
+  CHECK(config_set(&s, "--set", "video.resolution_scale", "") != 0);
+  CHECK_INT(s.resolution_scale, 8);
+  CHECK_INT(config_load_string(&s, "x.toml", "[video]\nresolution_scale = 2\n"),
+            0);
+  CHECK_INT(s.resolution_scale, 2);
+  CHECK(config_load_string(&s, "x.toml", "[video]\nresolution_scale = 2.0\n") !=
+        0);
+  CHECK(config_load_string(&s, "x.toml",
+                           "[video]\nresolution_scale = \"2\"\n") != 0);
+  CHECK(config_load_string(&s, "x.toml", "[video]\nresolution_scale = 0\n") !=
+        0);
+  CHECK_INT(s.resolution_scale, 2);
+  CHECK_INT(config_load_string(&s, "x.toml",
+                               "[video]\nresolution_scale = \"auto\"\n"),
+            0);
+  CHECK_INT(s.resolution_scale, 0);
+}
+
+TEST(parse_aspect) {
+  double a = -1;
+
+  CHECK_INT(config_parse_aspect("auto", &a), 0);
+  CHECK(a == 0);
+  CHECK_INT(config_parse_aspect("4:3", &a), 0);
+  CHECK(fabs(a - 4.0 / 3.0) < 1e-12);
+  CHECK_INT(config_parse_aspect("16:9", &a), 0);
+  CHECK(fabs(a - 16.0 / 9.0) < 1e-12);
+  CHECK_INT(config_parse_aspect("21:9", &a), 0);
+  CHECK(fabs(a - 21.0 / 9.0) < 1e-12);
+  CHECK_INT(config_parse_aspect("2560:1080", &a), 0);
+  CHECK_INT(config_parse_aspect("8:3", &a), 0);
+  CHECK_INT(config_parse_aspect("2.35", &a), 0);
+  CHECK(a == 2.35);
+  CHECK(config_parse_aspect("5:4", &a) != 0);  /* narrower than 4:3 */
+  CHECK(config_parse_aspect("32:9", &a) != 0); /* wider than the canvas */
+  CHECK(config_parse_aspect("16:", &a) != 0);
+  CHECK(config_parse_aspect(":9", &a) != 0);
+  CHECK(config_parse_aspect("16:0", &a) != 0);
+  CHECK(config_parse_aspect("16:9x", &a) != 0);
+  CHECK(config_parse_aspect("", &a) != 0);
+  CHECK(config_parse_aspect("wide", &a) != 0);
+  CHECK(a == 2.35);
+}
+
+/* The width asked of PsyZ at 224 lines, to a multiple of 5: 4:3 -> 320 (a
+   512 canvas, no narrower), 16:9 -> 400 (640), 21:9 -> 525 (840), 64:27 ->
+   530 (848), 8:3 -> 595 (952); clamped to 320..640. */
+TEST(aspect_request_width) {
+  CHECK_INT(config_aspect_request_width(4.0 / 3.0), 320);
+  CHECK_INT(config_aspect_request_width(16.0 / 9.0), 400);
+  CHECK_INT(config_aspect_request_width(21.0 / 9.0), 525);
+  CHECK_INT(config_aspect_request_width(64.0 / 27.0), 530);
+  CHECK_INT(config_aspect_request_width(8.0 / 3.0), 595);
+  CHECK_INT(config_aspect_request_width(20.0 / 7.0), 640);
+  CHECK_INT(config_aspect_request_width(1.0), 320);
+  CHECK_INT(config_aspect_request_width(4.0), 640);
+}
+
+TEST(aspect_setting) {
+  NativeSettings s = fresh();
+
+  CHECK(fabs(s.aspect - 4.0 / 3.0) < 1e-12);
+  CHECK_INT(config_set(&s, "--set", "video.aspect", "21:9"), 0);
+  CHECK(fabs(s.aspect - 21.0 / 9.0) < 1e-12);
+  log_capture();
+  CHECK(config_set(&s, "--aspect", "video.aspect", "1:1") != 0);
+  CHECK(strstr(log_text(), "--aspect: video.aspect must be \"auto\" or a "
+                           "width:height from 4:3 to 8:3") != NULL);
+  CHECK(fabs(s.aspect - 21.0 / 9.0) < 1e-12);
+  CHECK_INT(config_load_string(&s, "x.toml", "[video]\naspect = \"auto\"\n"),
+            0);
+  CHECK(s.aspect == 0);
+  CHECK(config_load_string(&s, "x.toml", "[video]\naspect = 1.78\n") != 0);
+}
+
 /* A range's ends are in it. */
 TEST(set_number_range_inclusive) {
   NativeSettings s = fresh();
@@ -356,6 +529,19 @@ TEST(stick_range) {
                            "[input.analog.right]\nrange = [\"0\", 1]\n") != 0);
   CHECK(config_load_string(&s, "y.toml",
                            "[input.analog.right]\nrange = 0.1\n") != 0);
+}
+
+TEST(hud_setting) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.hud_edges, 0);
+  CHECK_INT(config_load_string(&s, "x.toml", "[video]\nhud = \"edges\"\n"), 0);
+  CHECK_INT(s.hud_edges, 1);
+  log_capture();
+  CHECK(config_set(&s, "--set", "video.hud", "left") != 0);
+  CHECK(strstr(log_text(), "video.hud must be \"center\" or \"edges\"") !=
+        NULL);
+  CHECK_INT(s.hud_edges, 1);
 }
 
 TEST(camera_mode_rejects_bool) {
@@ -489,8 +675,8 @@ TEST(load_unknown_tables_fail) {
   NativeSettings s = fresh();
 
   log_capture();
-  CHECK(config_load_string(&s, "x.toml", "[video]\nscale = 2\n") != 0);
-  CHECK(strstr(log_text(), "x.toml:1: unknown table video\n") != NULL);
+  CHECK(config_load_string(&s, "x.toml", "[audio]\nvolume = 2\n") != 0);
+  CHECK(strstr(log_text(), "x.toml:1: unknown table audio\n") != NULL);
   log_capture();
   CHECK(config_load_string(&s, "x.toml", "[input.analog.middle]\nmode = 1\n") !=
         0);

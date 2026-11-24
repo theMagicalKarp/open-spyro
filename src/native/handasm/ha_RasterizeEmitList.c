@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster RasterizeEmitList: RasterizeEmitList (800573C8) */
 void ha_RasterizeEmitList(HaRegs *R, uint32_t entry) {
@@ -479,7 +480,8 @@ L_800576CC:
     goto L_800574C0;
   }
   /* 800576D0 1CA00006 */
-  bc = ((int32_t)a1 > 0);
+  /* native patch (RasterizeEmitList): screen x against the view's left edge */
+  bc = ((int32_t)a1 > VIEW_X0_HI);
   /* 800576D4 00022C00 (delay) */
   a1 = v0 << 16;
   if (bc) {
@@ -489,7 +491,8 @@ L_800576CC:
     }
   }
   /* 800576D8 1CA00004 */
-  bc = ((int32_t)a1 > 0);
+  /* native patch (RasterizeEmitList): screen x against the view's left edge */
+  bc = ((int32_t)a1 > VIEW_X0_HI);
   /* 800576DC 00032C00 (delay) */
   a1 = v1 << 16;
   if (bc) {
@@ -499,7 +502,8 @@ L_800576CC:
     }
   }
   /* 800576E0 1CA00002 */
-  bc = ((int32_t)a1 > 0);
+  /* native patch (RasterizeEmitList): screen x against the view's left edge */
+  bc = ((int32_t)a1 > VIEW_X0_HI);
   /* 800576E4 00042C00 (delay) */
   a1 = a0 << 16;
   if (bc) {
@@ -509,7 +513,8 @@ L_800576CC:
     }
   }
   /* 800576E8 18A0FF75 */
-  bc = ((int32_t)a1 <= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's left edge */
+  bc = ((int32_t)a1 <= VIEW_X0_HI);
 L_800576EC:
   /* 800576EC 00012C00 (delay) */
   a1 = at << 16;
@@ -519,7 +524,8 @@ L_800576EC:
   /* 800576F0 00B62822 */
   a1 = a1 - s6;
   /* 800576F4 04A00009 */
-  bc = ((int32_t)a1 < 0);
+  /* native patch (RasterizeEmitList): screen x against the view's right edge */
+  bc = ((int32_t)a1 < VIEW_X1_HI_REL);
   /* 800576F8 00022C00 (delay) */
   a1 = v0 << 16;
   if (bc) {
@@ -531,7 +537,8 @@ L_800576EC:
   /* 800576FC 00B62822 */
   a1 = a1 - s6;
   /* 80057700 04A00006 */
-  bc = ((int32_t)a1 < 0);
+  /* native patch (RasterizeEmitList): screen x against the view's right edge */
+  bc = ((int32_t)a1 < VIEW_X1_HI_REL);
   /* 80057704 00032C00 (delay) */
   a1 = v1 << 16;
   if (bc) {
@@ -543,7 +550,8 @@ L_800576EC:
   /* 80057708 00B62822 */
   a1 = a1 - s6;
   /* 8005770C 04A00003 */
-  bc = ((int32_t)a1 < 0);
+  /* native patch (RasterizeEmitList): screen x against the view's right edge */
+  bc = ((int32_t)a1 < VIEW_X1_HI_REL);
   /* 80057710 00042C00 (delay) */
   a1 = a0 << 16;
   if (bc) {
@@ -555,7 +563,8 @@ L_800576EC:
   /* 80057714 00B62822 */
   a1 = a1 - s6;
   /* 80057718 04A1FF69 */
-  bc = ((int32_t)a1 >= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's right edge */
+  bc = ((int32_t)a1 >= VIEW_X1_HI_REL);
 L_8005771C:
   /* 8005771C 017D2820 (delay) */
   a1 = t3 + sp;
@@ -962,14 +971,16 @@ L_80057954:
     goto L_800574C0;
   }
   /* 80057A00 1860FEAF */
-  bc = ((int32_t)v1 <= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's left edge */
+  bc = ((int32_t)v1 <= VIEW_X0_HI);
   /* 80057A04 00761822 (delay) */
   v1 = v1 - s6;
   if (bc) {
     goto L_800574C0;
   }
   /* 80057A08 0461FEAD */
-  bc = ((int32_t)v1 >= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's right edge */
+  bc = ((int32_t)v1 >= VIEW_X1_HI_REL);
   /* 80057A0C 00021142 (delay) */
   v0 = v0 >> 5;
   if (bc) {
@@ -1128,14 +1139,16 @@ L_80057A74:
     goto L_800574C0;
   }
   /* 80057B10 1880FE6B */
-  bc = ((int32_t)a0 <= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's left edge */
+  bc = ((int32_t)a0 <= VIEW_X0_HI);
   /* 80057B14 00962022 (delay) */
   a0 = a0 - s6;
   if (bc) {
     goto L_800574C0;
   }
   /* 80057B18 0481FE69 */
-  bc = ((int32_t)a0 >= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's right edge */
+  bc = ((int32_t)a0 >= VIEW_X1_HI_REL);
   /* 80057B1C 00031942 (delay) */
   v1 = v1 >> 5;
   if (bc) {
@@ -1365,14 +1378,16 @@ L_80057C08:
     goto L_800574C0;
   }
   /* 80057CB0 18E0FE03 */
-  bc = ((int32_t)a3 <= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's left edge */
+  bc = ((int32_t)a3 <= VIEW_X0_HI);
   /* 80057CB4 00F63822 (delay) */
   a3 = a3 - s6;
   if (bc) {
     goto L_800574C0;
   }
   /* 80057CB8 04E1FE01 */
-  bc = ((int32_t)a3 >= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's right edge */
+  bc = ((int32_t)a3 >= VIEW_X1_HI_REL);
   /* 80057CBC 00052942 (delay) */
   a1 = a1 >> 5;
   if (bc) {
@@ -1708,14 +1723,16 @@ L_80057E7C:
   /* 80057F20 00011C00 */
   v1 = at << 16;
   /* 80057F24 1860FD66 */
-  bc = ((int32_t)v1 <= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's left edge */
+  bc = ((int32_t)v1 <= VIEW_X0_HI);
   /* 80057F28 00761822 (delay) */
   v1 = v1 - s6;
   if (bc) {
     goto L_800574C0;
   }
   /* 80057F2C 0461FD64 */
-  bc = ((int32_t)v1 >= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's right edge */
+  bc = ((int32_t)v1 >= VIEW_X1_HI_REL);
   /* 80057F30 00021142 (delay) */
   v0 = v0 >> 5;
   if (bc) {
@@ -1859,14 +1876,16 @@ L_80057F98:
     goto L_800574C0;
   }
   /* 80058018 1880FD29 */
-  bc = ((int32_t)a0 <= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's left edge */
+  bc = ((int32_t)a0 <= VIEW_X0_HI);
   /* 8005801C 00962022 (delay) */
   a0 = a0 - s6;
   if (bc) {
     goto L_800574C0;
   }
   /* 80058020 0481FD27 */
-  bc = ((int32_t)a0 >= 0);
+  /* native patch (RasterizeEmitList): screen x against the view's right edge */
+  bc = ((int32_t)a0 >= VIEW_X1_HI_REL);
   /* 80058024 00031942 (delay) */
   v1 = v1 >> 5;
   if (bc) {

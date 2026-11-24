@@ -25,8 +25,12 @@ Model:
   (its wasm signature); C callers reach a hand-asm function through a
   generated wrapper with that same signature.
 
-Output: ``src/native/handasm/<cluster>.c`` plus ``handasm_index.h``. The files
-are generated; regenerate with ``open-spyro native handasm``.
+Output: ``src/native/handasm/<cluster>.c`` plus ``handasm_index.h`` and
+``functions.txt`` (the ``handwritten`` list, which stands in for
+``progress.json`` where there is no rebuilt EXE to make it). The files
+are generated; regenerate with ``open-spyro native handasm``. The literal
+translation can be overridden per address range for native-only changes
+(``handasm_patches.py``).
 """
 
 from __future__ import annotations
@@ -42,9 +46,11 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from open_spyro.handasm_patches import PATCHES, BranchPatch, Patch
 from open_spyro.paths import repo_root
 
 OUT_DIR = "src/native/handasm"
+FUNCTIONS_TXT = "functions.txt"  # the hand-written functions translated, one per line
 WASI_CLANG = "build/native-tools/wasi-sdk-34.0/bin/clang"
 
 REG = (
@@ -433,6 +439,7 @@ class Cluster:
     insns: dict[int, Insn] = field(default_factory=dict)
     labels: set[int] = field(default_factory=set)
     dispatch: set[int] = field(default_factory=set)
+    patches: list[Patch | BranchPatch] = field(default_factory=list)
 
     def owns(self, a: int) -> bool:
         return a in self.insns
@@ -553,6 +560,87 @@ def find_labels(cl: Cluster) -> None:
                 break
 
 
+# ---- patches ------------------------------------------------------------------
+
+_GOTO = re.compile(r"\bL_([0-9A-F]{8})\b")
+
+
+def check_patches(cl: Cluster) -> tuple[dict[int, Patch], dict[int, BranchPatch]]:
+    """CL's range patches by start address and branch patches by address,
+    after the rules in handasm_patches.py (labels must be known: run after
+    find_labels)."""
+
+    def fail(p: Patch, msg: str) -> SystemExit:
+        return SystemExit(f"handasm: patch {p.func} {p.start:08X}..{p.end:08X}: {msg}")
+
+    by_start: dict[int, Patch] = {}
+    branches: dict[int, BranchPatch] = {}
+    covered: set[int] = set()
+    for b in cl.patches:
+        if not isinstance(b, BranchPatch):
+            continue
+        ins = cl.insns.get(b.addr)
+        where = f"handasm: branch patch {b.func} {b.addr:08X}"
+        if ins is None:
+            raise SystemExit(f"{where}: not in cluster {cl.name}")
+        if ins.word != b.expect:
+            raise SystemExit(f"{where}: stale: the asm there is now {ins.word:08X}")
+        if ins.kind not in ("branch", "branch_link"):
+            raise SystemExit(f"{where}: not a conditional branch")
+        if b.addr in branches:
+            raise SystemExit(f"{where}: patched twice")
+        branches[b.addr] = b
+    for p in cl.patches:
+        if isinstance(p, BranchPatch):
+            continue
+        if p.start % 4 or p.end % 4 or p.end <= p.start:
+            raise fail(p, "not a range of whole instructions")
+        span = range(p.start, p.end, 4)
+        missing = [a for a in span if a not in cl.insns]
+        if missing:
+            raise fail(p, f"{missing[0]:08X} is not in cluster {cl.name}")
+        words = tuple(cl.insns[a].word for a in span)
+        if words != p.expect:
+            got = " ".join(f"{w:08X}" for w in words)
+            raise fail(p, f"stale: the asm there is now {got}")
+        if covered & set(span):
+            raise fail(p, "overlaps another patch")
+        covered |= set(span)
+        before, last = cl.insns.get(p.start - 4), cl.insns[p.end - 4]
+        if before is not None and before.kind:
+            raise fail(p, f"starts in the delay slot of {before.addr:08X}")
+        if last.kind:
+            raise fail(p, f"ends between {last.addr:08X} and its delay slot")
+        inner = [a for a in span[1:] if a in cl.labels]
+        if inner:
+            raise fail(p, f"{inner[0]:08X} inside it is a jump target")
+        first, after = cl.insns[p.start], cl.insns.get(p.end)
+        if before is not None and before.load > 0 and before.load in first.reads:
+            raise fail(p, f"load-delay hazard into its start from {before.addr:08X}")
+        if after is not None and last.load > 0 and last.load in after.reads:
+            raise fail(p, f"load-delay hazard out of its end into {p.end:08X}")
+        for m in _GOTO.finditer(p.c):
+            t = int(m.group(1), 16)
+            if t not in cl.labels:
+                raise fail(p, f"goto {m.group(0)}: not a label of {cl.name}")
+            prev = cl.insns.get(t - 4)
+            if prev is not None and prev.kind:
+                raise fail(p, f"goto {m.group(0)}: a delay slot")
+        hit = [a for a in branches if a in span]
+        if hit:
+            raise fail(p, f"overlaps the branch patch at {hit[0]:08X}")
+        by_start[p.start] = p
+    return by_start, branches
+
+
+def emit_patch(p: Patch, cl: Cluster) -> list[str]:
+    out = [f"  /* native patch ({p.func}): {p.why} */"]
+    for a in range(p.start, p.end, 4):
+        out.append(f"  /* {a:08X} {cl.insns[a].word:08X} (replaced) */")
+    out += [f"  {line}" if line else "" for line in p.c.strip("\n").splitlines()]
+    return out
+
+
 # ---- emit -------------------------------------------------------------------
 
 
@@ -623,6 +711,7 @@ def emit_transfer(ctx: Ctx, cl: Cluster, ins: Insn) -> list[str]:
 
 def emit_cluster(ctx: Ctx, cl: Cluster) -> str:  # noqa: C901
     find_labels(cl)
+    patches, branches = check_patches(cl)
     addrs = sorted(cl.insns)
     body: list[str] = []
     k = 0
@@ -636,6 +725,13 @@ def emit_cluster(ctx: Ctx, cl: Cluster) -> str:  # noqa: C901
             body.append(f"  tgt = {prev_addr + 4:#010x}u; goto dispatch;")
         if a in cl.labels:
             body.append(f"{lab(a)}:")
+        if a in patches:
+            p = patches[a]
+            body += emit_patch(p, cl)
+            prev_falls = True
+            prev_addr = p.end - 4
+            k += (p.end - p.start) // 4
+            continue
         body.append(f"  /* {a:08X} {ins.word:08X} */")
         if ins.kind:
             # Control transfer + delay slot.
@@ -658,7 +754,11 @@ def emit_cluster(ctx: Ctx, cl: Cluster) -> str:  # noqa: C901
                         f"handasm: {cl.name}: load-delay hazard after delay slot {a + 4:08X}"
                     )
             pre = []
-            if ins.kind == "branch" or ins.kind == "branch_link":
+            if a in branches:
+                bp = branches[a]
+                body.append(f"  /* native patch ({bp.func}): {bp.why} */")
+                pre.append(f"bc = ({bp.cond});")
+            elif ins.kind == "branch" or ins.kind == "branch_link":
                 pre.append(f"bc = ({ins.cond});")
             elif ins.kind == "jr":
                 pre.append(f"tgt = {R(ins.reg)};")
@@ -784,25 +884,44 @@ HEADER = """\
 """
 
 
-def clang_format(files: list[Path]) -> None:
-    """Formats FILES in place with the repo's .clang-format (`make lint-c`
-    checks the generated files too), using the pinned clang-format from this
-    project's venv."""
+def clang_format(files: list[Path], style: Path) -> None:
+    """Formats FILES in place with STYLE, the repo's .clang-format (`make
+    lint-c` checks the generated files too), using the pinned clang-format
+    from this project's venv. The style is passed rather than found next to
+    the files, so output written outside the repo formats the same."""
     exe = Path(sys.executable).with_name("clang-format")
     tool = str(exe) if exe.exists() else shutil.which("clang-format")
     if tool is None:
         raise SystemExit("handasm: clang-format not found (uv sync --group dev)")
-    subprocess.run([tool, "-i", *map(str, files)], check=True)
+    subprocess.run([tool, f"--style=file:{style}", "-i", *map(str, files)], check=True)
+
+
+def assign_patches(clusters: list[Cluster], patches: list[Patch | BranchPatch]) -> None:
+    """Hands each patch to the cluster holding its start."""
+    for p in patches:
+        at = p.addr if isinstance(p, BranchPatch) else p.start
+        cl = next((c for c in clusters if c.owns(at)), None)
+        if cl is None:
+            raise SystemExit(f"handasm: patch {p.func} {at:08X}: not in any hand-asm cluster")
+        cl.patches.append(p)
 
 
 def run(out_dir: Path | None = None) -> None:
     root = repo_root()
     out = out_dir or root / OUT_DIR
     all_funcs = read_text_functions(root / "asm/text.s")
-    names = handwritten_names(root / "progress.json")
+    # progress.json needs the rebuilt EXE; without it (CI's native job), the
+    # list the committed translation was made from.
+    progress = root / "progress.json"
+    names = (
+        handwritten_names(progress)
+        if progress.exists()
+        else (root / OUT_DIR / FUNCTIONS_TXT).read_text().split()
+    )
     hw = [all_funcs[n] for n in names]
     clusters = build_clusters(hw, all_funcs)
     cluster_of = {f.addr: cl for cl in clusters for f in cl.funcs}
+    assign_patches(clusters, PATCHES)
     hw_names = set(names)
     pulled = [f.name for cl in clusters for f in cl.funcs if f.name not in hw_names]
     if pulled:
@@ -852,7 +971,10 @@ def run(out_dir: Path | None = None) -> None:
             params, results = ctx.sigs[n]
             ps = ", ".join("uint32_t" for _ in params) or "void"
             ext.append(f"extern {'uint32_t' if results else 'void'} {n}({ps});")
-        text = HEADER + '#include "handasm_index.h"\n\n'
+        text = HEADER + '#include "handasm_index.h"\n'
+        for inc in sorted({i for p in cl.patches for i in p.includes}):
+            text += f'#include "{inc}"\n'
+        text += "\n"
         if ext:
             text += "\n".join(ext) + "\n\n"
         text += code + "\n"
@@ -861,7 +983,8 @@ def run(out_dir: Path | None = None) -> None:
         (out / f"ha_{cl.name}.c").write_text(text)
     index.append("#endif")
     (out / "handasm_index.h").write_text("\n".join(index) + "\n")
-    clang_format(sorted(out.glob("*.[ch]")))
+    (out / FUNCTIONS_TXT).write_text("".join(f"{n}\n" for n in names))
+    clang_format(sorted(out.glob("*.[ch]")), root / ".clang-format")
     hazards = [w for w in ctx.warnings if "handled" in w]
     other = [w for w in ctx.warnings if "handled" not in w]
     for w in other:
@@ -869,7 +992,8 @@ def run(out_dir: Path | None = None) -> None:
     n_insn = sum(len(cl.insns) for cl in clusters)
     print(
         f"handasm: {len(hw)} functions ({n_insn} instructions) in {len(clusters)} clusters, "
-        f"{total_wrappers} C wrappers, {len(hazards)} load-delay hazards -> {out}"
+        f"{total_wrappers} C wrappers, {len(hazards)} load-delay hazards, "
+        f"{len(PATCHES)} native patches -> {out}"
     )
 
 

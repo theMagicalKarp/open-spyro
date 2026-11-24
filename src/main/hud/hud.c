@@ -5,6 +5,9 @@
 #include "globals.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#ifdef __psyz
+#include "native_view.h"
+#endif
 #include "vecmath.h"
 
 /* 0x800542e4 (0x11c) — write `value` into the HUD counter as decimal digits,
@@ -230,6 +233,9 @@ icon_slot:
         HUD_RECT(g_anHudDigitRestRects, rect)->h;
     rect += 8;
   } while (rect < 0x60);
+#ifdef __psyz
+  NativeHudReset();
+#endif
   anchor = &HUD_ICON_SLOT(HUD_SLOT_GEMS)->type;
   idx = VOL(g_nLevelIndex);
   VOL(anchor[0]) = ACTOR_TYPE_HUD_GEM_ICON;
@@ -610,6 +616,10 @@ void UpdateHudCounters(void) {
       av[0] = g_nHudEggCachedCount * 0x144 - 0x9C4;
       av[1] = 0x3F0;
       av[2] = 0x1000;
+#ifdef __psyz
+      /* the burst at the egg's screen x, in camera space */
+      av[0] += NativeHudLeftDx() * av[2] / VIEW_SCREEN_H;
+#endif
       g_pfnLevelEmitParticles(0x10, EMIT_DRIFT_STREAK, av, 0);
     } else if (g_nHudEggHoldTimer >= 9) {
       g_nHudEggCachedCount += 1;

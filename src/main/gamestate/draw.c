@@ -16,6 +16,7 @@
 #include "level_id.h"
 #include "main_shared.h"
 #include "match_asm.h"
+#include "native_view.h"
 #include "pause_menu.h"
 #include "save_menu.h"
 #include "title_state.h"
@@ -639,6 +640,9 @@ void PauseMenu_Draw(void) {
     LINE->r0 = 0;
     LINE->g0 = 0;
     LINE->b0 = 0;
+#ifdef __psyz
+    NativeStretchBackdrop((PolyFT4 *)p - (MENU_BACKDROP_STRIPS - 1));
+#endif
     AddPrimToOT((int)next);
     (*(char **)&g_pPrimBufferWriteCursor) = p + 0x38;
     prim = (BackdropTail *)p;
@@ -1554,6 +1558,9 @@ void MenuTransition_Draw(void) {
     LINE->r0 = 0;
     LINE->g0 = 0;
     LINE->b0 = 0;
+#ifdef __psyz
+    NativeStretchBackdrop((PolyFT4 *)p - (MENU_BACKDROP_STRIPS - 1));
+#endif
 #undef LINE
     AddPrimToOTSlot(next, slot);
     g_pPrimBufferWriteCursor = p + 0x38;
@@ -2725,7 +2732,11 @@ void GamestateDraw(void) {
   g_pActiveFrameDrawEnv = (DRAWENV *)env;
   g_nPrimBufferOverflowFlag = 0;
   g_pPrimBufferWriteCursor = cursor;
+#ifdef __psyz
+  limit = cursor + NATIVE_PRIM_BUFFER_BYTES; /* frame_db.h */
+#else
   limit = cursor + PRIM_BUFFER_BYTES;
+#endif
   g_pOtDepthBinArrayBase = otbase;
   g_pOtActiveDepthSlot = otslot;
   g_pPrimBufferLimit = limit;
@@ -2734,6 +2745,9 @@ void GamestateDraw(void) {
   BuildCameraViewMatrix();
 
   if (g_nGamestate != GS_GAMEPLAY) {
+#ifdef __psyz
+    NativeMenuBackdrop();
+#endif
     if (g_nGamestate == GS_LEVEL_LOAD) {
       LevelTransition_Draw();
     } else if (g_nGamestate == GS_PAUSE_MENU) {

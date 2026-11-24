@@ -1344,6 +1344,10 @@ void InitActorMeshScratchRegions(int split) {
   SCHED_FENCE();
   g_pFramePrimBufferBase0 = VREAD(g_pRenderScratchRegionBase);
   g_pFramePrimBufferBase1 = VREAD(g_pRenderScratchPrimBase1);
+#ifdef __psyz
+  g_pFramePrimBufferBase0 = NATIVE_PRIM_BUFFER_BASE;
+  g_pFramePrimBufferBase1 = NATIVE_PRIM_BUFFER_BASE + NATIVE_PRIM_BUFFER_BYTES;
+#endif
   g_pFrameOtMergedChainSlot1 = g_pFrameOtMergedChainSlot0 =
       VREAD(g_pRenderScratchPrimTop);
   g_pFrameOtDepthBinBase1 = g_pFrameOtDepthBinBase0 =

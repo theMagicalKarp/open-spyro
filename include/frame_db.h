@@ -28,6 +28,17 @@ typedef struct FrameDB {
  * (cutscene) layout. */
 #define PRIM_BUFFER_BYTES 0x1C000
 #define PRIM_BUFFER_BYTES_SPLIT 0x13000
+#ifdef __psyz
+/* Native: the two frames' primitive buffers are NATIVE_PRIM_BUFFER_BYTES each
+   from NATIVE_PRIM_BUFFER_BASE, past the PS1's 2 MiB (native memory maps 8
+   MiB of KSEG0; DEMO_RECORD_BUFFER is at 0x80600000) instead of the carved
+   ones, which go unused. The original sizes are what a 4:3 view needs; a
+   wider one draws more, and the split (cutscene) buffers' limit in
+   GamestateDraw is not their end, so an overflow wrote over the OT above
+   them. */
+#define NATIVE_PRIM_BUFFER_BASE ((char *)0x80200000)
+#define NATIVE_PRIM_BUFFER_BYTES 0x80000
+#endif
 /* The regions above them, from g_pWorkAreaTop down: the emit list (256
  * 0x20-byte records), the depth-bin OT shared by both frames, and the
  * 8-byte merged-chain slot. */

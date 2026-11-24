@@ -2,6 +2,7 @@
  * Literal translation of hand-written asm; see handasm.h. */
 #include "handasm.h"
 #include "handasm_index.h"
+#include "native_view.h"
 
 /* cluster EmitActorDrawList: EmitActorDrawList (8001F798) */
 void ha_EmitActorDrawList(HaRegs *R, uint32_t entry) {
@@ -751,7 +752,8 @@ L_8001FC84:
   s0 = s0 | 0x2u;
 L_8001FC90:
   /* 8001FC90 1DC00002 */
-  bc = ((int32_t)t6 > 0);
+  /* native patch (EmitActorDrawList): screen x against the view's left edge */
+  bc = ((int32_t)t6 > VIEW_X0_HI);
   /* 8001FC94 01D97022 (delay) */
   t6 = t6 - t9;
   if (bc) {
@@ -761,7 +763,8 @@ L_8001FC90:
   s0 = s0 | 0x4u;
 L_8001FC9C:
   /* 8001FC9C 05C00002 */
-  bc = ((int32_t)t6 < 0);
+  /* native patch (EmitActorDrawList): screen x against the view's right edge */
+  bc = ((int32_t)t6 < VIEW_X1_HI_REL);
   /* 8001FCA0 00000000 (delay) */
   if (bc) {
     goto L_8001FCA8;
@@ -919,7 +922,8 @@ L_8001FD94:
   s0 = s0 | 0x2u;
 L_8001FDA0:
   /* 8001FDA0 1DC00002 */
-  bc = ((int32_t)t6 > 0);
+  /* native patch (EmitActorDrawList): screen x against the view's left edge */
+  bc = ((int32_t)t6 > VIEW_X0_HI);
   /* 8001FDA4 01D97022 (delay) */
   t6 = t6 - t9;
   if (bc) {
@@ -929,7 +933,8 @@ L_8001FDA0:
   s0 = s0 | 0x4u;
 L_8001FDAC:
   /* 8001FDAC 05C00002 */
-  bc = ((int32_t)t6 < 0);
+  /* native patch (EmitActorDrawList): screen x against the view's right edge */
+  bc = ((int32_t)t6 < VIEW_X1_HI_REL);
   /* 8001FDB0 31A60001 (delay) */
   a2 = t5 & 0x1u;
   if (bc) {
