@@ -247,6 +247,70 @@ TEST(stick_mode) {
         0);
 }
 
+TEST(keyboard_defaults) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(s.keyboard[6][0], KEY_LETTER('k')); /* cross */
+  CHECK_INT(s.keyboard[6][1], KEY_SPACE);
+  CHECK_INT(s.keyboard[0][0], KEY_LETTER('u'));  /* l2 */
+  CHECK_INT(s.keyboard[12][0], KEY_LETTER('w')); /* up */
+  CHECK_INT(s.keyboard[12][1], KEY_UP);
+  CHECK_INT(s.keyboard[9][0], 0); /* l3 */
+}
+
+TEST(keyboard_set) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(config_set(&s, "--set", "input.keyboard.cross", "x"), 0);
+  CHECK_INT(s.keyboard[6][0], KEY_LETTER('x'));
+  CHECK_INT(s.keyboard[6][1], 0);
+  CHECK_INT(config_set(&s, "--set", "input.keyboard.l2", " 1 , kp_4,lshift"),
+            0);
+  CHECK_INT(s.keyboard[0][0], KEY_1);
+  CHECK_INT(s.keyboard[0][1], KEY_KP_1 + 3);
+  CHECK_INT(s.keyboard[0][2], KEY_LSHIFT);
+  CHECK_INT(s.keyboard[0][3], 0);
+  CHECK_INT(config_set(&s, "--set", "input.keyboard.l2", ""), 0);
+  CHECK_INT(s.keyboard[0][0], 0);
+  log_capture();
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "jump") != 0);
+  CHECK(strstr(log_text(), "input.keyboard.cross must be a key name") != NULL);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "escape") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "grave") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "k space") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "k,") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.cross", "a,b,c,d,e") != 0);
+  CHECK(config_set(&s, "--set", "input.keyboard.jump", "k") != 0);
+  CHECK_INT(s.keyboard[6][0], KEY_LETTER('x'));
+}
+
+TEST(keyboard_toml) {
+  NativeSettings s = fresh();
+
+  CHECK_INT(config_load_string(&s, "x.toml",
+                               "[input.keyboard]\n"
+                               "cross = [\"k\", \"space\", \"kp_2\"]\n"
+                               "square = \"j\"\n"
+                               "l3 = []\n"
+                               "start = [\"return\"]\n"),
+            0);
+  CHECK_INT(s.keyboard[6][0], KEY_LETTER('k'));
+  CHECK_INT(s.keyboard[6][1], KEY_SPACE);
+  CHECK_INT(s.keyboard[6][2], KEY_KP_1 + 1);
+  CHECK_INT(s.keyboard[7][0], KEY_LETTER('j'));
+  CHECK_INT(s.keyboard[9][0], 0);
+  CHECK_INT(s.keyboard[11][0], KEY_RETURN);
+  log_capture();
+  CHECK(config_load_string(&s, "y.toml",
+                           "[input.keyboard]\ncross = [\"k\", 1]\n"
+                           "circle = 5\nl1 = [\"a,b\"]\njump = \"k\"\n") != 0);
+  CHECK(strstr(log_text(), "y.toml:2: input.keyboard.cross must be") != NULL);
+  CHECK(strstr(log_text(), "y.toml:3: input.keyboard.circle must be") != NULL);
+  CHECK(strstr(log_text(), "y.toml:4: input.keyboard.l1 must be") != NULL);
+  CHECK(strstr(log_text(), "y.toml:5: unknown key input.keyboard.jump") !=
+        NULL);
+}
+
 TEST(cull_margin) {
   NativeSettings s = fresh();
 
@@ -386,14 +450,16 @@ TEST(parse_aspect) {
   CHECK(a == 2.35);
 }
 
-/* The width asked of PsyZ at height 240: 4:3 -> 320 (a 512 canvas), 16:9 ->
-   427 (688), 21:9 -> 560 (896), 64:27 -> 569 (912); clamped to 4:3..8:3. */
+/* The width asked of PsyZ at 224 lines, to a multiple of 5: 4:3 -> 320 (a
+   512 canvas, no narrower), 16:9 -> 400 (640), 21:9 -> 525 (840), 64:27 ->
+   530 (848), 8:3 -> 595 (952); clamped to 320..640. */
 TEST(aspect_request_width) {
   CHECK_INT(config_aspect_request_width(4.0 / 3.0), 320);
-  CHECK_INT(config_aspect_request_width(16.0 / 9.0), 427);
-  CHECK_INT(config_aspect_request_width(21.0 / 9.0), 560);
-  CHECK_INT(config_aspect_request_width(64.0 / 27.0), 569);
-  CHECK_INT(config_aspect_request_width(8.0 / 3.0), 640);
+  CHECK_INT(config_aspect_request_width(16.0 / 9.0), 400);
+  CHECK_INT(config_aspect_request_width(21.0 / 9.0), 525);
+  CHECK_INT(config_aspect_request_width(64.0 / 27.0), 530);
+  CHECK_INT(config_aspect_request_width(8.0 / 3.0), 595);
+  CHECK_INT(config_aspect_request_width(20.0 / 7.0), 640);
   CHECK_INT(config_aspect_request_width(1.0), 320);
   CHECK_INT(config_aspect_request_width(4.0), 640);
 }

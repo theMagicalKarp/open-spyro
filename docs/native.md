@@ -85,6 +85,9 @@ speed = 1.0
 boost = 1.0
 boost_time = 0.5
 
+[input.keyboard]               # pad 1's keys: a name or up to 4, [] for none
+cross = ["k", "space"]         # (each button; the defaults are below)
+
 [video]
 resolution_scale = 1           # --resolution-scale: render scale 1..8, or "auto"
 aspect = "4:3"                 # --aspect: "16:9", "21:9", "W:H" up to 8:3, "auto"
@@ -349,9 +352,18 @@ their entry points abort (`src/native/game/load/level_id_stubs.c`).
 
 ## Input and headless runs
 
-Pad 1 is the keyboard or the first SDL gamepad (PsyZ's backend): arrows =
-D-pad, X / Z / S / D = Cross / Square / Triangle / Circle, Q / R / W / E =
-L1 / R1 / L2 / R2, Return = Start, Backspace = Select. Pad 1 reports a
+Pad 1 is the keyboard or the first SDL gamepad (PsyZ's backend). The
+keyboard follows DuckStation's layout, with the camera turn moved next to
+the face buttons: W A S D (or the arrows) = D-pad, I / J / K / L =
+Triangle / Square / Cross / Circle (Space is a second Cross, for jump),
+Q / E = L1 / R1, U / O = L2 / R2, Return = Start, Backspace = Select; L3
+and R3 are unbound. `input.keyboard.<button>` (`cross`, `l2`, `up`, ...)
+rebinds one: a key name (`"k"`, `"space"`, `"f1"`, `"kp_4"`, `"lshift"`, `"up"`)
+or an array of up to four, `[]` for none (`--set input.keyboard.cross=k,space`).
+Escape, F4, F6, `` ` `` and `=` are the host's and can't be bound. PsyZ's
+own keyboard table is fixed, so the host rebuilds pad 1's buttons from the
+gamepad and these bindings in `Psyz_PadsSet` (`src/native/host/main.c`,
+names in `keymap.c`). Pad 1 reports a
 DualShock in analog mode (id 0x73; `input.pad = "digital"` makes it a digital
 pad, 0x41): the left stick steers Spyro (and the free-look camera) through
 the game's own analog path, which calibrates the stick centre from the first
@@ -412,9 +424,12 @@ next to it per shot too); the two can be given together.
 
 `video.resolution_scale` (`--resolution-scale N`) renders at N times
 512x240, 1 to 8, or `"auto"` for the window size over the game's size. Anything
-but 1 puts PsyZ in its native display mode (a 512x240 canvas of its own,
+but 1 puts PsyZ in its native display mode (a 512x224 canvas of its own,
 centred), which is where it scales; 1, the default, keeps the PS1 display
-path. Either way the frame fills the window at 4:3 (PsyZ's native mode
+path. The game draws only rows 8..232 of its 240 (`DRAW_Y`, `DRAW_H`; a
+TV's overscan hid the black lines above and below), so the native canvas
+crops them, while the PS1 path shows all 240 at 4:3. Either way the frame
+fills the window at the view's aspect (PsyZ's native mode
 alone would only scale by whole multiples; the host reports a display
 larger than any window so it fits it instead), and auto picks the
 smallest scale at least as tall as that fit. At 1x the two modes capture the same frame, up to a few pixels one
@@ -423,11 +438,18 @@ The pause and menu backdrops stay at 1x under a scaled HUD and menu: the
 game reads the frame back into RAM (`StoreImage`, `MoveImage`) and draws it
 again as a texture, so it only ever sees the 512x240 copy.
 `video.aspect` (`--aspect`) widens the view: `"16:9"`, `"21:9"`, any
-`"W:H"` from 4:3 to 8:3 (PsyZ's widest canvas, 1024 game pixels), or
-`"auto"` for the window's, followed as it is resized. It asks PsyZ's native
-mode for a canvas wider than the 512x240 framebuffer, at the same height and
-the same projection, centred on it (688 wide at 16:9, x -88..600; 896 at
-21:9), and the run logs the view's game-coordinate bounds. The game's
+`"W:H"` from 4:3 to 8:3, or `"auto"` for the window's, followed as it is
+resized. It is the aspect of the cropped 224-line picture, never narrower
+than the 512-wide framebuffer (so `"4:3"` is about 1.43:1), and rounded so
+the canvas is a whole number of game pixels (PsyZ presents nothing for a
+canvas it has to round). A fixed aspect also opens the window at it (at
+PsyZ's height, or narrower and shorter if that would be wider than the
+display), so the picture fills it without bars; resizing it afterwards is
+left alone. The `=` key's first step out of the PS1 path (1x at `"4:3"`)
+refits the window the same way, as the cropped canvas is wider. It asks PsyZ's native mode for a
+canvas wider than the framebuffer, at the same projection, centred on it
+(640 wide at 16:9, x -64..576; 840 at 21:9), and the run logs the view's
+game-coordinate bounds. The game's
 side culls, hand-written asm tuned to the 4:3 edges, are widened to the view
 by native patches to the hand-asm translation
 (`tools/open-spyro/src/open_spyro/handasm_patches.py`, `include/native_view.h`):

@@ -43,10 +43,7 @@ unsigned Psyz_VideoGetInternalResolution(void);
 #define GAMESTATE_ADDR 0x800757d8u
 #define ACTIVE_LEVEL_ADDR 0x8007596cu
 
-static const float MARGIN = 8; /* points from the game image's corner */
-/* The game leaves the top 8 of its 240 lines black (a ~224-line picture),
-   so the panel starts below that band. */
-static const float GAME_TOP_BAND = 8.0f / 240.0f;
+static const float MARGIN = 8;     /* points from the game image's corner */
 static const float FONT_SIZE = 12; /* the panel's text */
 static const float GRAPH_FPS = 70; /* the graph's height, unless exceeded */
 static const ImVec2 GRAPH_SIZE(170, 40); /* until the rows are measured */
@@ -311,16 +308,19 @@ static ImVec2 game_origin(void) {
   /* PsyZ fits the game to the window at the view's aspect, centred, with
      black bars on the other axis (FitGameToWindow / GetCanvasPresentRect). */
   float aspect = (float)native_view_aspect();
+  /* The game's black top band, when the view shows it: the panel starts
+     below it. */
+  float band = (float)native_view_top_band();
   float h;
 
   if (win.x <= 0 || win.y <= 0) {
     return ImVec2(0, 0);
   }
   if (win.x / win.y > aspect) {
-    return ImVec2((win.x - win.y * aspect) / 2, win.y * GAME_TOP_BAND);
+    return ImVec2((win.x - win.y * aspect) / 2, win.y * band);
   }
   h = win.x / aspect;
-  return ImVec2(0, (win.y - h) / 2 + h * GAME_TOP_BAND);
+  return ImVec2(0, (win.y - h) / 2 + h * band);
 }
 
 static void draw_panel(void) {

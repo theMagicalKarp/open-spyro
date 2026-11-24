@@ -122,7 +122,9 @@ int config_parse_aspect(const char *s, double *aspect) {
 }
 
 int config_aspect_request_width(double aspect) {
-  int w = (int)lround(240 * aspect);
+  /* A multiple of 5, so the canvas is a whole number of game pixels (8 per
+     5): PsyZ presents nothing for a canvas it has to round. */
+  int w = 5 * (int)lround(CONFIG_VIEW_LINES * aspect / 5);
 
   return w < 320 ? 320 : w > 640 ? 640 : w;
 }
@@ -190,7 +192,8 @@ enum setting_kind {
   SET_LEVEL,
   SET_RANGE,
   SET_ASPECT,
-  SET_RESOLUTION_SCALE
+  SET_RESOLUTION_SCALE,
+  SET_KEYS
 };
 static const struct setting {
   const char *key;
@@ -215,6 +218,7 @@ static const struct setting {
   CHOICE("input." name ".mode", stick[i].mode, stick_modes),                   \
       SETTING("input." name ".range", SET_RANGE, stick[i].range),              \
       NUMBER("input." name ".curve", stick[i].curve, 0.1, 5)
+#define KEYS(button, i) SETTING("input.keyboard." button, SET_KEYS, keyboard[i])
     SETTING("disc", SET_PATH, disc),
     SETTING("memcard.port1", SET_PATH, card[0]),
     SETTING("memcard.port2", SET_PATH, card[1]),
@@ -231,10 +235,27 @@ static const struct setting {
     NUMBER("input.camera.speed", camera_speed, 0.1, 8),
     NUMBER("input.camera.boost", camera_boost, 1, 8),
     NUMBER("input.camera.boost_time", camera_boost_time, 0, 10),
+    KEYS("l2", 0),
+    KEYS("r2", 1),
+    KEYS("l1", 2),
+    KEYS("r1", 3),
+    KEYS("triangle", 4),
+    KEYS("circle", 5),
+    KEYS("cross", 6),
+    KEYS("square", 7),
+    KEYS("select", 8),
+    KEYS("l3", 9),
+    KEYS("r3", 10),
+    KEYS("start", 11),
+    KEYS("up", 12),
+    KEYS("right", 13),
+    KEYS("down", 14),
+    KEYS("left", 15),
     {"video.resolution_scale", SET_RESOLUTION_SCALE,
      offsetof(NativeSettings, resolution_scale), 1, 8, NULL},
     SETTING("video.aspect", SET_ASPECT, aspect),
     CHOICE("video.hud", hud_edges, hud_modes),
+#undef KEYS
 #undef STICK
 #undef CHOICE
 #undef INTEGER
@@ -280,6 +301,9 @@ static const char *setting_want(const struct setting *t) {
     return "\"auto\" or a width:height from 4:3 to 8:3 (\"16:9\")";
   case SET_RESOLUTION_SCALE:
     return "\"auto\" or a whole number from 1 to 8";
+  case SET_KEYS:
+    return "a key name or an array of up to 4 (\"k\", [\"k\", \"space\"], [] "
+           "for none), not escape, f4, f6, grave or equals";
   case SET_NUMBER:
   case SET_INT: {
     static char want[64];
@@ -387,6 +411,37 @@ static int store_setting(NativeSettings *s, const struct setting *t,
     ((double *)field)[1] = v[1];
     return 1;
   }
+  case SET_KEYS: {
+    /* Key names split by commas (a TOML array arrives joined): "k, space";
+       "" unbinds the button. */
+    static const char blank[] = " \t";
+    unsigned char keys[KEYMAP_KEYS] = {0};
+    const char *p = value + strspn(value, blank);
+    int n = 0;
+
+    while (*p != '\0') {
+      size_t len = strcspn(p, ", \t");
+      int key = keymap_key(p, (int)len);
+
+      if (key == 0 || keymap_reserved(key) || n == KEYMAP_KEYS) {
+        return 0;
+      }
+      keys[n++] = (unsigned char)key;
+      p += len;
+      p += strspn(p, blank);
+      if (*p == ',') {
+        p++;
+        p += strspn(p, blank);
+        if (*p == '\0') {
+          return 0;
+        }
+      } else if (*p != '\0') {
+        return 0;
+      }
+    }
+    memcpy(field, keys, sizeof(keys));
+    return 1;
+  }
   case SET_CHOICE:
     for (int i = 0; t->choices[i] != NULL; i++) {
       if (strcmp(value, t->choices[i]) == 0) {
@@ -459,7 +514,7 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
                         toml_datum_t v) {
   const struct setting *t = find_setting(key);
   const char *value = NULL;
-  char buf[64]; /* a number or range, formatted for store_setting */
+  char buf[128]; /* a number, range or key list, formatted for store_setting */
 
   if (t == NULL) {
     if (is_table(key)) {
@@ -496,6 +551,20 @@ static int config_value(NativeSettings *s, const char *file, const char *key,
     }
     snprintf(buf, sizeof(buf), "%.17g,%.17g", e[0], e[1]);
     value = buf;
+  } else if (t->kind == SET_KEYS && v.type == TOML_ARRAY) {
+    size_t n = 0;
+
+    buf[0] = '\0';
+    value = buf;
+    for (int i = 0; i < v.u.arr.size && value != NULL; i++) {
+      toml_datum_t d = v.u.arr.elem[i];
+
+      if (d.type != TOML_STRING || strchr(d.u.s, ',') != NULL ||
+          (n += (size_t)snprintf(buf + n, sizeof(buf) - n, "%s%s", i ? "," : "",
+                                 d.u.s)) >= sizeof(buf)) {
+        value = NULL;
+      }
+    }
   } else if (t->kind == SET_NUMBER || t->kind == SET_LEVEL ||
              t->kind == SET_INT || t->kind == SET_RANGE ||
              (t->kind == SET_RESOLUTION_SCALE &&

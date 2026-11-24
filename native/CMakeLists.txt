@@ -158,6 +158,7 @@ add_executable(spyro
     ${ROOT}/src/native/host/diag.cpp
     ${ROOT}/src/native/host/diag_stats.c
     ${ROOT}/src/native/host/imports.c
+    ${ROOT}/src/native/host/keymap.c
     ${ROOT}/src/native/host/audio.c
     ${ROOT}/src/native/host/audio_format.c
     ${ROOT}/src/native/host/host_io.c

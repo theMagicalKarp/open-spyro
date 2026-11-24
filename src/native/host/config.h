@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 
+#include "keymap.h"
 #include "stick.h"
 
 /* Every persistent setting, by its dotted config key (config.c settings). */
@@ -32,12 +33,16 @@ typedef struct NativeSettings {
   int camera_analog;
   int camera_invert; /* input.camera.invert: stick right turns like L2 */
   double camera_speed, camera_boost, camera_boost_time;
+  /* input.keyboard.<button>: the keys (KEY_ values, 0-padded) that hold each
+     of pad 1's buttons, in config_parse_buttons' bit order. */
+  unsigned char keyboard[16][KEYMAP_KEYS];
   /* video.resolution_scale: the render scale, 1..8, or 0 ("auto") for the
      window size over the canvas; 1 keeps PsyZ's PS1 display mode. */
   int resolution_scale;
-  /* video.aspect: the view's width over its height, 4:3 (the original) to
-     8:3 (PsyZ's widest canvas), wider showing more of the world at the
-     sides; 0 for the window's. */
+  /* video.aspect: the picture's width over its height (the game's 224
+     drawn lines), 4:3 (the original, which shows the whole 512-wide
+     framebuffer at about 1.43:1) to 8:3, wider showing more of the world at
+     the sides; 0 for the window's. */
   double aspect;
   /* video.hud: 0 "center" (the original's 4:3 layout), 1 "edges" (the side
      counters at a widened view's edges). */
@@ -57,6 +62,7 @@ enum { CONFIG_MAX_FILES = 8 };
       .camera_speed = 1.0,                                                     \
       .camera_boost = 1.0,                                                     \
       .camera_boost_time = 0.5,                                                \
+      .keyboard = KEYMAP_DEFAULT,                                              \
       .resolution_scale = 1,                                                   \
       .aspect = 4.0 / 3.0,                                                     \
   }
@@ -83,8 +89,13 @@ int config_level_valid(int level);
 /* --warp N:LEVEL; nonzero if the form is wrong or N is not positive. */
 int config_parse_warp(const char *arg, int *frame, int *level);
 
-/* video.aspect's range: the original 4:3, up to the 1024-wide canvas PsyZ
-   can draw (8:3 at 240 lines). */
+/* The lines of the picture PsyZ's native mode shows: the game draws rows
+   8..232 of its 240 (DRAW_Y, DRAW_H) and leaves the rest black, hidden by a
+   TV's overscan, so the canvas crops them. */
+#define CONFIG_VIEW_LINES 224
+
+/* video.aspect's range: the original 4:3, up to 8:3 (the widest canvas PsyZ
+   can draw is 1024 game pixels, a little wider still). */
 #define CONFIG_ASPECT_MIN (4.0 / 3.0)
 #define CONFIG_ASPECT_MAX (8.0 / 3.0)
 
@@ -92,8 +103,10 @@ int config_parse_warp(const char *arg, int *frame, int *level);
    nonzero if malformed or outside CONFIG_ASPECT_MIN..MAX. */
 int config_parse_aspect(const char *s, double *aspect);
 
-/* The canvas width to ask PsyZ for at 240 lines and ASPECT (window
-   pixels: 320 is 4:3, a 512x240 canvas), clamped to the range above. */
+/* The canvas width to ask PsyZ for at CONFIG_VIEW_LINES and ASPECT (window
+   pixels: 320 is the 512-wide framebuffer), to the nearest multiple of 5,
+   from 320 (so the view is never narrower than the framebuffer: "4:3" is
+   about 1.43:1) to 640 (1024). */
 int config_aspect_request_width(double aspect);
 
 /* Whether ARG is a flag other than --config that takes the next argument. */

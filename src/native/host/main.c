@@ -169,8 +169,16 @@ void native_display_mode(int rgb24) {
 /* The view's width over its height: 4:3 in PsyZ's PS1 mode, which also
    stands in while a 24-bit boot image is shown. */
 double native_view_aspect(void) {
-  return video_request.w > 0 && !showing_rgb24 ? video_request.w / 240.0
-                                               : 4.0 / 3.0;
+  return video_request.w > 0 && !showing_rgb24
+             ? video_request.w / (double)CONFIG_VIEW_LINES
+             : 4.0 / 3.0;
+}
+
+/* The black band above the game's picture, as a fraction of the view's
+   height: the PS1 mode shows all 240 lines, the top 8 of them blank; the
+   native canvas crops them. */
+double native_view_top_band(void) {
+  return video_request.w > 0 && !showing_rgb24 ? 0.0 : 8.0 / 240.0;
 }
 
 /* The window's size in pixels: asked for once it exists, then kept up to
@@ -200,9 +208,10 @@ static int window_size(int *w, int *h) {
   return window_w > 0;
 }
 
-/* Native mode at WIDTH x 240 at the display aspect (320 is 4:3: a 512x240
-   canvas, the framebuffer's own size; wider is more of the world at the
-   sides, the framebuffer centred in it). Native mode presents at whole
+/* Native mode at WIDTH x CONFIG_VIEW_LINES at the display aspect (320 is a
+   512-wide canvas, the framebuffer's own width; wider is more of the world
+   at the sides, the framebuffer centred in it, and the 8 blank lines above
+   and below the game's picture cropped). Native mode presents at whole
    multiples of the display it is given (and fits that to the window the
    same way), leaving borders in most windows; told the display is 32 times
    the request, larger than any window, it scales the frame to fit the
@@ -211,7 +220,7 @@ static void set_video_request(int width) {
   if (video_request.w == width) {
     return;
   }
-  video_request = (PsyzSize){width, 240};
+  video_request = (PsyzSize){width, CONFIG_VIEW_LINES};
   Psyz_VideoSimulateDisplay(
       (PsyzSize){video_request.w * 32, video_request.h * 32});
   if (!showing_rgb24) {
@@ -229,6 +238,77 @@ static void update_auto_aspect(void) {
   }
 }
 
+/* A fixed video.aspect: the window, once PsyZ has shown it at its 4:3
+   default, is widened to the view's aspect at the same height (narrowed to
+   the display's usable width if that is too wide) and centred, so the view
+   fills it without bars. PsyZ puts back its own size when the window's
+   display scale changes (as it does just after the first show on a HiDPI
+   display), so the size is set again each frame until the window has it,
+   for at most FIT_WINDOW_MS of wall time (frames run uncapped under --fast
+   and the intro skip); after that resizes are the player's. A window not
+   shown by then, or fullscreen throughout, is left as it is. */
+enum { FIT_WINDOW_MS = 2000 };
+static int fit_window_armed = 1, fit_target_w, fit_target_h;
+static Uint64 fit_window_deadline;
+
+/* Fit the window again from the next frame on: the view's aspect changed. */
+static void refit_window_to_aspect(void) {
+  fit_window_armed = 1;
+  fit_target_w = 0;
+  fit_window_deadline = 0;
+}
+
+static void fit_window_to_aspect(void) {
+  int count, w, h;
+  SDL_Window **windows;
+  Uint64 now;
+
+  if (!fit_window_armed || cfg.aspect == 0) {
+    return;
+  }
+  now = SDL_GetTicks();
+  if (fit_window_deadline == 0) {
+    fit_window_deadline = now + FIT_WINDOW_MS;
+  } else if (now > fit_window_deadline) {
+    fit_window_armed = 0;
+    return;
+  }
+  windows = SDL_GetWindows(&count);
+  if (windows != NULL && count > 0 &&
+      !(SDL_GetWindowFlags(windows[0]) &
+        (SDL_WINDOW_HIDDEN | SDL_WINDOW_FULLSCREEN)) &&
+      SDL_GetWindowSize(windows[0], &w, &h)) {
+    if (fit_target_w == 0) {
+      /* The canvas's, not native_view_aspect: the window is first shown
+         during the boot splash, which stands in at 4:3. */
+      double aspect = video_request.w > 0
+                          ? video_request.w / (double)CONFIG_VIEW_LINES
+                          : 4.0 / 3.0;
+      SDL_Rect usable;
+
+      fit_target_w = (int)lround(h * aspect);
+      fit_target_h = h;
+      if (SDL_GetDisplayUsableBounds(SDL_GetDisplayForWindow(windows[0]),
+                                     &usable) &&
+          fit_target_w > usable.w) {
+        fit_target_w = usable.w;
+        fit_target_h = (int)lround(fit_target_w / aspect);
+      }
+      if (fit_target_w != w || fit_target_h != h) {
+        printf("native: window %dx%d\n", fit_target_w, fit_target_h);
+      }
+    }
+    if (w == fit_target_w && h == fit_target_h) {
+      fit_window_armed = 0;
+    } else {
+      SDL_SetWindowSize(windows[0], fit_target_w, fit_target_h);
+      SDL_SetWindowPosition(windows[0], SDL_WINDOWPOS_CENTERED,
+                            SDL_WINDOWPOS_CENTERED);
+    }
+  }
+  SDL_free(windows);
+}
+
 /* video.resolution_scale = "auto": enough scale for the window's height, or
    for its width at the view's aspect, so the fit to the window shrinks
    rather than blurs. */
@@ -240,7 +320,7 @@ static void update_auto_resolution_scale(void) {
   }
   fit = (int)(w / native_view_aspect());
   fit = h < fit ? h : fit;
-  fit = (fit + 239) / 240;
+  fit = (fit + CONFIG_VIEW_LINES - 1) / CONFIG_VIEW_LINES;
   Psyz_VideoSetInternalResolution(fit < 1 ? 1 : fit > 8 ? 8 : (unsigned)fit);
 }
 
@@ -262,8 +342,10 @@ static void apply_pending_resolution_scale(void) {
     return;
   }
   if (video_request.w == 0) {
+    /* The cropped 224-line canvas is wider than the PS1 mode's 4:3. */
     Psyz_VideoSetAnchor(PSYZ_ANCHOR_CENTER);
     set_video_request(320);
+    refit_window_to_aspect();
   }
   cfg.resolution_scale = (int)pending_resolution_scale;
   Psyz_VideoSetInternalResolution(pending_resolution_scale);
@@ -289,6 +371,7 @@ int native_frame_hook(void) {
   static PsyzRect logged_area;
 
   frames_run++;
+  fit_window_to_aspect();
   if (cfg.aspect == 0) {
     update_auto_aspect();
   }
@@ -464,6 +547,110 @@ _Noreturn void native_quit(int code) {
   exit(code);
 }
 
+/* --- pad 1's buttons ---------------------------------------------------------
+ */
+
+_Static_assert(KEY_A == SDL_SCANCODE_A && KEY_0 == SDL_SCANCODE_0 &&
+                   KEY_SEMICOLON == SDL_SCANCODE_SEMICOLON &&
+                   KEY_F1 == SDL_SCANCODE_F1 &&
+                   KEY_INSERT == SDL_SCANCODE_INSERT &&
+                   KEY_UP == SDL_SCANCODE_UP &&
+                   KEY_KP_DIVIDE == SDL_SCANCODE_KP_DIVIDE &&
+                   KEY_KP_PERIOD == SDL_SCANCODE_KP_PERIOD &&
+                   KEY_LCTRL == SDL_SCANCODE_LCTRL &&
+                   KEY_RGUI == SDL_SCANCODE_RGUI,
+               "keymap.h's KEY_ values are SDL scancodes");
+
+/* PsyZ's gamepad buttons (sdl3_common.h PadRead_Gamepad), by pad bit. */
+static const struct {
+  SDL_GamepadButton button;
+  int bit;
+} gamepad_buttons[] = {
+    {SDL_GAMEPAD_BUTTON_LEFT_SHOULDER, 2},
+    {SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, 3},
+    {SDL_GAMEPAD_BUTTON_NORTH, 4},
+    {SDL_GAMEPAD_BUTTON_EAST, 5},
+    {SDL_GAMEPAD_BUTTON_SOUTH, 6},
+    {SDL_GAMEPAD_BUTTON_WEST, 7},
+    {SDL_GAMEPAD_BUTTON_BACK, 8},
+    {SDL_GAMEPAD_BUTTON_LEFT_STICK, 9},
+    {SDL_GAMEPAD_BUTTON_RIGHT_STICK, 10},
+    {SDL_GAMEPAD_BUTTON_START, 11},
+    {SDL_GAMEPAD_BUTTON_DPAD_UP, 12},
+    {SDL_GAMEPAD_BUTTON_DPAD_RIGHT, 13},
+    {SDL_GAMEPAD_BUTTON_DPAD_DOWN, 14},
+    {SDL_GAMEPAD_BUTTON_DPAD_LEFT, 15},
+};
+
+/* The buttons held on pad 1's gamepad: PsyZ's, the first connected one still
+   there (the lowest instance id), read as PsyZ reads it. */
+static unsigned gamepad_held(void) {
+  int n;
+  SDL_JoystickID *ids = SDL_GetGamepads(&n), first = 0;
+  SDL_Gamepad *pad;
+  unsigned held = 0;
+
+  if (ids == NULL) {
+    return 0;
+  }
+  for (int i = 0; i < n; i++) {
+    if (first == 0 || ids[i] < first) {
+      first = ids[i];
+    }
+  }
+  SDL_free(ids);
+  if (first == 0 || (pad = SDL_GetGamepadFromID(first)) == NULL) {
+    return 0;
+  }
+  for (size_t i = 0; i < sizeof(gamepad_buttons) / sizeof(gamepad_buttons[0]);
+       i++) {
+    if (SDL_GetGamepadButton(pad, gamepad_buttons[i].button)) {
+      held |= 1u << gamepad_buttons[i].bit;
+    }
+  }
+  if (SDL_GetGamepadAxis(pad, SDL_GAMEPAD_AXIS_LEFT_TRIGGER) > 8000) {
+    held |= 1u << 0;
+  }
+  if (SDL_GetGamepadAxis(pad, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) > 8000) {
+    held |= 1u << 1;
+  }
+  return held;
+}
+
+/* The buttons held through cfg.keyboard (input.keyboard.*). */
+static unsigned keyboard_held(void) {
+  const bool *down;
+  unsigned held = 0;
+
+  if (!SDL_HasKeyboard()) {
+    return 0;
+  }
+  down = SDL_GetKeyboardState(NULL);
+
+  for (int b = 0; b < 16; b++) {
+    for (int k = 0; k < KEYMAP_KEYS && cfg.keyboard[b][k] != 0; k++) {
+      if (down[cfg.keyboard[b][k]]) {
+        held |= 1u << b;
+      }
+    }
+  }
+  return held;
+}
+
+/* PsyZ ORs its own fixed keyboard table into pad 1's buttons, so they are
+   rebuilt from the gamepad and cfg.keyboard instead. */
+static void rebind_pad1(unsigned char *report, int len) {
+  unsigned held;
+
+  if (len < 4 || (report[1] != PSYZ_CTRL_DIGITAL_PAD &&
+                  report[1] != PSYZ_CTRL_ANALOG_PAD)) {
+    return;
+  }
+  held = gamepad_held() | keyboard_held();
+  report[2] = (unsigned char)~(held >> 8);
+  report[3] = (unsigned char)~held;
+}
+
 /* --- core functions PsyZ's backend calls, forwarded into the module ------- */
 
 void Psyz_PadsSet(int port, const char *src, int len) {
@@ -474,6 +661,9 @@ void Psyz_PadsSet(int port, const char *src, int len) {
     len = 256;
   }
   memcpy(dst, src, (size_t)len);
+  if (port == 0) {
+    rebind_pad1(dst, len);
+  }
   stick_shape_report(dst, len, &cfg.stick[0], &cfg.stick[1]);
   if (port == 0) {
     script_apply_pad(dst, len, script_buttons(presses, n_presses, frames_run));
