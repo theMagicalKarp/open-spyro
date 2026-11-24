@@ -1,322 +1,421 @@
-# Native build (macOS arm64, Linux arm64, Linux x86_64)
+# The native build
 
-An experimental native executable built from the matched C. It runs no
-emulation. The feasibility study is in `docs/native-spike.md`. The PS1 build
-never reads anything described here, and `make check` stays the gate for every change to shared code.
+The native build turns the decompiled game into a regular desktop program. It
+does not emulate a PlayStation: the matched C is compiled for your machine and
+runs directly. It reads the game data from your own disc image.
 
-**Status: in progress.** `make native` builds `build/native/spyro`:
-all game C, the translated hand-written asm and PsyZ in one module. Given the
-user's disc image it loads the game's executable from it and runs the game's
-`main` at the original frame rate: boot splashes, the title menu, the opening
-cutscene, and the game itself. All 35 levels load and play (hubs, flight
-levels, bosses), with sound (effects, XA music, cutscene narration) and
-memory-card saves to a card-image file.
-`spyro --stub` runs a disc-free test scene instead, with no disc (the CI smoke
-run).
+It runs on:
 
-## Setup and use
+- macOS on Apple Silicon
+- Linux on arm64 or x86_64
 
-Supported hosts: macOS on Apple Silicon (Homebrew), and Linux on arm64 or
-x86_64. On Linux, `tools/native_setup.sh` uses the system SDL3 when
-`pkg-config` finds one and otherwise builds the pinned SDL3 release into
-`build/native-tools/sdl3`; it names the Debian/Ubuntu packages it needs
-(`LINUX_PACKAGES`) if a tool is missing. Rendering uses SDL_GPU on Vulkan, so
-Linux needs a Vulkan driver (Mesa's `mesa-vulkan-drivers` includes the
-`lavapipe` software one). With no display, set `SDL_VIDEODRIVER=offscreen`
-(the CI smoke runs do).
+**Status: experimental, but playable.** The boot splashes, title menu, opening
+cutscene and all 35 levels (hubs, flight levels and bosses) work, along with
+sound effects, music, cutscene narration and memory-card saves.
+
+The native build is separate from the byte-matching PS1 build. Nothing here
+affects the PS1 output, and `make check` is still the test every change to
+shared code has to pass. The original feasibility study is in
+[`native-spike.md`](native-spike.md).
+
+- [Quick start](#quick-start)
+- [Playing](#playing)
+- [Configuration](#configuration)
+- [Display options](#display-options)
+- [Scripted and headless runs](#scripted-and-headless-runs)
+- [Development](#development)
+- [How it works](#how-it-works)
+- [Known issues](#known-issues)
+
+## Quick start
 
 ```sh
-tools/native_setup.sh            # wasi-sdk + wasm2c (pinned, into build/native-tools) + SDL3/cmake (Homebrew on macOS)
-git submodule update --init external/psyz external/tomlc17 external/imgui external/implot   # `make native` does this too; PsyZ's own submodules are not needed
-make native                      # -> build/native/spyro (+ build/native/gate)
-cp spyro.example.toml spyro.toml # then set its `disc` to your .cue
-make native-run NATIVE_ARGS="--frames 300 --screenshot out.bmp"   # with spyro.toml (its `disc` key names the .cue)
-make native-run NATIVE_ARGS="--frames 1900 --screenshot out.bmp --press 1300:start \
-  --press 1400:start --shot 1550"   # scripted pad 1 + a screenshot at VSync 1550
-make native-run NATIVE_ARGS="--fast --memcard none --frames 4400 --screenshot out.bmp \
-  --press 1300:start --press 1400:start --press 1550:cross --press 1650:cross \
-  --press 2300:start --warp 3400:21 --shot 3990"   # Dry Canyon, unthrottled
-make native-run NATIVE_ARGS="--frames 1900 --capture out.bmp --resolution-scale 4 \
-  --press 1300:start --press 1400:start --shot 1550"   # the displayed frame at 4x (2048x960)
-build/native/spyro --stub --frames 60    # no disc: a spinning-triangle test scene
-make native-gate SAVESTATE=~/Library/Application\ Support/DuckStation/savestates/<state>.sav
-make native-test                 # host unit tests (native/tests): C compiler + cmake only
-open-spyro neutral [--ref main] [--host]   # shared-code change neutral for the PS1 cpp?
+tools/native_setup.sh              # one-time: download and build the pinned toolchain and SDL3
+make native                        # build build/native/spyro
+cp spyro.example.toml spyro.toml   # then set `disc` in spyro.toml to your .cue file
+make native-run                    # play
 ```
 
-`make clean` empties `build/`, including `build/native-tools`; re-run
-`tools/native_setup.sh` after it.
+`tools/native_setup.sh` installs everything into `build/native-tools/`: a pinned
+wasi-sdk, wasm2c and a static build of SDL3. On macOS it also installs cmake
+through Homebrew. On Linux it prints the Debian/Ubuntu packages to install if
+anything is missing. `make native` fetches the git submodules it needs by
+itself.
 
-### Config file
+`make clean` deletes all of `build/`, including the toolchain, so run
+`tools/native_setup.sh` again afterwards.
 
-Settings that stay the same from run to run can live in a TOML file instead
-of on the command line. `spyro` reads `config.toml` from the user's data
-directory (`~/Library/Application Support/open-spyro/spyro/` on macOS,
-`~/.local/share/open-spyro/spyro/` on Linux) when it exists;
-`--config PATH` reads that file instead (and it must exist), and
-`--no-config` reads none, for repeatable scripted runs. `--config` can be
-given more than once (up to 8): the files are read in order and a later one
-overrides an earlier one, so a small file with only a few settings can be
-layered on a base config. Flags override the files. `make native-run` passes
-`--config spyro.toml` instead: the repo-root config, a gitignored copy of
-[`spyro.example.toml`](../spyro.example.toml) (`NATIVE_CONFIG=other.toml` for
-another, `NATIVE_CONFIG=` for the user's own); set `disc` there to point it at
-your dump.
+**Linux notes.** Rendering uses Vulkan, so you need a Vulkan driver. Mesa's
+`mesa-vulkan-drivers` package works, and includes the `lavapipe` software
+renderer for machines without a GPU. On a machine with no display at all, set
+`SDL_VIDEODRIVER=offscreen`.
+
+The finished executable has no unusual runtime dependencies. SDL3 is linked in
+statically. On macOS it needs only the system libraries. On Linux it needs glibc
+and the usual X11/Wayland, Vulkan and audio libraries.
+
+**No disc?** `build/native/spyro --stub` shows a spinning-triangle test scene
+instead. CI uses it as a smoke test.
+
+## Playing
+
+### Controls
+
+Pad 1 is the keyboard, or the first gamepad SDL finds. The keyboard layout
+follows DuckStation's, except that the camera buttons sit next to the face
+buttons.
+
+| Keyboard        | PS1 pad                            |
+| --------------- | ---------------------------------- |
+| W A S D, arrows | D-pad                              |
+| K, Space        | Cross (Space is there for jumping) |
+| J               | Square                             |
+| I               | Triangle                           |
+| L               | Circle                             |
+| Q / E           | L1 / R1                            |
+| U / O           | L2 / R2 (turn the camera)          |
+| Return          | Start                              |
+| Backspace       | Select                             |
+| (unbound)       | L3 / R3                            |
+
+Every button can be rebound in the config file, under `[input.keyboard]`. Each
+button takes a key name or a list of up to four. An empty list unbinds it:
 
 ```toml
-disc = "/path/to/Spyro.cue"   # --disc; a relative path is relative to this file
-
-[memcard]
-port1 = "card1.mcd"            # --memcard; "none" leaves port A empty
-port2 = "card2.mcd"            # --memcard2
-
-[input]
-pad = "analog"                 # "digital": pad 1 reports a digital pad
-
-[input.analog.left]            # and [input.analog.right] (radial, [0.15, 1.0])
-mode = "original"              # or "radial": the two below
-range = [0.375, 1.0]           # [inner, outer], fractions of full deflection
-curve = 1.0
-
-[input.camera]
-mode = "original"              # "analog": the right stick turns the camera
-invert = false
-speed = 1.0
-boost = 1.0
-boost_time = 0.5
-
-[input.keyboard]               # pad 1's keys: a name or up to 4, [] for none
-cross = ["k", "space"]         # (each button; the defaults are below)
-
-[video]
-resolution_scale = 1           # --resolution-scale: render scale 1..8, or "auto"
-aspect = "4:3"                 # --aspect: "16:9", "21:9", "W:H" up to 8:3, "auto"
-hud = "center"                 # "edges": the side counters at a wide view's edges
-
-[debug]
-fast = false                   # --fast
-log_level = "info"             # --log-level: "debug", "info", "warn", "error" (or d/i/w/e)
-overlay = false                # start with the diagnostics overlay shown
-cull_margin = 0                # widened views: cull this many pixels past each side
-
-[debug.start]                  # the state a run starts in
-level = 0                      # a level id: boot straight into it, 0 = title screen
+[input.keyboard]
+cross = ["k", "space"]
+l2 = "f1"
+select = []
 ```
 
-Every key is optional. Each setting has a dotted name, its table and key
-(`memcard.port1`, `debug.fast`), and `--set KEY=VALUE` sets any of them from
-the command line (`--set debug.log_level=debug`; a relative path there is
-relative to the working directory). The older flags are short forms of
-`--set`: `--disc`, `--memcard`, `--memcard2`, `--fast`, `--log-level`,
-`--resolution-scale` and `--aspect`.
-The per-run flags (`--frames`, `--press`, `--shot`, `--warp`,
-`--screenshot`, `--capture`, `--wav`) have no config key. The settings are one table in
-`src/native/host/config.c` (`settings[]`), which the config files, `--set` and
-the short flags all go through; a new setting is one row there. A malformed
-file, an unknown key or table, or a value of the wrong type or out of range
-stops the run, with every bad key reported by file and line. The parser is
-[tomlc17](https://github.com/cktan/tomlc17) (MIT), the `external/tomlc17`
-submodule, compiled into the host executable only (`native/CMakeLists.txt`).
+Key names include letters and digits, `space`, `return`, `up`, `lshift`, `f1`,
+`kp_4` and so on (see `src/native/host/keymap.c`).
 
-### Unit tests
+These keys always belong to the program and can't be rebound:
 
-`make native-test` builds and runs `native/tests` (a CMake project of its own
-in `build/native-test`, with ASan and UBSan), which needs only a C compiler,
-cmake and the tomlc17 submodule. It covers the native code that has no SDL or
-wasm dependency:
+| Key     | Action                                                      |
+| ------- | ----------------------------------------------------------- |
+| `` ` `` | Show or hide the diagnostics overlay (L3 + R3 on a gamepad) |
+| `=`     | Cycle the render scale: 1x, 2x, 4x, 8x                      |
+| F4      | Toggle fullscreen                                           |
+| F6      | Show the VRAM viewer                                        |
+| Escape  | Quit                                                        |
 
-- `src/native/host/config.c`: the config files, `--set` and the `--press` /
-  `--warp` / `--log-level` value formats that `main.c` uses.
-- `src/native/wasm/libc.c`: the printf family, sscanf, string functions and
-  stdio. The test includes `libc.c` with each libc name renamed to `w_<name>`,
-  so the module's implementation runs beside the host's.
-- `src/native/wasm/memcard.c`: card presence, formatting, the directory and
-  block chains, and reads/writes round-tripped through the `.mcd` image.
-- `src/native/wasm/shim_helpers.c`: the SDK shim's texpage masking of GPU
-  packets, the GTE MulMatrix0 and the CdlGetlocP result `sdk_shim.c` fakes.
-- `src/native/handasm/runtime.c`: the GTE side-effect layer (SXYP, IRGB/ORGB,
-  LZCS/LZCR) over a fake GTE, the R3000 mult/div macros and the hand-asm
-  leaves that touch no memory (hand-asm loads and stores need wasm32
-  addresses).
-- `src/native/host/host_io.c`: the module's file-handle table, the memory-card
-  path copy and the log filter (`imports.c` forwards to it).
-- `src/native/host/script.c`: `--press` hold windows, the scripted buttons on
-  pad 1's report and the `--shot` file names (`main.c`).
-- `src/native/host/stick.c`: the stick dead zones and curve, checked through
-  a model of the game's stick calibration (`main.c`).
-- `src/native/game/camera/manual_yaw.c`: L2/R2 and the right-stick camera
-  turn, its speed, invert and boost ramp, over the game globals it reads
-  (defined by the test).
-- `src/native/game/debug/warp.c`: when `--warp` and `debug.start.level` may
-  leave the current state and what they hand the game, the story-intro
-  fly-over cut, over stubs for the game calls (`funcs.h` is kept out, since
-  its struct size checks are 32-bit only).
-- `src/native/host/audio_format.c`: the sample frames per vblank and the
-  `--wav` header (`audio.c`).
-- `src/native/host/diag_stats.c`: the diagnostics overlay's frame rate and
-  frame-time averages, frame-time history and state names (`diag.cpp`).
-- `src/native/host/psx_memory.c`: the address-space layout and the KUSEG
-  mirror (`mach_vm_remap` on macOS, a shared memfd on Linux), built only when
-  the wasm2c runtime from `tools/native_setup.sh` is in `build/native-tools`
-  (CI sets it up before the tests).
+The diagnostics overlay shows the frame rate, a graph of recent frame times, the
+current game state and the current level. It is not part of the original game.
 
-Where a unit sits next to SDL, PsyZ or wasm2c code, its testable logic lives
-in its own file (`host_io.c`, `script.c`, `stick.c`, `audio_format.c`, `diag_stats.c`, `shim_helpers.c`)
-and the original file calls it.
+### Gamepads and analog sticks
 
-A unit's tests live next to it as `<unit>_test.c` (`src/native/host/config_test.c`),
-which `native/tests/CMakeLists.txt` picks up by glob; `native/tests` holds only
-the harness. The wasm-side tests include their unit rather than link it, and
-implement the `host_*` imports it calls (`host_imports.h` drops the wasm import
-attributes off wasm). The native game replacements' tests
-(`src/native/game/<subsystem>/<unit>_test.c`) include their unit too, with the
-game headers in `include/`, and define the game globals it uses. A test is a `TEST(name)` block with `CHECK`, `CHECK_INT` and
-`CHECK_STR` (`native/tests/test.h`); `build/native-test/native_tests FILTER`
-runs only the tests whose name contains FILTER.
+The game sees pad 1 as a DualShock in analog mode. The left stick moves Spyro
+through the game's own analog code. Set `input.pad = "digital"` to present a
+plain digital pad instead.
 
-## How it works
-
-The game C needs 32-bit pointers with PS1 RAM at its real addresses
-(`docs/native-spike.md`). A 64-bit host process cannot map memory at `0x80000000`, so the
-game is compiled for **wasm32**, where an address is an offset into linear
-memory, and **wasm2c** turns the module back into C for the host compiler
-(Apple clang on macOS, clang or gcc on Linux):
-
-```
-game C + src/native/handasm
-  + PsyZ core + src/native/wasm        --wasi-sdk clang-->  spyro.wasm (wasm32, PIE)
-spyro.wasm                             --wasm2c-->          spyro_w.c
-spyro_w.c + src/native/host + PsyZ SDL3 platform layer  --host cc-->     build/native/spyro
-```
-
-The result is plain host code (arm64 or x86_64). wasm2c bounds-checks memory with guard pages,
-so there are no per-access checks.
-
-### Memory map (`src/native/host/psx_memory.h`)
-
-| Linear address | Contents |
-|---|---|
-| `0x00000000–0x001FFFFF` | KUSEG mirror of main RAM: the same pages as KSEG0, remapped with `mach_vm_remap` (macOS) or mapped from one `memfd` (Linux) |
-| `0x01000000–0x017FFFFF` | wasm-side static data (`__memory_base`) |
-| `0x01800000–0x01FFFFFF` | wasm-side C stack |
-| `0x1F800000` | scratchpad |
-| `0x80000000–0x807FFFFF` | main RAM (2 MiB retail, plus dev-kit headroom for `DEMO_RECORD_BUFFER`) |
-
-Only touched pages are committed.
-
-### Game globals at PS1 addresses: GOT imports
-
-The modules are position-independent (`-fPIC`, `wasm-ld -pie`
-`--unresolved-symbols=import-dynamic`). Every game global stays an undefined
-`extern` (the `globals.h` declarations), so wasm-ld turns each one into a
-`GOT.mem` import. `open-spyro native got-table` writes the host side of those
-imports from the same symbol files the PS1 link pins (`config/symbol_addrs.txt`
-and the `undefined_*` lists). Each global therefore lives at its PS1 address,
-and aliases, nested symbols, `*Block` views and cross-symbol arithmetic
-(`textureCountRef - 7`) work unchanged. **No source change is needed.** This
-replaces the generated `globals_at.h` header the spike proposed.
-
-### No libc from wasi-sdk
-
-wasi-libc's `libc.a` is not PIC, so it cannot link into the PIE module. The
-module carries its own small libc (`src/native/wasm/libc.c`): string functions,
-the printf family, the `sscanf` subset PsyZ's cue parser uses, and stdio over
-host file handles. The wasi sysroot is used for headers only. The module's
-imports are therefore exactly:
-
-- `env.Draw_*`, `Psyz_VideoVSync`, `Psyz_PadsPoll`, `MyPadInit`: PsyZ's
-  platform API. `src/native/host/imports.c` forwards these to PsyZ's own
-  `sdl3_gpu` backend (Metal on macOS, Vulkan on Linux), built natively.
-- `host.*`: libc services (`src/native/wasm/host_imports.h`).
-- `GOT.mem.*`: game globals (above).
-
-PsyZ makes `u_long` pointer-sized: 32-bit in the module, 64-bit in the natively
-built backend. `imports.c` widens GPU packet words before `Draw_PushPrim` parses
-them, and copies `u_long` bitfield structs. Image data is 16-bit pixels on both
-sides.
-
-### Threads
-
-A wasm2c instance must only run on one thread. `Psyz_OsThreadStart` fails on
-purpose (`src/native/wasm/psyz_bridge.c`), so PsyZ's kernel services its timers
-from VSync instead of an IRQ thread. For the same reason sound is pushed, not
-pulled (next section).
-
-### Sound
-
-PsyZ's SPU emulation (voices, ADSR, reverb, and the CD / XA audio it decodes)
-runs inside the module; its SDL backend would pull samples from an SDL audio
-thread, which would re-enter the module. Instead `src/native/host/audio.c`
-asks the module for samples (`native_audio_pull`) at every blocking VSync and
-tops an SDL audio stream up to ~46 ms ahead of the device. The SPU so
-advances at the device's rate, as under PsyZ's pull model.
-
-The SPU therefore runs only between frames, where on a PS1 it runs alongside
-the CPU. One place notices: `CdReadSyncSectors` polls the voice tick while it
-waits for the disc, and a natively instant read polls twice with no samples
-between. A voice keyed on just before then still reads "keyed, envelope 0",
-the state the tick takes for a finished sound, and is freed (the opening
-cutscene's narration was silent). `GetSpuVoiceKeyStatus` (`sdk_shim.c`)
-reports a voice keyed on since the SPU last ran as `SPU_ON`.
-
-PsyZ's first `Psyz_SpuInit` zeroes SPU RAM, and PsyZ calls it lazily, when
-libcd first selects CD-DA / XA audio. By then the boot has uploaded the
-title's sample bank, so the title menu's sounds played silence (zeroed
-blocks with no end flag, so those voices never freed). `native_main` starts
-the SPU emulation before the game runs.
+The original game never reads the right stick. The native build can optionally
+use it to turn the camera (see [Camera](#camera) below).
 
 ### Memory cards
 
-`src/native/wasm/memcard.c` implements the libmcrd calls the game makes
-(Exist, Accept, ReadFile, WriteFile, CreateFile, Format) over a raw 128 KiB
-card image, the `.mcd` format emulators use, so saves move between this build
-and DuckStation. Port A is `card1.mcd` in the user's data directory
-(`~/Library/Application Support/open-spyro/spyro/` on macOS,
-`~/.local/share/open-spyro/spyro/` on Linux) unless `--memcard PATH`
-(or `memcard` in the config file) names another; `--memcard none` leaves it empty, and `--memcard2` fills port
-B. A missing file is a freshly formatted card, written on the first change;
-every change writes the whole image back. Operations finish at once and
-`MemCardSync` reports them on its next call.
+Saves go to a `.mcd` card image, the same 128 KiB format emulators use, so you
+can move saves between this build and DuckStation.
 
-## Shared-code portability
+By default, port 1 is `card1.mcd` in your data directory:
 
-The game C compiles natively with `__psyz` defined. The few places where the
-PS1 text cannot serve both builds go through `include/port.h` (included from
-`types.h`, `actor.h`, `model.h` and the level headers that need it), whose PS1
-expansion is the original text:
+- macOS: `~/Library/Application Support/open-spyro/spyro/`
+- Linux: `~/.local/share/open-spyro/spyro/`
 
-| Macro | PS1 | native |
-|---|---|---|
-| `REG_PIN(type, name, "$n")` | `register type name asm("$n")` | `type name` |
-| `PORT_VOLATILE` | (empty) | `volatile`: globals declared plain in some headers and volatile in others |
+The example config sets it to `card1.mcd` in the repo root instead. If the file
+doesn't exist, the game sees a freshly formatted card, and the file is created
+the first time the game saves. Use `--memcard none` to leave port 1 empty, and
+`--memcard2 PATH` to put a card in port 2.
 
-`match_asm.h` has native definitions too (plain C: a fence is nothing,
-`OPAQUE_COPY` is an assignment, `REG_RESERVE` zeroes). Other native-only code is
-under `#ifdef __psyz` (the variadic `OnActorAnimQueued` prototype, prototypes
-for the two `actor/groups.c` functions level 22 calls undeclared) or in
-`src/native/game/`, which replaces PS1 files or definitions with no native
-meaning: `render/ot.c` (`goto *ra`), `render/static_regs.c` (file-scope
-register variables) and `OnActorAnimQueued`'s definition.
-Native game C is built with `-Werror=implicit-function-declaration`: on wasm an
-undeclared call gets a guessed signature and traps if the definition differs.
+## Configuration
 
-`open-spyro neutral` checks every shared-code change: it compares the PS1
-preprocessor's output, before and after, as one stream of C tokens (line markers,
-whitespace and line breaks ignored). `make check` is still the final word.
+### Where settings come from
 
-## The ILP32 gate
+Settings are read in this order, with later sources winning:
 
-`native/gate/` builds the real `src/main/load/level.c` into its own module and
-replays a level transition: `UnpackWorldDataChunks` on the world bundle,
-`RelocateActorMeshHeader` on the mesh chunk (KUSEG pointers, 21-bit packed frame
-words), then `BuildLoadedLevelRuntime` on the level archive. The input is that
-level's original blobs from `WAD.WAD`. `open-spyro native gate` takes the RAM
-from a DuckStation savestate taken in the level and checks three things:
+1. `config.toml` in your data directory (the folder listed under
+   [Memory cards](#memory-cards)), if it exists.
+2. Files given with `--config PATH`. These replace step 1. You can pass
+   `--config` up to eight times, and each file overrides the ones before it, so
+   a small file can tweak a larger base config.
+3. Command-line flags.
 
-- every word the native loader relocated equals the PS1 RAM;
-- no on-disc offset that the PS1 rebased was missed;
-- every published global (chunk tables, collision header, actor pool, …) is
-  produced natively and matches.
+`--no-config` skips the config files entirely, which is handy for repeatable
+scripted runs.
+
+`make native-run` passes `--config spyro.toml`, the gitignored copy of
+[`spyro.example.toml`](../spyro.example.toml) in the repo root. Use
+`NATIVE_CONFIG=other.toml` to point it at a different file, or `NATIVE_CONFIG=`
+to fall back to the one in your data directory. Extra flags go in
+`NATIVE_ARGS="..."`.
+
+Every key is optional. A bad file, an unknown key or an out-of-range value stops
+the program, and every problem is reported with its file and line.
+
+### Setting any value from the command line
+
+Every setting has a dotted name made of its table and key, such as `debug.fast`
+or `memcard.port1`. `--set NAME=VALUE` sets any of them:
+
+```sh
+build/native/spyro --set debug.log_level=debug --set input.keyboard.cross=k,space
+```
+
+Relative paths given through `--set` are relative to the current directory. In a
+config file, they are relative to that file.
+
+A few common settings also have short flags:
+
+| Flag                   | Setting                  |
+| ---------------------- | ------------------------ |
+| `--disc PATH`          | `disc`                   |
+| `--memcard PATH`       | `memcard.port1`          |
+| `--memcard2 PATH`      | `memcard.port2`          |
+| `--fast`               | `debug.fast`             |
+| `--log-level LEVEL`    | `debug.log_level`        |
+| `--resolution-scale N` | `video.resolution_scale` |
+| `--aspect W:H`         | `video.aspect`           |
+
+### Settings reference
+
+[`spyro.example.toml`](../spyro.example.toml) lists every setting with a short
+comment. In brief:
+
+| Setting                          | Default      | Meaning                                                      |
+| -------------------------------- | ------------ | ------------------------------------------------------------ |
+| `disc`                           |              | Your `.cue` file                                             |
+| `memcard.port1`, `memcard.port2` | see above    | Card image paths, or `"none"`                                |
+| `input.pad`                      | `"analog"`   | `"digital"` to present a digital pad                         |
+| `input.analog.left.*`            | original     | Left stick shaping (see [Stick tuning](#stick-tuning))       |
+| `input.analog.right.*`           | radial       | Right stick shaping                                          |
+| `input.camera.*`                 | original     | Right-stick camera (see [Camera](#camera))                   |
+| `input.keyboard.*`               | see Controls | Key bindings                                                 |
+| `video.resolution_scale`         | `1`          | 1 to 8, or `"auto"` to match the window                      |
+| `video.aspect`                   | `"4:3"`      | `"16:9"`, `"21:9"`, any `"W:H"` up to 8:3, or `"auto"`       |
+| `video.hud`                      | `"center"`   | `"edges"` moves the HUD counters to the sides of a wide view |
+| `debug.fast`                     | `false`      | Run as fast as possible, without the 59.94 Hz frame limiter  |
+| `debug.log_level`                | `"info"`     | `"debug"`, `"info"`, `"warn"` or `"error"`                   |
+| `debug.overlay`                  | `false`      | Start with the diagnostics overlay showing                   |
+| `debug.cull_margin`              | `0`          | Draw this many extra pixels past each edge of a wide view    |
+| `debug.start.level`              | `0`          | Boot straight into this level id (`0` is the title screen)   |
+
+### Stick tuning
+
+Each stick has a `mode`:
+
+- **`"original"`** (left stick default) passes the stick through untouched, so
+  the game's own dead zone applies.
+- **`"radial"`** (right stick default) shapes the stick before the game sees it,
+  using two extra settings:
+  - `range = [inner, outer]`: below `inner` the stick reads as centred, past
+    `outer` it reads as fully pushed, and it is linear in between. Values are
+    fractions of full deflection.
+  - `curve`: a response exponent. `1` is linear; higher values give finer
+    control near the centre.
+
+The left stick's default radial range, `[0.375, 1.0]`, matches the size of the
+original dead zone. Gamepads often feel better with about `[0.1, 0.95]`.
+
+### Camera
+
+In the original game, L2 and R2 turn the camera. Setting
+`input.camera.mode = "analog"` also lets the right stick turn it, at a speed
+that follows how far the stick is pushed. L2 and R2 keep working and take
+priority.
+
+| Setting                   | Meaning                                                          |
+| ------------------------- | ---------------------------------------------------------------- |
+| `input.camera.invert`     | Reverse the stick direction                                      |
+| `input.camera.speed`      | Turn speed at full deflection; `1` matches L2/R2                 |
+| `input.camera.boost`      | When held fully, speed up to this many times `speed` (`1` = off) |
+| `input.camera.boost_time` | Seconds to reach full boost                                      |
+
+Moving the stick counts as camera input, just like L2/R2, so the camera waits
+the usual 1.5 seconds before swinging back behind Spyro.
+
+## Display options
+
+### Resolution scale
+
+`video.resolution_scale` renders the 3D scene at a multiple of the PS1's
+512x240. The default, `1`, uses a display path that closely follows the PS1's
+own. Any other value, including `"auto"`, switches to a scaled renderer. The `=`
+key cycles through 1x, 2x, 4x and 8x while the game runs.
+
+The image always fills the window at the chosen aspect ratio. `"auto"` picks the
+smallest scale that is at least as tall as the window.
+
+Some things stay at the original resolution:
+
+- **Geometry still snaps to the 512x240 pixel grid.** The PS1's geometry
+  hardware produces whole-pixel coordinates. Removing that jitter would take
+  PGXP-style subpixel support in PsyZ, which hasn't been done.
+- **Pause and menu backdrops** look lower resolution than the HUD and text on
+  top of them. The game copies the frame into RAM and redraws it as a texture,
+  so it only ever has the 512x240 copy.
+
+The PS1 only shows lines 8 to 232 of its 240-line image, because TVs hid the
+rest. The scaled renderer crops to those lines; the 1x path shows all 240.
+
+### Widescreen
+
+`video.aspect` widens the view to `"16:9"`, `"21:9"`, any `"W:H"` between 4:3
+and 8:3, or `"auto"` to follow the window as you resize it. With a fixed aspect,
+the window opens at that shape.
+
+The game culls anything outside its original 4:3 view, so the native build
+widens those checks to fit the new view. Things that were checked at 21:9
+against 4:3, with nothing found missing at the edges:
+
+- the hubs, a normal level, a flight level and a boss
+- the title screen and menus, the intro cutscene and a dragon rescue
+- pause, inventory, the attract demo, dying and respawning, and game over
+- the first level of every world
+
+The 2D screens (title, menus, pause, inventory, cutscene text) stay in a centred
+4:3 area. So does the HUD, unless you set `video.hud = "edges"`. That moves the
+gem counter and eggs to the left edge and the lives and key to the right edge,
+at the same distance from the edge as in the original. The dragon counter stays
+centred, and flight levels keep their own HUD.
+
+Things to know:
+
+- **Cutscenes were framed for 4:3**, so characters can stand half in the extra
+  space at the sides. The intro's dragons do.
+- **Runs drift over time.** The game only animates actors it thinks are on
+  screen, and more of them are on screen in a wide view. So a scripted run at
+  21:9 slowly diverges from the same run at 4:3.
+- **Pause backdrops lose some horizontal detail** (about 0.74x at 16:9), because
+  the wide view is squeezed into the 512-pixel-wide copy and stretched back out.
+
+`debug.cull_margin = N` makes the game draw `N` extra pixels past each edge.
+Comparing runs with and without it is a quick way to spot anything that is still
+culled too early.
+
+## Scripted and headless runs
+
+The native build can play itself with pre-scripted input and take screenshots,
+which is how most testing is done.
+
+| Flag                       | Effect                                                                                                 |
+| -------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `--frames N`               | Quit after N VSyncs                                                                                    |
+| `--press N:BUTTONS[:HOLD]` | Hold buttons on pad 1 from VSync N for HOLD VSyncs (default 4). Join buttons with `+`, e.g. `cross+up` |
+| `--screenshot out.bmp`     | Save a screenshot of VRAM when the run ends                                                            |
+| `--shot N`                 | Also save one at VSync N, as `out-N.bmp`                                                               |
+| `--capture out.bmp`        | Save the displayed frame at its scaled size, instead of or as well as VRAM                             |
+| `--warp N:LEVEL`           | Load level id LEVEL at VSync N, as the developer level select did                                      |
+| `--fast`                   | No frame limiter; time advances one frame per VSync, so runs are repeatable                            |
+| `--wav out.wav`            | Also record the audio to a file                                                                        |
+
+These flags apply to one run only and have no config-file equivalent.
+
+Some level ids: 10 is Artisans, 21 is Dry Canyon. Setting
+`debug.start.level = LEVEL` boots straight into a level with a fresh game, no
+button presses needed. It skips the boot screens quickly with nothing shown or
+heard, then switches back to normal speed once the level is playing.
+
+Examples:
+
+```sh
+# Run 300 VSyncs and take a screenshot
+make native-run NATIVE_ARGS="--frames 300 --screenshot out.bmp"
+
+# Press Start twice to skip the title flyby, screenshot at VSync 1550
+make native-run NATIVE_ARGS="--frames 1900 --screenshot out.bmp \
+  --press 1300:start --press 1400:start --shot 1550"
+
+# Same, but capture the displayed frame at 4x (2048x960)
+make native-run NATIVE_ARGS="--frames 1900 --capture out.bmp --resolution-scale 4 \
+  --press 1300:start --press 1400:start --shot 1550"
+
+# Warp to Dry Canyon, as fast as possible
+make native-run NATIVE_ARGS="--fast --memcard none --frames 4400 --screenshot out.bmp \
+  --press 1300:start --press 1400:start --press 1550:cross --press 1650:cross \
+  --press 2300:start --warp 3400:21 --shot 3990"
+```
+
+Tips for writing scripts:
+
+- The game runs at one frame per two VSyncs.
+- On a cold boot the title flyby lasts until about VSync 1300. Start skips it,
+  and a second Start opens the memory-card check.
+- A memory card changes which menus appear, so pass `--memcard none` (or a
+  scratch card) to keep runs repeatable.
+
+## Development
+
+### Make targets
+
+| Command                                    | What it does                                                                             |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------- |
+| `make native`                              | Build `build/native/spyro` and the gate tool                                             |
+| `make native-run`                          | Run with `spyro.toml`; extra flags in `NATIVE_ARGS`                                      |
+| `make native-test`                         | Run the host unit tests (needs only a C compiler and cmake)                              |
+| `make native-gate SAVESTATE=...`           | Check the level loader against a DuckStation savestate ([below](#the-level-loader-gate)) |
+| `open-spyro neutral [--ref main] [--host]` | Check that a shared-code change leaves the PS1 build unchanged                           |
+
+### Unit tests
+
+`make native-test` builds `native/tests` as its own CMake project in
+`build/native-test`, with AddressSanitizer and UndefinedBehaviorSanitizer turned
+on. It tests the native code that doesn't depend on SDL or wasm, including the
+config parser, the libc, memory cards, input scripting, stick shaping, the
+camera, level warps, audio, the diagnostics overlay and the memory layout.
+
+Tests live next to the code they test, as `<unit>_test.c` (for example
+`src/native/host/config_test.c`), and are picked up automatically. A test is a
+`TEST(name)` block using `CHECK`, `CHECK_INT` and `CHECK_STR` from
+`native/tests/test.h`. To run only some tests:
+
+```sh
+build/native-test/native_tests FILTER   # tests whose name contains FILTER
+```
+
+When code is tied up with SDL, PsyZ or wasm2c, the testable part is split into
+its own file (`host_io.c`, `script.c`, `stick.c`, `audio_format.c`,
+`diag_stats.c`, `shim_helpers.c`) so it can be tested alone. Tests for code that
+runs inside wasm `#include` the file under test rather than linking it, and
+provide the `host_*` functions it calls. Tests for native game code also define
+the game globals the code uses.
+
+### Changing shared code
+
+The game C is shared with the PS1 build, and the PS1 build must stay
+byte-identical. Before committing a change to shared code, run
+`open-spyro neutral`. It compares the PS1 preprocessor output before and after
+your change, ignoring whitespace and line breaks. `make check` is the final
+word.
+
+Where the PS1 source can't work as-is natively, `include/port.h` provides macros
+that expand to the original text on PS1:
+
+| Macro                       | PS1                            | Native                                                                 |
+| --------------------------- | ------------------------------ | ---------------------------------------------------------------------- |
+| `REG_PIN(type, name, "$n")` | `register type name asm("$n")` | `type name`                                                            |
+| `PORT_VOLATILE`             | (nothing)                      | `volatile`, for globals some headers declare volatile and others don't |
+
+`match_asm.h` also has plain-C native versions of its matching helpers. Other
+native-only code is either inside `#ifdef __psyz` or in `src/native/game/`,
+which replaces PS1 code that has no native meaning (such as computed `goto *ra`
+jumps and file-scope register variables).
+
+Native game C is built with `-Werror=implicit-function-declaration`. On wasm,
+calling an undeclared function guesses its signature, and the call crashes if
+the guess is wrong.
+
+### The level loader gate
+
+`native/gate/` checks that the level loader produces exactly the same memory as
+the PS1. It builds the real `src/main/load/level.c` on its own, loads a level
+from the original `WAD.WAD`, and compares the result against RAM from a
+DuckStation savestate taken in that level. It checks that:
+
+- every pointer the native loader fixed up matches the PS1 RAM;
+- no pointer the PS1 fixed up was missed;
+- every global the loader sets up (chunk tables, collision header, actor pool,
+  and so on) matches.
 
 Result on level index 10:
 
@@ -328,305 +427,212 @@ level archive  0x80168a24+0x00b000: 107 words relocated, 107 match PS1, 0 differ
 gate: PASS
 ```
 
-"Runtime-only changes" in the full output are words the game changed after
-loading (actor state, animated vertices); the gate does not compare them.
+The full output also lists "runtime-only changes". Those are values the game
+changed after loading, such as actor state and animated vertices, and the gate
+ignores them.
 
-## Starting the game
+## How it works
 
-`spyro --disc game.cue` copies the path into the module, and
-`src/native/wasm/game_main.c` does what the BIOS does: opens the image through
-PsyZ's CD layer, finds `SCUS_942.28` (`CdSearchFile`), and reads its PS-X EXE
-image to the address in its header (`0x80010000`). That puts main `.rodata` and
-`.data` at their PS1 addresses, where the game C reaches them through the GOT;
-the image's code bytes are inert. Nothing in it needs patching: its 26
-code-pointer words all belong to the SDK the module replaces. Then it calls the
-game's `main`.
+### The big picture
 
-Overlays need nothing extra. The game reads each from `WAD.WAD` into
-`0x8007aa38` itself, which lands the overlay's data at its PS1 addresses, and
-`ApplyPerLevelGlobalsTable` installs native function pointers (every overlay's
-C is in the module; no name collides). Overlay data has no code pointers. The
-GOT table includes the overlays' symbol files and fails if a name has two
-addresses. Level ids 0–9 and 99 point at overlays that are not on the disc;
-their entry points abort (`src/native/game/load/level_id_stubs.c`).
+The game's C code assumes 32-bit pointers and that PS1 RAM sits at its real
+addresses, such as `0x80000000`. A normal 64-bit program can't put memory there.
+So the game is compiled to **wasm32**, where every address is just an offset
+into one block of memory, and **wasm2c** then turns that WebAssembly back into C
+for the normal host compiler:
 
-## Input and headless runs
+```
+game C + translated hand-asm + PsyZ core + src/native/wasm
+    --(wasi-sdk clang)-->  spyro.wasm
+spyro.wasm
+    --(wasm2c)-->          spyro_w.c
+spyro_w.c + src/native/host + PsyZ's SDL3 backend
+    --(clang or gcc)-->    build/native/spyro
+```
 
-Pad 1 is the keyboard or the first SDL gamepad (PsyZ's backend). The
-keyboard follows DuckStation's layout, with the camera turn moved next to
-the face buttons: W A S D (or the arrows) = D-pad, I / J / K / L =
-Triangle / Square / Cross / Circle (Space is a second Cross, for jump),
-Q / E = L1 / R1, U / O = L2 / R2, Return = Start, Backspace = Select; L3
-and R3 are unbound. `input.keyboard.<button>` (`cross`, `l2`, `up`, ...)
-rebinds one: a key name (`"k"`, `"space"`, `"f1"`, `"kp_4"`, `"lshift"`, `"up"`)
-or an array of up to four, `[]` for none (`--set input.keyboard.cross=k,space`).
-Escape, F4, F6, `` ` `` and `=` are the host's and can't be bound. PsyZ's
-own keyboard table is fixed, so the host rebuilds pad 1's buttons from the
-gamepad and these bindings in `Psyz_PadsSet` (`src/native/host/main.c`,
-names in `keymap.c`). Pad 1 reports a
-DualShock in analog mode (id 0x73; `input.pad = "digital"` makes it a digital
-pad, 0x41): the left stick steers Spyro (and the free-look camera) through
-the game's own analog path, which calibrates the stick centre from the first
-analog report and never reads the right stick. The keyboard leaves both
-sticks centred. PsyZ fills the direct-mode report buffers on every VBlank;
-the game's own VSync callback (`PollPadAndDistributeInput`) reads them.
+The result is ordinary native code. wasm2c protects memory with guard pages, so
+there is no bounds check on each memory access.
 
-Backtick (`` ` ``), or L3 + R3 on a gamepad (click one stick while holding the other in),
-shows and hides the diagnostics overlay (`src/native/host/diag.cpp`, not in
-the original): presented FPS, a graph of the last 240 frames' rates, the mean
-and longest time between presents, the time the game ran between blocking
-VSyncs, the VSync count, `g_nGamestate` and `g_nActiveLevelId`; the averages
-refresh every half second. `debug.overlay = true` starts it shown. It is a
-[Dear ImGui](https://github.com/ocornut/imgui) panel with an
-[ImPlot](https://github.com/epezent/implot) graph (both MIT, the
-`external/imgui` and `external/implot` submodules), drawn through PsyZ's
-SDL_GPU overlay hooks with ImGui's SDL_GPU backend (Metal or Vulkan), in the
-system's monospace font (SF Mono, else DejaVu Sans Mono, else ImGui's own).
-If ImGui can't start, the frame rate goes in the window title instead. The
-`=` key steps `video.resolution_scale` through 1x, 2x, 4x and 8x (then back to
-1x) between frames, taking over from auto; the overlay's `res scale` row shows the
-current one. From 1x at 4:3 it first moves PsyZ from its PS1 display mode to
-its native one, where it scales. PsyZ's own keys stay: F4
-fullscreen, F6 the VRAM view, Escape quits.
+[PsyZ](https://github.com/Xeeynamo/psyz) provides PC versions of the PS1 SDK
+libraries (graphics, sound, CD, controllers) and an SDL3 backend. The native
+build uses it for everything the PS1 hardware used to do.
 
-Each stick has a `mode` (`input.analog.left.mode` / `input.analog.right.mode`).
-`"original"`, the left stick's default, passes the report through untouched,
-so the game's own calibration applies: a 0x30-per-axis dead zone around the
-centre it snapshots, linear past that. `"radial"`, the right stick's default,
-shapes the stick on the host before the game sees it
-(`src/native/host/stick.c`): a radial `range = [inner, outer]` (below inner
-the stick reads centred, from outer on it reads full, linear between) and a
-response `curve` (exponent; above 1 gives finer control near the centre).
-Those two apply only in radial mode.
-The shaped value is encoded just past the game's dead zone, so the shaped
-deflection reaches the game unchanged and the host's dead zone replaces the
-game's. The left stick's radial inner default, 0.375, is the original's size. The
-game never reads the right stick, so in `"original"` mode the right-stick
-camera turn gets the raw stick with no dead zone.
+### Memory layout
 
-`input.camera.mode = "analog"` adds what the original lacks: the right
-stick's X axis turns the camera the way L2 / R2 do, in proportion to the
-deflection, with the buttons taking priority; stick right turns the way R2 does, and
-`invert = true` flips that. `speed` scales the rate (1 = the
-L2/R2 rate); held at full deflection it ramps to `boost` times that over
-`boost_time` seconds (boost 1 = no ramp). Moving it counts as input the way L2 / R2 do: it
-restarts the standing camera's 1.5 s countdown before it swings back behind
-Spyro. The camera spring eases every turn
-in and out on its own. It is the native `UpdateCameraManualYawInput`
-(`src/native/game/camera/manual_yaw.c`); L2 / R2 keep the original rate.
+Defined in `src/native/host/psx_memory.h`:
 
-For runs without a person at the keyboard, `--press N:BUTTONS[:HOLD]` holds
-buttons (names joined by `+`: `cross+up`) for HOLD VSyncs (default 4) from
-VSync N, and `--shot N` writes a VRAM screenshot at VSync N next to
-`--screenshot` (`out-N.bmp`). `--capture out.bmp` writes the displayed
-frame instead of VRAM, at the scaled resolution (and with `--shot`, one
-next to it per shot too); the two can be given together.
+| Address                 | Contents                                                   |
+| ----------------------- | ---------------------------------------------------------- |
+| `0x00000000–0x001FFFFF` | A mirror of main RAM (the same memory, mapped twice)       |
+| `0x01000000–0x017FFFFF` | Static data for the native-only code                       |
+| `0x01800000–0x01FFFFFF` | The C stack                                                |
+| `0x1F800000`            | Scratchpad RAM                                             |
+| `0x80000000–0x807FFFFF` | Main RAM: the PS1's 2 MiB, plus extra room the dev kit had |
 
-`video.resolution_scale` (`--resolution-scale N`) renders at N times
-512x240, 1 to 8, or `"auto"` for the window size over the game's size. Anything
-but 1 puts PsyZ in its native display mode (a 512x224 canvas of its own,
-centred), which is where it scales; 1, the default, keeps the PS1 display
-path. The game draws only rows 8..232 of its 240 (`DRAW_Y`, `DRAW_H`; a
-TV's overscan hid the black lines above and below), so the native canvas
-crops them, while the PS1 path shows all 240 at 4:3. Either way the frame
-fills the window at the view's aspect (PsyZ's native mode
-alone would only scale by whole multiples; the host reports a display
-larger than any window so it fits it instead), and auto picks the
-smallest scale at least as tall as that fit. At 1x the two modes capture the same frame, up to a few pixels one
-5-bit step apart in 3D scenes (gouraud interpolation rounding).
-The pause and menu backdrops stay at 1x under a scaled HUD and menu: the
-game reads the frame back into RAM (`StoreImage`, `MoveImage`) and draws it
-again as a texture, so it only ever sees the 512x240 copy.
-`video.aspect` (`--aspect`) widens the view: `"16:9"`, `"21:9"`, any
-`"W:H"` from 4:3 to 8:3, or `"auto"` for the window's, followed as it is
-resized. It is the aspect of the cropped 224-line picture, never narrower
-than the 512-wide framebuffer (so `"4:3"` is about 1.43:1), and rounded so
-the canvas is a whole number of game pixels (PsyZ presents nothing for a
-canvas it has to round). A fixed aspect also opens the window at it (at
-PsyZ's height, or narrower and shorter if that would be wider than the
-display), so the picture fills it without bars; resizing it afterwards is
-left alone. The `=` key's first step out of the PS1 path (1x at `"4:3"`)
-refits the window the same way, as the cropped canvas is wider. It asks PsyZ's native mode for a
-canvas wider than the framebuffer, at the same projection, centred on it
-(640 wide at 16:9, x -64..576; 840 at 21:9), and the run logs the view's
-game-coordinate bounds. The game's
-side culls, hand-written asm tuned to the 4:3 edges, are widened to the view
-by native patches to the hand-asm translation
-(`tools/open-spyro/src/open_spyro/handasm_patches.py`, `include/native_view.h`):
-the world chunks, actors, sprites, sky, particles, billboards and the portal
-skies' clip rect (`portal_sky.c`). The per-zone visibility lists don't depend
-on the view's width, so nothing is missing at the new edges. Actors in the
-wider strips count as drawn, which the game uses to decide what to animate,
-so a run at 21:9 drifts from the same run at 4:3 after a while.
-`debug.cull_margin = N` makes the culls reach N game pixels past each side
-of a widened view. Comparing a run with it against one without shows what
-a cull still drops at the edges. PsyZ draws primitives of any width, so
-polygons spanning the whole canvas are not dropped.
-The sky's segment walks skip segments close to the camera plane, which the
-4:3 view never showed; that margin shrinks as the view widens, or the
-strips' top corners would show the clear colour. Spyro's own model has a
-45-degree side cull, wider than 4:3 but narrower than 16:9, widened the same
-way. Wider views emit more primitives than the original 4:3 ones, more than
-the per-frame primitive buffers carved from the top of the PS1's RAM hold
-(0x1C000 bytes, and 0x13000 in the cutscene layout, whose overflow limit is
-not even their end: the intro cutscene at 21:9 wrote over the OT and
-crashed). So the native build gives each frame a 512 KiB buffer above the
-PS1's 2 MiB instead (`NATIVE_PRIM_BUFFER_BASE` in `include/frame_db.h`,
-in the dev-kit RAM native memory maps; OT links are 24-bit, so they reach
-it), and the carved ones go unused. Levels 50 and 53 at 8:3 and the intro
-cutscene at 21:9, which filled the original buffers, no longer do.
-The 2D screens (title, menus, pause, inventory, the cutscene text) stay in
-the centred 4:3 area, and so does the HUD unless `video.hud = "edges"`.
-With it, the gem counter and the egg row move out to the view's left edge
-and the lives counter (its butterflies with it) and the key to its right
-one, at the original's distance from the 4:3 edge; the dragon counter stays
-centred. The HUD's icon records and egg rects are laid out at their 4:3
-rest positions (`InitHudCounters`); the native build shifts them by the
-view's edges after that and again whenever the view changes
-(`NativeHudAnchor`, in `src/native/game/render/view.c`), along with the
-all-gems total's text and the egg counter's sparkle burst. Flight levels
-keep their own HUD as laid out. The frozen grey backdrop behind the
-pause, inventory and flight-results screens spans the whole view: the game
-reads it back from the 512-wide framebuffer, so its capture frame squeezes
-camera x by 512 / the view's width (`NativeMenuBackdrop`, in
-`src/native/game/render/view.c`) and the backdrop's four quads stretch it
-back over the view (`NativeStretchBackdrop`). It needs no extra VRAM, at
-the cost of horizontal detail (0.74x at 16:9). The remaining `SCREEN_W` uses in game C are
-the framebuffer's own clears and copies, which stay 512 wide.
-Checked at 21:9 against 4:3: the hubs, a normal level, a flight level, a
-boss, the title screen and its menus, the intro cutscene, a dragon rescue,
-pause and inventory, the attract demo, a death with its fade and respawn,
-and the game-over screen. Scripted runs of the first level of each
-world (Stone Hill, Dry Canyon, Alpine Ridge, Terrace Village, Dark Passage,
-Gnorc Cove) at 21:9 showed nothing missing at the edges. A camera
-spin in the Artisans hub and turns in Sunny Flight, each run with
-`debug.cull_margin = 64` and without, differ only where the margin changes
-what the game animates: actors and Sparx out of step, and a smoke trail one
-puff longer, since an actor just past the edge emits only while it counts as
-drawn (as at the 4:3 edge in the original). No geometry or actor pops in at
-the edges. Known issue: cutscenes were framed
-for 4:3, so characters can stand half in the new strips beside the shot
-(the intro's dragons do).
-Geometry still snaps to the 512x240 grid at any scale: the GTE returns
-whole-pixel screen coordinates, and removing the jitter needs subpixel
-vertices through PsyZ's GTE and packet path (a PGXP-style change in the
-`external/psyz` submodule, not done). A VSync here is a blocking one: the game runs
-one frame per two. The title flyby lasts until VSync ~1300 on a cold boot;
-Start skips it, a second Start opens the memory-card check. A card changes
-the menus that follow, so scripted runs pass `--memcard none` (or a scratch
-card) to stay repeatable.
+Only pages that are actually used take up memory. The RAM mirror uses
+`mach_vm_remap` on macOS and a shared `memfd` on Linux.
 
-`--fast` drops the 59.94 Hz frame limiter, and `VSync(-1)`, the counter the
-game paces itself by, then counts blocking VSyncs instead of wall time: game
-time advances one vblank per VSync, so a run is deterministic and a few
-seconds long. `--warp N:LEVEL` starts a load of level id LEVEL (10 =
-Artisans, 21 = Dry Canyon, ...) at VSync N, or once gameplay resumes after
-it, with the teardown the dev level select runs
-(`src/native/game/debug/warp.c`). `debug.start.level = LEVEL` (or
-`--set debug.start.level=LEVEL`) instead boots into a level: once the title
-screen's scene has loaded, it takes the title's load-game exit into LEVEL
-with a fresh game (no memory-card save loaded), with no pad input needed.
-Until the level is in play nothing is shown or heard and the run is
-`--fast`; the boot screens' VSyncs are presented with the display held off
-(black, but the GPU work is still submitted), and the story intro's
-fly-over is cut short (`native_skip_intro_fly`), so the game opens on the
-level a fraction of a second after launch. It then drops back to real time,
-with `VSync(-1)` carrying on from the VSync count.
-`--wav out.wav` writes the sound output to
-a file as well.
+### Game globals at their PS1 addresses
 
-## The SDK
+Every game global stays an `extern` declaration with no definition. The wasm
+module is built position-independent, so the linker turns each one into an
+import, and `open-spyro native got-table` fills those imports in with the
+addresses from the same symbol files the PS1 build uses
+(`config/symbol_addrs.txt` and the `undefined_*` lists).
 
-The matched C calls the SDK by project names. `src/native/wasm/sdk_shim.c`
-defines each one with the game prototype's signature and forwards to PsyZ:
-libspu, libgpu, libcd, libapi, `rand`. Gaps are shimmed:
+So every global sits at exactly its PS1 address, and tricks the game relies on,
+such as two names for one address or arithmetic across symbols, keep working.
+**No source changes were needed for this.**
 
-- libpad direct mode (`PadInitDirect`) is PsyZ's `InitPAD`, which fills the
-  raw report buffers on VBlank.
-- `SetDrawMode` writes the PS1 packet (tag, E1, E2). PsyZ's own writes its
-  native two-word tag, which shifts the commands one word and overwrites the
-  tag of the primitive the game packs right after the `DR_MODE`.
-- `DrawOTag` converts the game's ordering table, built in the PS1 packet
-  format (one tag word: 24-bit next address, length in the top byte), into
-  PsyZ's native format (a two-word tag: full pointer, length) before handing
-  it to PsyZ. On the way it clears the bits above 8 in each textured
-  polygon's texpage halfword: the GPU ignores them, PsyZ uses them as its
-  own flags (bit 15 = untextured), and the world renderer's texture records
-  set bit 15, which drew all but the nearest terrain untextured.
-- `CdRead` completes synchronously, then raises the read callback the game
-  registered (every caller raises its in-flight flag first).
-- The libmcrd upper layer is `memcard.c` (above).
-- `GetSpuVoiceKeyStatus` treats a voice keyed on since the SPU last ran as
-  `SPU_ON` (Sound, above).
-- `LoadExec`, `_96_init` and the libapi slot 0x10 call log and do nothing
-  (`LoadExec` exits).
+### Booting
 
-`src/native/wasm/game_prelude.h` is force-included into game C. It renames
-the game names that collide with PsyZ (the game's own `SpuInit` is a
-memory-card reset) or that PsyZ declares with other types (`LoadExec`,
-`MulMatrix0`, `CdRead`, `CdReadCallback`, `DrawOTag`, `SetDrawMode`).
+`spyro --disc game.cue` does what the PS1 BIOS would
+(`src/native/wasm/game_main.c`): it opens the disc image, finds the game
+executable `SCUS_942.28`, and loads it at `0x80010000`. That puts the game's
+data at its original addresses. The machine code in the file is ignored, since
+the compiled C replaces it. Then it calls the game's `main`.
 
-## Hand-written asm
+Levels need nothing special. The game loads each level's overlay from `WAD.WAD`
+into memory itself, which puts its data in the right place, and since every
+overlay's C is already compiled in, the game's per-level function table just
+points at native functions. Level ids 0–9 and 99 refer to overlays that aren't
+on the disc; they stop the program if reached
+(`src/native/game/load/level_id_stubs.c`).
 
-`open-spyro native handasm` translates the 100 hand-written functions from
-`asm/text.s` into `src/native/handasm/ha_*.c` (generated, committed; rerun it
-when the asm changes). It decodes each instruction word and emits C that does
-exactly what the instruction does (`handasm.h`):
+### The PS1 SDK
 
-- Every register is a `uint32_t` local; memory accesses are plain pointer
-  accesses at the PS1 address the code computes.
-- Functions that jump into each other (`X` / `X_Tail`, the portal clip
-  helpers) form one *cluster*, a single C function. Four small matched
-  functions the asm falls or jumps into (`ReturnT0Fixed12`, ...) are
-  translated into their clusters too.
-- Clusters call each other with the whole register file (`HaRegs`): the
-  "register-convention helpers" pass values in arbitrary registers.
-- `jr reg` dispatches through a switch over the cluster's code addresses:
-  branch targets, `jal` return addresses, entries, and every instruction of a
-  Duff-style computed jump (`la base; add off; jr`). The collision and portal
-  clip code also jumps into tables: of `j` instructions (the last entry may be
-  `jr $ra`), or of fixed-stride stubs that each end in `j join`; the run then
-  goes on through the table. An unknown target aborts with its address.
-- Delay slots run before the transfer. R3000 load delays (the next
-  instruction sees the old value) are honoured; the translator stops on any
-  hazard it cannot express. This code has none.
-- GTE moves and commands go to PsyZ's register-level API. `runtime.c` adds
-  what PsyZ does not model: the SXYP FIFO push, IRGB/ORGB and LZCS/LZCR.
-- Hand-asm frames live on a separate 256 KiB stack (`ha_mips_sp`); calls to
-  game C (`GetRandomU32`, `PlaySoundEffect`, ...) use the callee's prototype.
-- C callers reach each function through a wrapper with its `funcs.h`
-  signature.
+The game calls the PS1 SDK libraries through the names this project gave them.
+`src/native/wasm/sdk_shim.c` defines each one and forwards it to PsyZ. Where
+PsyZ behaves differently from the real SDK, the shim fills the gap. For example:
 
-## Signatures must match
+- `SetDrawMode` writes the real PS1 packet format, since PsyZ's version is laid
+  out differently and corrupts the next packet.
+- `DrawOTag` converts the game's PS1-format draw list into PsyZ's format. It
+  also clears some texture bits that the PS1 GPU ignored but PsyZ treats as
+  "untextured", which otherwise left most of the terrain untextured.
+- `CdRead` finishes immediately, then calls the game's callback.
+- `LoadExec` and a couple of BIOS calls just log a message.
 
-wasm traps on a call whose signature differs from the callee's, where the PS1
-(and a native build) would not care. The link therefore runs with
-`--fatal-warnings`, which makes wasm-ld's signature-mismatch warning an error.
-The game had three kinds, all fixed without changing PS1 text:
+`src/native/wasm/game_prelude.h` is included into all game C. It renames game
+functions whose names clash with PsyZ's, such as the game's `SpuInit`, which
+actually resets the memory card.
 
-- Overlay headers that declare main or SDK functions differently (`void`
-  where the definition returns a value, a K&R `sprintf`, stray arguments the
-  PS1 passes in a register the callee ignores): `#ifdef __psyz` declarations,
-  with a call macro where the argument count differs.
-- `MoveActorByDelta` takes its delta as a struct by value, which the PS1
-  passes in `$a1`–`$a3` and callers pass as three ints:
-  `src/native/game/actor/move_by_delta.c` is the callers' entry point.
-- The titlescreen tests the `$v0` that the void
-  `RestartTitleCardCheckOnTriangle` leaves: `src/native/game/gamestate/update.c`
-  returns it.
+The native code carries its own small libc (`src/native/wasm/libc.c`), because
+wasi-sdk's libc can't be linked into a position-independent module. File access,
+logging and other services go through `host_*` functions on the native side
+(`src/native/wasm/host_imports.h`).
 
-PsyZ's own mismatches (decomp callers vs. PsyZ definitions: `WaitEvent`,
-`StartCARD2`, `StopCARD2`, `CD_datasync`, `CD_getsector2`) go through adapters
-in `src/native/wasm/psyz_fixups.c`, selected per calling file in
-`native/wasm/CMakeLists.txt`.
+PsyZ makes `u_long` pointer-sized, so it is 32 bits inside the wasm module and
+64 bits in the native graphics backend. `src/native/host/imports.c` converts
+graphics packets between the two.
 
-The wasm link passes `--no-wasm-opt`. Otherwise clang runs any `wasm-opt` on
-`PATH`, which makes the output depend on the machine and strips function names.
+### One thread
+
+A wasm2c module can only be used from one thread. PsyZ normally runs timers on a
+separate thread, so the native build stops that thread from starting
+(`src/native/wasm/psyz_bridge.c`) and PsyZ runs its timers once per frame
+instead.
+
+### Sound
+
+PsyZ emulates the PS1 sound chip inside the module, including voices, envelopes,
+reverb and CD/XA audio. Normally SDL's audio thread would pull samples from it,
+but that would mean a second thread entering the module. Instead,
+`src/native/host/audio.c` asks the module for samples once per frame and keeps
+SDL's audio buffer about 46 ms ahead.
+
+This means sound only advances between frames, whereas on a PS1 it runs
+alongside the game. Two bugs came from that, both fixed:
+
+- **Silent cutscene narration.** While waiting for the disc, the game checks
+  whether each sound has finished. Disc reads are instant here, so the sound
+  chip hadn't run yet and a sound that had just started looked finished, and was
+  stopped. `GetSpuVoiceKeyStatus` now reports such sounds as still playing.
+- **Silent title menu.** PsyZ clears sound memory the first time it starts the
+  sound chip, which used to happen after the title screen's sounds were loaded.
+  `native_main` now starts it before the game runs.
+
+### Memory cards
+
+`src/native/wasm/memcard.c` implements the memory-card calls the game makes
+(check, read, write, create and format) on top of a `.mcd` file. Every change
+writes the whole file. Operations finish instantly, and the game sees the result
+the next time it checks.
+
+### Hand-written assembly
+
+About 100 of the game's functions were written by hand in assembly and can't be
+matched as C. `open-spyro native handasm` translates them from `asm/text.s` into
+C, one instruction at a time, as `src/native/handasm/ha_*.c`. These files are
+generated but committed; run it again if the assembly changes.
+
+Each MIPS register becomes a local variable, and each memory access becomes a
+pointer access at the same PS1 address. Details:
+
+- Functions that jump into each other are merged into one C function.
+- Indirect jumps (`jr`) become a `switch` over every possible target, including
+  jump tables and computed jumps into the middle of unrolled loops. An
+  unexpected target stops the program with its address.
+- Branch delay slots and the R3000's load delay are reproduced exactly.
+- Geometry coprocessor (GTE) instructions go to PsyZ's GTE, with a few missing
+  pieces added in `src/native/handasm/runtime.c`.
+- The translated code has its own 256 KiB stack.
+- Game C calls each function through a wrapper with its normal C signature.
+
+Widescreen needs some hand-written culling code to see a wider view. Those
+changes are applied as patches during translation
+(`tools/open-spyro/src/open_spyro/handasm_patches.py`, `include/native_view.h`).
+
+### Widescreen internals
+
+The wider view is a wider canvas at the same projection, centred on the
+original: 640 pixels wide at 16:9 (x from -64 to 576), 840 at 21:9. Its width is
+rounded to a multiple of 8 game pixels.
+
+- The culling checks for world geometry, actors, sprites, sky, particles,
+  billboards, portal skies and Spyro's own model are widened to the view. The
+  per-zone visibility lists don't depend on view width, so nothing is missing
+  from them.
+- The sky skips segments very close to the camera. That margin shrinks as the
+  view widens, so the corners don't show the background colour.
+- A wide view draws more than the original per-frame draw buffers can hold (the
+  intro cutscene at 21:9 overflowed and crashed). The native build gives each
+  frame a 512 KiB buffer in the extra RAM above 2 MiB instead
+  (`NATIVE_PRIM_BUFFER_BASE` in `include/frame_db.h`).
+- The HUD is laid out at its 4:3 positions, then moved to the view's edges when
+  `video.hud = "edges"` is set, and again whenever the view changes
+  (`NativeHudAnchor` in `src/native/game/render/view.c`).
+- Pause backdrops are captured squeezed into 512 pixels and stretched back over
+  the view (`NativeMenuBackdrop` and `NativeStretchBackdrop`).
+
+### Function signatures must match exactly
+
+On the PS1, calling a function with the wrong number or type of arguments
+usually works. In WebAssembly it crashes. The wasm link therefore treats
+signature mismatches as errors (`--fatal-warnings`). The game had three kinds of
+mismatch, all fixed without changing the PS1 output:
+
+- Overlay headers that declare a function differently from its definition. These
+  get corrected declarations under `#ifdef __psyz`.
+- `MoveActorByDelta`, which takes a struct by value but is called with three
+  separate ints. `src/native/game/actor/move_by_delta.c` provides the three-int
+  version.
+- The title screen uses a return value from `RestartTitleCardCheckOnTriangle`,
+  which is declared `void`. `src/native/game/gamestate/update.c` returns it.
+
+PsyZ has a few mismatches of its own, smoothed over by adapters in
+`src/native/wasm/psyz_fixups.c`.
+
+The wasm link also passes `--no-wasm-opt`. Otherwise clang runs whatever
+`wasm-opt` is on your `PATH`, which makes the output differ between machines and
+strips function names.
 
 ## Known issues
 
-- The translated hand-asm has no differential tests yet.
-- Physics parity with the PS1 has only been checked by eye, not side by side
-  with DuckStation.
-- The in-game save menu (talking to a save host) has not been driven by a
-  scripted run; the title's card check, file creation and slot list have.
+- The translated hand-written assembly isn't tested against the original yet.
+- Physics have only been compared with the PS1 by eye, not frame by frame
+  against DuckStation.
+- No scripted run has tested saving from inside a level yet. The title screen's
+  memory-card check, file creation and save list have been tested.
+- Cutscenes can show characters cut off in the extra widescreen area.
+- Geometry still snaps to the PS1 pixel grid at higher resolutions.

@@ -51,10 +51,11 @@ set(WASM2C_RT ${TOOLS}/wasm2c-runtime CACHE PATH "wasm2c runtime sources")
 # wasm2c from tools/native_setup.sh, built from the same source as its runtime.
 find_program(WASM2C wasm2c PATHS ${TOOLS}/wabt-1.0.42/bin NO_DEFAULT_PATH REQUIRED)
 find_program(UV uv REQUIRED)
-# SDL3: the system's (Homebrew, a distro package), else the pinned build
-# tools/native_setup.sh makes in build/native-tools/sdl3.
-list(APPEND CMAKE_PREFIX_PATH ${TOOLS}/sdl3)
-find_package(SDL3 REQUIRED CONFIG)
+# SDL3: the pinned static build tools/native_setup.sh makes in
+# build/native-tools/sdl3, linked into the executable. Only that prefix is
+# searched, so a system (shared) SDL3 is never picked up instead.
+find_package(SDL3 REQUIRED CONFIG COMPONENTS SDL3-static
+    PATHS ${TOOLS}/sdl3 NO_DEFAULT_PATH)
 
 if(NOT EXISTS ${WASI_SDK}/bin/clang OR NOT EXISTS ${WASM2C_RT}/wasm-rt-impl.c)
   message(FATAL_ERROR "native toolchain missing: run tools/native_setup.sh")
@@ -130,7 +131,7 @@ target_compile_definitions(psyz_platform PUBLIC __psyz
 # runtime needs; only imports.c sees it (below).
 target_include_directories(psyz_platform PRIVATE ${PSYZ}/include ${PSYZ}/src)
 target_compile_options(psyz_platform PRIVATE -O2 -w)
-target_link_libraries(psyz_platform PUBLIC SDL3::SDL3)
+target_link_libraries(psyz_platform PUBLIC SDL3::SDL3-static)
 set_target_properties(psyz_platform PROPERTIES C_STANDARD 11)
 
 # --- 3. Dear ImGui + ImPlot, for the diagnostics overlay -----------------------
@@ -148,7 +149,7 @@ add_library(imgui STATIC
 target_include_directories(imgui PUBLIC ${IMGUI} ${IMGUI}/backends ${IMPLOT})
 target_compile_definitions(imgui PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
 target_compile_options(imgui PRIVATE -O2 -w)
-target_link_libraries(imgui PUBLIC SDL3::SDL3)
+target_link_libraries(imgui PUBLIC SDL3::SDL3-static)
 set_target_properties(imgui PROPERTIES CXX_STANDARD 17)
 
 # --- 4. executables -----------------------------------------------------------
@@ -175,6 +176,12 @@ target_compile_options(spyro PRIVATE -O2)
 set_source_files_properties(${CMAKE_BINARY_DIR}/spyro_w.c PROPERTIES
     COMPILE_OPTIONS "-w")
 target_link_libraries(spyro PRIVATE psyz_platform imgui m)
+# Linux: fold in the C++ runtime (ImGui) too, leaving only glibc and the
+# libraries SDL3 dlopens (X11/Wayland, Vulkan, audio) to the system. macOS's
+# libc++ is part of the OS, like libSystem.
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  target_link_options(spyro PRIVATE -static-libstdc++ -static-libgcc)
+endif()
 set_source_files_properties(${ROOT}/src/native/host/imports.c PROPERTIES
     INCLUDE_DIRECTORIES ${PSYZ}/include)
 
